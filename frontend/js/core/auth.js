@@ -101,7 +101,7 @@ class auth {
       view.loadView(this.config.redirectAfterLogin);
     }
 
-    // ✅ Inicializar selector de idioma (con pequeño delay para asegurar DOM)
+    // Inicializar selector de idioma
     setTimeout(() => {
       if (window.initLangSelector) {
         window.initLangSelector();

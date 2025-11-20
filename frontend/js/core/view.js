@@ -11,8 +11,17 @@ class view {
       cacheKey = `plugin_view_${pluginContext}_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.includes('/')) {
-      const result = await this.findViewInPlugins(viewName, container);
-      if (result) return;
+      // Detectar vistas core comunes y buscar ahí primero
+      const isCoreView = viewName.startsWith('auth/') || 
+                         viewName.startsWith('_sections/') || 
+                         viewName.startsWith('_modals/') ||
+                         viewName.startsWith('forms/');
+      
+      if (!isCoreView) {
+        // Solo buscar en plugins si NO es una vista core común
+        const result = await this.findViewInPlugins(viewName, container);
+        if (result) return;
+      }
 
       basePath = 'js/views';
       cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
@@ -56,13 +65,11 @@ class view {
 
       const viewData = await response.json();
 
-      // ✅ VALIDAR
       if (window.validator) {
         const validation = validator.validate('view', viewData, `${viewName}.json`);
         if (!validation.valid) {
           console.error(validation.message);
           if (window.appConfig?.isDevelopment) {
-            // En desarrollo, mostrar el error claramente
             this.renderError(`${validation.message}`, container);
             return;
           }
@@ -370,7 +377,6 @@ class view {
       }
     }
 
-    // Cargar componentes dinámicos
     const componentContainers = container.querySelectorAll('.dynamic-component[data-component]');
 
     for (const compContainer of componentContainers) {

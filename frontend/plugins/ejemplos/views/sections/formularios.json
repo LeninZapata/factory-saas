@@ -18,6 +18,20 @@
       ]
     },
     {
+      "id": "campos-agrupados",
+      "title": "📊 Campos Agrupados",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Agrupación de Campos en Columnas</h3><p>Organiza campos en grupos de 2, 3 o 4 columnas con diseño responsive:</p><ul style='margin: 1rem 0; padding-left: 2rem;'><li><strong>2 columnas:</strong> Nombre y Apellido</li><li><strong>3 columnas:</strong> Email, Teléfono y Fecha de Nacimiento</li><li><strong>4 columnas:</strong> Datos de tarjeta (Número, Mes, Año, CVV)</li><li><strong>Responsive:</strong> Se adapta a móvil (1 columna), tablet (2 columnas) y desktop (todas las columnas)</li></ul>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/form-grouped-fields"
+        }
+      ]
+    },
+    {
       "id": "formularios-modal",
       "title": "🪟 Formularios en Modal",
       "content": [

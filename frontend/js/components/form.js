@@ -48,11 +48,6 @@ class form {
     const instanceSchema = JSON.parse(JSON.stringify(schema));
     instanceSchema.id = instanceId;
 
-    // ✅ Traducir schema si i18n está disponible
-    if (window.__) {
-      this.translateSchema(instanceSchema);
-    }
-
     this.schemas.set(instanceId, instanceSchema);
 
     const html = this.render(instanceSchema);
@@ -71,68 +66,6 @@ class form {
         console.error('❌ Formulario no encontrado en DOM');
       }
     }, 10);
-  }
-
-  // ✅ NUEVO: Traducir valores que empiecen con "i18n:"
-  static translateSchema(schema) {
-    // Traducir title y description
-    if (schema.title?.startsWith('i18n:')) {
-      schema.title = __(schema.title.replace('i18n:', ''));
-    }
-    if (schema.description?.startsWith('i18n:')) {
-      schema.description = __(schema.description.replace('i18n:', ''));
-    }
-
-    // Traducir fields
-    if (schema.fields) {
-      this.translateFields(schema.fields);
-    }
-
-    // Traducir toolbar
-    if (schema.toolbar) {
-      this.translateFields(schema.toolbar);
-    }
-
-    // Traducir statusbar
-    if (schema.statusbar) {
-      this.translateFields(schema.statusbar);
-    }
-  }
-
-  static translateFields(fields) {
-    fields.forEach(field => {
-      // Traducir label
-      if (field.label?.startsWith('i18n:')) {
-        field.label = __(field.label.replace('i18n:', ''));
-      }
-
-      // Traducir placeholder
-      if (field.placeholder?.startsWith('i18n:')) {
-        field.placeholder = __(field.placeholder.replace('i18n:', ''));
-      }
-
-      // Traducir addText y removeText (para repetibles)
-      if (field.addText?.startsWith('i18n:')) {
-        field.addText = __(field.addText.replace('i18n:', ''));
-      }
-      if (field.removeText?.startsWith('i18n:')) {
-        field.removeText = __(field.removeText.replace('i18n:', ''));
-      }
-
-      // Traducir options (para select)
-      if (field.options) {
-        field.options.forEach(opt => {
-          if (opt.label?.startsWith('i18n:')) {
-            opt.label = __(opt.label.replace('i18n:', ''));
-          }
-        });
-      }
-
-      // Traducir subcampos (para repetibles)
-      if (field.fields) {
-        this.translateFields(field.fields);
-      }
-    });
   }
 
   static render(schema) {
@@ -158,8 +91,30 @@ class form {
         return this.renderRepeatable(field, fieldPath);
       }
 
+      // Soporte para grupos de campos
+      if (field.type === 'group') {
+        return this.renderGroup(field, path);
+      }
+
       return this.renderField(field, fieldPath);
     }).join('');
+  }
+
+  // Nuevo: Renderizar grupo de campos
+  static renderGroup(field, basePath) {
+    const columns = field.columns || 2; // Por defecto 2 columnas
+    const gap = field.gap || 'normal'; // small, normal, large
+    
+    const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+    
+    return `
+      <div class="${groupClass}">
+        ${field.fields ? field.fields.map(subField => {
+          const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
+          return this.renderField(subField, fieldPath);
+        }).join('') : ''}
+      </div>
+    `;
   }
 
   static renderRepeatable(field, path) {

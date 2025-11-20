@@ -233,3 +233,92 @@ textarea {
 .repeatable-item .repeatable-item .repeatable-header h4 {
   font-size: 0.9rem;
 }
+/* ===================================
+   Grupos de Campos (Field Groups)
+   ================================= */
+
+/* Contenedor base de grupos */
+.form-group-cols {
+  display: grid;
+  margin-bottom: 1rem;
+}
+
+/* Grid de 2 columnas */
+.form-group-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Grid de 3 columnas */
+.form-group-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Grid de 4 columnas */
+.form-group-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Espaciado entre campos */
+.form-group-gap-small {
+  gap: 0.5rem;
+}
+
+.form-group-gap-normal {
+  gap: 1rem;
+}
+
+.form-group-gap-large {
+  gap: 1.5rem;
+}
+
+/* Los campos dentro del grupo no necesitan margin-bottom */
+.form-group-cols > .form-group {
+  margin-bottom: 0;
+}
+
+/* ===================================
+   Responsive
+   ================================= */
+
+/* Tablets (< 1024px) */
+@media (max-width: 1024px) {
+  /* 4 columnas → 2 columnas */
+  .form-group-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* 3 columnas → 2 columnas */
+  .form-group-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Móviles (< 768px) */
+@media (max-width: 768px) {
+  /* Todas las columnas → 1 columna */
+  .form-group-cols-2,
+  .form-group-cols-3,
+  .form-group-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* En móvil, mantener spacing normal */
+  .form-group-cols > .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group-cols > .form-group:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Móviles pequeños (< 480px) */
+@media (max-width: 480px) {
+  .form-group-gap-large {
+    gap: 1rem;
+  }
+  
+  .form-group-gap-normal {
+    gap: 0.75rem;
+  }
+}
