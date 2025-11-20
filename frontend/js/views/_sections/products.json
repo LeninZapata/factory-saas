@@ -1,0 +1,39 @@
+{
+  "id": "products",
+  "title": "Gestión de Productos",
+  "tabs": [
+    {
+      "id": "list",
+      "title": "📋 Listado de Productos",
+      "content": [
+
+        {
+          "type": "html",
+          "content": "<button class='btn btn-primary' onclick=\"modal.open('product-create', { width: '50%' })\">➕ Nuevo Producto</button>"
+        },
+        {
+          "type": "html",
+          "content": "<h3>Lista de Productos</h3>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='table-responsive'><table class='table table-striped'><thead><tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody><tr><td>1</td><td>Laptop HP</td><td>$1200</td><td>15</td><td><button class='btn btn-sm btn-primary' onclick=\"modal.open('product-edit', { width: '60%', model: { className: 'product', method: 'get', value: 1 } })\">✏️ Editar</button></td></tr><tr><td>2</td><td>Mouse Inalámbrico</td><td>$25</td><td>50</td><td><button class='btn btn-sm btn-primary' onclick=\"modal.open('product-edit', { width: '60%', model: { className: 'product', method: 'get', value: 2 } })\">✏️ Editar</button></td></tr><tr><td>3</td><td>Teclado Mecánico</td><td>$80</td><td>30</td><td><button class='btn btn-sm btn-primary' onclick=\"modal.open('product-edit', { width: '60%', model: { className: 'product', method: 'get', value: 3 } })\">✏️ Editar</button></td></tr></tbody></table></div>"
+        }
+      ]
+    },
+    {
+      "id": "sales",
+      "title": "💰 Ventas",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Historial de Ventas</h3>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='table-responsive'><table class='table table-striped'><thead><tr><th>ID Venta</th><th>Producto</th><th>Cantidad</th><th>Total</th><th>Fecha</th></tr></thead><tbody><tr><td>V-001</td><td>Laptop HP</td><td>1</td><td>$1200</td><td>2024-01-15</td></tr><tr><td>V-002</td><td>Mouse Inalámbrico</td><td>2</td><td>$50</td><td>2024-01-16</td></tr><tr><td>V-003</td><td>Teclado Mecánico</td><td>1</td><td>$80</td><td>2024-01-17</td></tr></tbody></table></div>"
+        }
+      ]
+    }
+  ]
+}

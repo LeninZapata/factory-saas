@@ -1,0 +1,14 @@
+{
+  "id": "inventory",
+  "title": "Control de Inventario",
+  "content": [
+    {
+      "type": "html",
+      "content": "<h3>Registro de Inventario</h3>"
+    },
+    {
+      "type": "html",
+      "content": "<div class='table-responsive'><table class='table table-striped'><thead><tr><th>Producto</th><th>Cantidad Actual</th><th>Mínimo</th><th>Máximo</th><th>Última Actualización</th></tr></thead><tbody><tr><td>Laptop HP</td><td>15</td><td>5</td><td>50</td><td>2024-01-15</td></tr><tr><td>Mouse Inalámbrico</td><td>50</td><td>10</td><td>100</td><td>2024-01-16</td></tr><tr><td>Teclado Mecánico</td><td>30</td><td>5</td><td>60</td><td>2024-01-17</td></tr></tbody></table></div>"
+    }
+  ]
+}

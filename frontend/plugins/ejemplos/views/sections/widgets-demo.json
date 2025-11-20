@@ -1,0 +1,46 @@
+{
+  "id": "ejemplos-widgets",
+  "title": "🎨 Dashboard Widgets",
+  "content": [
+    {
+      "type": "html",
+      "order": 1,
+      "content": "<h3>🎨 Sistema de Widgets</h3><p>Widgets con drag & drop para reorganizar</p>"
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 5,
+      "config": {
+        "columns": 2,
+        "widgets": [
+          {
+            "title": "📊 Estadísticas",
+            "order": 1,
+            "html": "<div style='text-align:center;padding:2rem;'><h2 style='color:#667eea;margin:0;'>1,234</h2><p style='margin:0.5rem 0 0;color:#666;'>Usuarios Activos</p></div>"
+          },
+          {
+            "title": "📈 Ventas",
+            "order": 2,
+            "html": "<div style='text-align:center;padding:2rem;'><h2 style='color:#10b981;margin:0;'>$45,678</h2><p style='margin:0.5rem 0 0;color:#666;'>Total del Mes</p></div>"
+          },
+          {
+            "title": "👥 Usuarios Recientes",
+            "order": 3,
+            "html": "<ul style='list-style:none;padding:0;margin:0;'><li style='padding:0.5rem;border-bottom:1px solid #eee;'>Juan Pérez - hace 2h</li><li style='padding:0.5rem;border-bottom:1px solid #eee;'>María García - hace 5h</li><li style='padding:0.5rem;'>Carlos López - ayer</li></ul>"
+          },
+          {
+            "title": "🔔 Notificaciones",
+            "order": 4,
+            "html": "<div style='padding:1rem;'><div style='background:#e0f2fe;padding:0.75rem;border-radius:4px;margin-bottom:0.5rem;'>✓ Sistema actualizado</div><div style='background:#fef3c7;padding:0.75rem;border-radius:4px;'>⚠ Mantenimiento programado</div></div>"
+          }
+        ]
+      }
+    },
+    {
+      "type": "html",
+      "order": 10,
+      "content": "<div style='margin-top:2rem;padding:1rem;background:#f0f9ff;border-radius:8px;'><h4 style='margin:0 0 0.5rem;'>💡 Características:</h4><ul style='margin:0;'><li>Drag & Drop para reorganizar</li><li>Grid responsive (1-4 columnas)</li><li>Soporta HTML, componentes, vistas, formularios</li><li>Estilos minimalistas</li></ul></div>"
+    }
+  ]
+}

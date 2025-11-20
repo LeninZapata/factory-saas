@@ -1,0 +1,59 @@
+{
+  "id": "ejemplos-formularios",
+  "title": "Ejemplos de Formularios",
+  "type": "tabs",
+  "tabs": [
+    {
+      "id": "inputs-normales",
+      "title": "📝 Inputs Normales",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Tipos de Inputs Disponibles</h3>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/inputs-demo"
+        }
+      ]
+    },
+    {
+      "id": "formularios-modal",
+      "title": "🪟 Formularios en Modal",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display: flex; gap: 1rem; margin: 1rem 0;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/login\", { title: \"Login\" })'>🔐 Login</button><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/register\", { title: \"Registro\" })'>📝 Registro</button></div>"
+        }
+      ]
+    },
+    {
+      "id": "campos-repetibles",
+      "title": "🔁 Campos Repetibles",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Campos que se Repiten</h3><p>Agrega y elimina grupos de campos dinámicamente:</p>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/repetibles-demo"
+        }
+      ]
+    },
+    {
+      "id": "repetibles-anidados",
+      "title": "🔁🔁 Repetibles Anidados",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Repetibles dentro de Repetibles</h3><p>Ejemplo de hasta 3 niveles de anidación: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/repetibles-anidados\", { title: \"🪟 Modal con Formulario Repetible\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Modal con Formulario Repeater</button>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/repetibles-anidados"
+        }
+      ]
+    }
+  ]
+}

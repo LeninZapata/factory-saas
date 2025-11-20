@@ -1,0 +1,30 @@
+{
+  "user.title": "User Management",
+  "user.add": "Add User",
+  "user.edit": "Edit User",
+  "user.delete": "Delete User",
+  "user.list": "User List",
+  "user.stats": "User Statistics",
+  "user.config": "Configuration",
+  
+  "user.delete.confirm": "Delete user {name}?",
+  "user.delete.success": "User deleted successfully",
+  "user.save.success": "User saved successfully",
+  
+  "user.stats.active": "Active users",
+  "user.stats.inactive": "Inactive users",
+  "user.stats.new": "New users",
+  "user.stats.total": "Total users",
+  
+  "user.field.name": "Name",
+  "user.field.email": "Email",
+  "user.field.role": "Role",
+  "user.field.status": "Status",
+  
+  "user.role.admin": "Administrator",
+  "user.role.editor": "Editor",
+  "user.role.user": "User",
+  
+  "user.status.active": "Active",
+  "user.status.inactive": "Inactive"
+}

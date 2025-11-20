@@ -1,0 +1,91 @@
+{
+  "id": "producto-form",
+  "title": "Producto",
+  "description": "Completa la información del producto",
+  "fields": [
+    {
+      "name": "nombre",
+      "label": "Nombre del Producto",
+      "type": "text",
+      "required": true,
+      "placeholder": "Ej: Laptop Dell XPS 15"
+    },
+    {
+      "name": "categoria",
+      "label": "Categoría",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "electronica", "label": "📱 Electrónica" },
+        { "value": "accesorios", "label": "🖱️ Accesorios" },
+        { "value": "mobiliario", "label": "🪑 Mobiliario" },
+        { "value": "audio", "label": "🎧 Audio" },
+        { "value": "almacenamiento", "label": "💾 Almacenamiento" },
+        { "value": "oficina", "label": "🖨️ Oficina" }
+      ]
+    },
+    {
+      "name": "precio",
+      "label": "Precio ($)",
+      "type": "number",
+      "required": true,
+      "placeholder": "0.00",
+      "min": 0,
+      "step": 0.01
+    },
+    {
+      "name": "cantidad",
+      "label": "Cantidad en Stock",
+      "type": "number",
+      "required": true,
+      "placeholder": "0",
+      "min": 0,
+      "step": 1
+    },
+    {
+      "name": "estado",
+      "label": "Estado",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "activo", "label": "✅ Activo" },
+        { "value": "inactivo", "label": "❌ Inactivo" },
+        { "value": "bajo_stock", "label": "⚠️ Bajo Stock" }
+      ]
+    },
+    {
+      "name": "descripcion",
+      "label": "Descripción",
+      "type": "textarea",
+      "placeholder": "Descripción detallada del producto..."
+    },
+    {
+      "name": "codigo_barras",
+      "label": "Código de Barras",
+      "type": "text",
+      "placeholder": "Ej: 7501234567890"
+    },
+    {
+      "name": "proveedor",
+      "label": "Proveedor",
+      "type": "text",
+      "placeholder": "Nombre del proveedor"
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar Producto",
+      "action": "submit",
+      "onclick": "event.preventDefault(); toast.success('✅ Producto guardado correctamente'); setTimeout(() => { toast.info('📦 Inventario actualizado'); modal.closeAll(); }, 1500);"
+    },
+    {
+      "name": "cancel",
+      "type": "button",
+      "label": "❌ Cancelar",
+      "style": "secondary",
+      "onclick": "modal.closeAll()"
+    }
+  ]
+}

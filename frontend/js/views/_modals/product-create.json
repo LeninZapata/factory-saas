@@ -1,0 +1,16 @@
+{
+  "id": "product-create",
+  "title": "Crear Producto",
+  "content": [
+    {
+      "type": "form", 
+      "formJson": "product-create"
+    }
+  ],
+  "footer": [
+    {
+      "type": "html",
+      "content": "<button class='btn btn-secondary' onclick='modal.close(\"product-create\")'>Cancelar</button><button class='btn btn-primary' onclick='guardarProducto()'>Guardar Producto</button>"
+    }
+  ]
+}

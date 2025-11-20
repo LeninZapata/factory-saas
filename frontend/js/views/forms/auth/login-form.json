@@ -1,0 +1,41 @@
+{
+  "id": "login-form",
+  "title": "i18n:auth.login.title",
+  "description": "i18n:auth.login.description",
+  "fields": [
+    {
+      "name": "email",
+      "label": "i18n:auth.field.email",
+      "type": "email",
+      "required": true,
+      "placeholder": "i18n:auth.field.email.placeholder"
+    },
+    {
+      "name": "password",
+      "label": "i18n:auth.field.password",
+      "type": "password",
+      "required": true,
+      "placeholder": "i18n:auth.field.password.placeholder"
+    },
+    {
+      "name": "remember",
+      "label": "i18n:auth.remember",
+      "type": "checkbox"
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "i18n:auth.login.submit",
+      "action": "submit"
+    },
+    {
+      "name": "cancel",
+      "type": "button",
+      "label": "i18n:core.cancel",
+      "style": "secondary",
+      "onclick": "modal.closeAll()"
+    }
+  ]
+}

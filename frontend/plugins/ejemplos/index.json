@@ -1,0 +1,49 @@
+{
+  "name": "ejemplos",
+  "version": "1.0.0",
+  "enabled": true,
+  "hasHooks": false,
+  "hasViews": true,
+  "hasMenu": true,
+  "menu": {
+    "title": "Ejemplos",
+    "icon": "📚",
+    "order": 99,
+    "items": [
+      {
+        "id": "ejemplos-forms",
+        "title": "Formularios",
+        "view": "sections/formularios",
+        "order": 1
+      },
+      {
+        "id": "ejemplos-graficos",
+        "title": "Scripts (bajo demanda).",
+        "view": "sections/graficos",
+        "order": 2,
+        "styles": [
+          "plugins/ejemplos/assets/css/chart.css"
+        ]
+      },
+      {
+        "id": "ejemplos-datatable",
+        "title": "DataTable",
+        "view": "sections/users-datatable",
+        "order": 3
+      },
+      {
+        "id": "ejemplos-widgets",
+        "title": "Widgets",
+        "view": "sections/widgets-demo",
+        "order": 4
+      },
+      {
+        "id": "ejemplos-toast",
+        "title": "Toast",
+        "view": "sections/toast-demo",
+        "order": 5
+      }
+    ]
+  },
+  "description": "Ejemplos de uso del sistema"
+}

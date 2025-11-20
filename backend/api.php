@@ -1,0 +1,78 @@
+<?php
+// API.PHP - Entry Point
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit();
+}
+
+ob_start();
+
+require_once __DIR__ . '/config/consts.php';
+
+if (IS_DEV) {
+  error_reporting(E_ALL);
+  ini_set('display_errors', '0');
+  ini_set('log_errors', '1');
+} else {
+  error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+  ini_set('display_errors', '0');
+  ini_set('log_errors', '0');
+}
+
+require_once __DIR__ . '/core/autoload.php';
+require_once __DIR__ . '/core/router.php';
+
+$router = new router();
+require_once __DIR__ . '/routes/api.php';
+
+$captured = ob_get_clean();
+if (!empty($captured) && IS_DEV) {
+  error_log("API Warning: Output capturado: " . substr($captured, 0, 200));
+}
+
+ob_start();
+
+try {
+  $router->dispatch();
+} catch (Exception $e) {
+  if (ob_get_length()) ob_get_clean();
+  http_response_code(500);
+
+  if (IS_DEV) {
+    echo json_encode([
+      'success' => false,
+      'error' => $e->getMessage(),
+      'file' => $e->getFile(),
+      'line' => $e->getLine(),
+      'trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 5)
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+  } else {
+    echo json_encode(['success' => false, 'error' => 'Internal Server Error'], JSON_UNESCAPED_UNICODE);
+  }
+  exit;
+}
+
+$output = ob_get_clean();
+
+if (!empty($output)) {
+  $trimmed = trim($output);
+  $decoded = json_decode($trimmed);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    http_response_code(500);
+    echo json_encode([
+      'success' => false,
+      'error' => 'Invalid JSON response',
+      'debug' => IS_DEV ? substr($trimmed, 0, 200) : null
+    ], JSON_UNESCAPED_UNICODE);
+  } else {
+    echo $trimmed;
+  }
+} else {
+  echo json_encode(['success' => true]);
+}

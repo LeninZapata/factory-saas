@@ -1,0 +1,92 @@
+{
+  "id": "inventario-listado",
+  "title": "Gestión de Productos",
+  "type": "tabs",
+  "tabs": [
+    {
+      "id": "productos-list",
+      "title": "📋 Listado de Productos",
+      "content": [
+        {
+          "id": "listado-header",
+          "type": "html",
+          "order": 0,
+          "content": "<h3>📦 Inventario de Productos</h3><p>Administra todos los productos del sistema.</p>"
+        },
+        {
+          "id": "listado-actions",
+          "type": "html",
+          "order": 5,
+          "content": "<div class=\"view-toolbar\"><button class=\"btn btn-primary\" onclick=\"modal.open('inventario|forms/producto', {title: '➕ Nuevo Producto', width: '60%', maxWidth: '700px'})\">➕ Nuevo Producto</button><button class=\"btn btn-secondary\" onclick=\"toast.success('Listado actualizado correctamente')\">🔄 Actualizar</button><button class=\"btn btn-success\" onclick=\"toast.info('Exportando inventario...'); setTimeout(() => toast.success('Inventario exportado exitosamente'), 1500)\">📤 Exportar</button></div>"
+        },
+        {
+          "id": "listado-table",
+          "type": "component",
+          "component": "datatable",
+          "order": 10,
+          "config": {
+            "source": "db_inventario.json",
+            "columns": ["id", "nombre", "categoria", "precio", "cantidad", "estado"],
+            "actions": {
+              "edit": {
+                "name": "✏️ Editar",
+                "onclick": "modal.open('inventario|forms/producto', {title: '✏️ Editar Producto: {nombre}', width: '60%', maxWidth: '700px'}); toast.info('Cargando producto #{id}...')"
+              },
+              "delete": {
+                "name": "🗑️ Eliminar",
+                "onclick": "if(confirm('¿Eliminar {nombre}?')) { toast.success('Producto {nombre} eliminado correctamente'); setTimeout(() => toast.warning('Recuerda actualizar el inventario'), 2000); }"
+              },
+              "details": {
+                "name": "👁️ Ver",
+                "onclick": "toast.info('Ver detalles de: {nombre}')"
+              }
+            }
+          }
+        },
+        {
+          "id": "listado-stats",
+          "type": "html",
+          "order": 15,
+          "content": "<div class='view-statusbar'>Total de productos: <strong>10</strong> | Categorías: <strong>5</strong> | Valor total: <strong>$15,247.89</strong></div>"
+        }
+      ]
+    },
+    {
+      "id": "configuracion",
+      "title": "⚙️ Configuración",
+      "content": [
+        {
+          "id": "config-header",
+          "type": "html",
+          "order": 0,
+          "content": "<h3>⚙️ Configuración de Inventario</h3><p>Administra las categorías y configuraciones del sistema de inventario.</p>"
+        },
+        {
+          "id": "categorias-section",
+          "type": "html",
+          "order": 5,
+          "content": "<div style=\"background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;\"><h4 style=\"margin: 0 0 1rem 0; color: #2c3e50;\">📁 Categorías Disponibles</h4><div style=\"display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;\"><span style=\"background: #e3f2fd; color: #1976d2; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">📱 Electrónica</span><span style=\"background: #f3e5f5; color: #7b1fa2; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">🖱️ Accesorios</span><span style=\"background: #e8f5e9; color: #388e3c; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">🪑 Mobiliario</span><span style=\"background: #fff3e0; color: #f57c00; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">🎧 Audio</span><span style=\"background: #fce4ec; color: #c2185b; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">💾 Almacenamiento</span><span style=\"background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;\">🖨️ Oficina</span></div><div style=\"display: flex; gap: 0.75rem;\"><button class=\"btn btn-primary btn-sm\" onclick=\"toast.info('Función para agregar categoría')\">➕ Nueva Categoría</button><button class=\"btn btn-secondary btn-sm\" onclick=\"toast.warning('Función para editar categorías')\">✏️ Editar Categorías</button></div></div>"
+        },
+        {
+          "id": "alertas-section",
+          "type": "html",
+          "order": 10,
+          "content": "<div style=\"background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;\"><h4 style=\"margin: 0 0 1rem 0; color: #2c3e50;\">🔔 Configuración de Alertas</h4><div class=\"form-group\"><label>Stock mínimo para alerta:</label><input type=\"number\" value=\"5\" class=\"form-control\" style=\"max-width: 200px;\"></div><div class=\"form-group\"><label style=\"display: flex; align-items: center; gap: 0.5rem; cursor: pointer;\"><input type=\"checkbox\" checked> Enviar notificaciones por email</label></div><div class=\"form-group\"><label style=\"display: flex; align-items: center; gap: 0.5rem; cursor: pointer;\"><input type=\"checkbox\" checked> Mostrar alertas en dashboard</label></div></div>"
+        },
+        {
+          "id": "config-actions",
+          "type": "html",
+          "order": 15,
+          "content": "<div class=\"view-toolbar\"><button class=\"btn btn-success\" onclick=\"toast.success('✅ Configuración guardada correctamente')\">💾 Guardar Configuración</button><button class=\"btn btn-secondary\" onclick=\"toast.info('Configuración restablecida a valores por defecto')\">🔄 Restablecer</button></div>"
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "id": "global-stats",
+      "type": "html",
+      "content": "<span>Última actualización: <strong>Hoy 14:30</strong></span>"
+    }
+  ]
+}

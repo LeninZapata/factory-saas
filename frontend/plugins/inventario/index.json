@@ -1,0 +1,28 @@
+{
+  "name": "inventario",
+  "version": "1.0.0",
+  "enabled": true,
+  "hasHooks": true,
+  "hasViews": true,
+  "hasMenu": true,
+  "menu": {
+    "title": "Inventario",
+    "icon": "📦",
+    "order": 3,
+    "items": [
+      {
+        "id": "inventario-listado",
+        "title": "Listado",
+        "view": "sections/listado",
+        "order": 1
+      },
+      {
+        "id": "inventario-stock",
+        "title": "Stock",
+        "view": "sections/stock",
+        "order": 2
+      }
+    ]
+  },
+  "description": "Módulo de gestión de inventario y productos"
+}

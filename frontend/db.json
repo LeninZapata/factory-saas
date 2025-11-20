@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Juan Pérez",
+    "email": "juan@test.com",
+    "role": "Admin",
+    "status": "Activo"
+  },
+  {
+    "id": 2,
+    "name": "María García",
+    "email": "maria@test.com",
+    "role": "Editor",
+    "status": "Activo"
+  },
+  {
+    "id": 3,
+    "name": "Carlos López",
+    "email": "carlos@test.com",
+    "role": "Usuario",
+    "status": "Inactivo"
+  },
+  {
+    "id": 4,
+    "name": "Ana Martínez",
+    "email": "ana@test.com",
+    "role": "Editor",
+    "status": "Activo"
+  },
+  {
+    "id": 5,
+    "name": "Pedro Sánchez",
+    "email": "pedro@test.com",
+    "role": "Usuario",
+    "status": "Activo"
+  }
+]

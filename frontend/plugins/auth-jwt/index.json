@@ -1,0 +1,16 @@
+{
+  "name": "auth-jwt",
+  "version": "1.0.0",
+  "type": "auth-provider",
+  "enabled": true,
+  "autoload": "auth-provider.js",
+  "description": "Proveedor de autenticación JWT",
+  "styles": [
+    "plugins/auth-jwt/xxx.css" // <= no es necesario
+  ],
+  "scripts": [
+    "plugins/auth-jwt/provider.js",
+    "plugins/auth-jwt/auth-provider.js"
+  ]
+
+}

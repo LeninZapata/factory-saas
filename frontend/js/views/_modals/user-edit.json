@@ -1,0 +1,20 @@
+{
+  "id": "userEdit",
+  "title": "✏️ Editar Usuario",
+  "content": [
+    {
+      "type": "html",
+      "content": "<p>Modifica los datos del usuario:</p>"
+    },
+    {
+      "type": "form",
+      "formJson": "user-create"
+    }
+  ],
+  "footer": [
+    {
+      "type": "html",
+      "content": "<button class='btn btn-secondary' onclick='modal.close(\"userEdit\")'>Cancelar</button><button class='btn btn-primary' onclick='saveUser()'>Guardar Cambios</button>"
+    }
+  ]
+}

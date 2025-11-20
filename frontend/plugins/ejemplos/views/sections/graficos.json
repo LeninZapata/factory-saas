@@ -1,0 +1,21 @@
+{
+  "id": "ejemplos-graficos",
+  "title": "Gráficos con Scripts Bajo Demanda",
+  "scripts": [
+    "plugins/ejemplos/assets/js/chart.js"
+  ],
+  "content": [
+    {
+      "type": "html",
+      "content": "<p>Los scripts de gráficos se cargaron automáticamente al abrir esta vista 🎉</p>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;'><div id='chart1'></div><div id='chart2'></div></div>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='margin-top: 2rem;'><button class='btn btn-primary' onclick='ejemploChart.randomize()'>🎲 Datos Aleatorios</button> <button class='btn btn-secondary' onclick='ejemploChart.reset()'>🔄 Reset</button></div>"
+    }
+  ]
+}

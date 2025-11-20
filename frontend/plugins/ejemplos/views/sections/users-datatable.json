@@ -1,0 +1,77 @@
+{
+  "id": "ejemplos-datatable",
+  "title": "📊 DataTable - Ejemplos",
+  "type": "tabs",
+  "tabs": [
+    {
+      "id": "tab-users-full",
+      "title": "👥 Gestión Completa",
+      "content": [
+        {
+          "type": "html",
+          "order": 1,
+          "content": "<h3>👥 Gestión de Usuarios</h3><p>Administra todos los usuarios del sistema</p>"
+        },
+        {
+          "type": "html",
+          "order": 3,
+          "content": "<div class='view-toolbar'><button class='btn btn-primary' onclick=\"modal.open('user|sections/user', {title: 'Nuevo Usuario'})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick=\"location.reload()\">🔄 Actualizar</button></div>"
+        },
+        {
+          "type": "component",
+          "component": "datatable",
+          "order": 5,
+          "config": {
+            "source": "db.json",
+            "columns": ["id", "name", "email", "role", "status"],
+            "actions": {
+              "edit": {
+                "name": "✏️ Editar",
+                "onclick": "alert('Editar usuario {id}: {name}')"
+              },
+              "delete": {
+                "name": "🗑️ Eliminar",
+                "onclick": "confirm('¿Eliminar a {name}?') && alert('Usuario {id} eliminado')"
+              }
+            }
+          }
+        },
+        {
+          "type": "html",
+          "order": 10,
+          "content": "<div class='view-statusbar'>Total de usuarios: <strong>5</strong> | Activos: <strong>4</strong></div>"
+        }
+      ]
+    },
+    {
+      "id": "tab-users-simple",
+      "title": "📋 Lista Simple",
+      "content": [
+        {
+          "type": "html",
+          "order": 1,
+          "content": "<h3>📋 Lista de Usuarios</h3><p>Ejemplo básico de DataTable conectado a db.json</p>"
+        },
+        {
+          "type": "component",
+          "component": "datatable",
+          "order": 5,
+          "config": {
+            "source": "db.json",
+            "columns": ["id", "name", "email", "role", "status"],
+            "actions": {
+              "edit": {
+                "name": "Editar",
+                "onclick": "alert('Editar usuario {id}: {name}')"
+              },
+              "delete": {
+                "name": "Eliminar",
+                "onclick": "confirm('¿Eliminar {name}?') && alert('Usuario {id} eliminado')"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

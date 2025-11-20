@@ -1,0 +1,10 @@
+{
+  "id": "others",
+  "title": "Otros Módulos",
+  "content": [
+    {
+      "type": "html",
+      "content": "<h2>Otros Módulos</h2><p>Esta sección está en desarrollo. Aquí se agregarán más funcionalidades en el futuro.</p>"
+    }
+  ]
+}

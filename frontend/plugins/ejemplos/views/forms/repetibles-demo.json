@@ -1,0 +1,73 @@
+{
+  "id": "repetibles-demo",
+  "title": "Campos Repetibles",
+  "description": "Ejemplo de campos que se pueden repetir dinámicamente",
+  "fields": [
+    {
+      "name": "contactos",
+      "label": "📞 Lista de Contactos",
+      "type": "repeatable",
+      "addText": "➕ Agregar Contacto",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "type": "text",
+          "required": true,
+          "placeholder": "Nombre completo"
+        },
+        {
+          "name": "telefono",
+          "label": "Teléfono",
+          "type": "tel",
+          "placeholder": "+593 99 999 9999"
+        },
+        {
+          "name": "email",
+          "label": "Email",
+          "type": "email",
+          "placeholder": "contacto@email.com"
+        }
+      ]
+    },
+    {
+      "name": "direcciones",
+      "label": "🏠 Direcciones",
+      "type": "repeatable",
+      "addText": "➕ Agregar Dirección",
+      "removeText": "❌ Quitar",
+      "fields": [
+        {
+          "name": "tipo",
+          "label": "Tipo",
+          "type": "select",
+          "options": [
+            { "value": "casa", "label": "Casa" },
+            { "value": "trabajo", "label": "Trabajo" },
+            { "value": "otro", "label": "Otro" }
+          ]
+        },
+        {
+          "name": "direccion",
+          "label": "Dirección",
+          "type": "textarea",
+          "placeholder": "Calle, número, ciudad..."
+        },
+        {
+          "name": "principal",
+          "label": "Dirección principal",
+          "type": "checkbox"
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar",
+      "action": "submit"
+    }
+  ]
+}

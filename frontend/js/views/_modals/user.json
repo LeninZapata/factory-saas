@@ -1,0 +1,37 @@
+{
+  "id": "userModal",
+  "title": "Gestión de Usuario",
+  "content": [
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "id": "userInfo",
+          "title": "📋 Información",
+          "content": [
+            {
+              "type": "form",
+              "formJson": "user-create"
+            }
+          ]
+        },
+        {
+          "id": "userPermissions", 
+          "title": "🔐 Permisos",
+          "content": [
+            {
+              "type": "html",
+              "content": "<h4>Gestión de Permisos</h4><p>Configura los permisos del usuario...</p>"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": [
+    {
+      "type": "html",
+      "content": "<button class='btn btn-primary' onclick='modal.close(\"userModal\")'>Cerrar</button>"
+    }
+  ]
+}
