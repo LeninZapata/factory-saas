@@ -68,7 +68,12 @@ class conditions {
       'change',
       (e) => {
         const fieldName = this.getFieldName(e.target);
+        
+        // Debug: ver qué campo cambió
+        console.log('🔍 Campo cambiado:', fieldName, 'Valor:', e.target.value);
+        
         if (watchedFields.has(fieldName)) {
+          console.log('✅ Re-evaluando condiciones...');
           this.evaluate(formId);
         }
       },
@@ -89,6 +94,8 @@ class conditions {
     );
 
     this.watchers.set(formId, [watcherId, inputWatcherId]);
+    
+    console.log('👁️ Campos observados:', Array.from(watchedFields));
   }
 
   static evaluate(formId) {
@@ -99,9 +106,104 @@ class conditions {
     if (!rulesMap) return;
 
     rulesMap.forEach((rule, targetFieldPath) => {
-      const shouldShow = this.checkConditions(formEl, rule, targetFieldPath);
-      this.applyVisibility(formEl, targetFieldPath, shouldShow);
+      const { context } = rule;
+
+      if (context === 'repeatable') {
+        // Para contexto repeatable, evaluar cada item individualmente
+        this.evaluateRepeatable(formEl, targetFieldPath, rule);
+      } else {
+        // Para otros contextos, evaluación normal
+        const shouldShow = this.checkConditions(formEl, rule, targetFieldPath);
+        this.applyVisibilitySimple(formEl, targetFieldPath, shouldShow);
+      }
     });
+  }
+
+  static evaluateRepeatable(formEl, targetFieldPath, rule) {
+    // Encontrar todos los repeatable-items
+    const repeatableItems = formEl.querySelectorAll('.repeatable-item');
+    
+    if (repeatableItems.length === 0) {
+      // Si no hay items todavía, ocultar todos los campos condicionales
+      this.applyVisibilityToAll(formEl, targetFieldPath, false);
+      return;
+    }
+
+    // Evaluar cada item individualmente
+    repeatableItems.forEach(item => {
+      const shouldShow = this.checkConditions(item, rule, targetFieldPath);
+      
+      // Buscar el campo target dentro de este item específico
+      const pathParts = targetFieldPath.split('.');
+      const fieldName = pathParts[pathParts.length - 1];
+      
+      const targetField = item.querySelector(`[name*=".${fieldName}"]`);
+      if (targetField) {
+        const fieldElement = targetField.closest('.form-group, .form-checkbox');
+        
+        if (fieldElement) {
+          if (shouldShow) {
+            fieldElement.style.display = '';
+            fieldElement.classList.remove('wpfw-depend-on');
+            targetField.disabled = false;
+          } else {
+            fieldElement.style.display = 'none';
+            fieldElement.classList.add('wpfw-depend-on');
+            targetField.disabled = true;
+          }
+        }
+      }
+    });
+  }
+
+  static applyVisibilityToAll(formEl, fieldPath, shouldShow) {
+    const pathParts = fieldPath.split('.');
+    const fieldName = pathParts[pathParts.length - 1];
+    
+    const matchingFields = formEl.querySelectorAll(`[name*=".${fieldName}"]`);
+    
+    matchingFields.forEach(field => {
+      const fieldElement = field.closest('.form-group, .form-checkbox');
+      
+      if (fieldElement) {
+        if (shouldShow) {
+          fieldElement.style.display = '';
+          fieldElement.classList.remove('wpfw-depend-on');
+          field.disabled = false;
+        } else {
+          fieldElement.style.display = 'none';
+          fieldElement.classList.add('wpfw-depend-on');
+          field.disabled = true;
+        }
+      }
+    });
+  }
+
+  static applyVisibilitySimple(formEl, fieldPath, shouldShow) {
+    const fieldElement = this.findFieldElement(formEl, fieldPath);
+    
+    if (!fieldElement) {
+      console.warn(`Conditions: No se encontró el elemento para "${fieldPath}"`);
+      return;
+    }
+
+    if (shouldShow) {
+      fieldElement.style.display = '';
+      fieldElement.classList.remove('wpfw-depend-on');
+      
+      const inputs = fieldElement.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        input.disabled = false;
+      });
+    } else {
+      fieldElement.style.display = 'none';
+      fieldElement.classList.add('wpfw-depend-on');
+      
+      const inputs = fieldElement.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        input.disabled = true;
+      });
+    }
   }
 
   static checkConditions(formEl, rule, targetFieldPath) {
@@ -123,8 +225,23 @@ class conditions {
     const { field, operator, value } = condition;
 
     // Buscar el campo en el contexto
-    const fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
-
+    let fieldEl = null;
+    
+    // Si el contexto es un repeatable-item, buscar solo dentro de él
+    if (context.classList && context.classList.contains('repeatable-item')) {
+      // Buscar por el nombre del campo sin índices
+      const fields = context.querySelectorAll(`[name*=".${field}"]`);
+      fieldEl = fields.length > 0 ? fields[0] : null;
+      
+      // Si no se encuentra, intentar con el nombre exacto
+      if (!fieldEl) {
+        fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
+      }
+    } else {
+      // Búsqueda normal en form/view
+      fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
+    }
+    
     if (!fieldEl) {
       console.warn(`Conditions: Campo "${field}" no encontrado en contexto`);
       return false;
@@ -230,8 +347,11 @@ class conditions {
 
   static getFieldName(element) {
     const name = element.name || '';
-    // Remover índices de repetibles: "contactos[0].nombre" -> "contactos.nombre"
-    return name.replace(/\[\d+\]/g, '');
+    // Remover índices de repetibles: "proyectos[0].nombre" -> "nombre"
+    // Extraer solo el último segmento después del punto
+    const withoutIndexes = name.replace(/\[\d+\]/g, '');
+    const parts = withoutIndexes.split('.');
+    return parts[parts.length - 1]; // Retornar solo la última parte
   }
 
   static getContext(formEl, targetFieldPath, contextType) {
@@ -272,40 +392,25 @@ class conditions {
     let field = formEl.querySelector(`[name="${fieldPath}"]`);
     if (field) return field.closest('.form-group, .form-checkbox');
 
-    // Buscar por name parcial (para repetibles)
+    // Para repetibles: buscar considerando índices [0], [1], etc
+    // Convertir "proyectos.tipo_proyecto" a selector que coincida con "proyectos[0].tipo_proyecto"
+    const pathParts = fieldPath.split('.');
+    if (pathParts.length > 1) {
+      const baseField = pathParts[pathParts.length - 1]; // última parte
+      
+      // Buscar cualquier campo que termine con ese nombre
+      const fields = formEl.querySelectorAll(`[name*=".${baseField}"]`);
+      if (fields.length > 0) {
+        // Si hay múltiples, devolver el contenedor del primero
+        return fields[0].closest('.form-group, .form-checkbox');
+      }
+    }
+
+    // Buscar por name parcial (fallback)
     field = formEl.querySelector(`[name*="${fieldPath}"]`);
     if (field) return field.closest('.form-group, .form-checkbox');
 
     return null;
-  }
-
-  static applyVisibility(formEl, fieldPath, shouldShow) {
-    const fieldElement = this.findFieldElement(formEl, fieldPath);
-
-    if (!fieldElement) {
-      console.warn(`Conditions: No se encontró el elemento para "${fieldPath}"`);
-      return;
-    }
-
-    if (shouldShow) {
-      fieldElement.style.display = '';
-      fieldElement.classList.remove('wpfw-depend-on');
-
-      // Habilitar inputs dentro
-      const inputs = fieldElement.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        input.disabled = false;
-      });
-    } else {
-      fieldElement.style.display = 'none';
-      fieldElement.classList.add('wpfw-depend-on');
-
-      // Deshabilitar inputs dentro
-      const inputs = fieldElement.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        input.disabled = true;
-      });
-    }
   }
 
   static destroy(formId) {
@@ -324,7 +429,7 @@ class conditions {
 
   static debug(formId) {
     console.group(`🔍 Conditions Debug: ${formId}`);
-
+    
     const rules = this.rules.get(formId);
     if (!rules) {
       console.log('No hay reglas registradas para este formulario');
