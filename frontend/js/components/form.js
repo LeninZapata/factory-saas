@@ -62,6 +62,9 @@ class form {
       const formEl = document.getElementById(instanceId);
       if (formEl) {
         this.initRepeatables(instanceId);
+        if (window.conditions) {
+          conditions.init(instanceId);
+        }
       } else {
         console.error('❌ Formulario no encontrado en DOM');
       }
@@ -91,30 +94,12 @@ class form {
         return this.renderRepeatable(field, fieldPath);
       }
 
-      // Soporte para grupos de campos
       if (field.type === 'group') {
         return this.renderGroup(field, path);
       }
 
       return this.renderField(field, fieldPath);
     }).join('');
-  }
-
-  // Nuevo: Renderizar grupo de campos
-  static renderGroup(field, basePath) {
-    const columns = field.columns || 2; // Por defecto 2 columnas
-    const gap = field.gap || 'normal'; // small, normal, large
-    
-    const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
-    
-    return `
-      <div class="${groupClass}">
-        ${field.fields ? field.fields.map(subField => {
-          const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
-          return this.renderField(subField, fieldPath);
-        }).join('') : ''}
-      </div>
-    `;
   }
 
   static renderRepeatable(field, path) {
@@ -129,6 +114,22 @@ class form {
           </button>
         </div>
         <div class="repeatable-items" data-path="${path}"></div>
+      </div>
+    `;
+  }
+
+  static renderGroup(field, basePath) {
+    const columns = field.columns || 2;
+    const gap = field.gap || 'normal';
+    
+    const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+    
+    return `
+      <div class="${groupClass}">
+        ${field.fields ? field.fields.map(subField => {
+          const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
+          return this.renderField(subField, fieldPath);
+        }).join('') : ''}
       </div>
     `;
   }
@@ -200,32 +201,16 @@ class form {
       }
 
       form.addRepeatableItem(formId, path, container);
-    }, document);
+    });
 
     events.on('.repeatable-remove', 'click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+
       form.removeRepeatableItem(this);
-    }, document);
+    });
 
     this.registeredEvents.add('form-events');
-  }
-
-  static handleSubmit(formId, callback) {
-    const formEl = document.getElementById(formId);
-    if (!formEl) {
-      console.error('❌ Formulario no encontrado:', formId);
-      return;
-    }
-
-    formEl.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = this.getData(formId);
-
-      if (callback && typeof callback === 'function') {
-        await callback(data, formEl);
-      }
-    });
   }
 
   static initRepeatables(formId) {
@@ -266,9 +251,18 @@ class form {
     const itemPath = `${path}[${index}]`;
     const removeText = fieldDef.removeText || 'Eliminar';
 
+    // ✅ NUEVO: Soporte para columns en repeatable
+    const columns = fieldDef.columns;
+    const gap = fieldDef.gap || 'normal';
+    
+    let contentClass = 'repeatable-content';
+    if (columns) {
+      contentClass += ` form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+    }
+
     const itemHTML = `
       <div class="repeatable-item">
-        <div class="repeatable-content">
+        <div class="${contentClass}">
           ${this.renderFields(fieldDef.fields, itemPath)}
         </div>
         <button type="button" class="btn btn-danger btn-sm repeatable-remove">
@@ -286,59 +280,95 @@ class form {
 
     if (container.children.length > 1) {
       item.remove();
+    } else {
+      console.warn('⚠️  No se puede eliminar el último item');
     }
   }
 
-  static findField(fields, path) {
-    const parts = path.split('.');
-    let current = fields;
-    let result = null;
-
-    for (const part of parts) {
-      const cleanPart = part.replace(/\[\d+\]/g, '');
-      result = current.find(f => f.name === cleanPart);
-
-      if (!result) return null;
-      if (result.fields) current = result.fields;
-    }
-
-    return result;
-  }
-
-  static fill(formId, data) {
-    const formEl = document.getElementById(formId);
-    if (!formEl) return;
-
-    Object.keys(data).forEach(key => {
-      const field = formEl.querySelector(`[name="${key}"]`);
-      if (field) {
-        if (field.type === 'checkbox') {
-          field.checked = Boolean(data[key]);
-        } else {
-          field.value = data[key] || '';
-        }
+  static findField(fields, targetPath) {
+    for (const field of fields) {
+      if (field.name === targetPath) {
+        return field;
       }
-    });
+
+      if (field.type === 'repeatable' && field.fields) {
+        const found = this.findField(field.fields, targetPath);
+        if (found) return found;
+      }
+    }
+    return null;
   }
 
   static getData(formId) {
     const formEl = document.getElementById(formId);
     if (!formEl) return null;
 
+    const formData = new FormData(formEl);
     const data = {};
-    const inputs = formEl.querySelectorAll('input, select, textarea');
 
-    inputs.forEach(input => {
-      if (input.name) {
+    for (let [key, value] of formData.entries()) {
+      this.setNestedValue(data, key, value);
+    }
+
+    return data;
+  }
+
+  static setNestedValue(obj, path, value) {
+    const keys = path.replace(/\[/g, '.').replace(/\]/g, '').split('.');
+    let current = obj;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      const nextKey = keys[i + 1];
+
+      if (!isNaN(nextKey)) {
+        if (!Array.isArray(current[key])) {
+          current[key] = [];
+        }
+        if (!current[key][nextKey]) {
+          current[key][nextKey] = {};
+        }
+        current = current[key][nextKey];
+        i++;
+      } else {
+        if (!current[key]) {
+          current[key] = {};
+        }
+        current = current[key];
+      }
+    }
+
+    current[keys[keys.length - 1]] = value;
+  }
+
+  static fill(formId, data) {
+    const formEl = document.getElementById(formId);
+    if (!formEl) return;
+
+    Object.entries(data).forEach(([key, value]) => {
+      const input = formEl.querySelector(`[name="${key}"]`);
+      if (input) {
         if (input.type === 'checkbox') {
-          data[input.name] = input.checked;
+          input.checked = !!value;
         } else {
-          data[input.name] = input.value;
+          input.value = value;
         }
       }
     });
+  }
 
-    return data;
+  static validate(formId) {
+    const formEl = document.getElementById(formId);
+    if (!formEl) return false;
+
+    return formEl.checkValidity();
+  }
+
+  static reset(formId) {
+    const formEl = document.getElementById(formId);
+    if (formEl) {
+      formEl.reset();
+    }
   }
 }
 

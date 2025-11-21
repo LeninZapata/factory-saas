@@ -32,6 +32,28 @@
       ]
     },
     {
+      "id": "repetibles-agrupados",
+      "title": "🔁📊 Repetibles Agrupados",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Campos Repetibles con Columnas</h3><p>Combina repetibles con agrupación de campos. Hay 2 formas de hacerlo:</p><h4>Opción 1: Columnas directamente en el repeatable (más simple)</h4><p>Agrega <code>columns</code> al repeatable para agrupar TODOS sus campos:</p><pre style='background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"type\": \"repeatable\",\n  \"columns\": 3,\n  \"fields\": [...]\n}</pre>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/form-repeatable-grouped-opt1"
+        },
+        {
+          "type": "html",
+          "content": "<hr style='margin: 2rem 0;'><h4>Opción 2: Groups dentro del repeatable (más flexible)</h4><p>Usa <code>type: \"group\"</code> dentro del repeatable para mezclar campos normales y agrupados:</p><pre style='background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"type\": \"repeatable\",\n  \"fields\": [\n    { \"type\": \"text\", ... },  // Full width\n    { \"type\": \"group\", \"columns\": 3, ... },  // 3 cols\n    { \"type\": \"group\", \"columns\": 2, ... }   // 2 cols\n  ]\n}</pre>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/form-repeatable-grouped-opt2"
+        }
+      ]
+    },
+    {
       "id": "formularios-modal",
       "title": "🪟 Formularios en Modal",
       "content": [

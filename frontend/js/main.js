@@ -59,6 +59,7 @@ const SCRIPTS_TO_LOAD = [
   'js/core/view.js',
   'js/core/sidebar.js',
   'js/core/validator.js',
+  'js/core/conditions.js',
   'js/components/form.js',
   'js/components/modal.js',
   'js/components/tabs.js',

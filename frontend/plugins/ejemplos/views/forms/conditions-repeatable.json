@@ -1,0 +1,126 @@
+{
+  "id": "conditions-repeatable",
+  "title": "Condiciones en Repetibles",
+  "description": "⚡ Las condiciones se evalúan DENTRO de cada item del repeatable. Cada proyecto es independiente.",
+  "fields": [
+    {
+      "name": "proyectos",
+      "label": "📁 Proyectos",
+      "type": "repeatable",
+      "addText": "➕ Agregar Proyecto",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "name": "nombre_proyecto",
+          "label": "Nombre del Proyecto",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej: Sistema de Ventas"
+        },
+        {
+          "name": "tipo_proyecto",
+          "label": "⭐ Tipo de Proyecto (cambia esto para ver condiciones)",
+          "type": "select",
+          "options": [
+            { "value": "web", "label": "🌐 Web" },
+            { "value": "mobile", "label": "📱 Mobile" },
+            { "value": "desktop", "label": "💻 Desktop" },
+            { "value": "api", "label": "🔌 API" }
+          ]
+        },
+        {
+          "name": "tecnologia_web",
+          "label": "✨ Tecnología Web (solo si tipo = Web)",
+          "type": "select",
+          "options": [
+            { "value": "react", "label": "⚛️ React" },
+            { "value": "vue", "label": "💚 Vue.js" },
+            { "value": "angular", "label": "🅰️ Angular" },
+            { "value": "vanilla", "label": "🍦 Vanilla JS" }
+          ],
+          "condition": [
+            { "field": "tipo_proyecto", "operator": "==", "value": "web" }
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "plataforma_mobile",
+          "label": "📱 Plataforma Móvil (solo si tipo = Mobile)",
+          "type": "select",
+          "options": [
+            { "value": "ios", "label": "🍎 iOS" },
+            { "value": "android", "label": "🤖 Android" },
+            { "value": "cross", "label": "📱 Multiplataforma" }
+          ],
+          "condition": [
+            { "field": "tipo_proyecto", "operator": "==", "value": "mobile" }
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "framework_mobile",
+          "label": "🔧 Framework (solo si plataforma = Multiplataforma)",
+          "type": "select",
+          "options": [
+            { "value": "react-native", "label": "⚛️ React Native" },
+            { "value": "flutter", "label": "🎯 Flutter" },
+            { "value": "ionic", "label": "⚡ Ionic" }
+          ],
+          "condition": [
+            { "field": "plataforma_mobile", "operator": "==", "value": "cross" }
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "lenguaje_desktop",
+          "label": "💻 Lenguaje Desktop (solo si tipo = Desktop)",
+          "type": "select",
+          "options": [
+            { "value": "electron", "label": "⚡ Electron" },
+            { "value": "qt", "label": "🔷 Qt" },
+            { "value": "dotnet", "label": "🔵 .NET" },
+            { "value": "java", "label": "☕ Java" }
+          ],
+          "condition": [
+            { "field": "tipo_proyecto", "operator": "==", "value": "desktop" }
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "presupuesto",
+          "label": "💰 Presupuesto ($) - Escribe más de 10000",
+          "type": "number",
+          "placeholder": "0.00",
+          "min": 0,
+          "step": 0.01
+        },
+        {
+          "name": "alerta_presupuesto",
+          "label": "⚠️ Presupuesto Alto",
+          "type": "text",
+          "value": "⚠️ Este proyecto requiere aprobación especial",
+          "readonly": true,
+          "condition": [
+            { "field": "presupuesto", "operator": ">", "value": 10000 }
+          ],
+          "conditionContext": "repeatable"
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "info",
+      "type": "button",
+      "label": "💡 Cómo funciona",
+      "onclick": "event.preventDefault(); alert('🎯 CONDICIONES EN REPETIBLES:\\n\\n1️⃣ Agrega varios proyectos\\n2️⃣ En cada proyecto, cambia el TIPO\\n3️⃣ Verás que aparecen campos diferentes según el tipo\\n4️⃣ Si pones presupuesto > 10000, aparece la alerta\\n\\n⚡ Cada proyecto se evalúa INDEPENDIENTEMENTE\\n✅ conditionContext: \"repeatable\"');"
+    },
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar Proyectos",
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Proyectos:', data); toast.success('✅ Proyectos guardados');"
+    }
+  ]
+}

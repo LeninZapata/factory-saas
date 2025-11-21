@@ -1,4 +1,7 @@
 pendientes:
-☐ Implementar el login
-☐ limpiar los console log de los archivos de core
-☐ 
+✔ Implementar el login @done(20-11-2025 19:10)
+✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
+☐ conditions.js en los formularios
+☐ cuando le das clic en un menu o submenu que al darle de nuevo no se cargue de nuevo la vista
+☐ poner un active al menu o submenu activo con un estilo porque no lo hace
+☐ hook entre plugins aunque creo que ya lo hace, seria entre forms

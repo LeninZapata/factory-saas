@@ -18,7 +18,7 @@
       },
       {
         "id": "ejemplos-graficos",
-        "title": "Scripts (bajo demanda).",
+        "title": "Scripts (bajo demanda)",
         "view": "sections/graficos",
         "order": 2,
         "styles": [
@@ -42,6 +42,12 @@
         "title": "Toast",
         "view": "sections/toast-demo",
         "order": 5
+      },
+      {
+        "id": "ejemplos-conditions",
+        "title": "🎯 Condiciones",
+        "view": "sections/conditions-demo",
+        "order": 6
       }
     ]
   },
