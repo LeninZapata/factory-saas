@@ -24,8 +24,69 @@ class conditions {
     // Configurar watchers
     this.setupWatchers(formId);
 
+    // Configurar observer para detectar nuevos items de repeatable
+    this.setupRepeatableObserver(formId);
+
     // Evaluación inicial
     setTimeout(() => this.evaluate(formId), 50);
+  }
+
+  static setupRepeatableObserver(formId) {
+    const formEl = document.getElementById(formId);
+    if (!formEl) return;
+
+    // Función recursiva para observar todos los contenedores de repetibles
+    const observeRepeatableContainers = (rootElement) => {
+      const repeatableContainers = rootElement.querySelectorAll('.repeatable-items');
+      
+      repeatableContainers.forEach(container => {
+        // Verificar si ya está siendo observado para evitar duplicados
+        if (container.dataset.conditionsObserved === 'true') {
+          return;
+        }
+        
+        // Marcar como observado
+        container.dataset.conditionsObserved = 'true';
+        
+        // Crear un MutationObserver para detectar cuando se agregan nuevos items
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+              mutation.addedNodes.forEach(node => {
+                // Solo procesar elementos (no nodos de texto)
+                if (node.nodeType === 1 && node.classList.contains('repeatable-item')) {
+                  console.log('🔄 Nuevo item repeatable agregado, re-evaluando condiciones...');
+                  
+                  // Pequeño delay para asegurar que el DOM esté listo
+                  setTimeout(() => {
+                    this.evaluate(formId);
+                    
+                    // ✅ IMPORTANTE: Observar también los repetibles anidados dentro del nuevo item
+                    observeRepeatableContainers(node);
+                  }, 50);
+                }
+              });
+            }
+          });
+        });
+
+        // Observar cambios en los hijos del contenedor
+        observer.observe(container, {
+          childList: true,
+          subtree: false
+        });
+
+        // Guardar referencia al observer para limpiarlo después
+        if (!this.watchers.has(formId)) {
+          this.watchers.set(formId, []);
+        }
+        const watchers = this.watchers.get(formId);
+        watchers.push({ type: 'observer', observer, container });
+      });
+    };
+
+    // Iniciar observación desde el formulario raíz
+    observeRepeatableContainers(formEl);
   }
 
   static extractConditions(fields, rulesMap, parentPath = '') {
@@ -93,7 +154,14 @@ class conditions {
       document
     );
 
-    this.watchers.set(formId, [watcherId, inputWatcherId]);
+    // Inicializar array de watchers si no existe
+    if (!this.watchers.has(formId)) {
+      this.watchers.set(formId, []);
+    }
+    
+    // Agregar los event listener IDs al array existente
+    const watchers = this.watchers.get(formId);
+    watchers.push(watcherId, inputWatcherId);
     
     console.log('👁️ Campos observados:', Array.from(watchedFields));
   }
@@ -414,11 +482,22 @@ class conditions {
   }
 
   static destroy(formId) {
-    // Limpiar watchers
+    // Limpiar watchers y observers
     const watchers = this.watchers.get(formId);
     if (watchers) {
-      watchers.forEach(watcherId => {
-        window.events?.off?.(watcherId);
+      watchers.forEach(watcher => {
+        if (typeof watcher === 'number') {
+          // Es un event listener ID
+          window.events?.off?.(watcher);
+        } else if (watcher.type === 'observer') {
+          // Es un MutationObserver
+          watcher.observer.disconnect();
+          
+          // Limpiar marca de observado
+          if (watcher.container) {
+            delete watcher.container.dataset.conditionsObserved;
+          }
+        }
       });
       this.watchers.delete(formId);
     }

@@ -104,6 +104,90 @@
             { "field": "presupuesto", "operator": ">", "value": 10000 }
           ],
           "conditionContext": "repeatable"
+        },
+        {
+          "name": "tiene_fases",
+          "label": "🔄 ¿Este proyecto tiene fases? (activa para ver repetible anidado)",
+          "type": "checkbox"
+        },
+        {
+          "name": "fases",
+          "label": "📋 Fases del Proyecto",
+          "type": "repeatable",
+          "addText": "➕ Agregar Fase",
+          "removeText": "❌ Eliminar Fase",
+          "condition": [
+            { "field": "tiene_fases", "operator": "==", "value": true }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "nombre_fase",
+              "label": "Nombre de la Fase",
+              "type": "text",
+              "placeholder": "Ej: Análisis, Desarrollo, Testing",
+              "required": true
+            },
+            {
+              "name": "tipo_fase",
+              "label": "⭐ Tipo de Fase",
+              "type": "select",
+              "options": [
+                { "value": "analisis", "label": "📊 Análisis" },
+                { "value": "diseno", "label": "🎨 Diseño" },
+                { "value": "desarrollo", "label": "💻 Desarrollo" },
+                { "value": "testing", "label": "🧪 Testing" }
+              ]
+            },
+            {
+              "name": "herramientas_diseno",
+              "label": "🎨 Herramientas de Diseño (solo si tipo = Diseño)",
+              "type": "select",
+              "options": [
+                { "value": "figma", "label": "Figma" },
+                { "value": "sketch", "label": "Sketch" },
+                { "value": "xd", "label": "Adobe XD" },
+                { "value": "photoshop", "label": "Photoshop" }
+              ],
+              "condition": [
+                { "field": "tipo_fase", "operator": "==", "value": "diseno" }
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "metodologia_testing",
+              "label": "🧪 Metodología de Testing (solo si tipo = Testing)",
+              "type": "select",
+              "options": [
+                { "value": "manual", "label": "Manual" },
+                { "value": "automatizado", "label": "Automatizado" },
+                { "value": "mixto", "label": "Mixto" }
+              ],
+              "condition": [
+                { "field": "tipo_fase", "operator": "==", "value": "testing" }
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "duracion_dias",
+              "label": "⏱️ Duración (días)",
+              "type": "number",
+              "placeholder": "0",
+              "min": 0,
+              "step": 1
+            },
+            {
+              "name": "alerta_fase_larga",
+              "label": "⚠️ Fase muy larga",
+              "type": "text",
+              "value": "⚠️ Esta fase dura más de 30 días",
+              "readonly": true,
+              "condition": [
+                { "field": "duracion_dias", "operator": ">", "value": 30 }
+              ],
+              "conditionContext": "repeatable"
+            }
+          ]
         }
       ]
     }
@@ -113,7 +197,7 @@
       "name": "info",
       "type": "button",
       "label": "💡 Cómo funciona",
-      "onclick": "event.preventDefault(); alert('🎯 CONDICIONES EN REPETIBLES:\\n\\n1️⃣ Agrega varios proyectos\\n2️⃣ En cada proyecto, cambia el TIPO\\n3️⃣ Verás que aparecen campos diferentes según el tipo\\n4️⃣ Si pones presupuesto > 10000, aparece la alerta\\n\\n⚡ Cada proyecto se evalúa INDEPENDIENTEMENTE\\n✅ conditionContext: \"repeatable\"');"
+      "onclick": "event.preventDefault(); alert('🎯 CONDICIONES EN REPETIBLES ANIDADOS:\\n\\n📁 NIVEL 1 - Proyectos:\\n  • Cambia TIPO para ver campos diferentes\\n  • Activa CHECKBOX \"tiene_fases\" para ver repetible anidado\\n\\n📋 NIVEL 2 - Fases (dentro de cada proyecto):\\n  • Cada fase tiene sus propias condiciones\\n  • Cambia TIPO DE FASE para ver campos específicos\\n  • Escribe duración > 30 para ver alerta\\n\\n⚡ Cada proyecto e item se evalúa INDEPENDIENTEMENTE');"
     },
     {
       "name": "submit",

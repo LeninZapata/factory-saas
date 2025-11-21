@@ -285,18 +285,34 @@ class form {
     }
   }
 
-  static findField(fields, targetPath) {
-    for (const field of fields) {
-      if (field.name === targetPath) {
-        return field;
+  static findField(fields, path) {
+    const parts = path.split('.');
+    let current = fields;
+    let result = null;
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const cleanPart = part.replace(/\[\d+\]/g, ''); // Remover índices [0], [1], etc
+      
+      result = current.find(f => f.name === cleanPart);
+
+      if (!result) {
+        console.warn(`❌ Campo "${cleanPart}" no encontrado en path: ${path}`);
+        return null;
       }
 
-      if (field.type === 'repeatable' && field.fields) {
-        const found = this.findField(field.fields, targetPath);
-        if (found) return found;
+      // Si no es el último segmento y tiene fields, continuar buscando
+      if (i < parts.length - 1) {
+        if (result.fields) {
+          current = result.fields;
+        } else {
+          console.warn(`❌ Campo "${cleanPart}" no tiene subcampos pero el path continúa: ${path}`);
+          return null;
+        }
       }
     }
-    return null;
+
+    return result;
   }
 
   static getData(formId) {
