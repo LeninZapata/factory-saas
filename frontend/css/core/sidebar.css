@@ -10,9 +10,16 @@
     align-items: center;
     gap: 0.5rem;
     border-bottom: 1px solid #34495e;
+    transition: all 0.15s ease;
 
     &:hover {
       background: #34495e;
+    }
+
+    &.active {
+      background: rgba(52, 152, 219, 0.2);
+      border-left: 3px solid #3498db;
+      padding-left: calc(1rem - 3px);
     }
 
     &.has-submenu::after {
@@ -37,9 +44,16 @@
       padding: 0.6rem 1rem 0.6rem 2rem;
       cursor: pointer;
       border-bottom: 1px solid #2c3e50;
+      transition: all 0.15s ease;
 
       &:hover {
         background: #3c5a78;
+      }
+
+      &.active {
+        background: rgba(52, 152, 219, 0.15);
+        border-left: 3px solid #3498db;
+        padding-left: calc(2rem - 3px);
       }
     }
   }

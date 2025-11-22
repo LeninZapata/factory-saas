@@ -2,9 +2,16 @@ pendientes:
 ✔ Implementar el login @done(20-11-2025 19:10)
 ✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
 ✔ conditions.js en los formularios @done(20-11-2025 23:10)
-☐ cuando le das clic en un menu o submenu que al darle de nuevo no se cargue de nuevo la vista
-☐ poner un active al menu o submenu activo con un estilo porque no lo hace
+✔ cuando le das clic en un menu o submenu que al darle de nuevo no se cargue de nuevo la vista @done(22-11-2025 01:48)
+✔ poner un active al menu o submenu activo con un estilo porque no lo hace @done(21-11-2025 21:51)
 ☐ hook entre plugins aunque creo que ya lo hace, seria entre forms
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ tabla con filtros que puede ser lineal o un modal con filtros.
-
+☐ Obtener valores para un formulario desde una API externa simulado de JSON
+ya que se requiere para un proyecto que se vean los campos precargado
+como por ejemplo losplugins wp o joomla que traen campos precargados
+☐ cunado haces campos agrupados, por ejemplo si pones uno de 3 colummnas y hay 4 elementos entonces
+debe respetar el agrupamiento y poner el 4to elemento en la siguiente fila
+☐ Hacer que se cargue toda una vista por defecto o varias vistas por menu o submenu
+es decir si un submenu tiene tabs entonces que cargue todas las tabs al iniciar la vista
+y no solo la tab activa.

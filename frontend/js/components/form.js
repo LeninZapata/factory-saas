@@ -2,6 +2,13 @@ class form {
   static schemas = new Map();
   static registeredEvents = new Set();
 
+  static t(text) {
+    if (!text || typeof text !== 'string') return text || '';
+    if (!text.startsWith('i18n:')) return text;
+    const key = text.replace('i18n:', '');
+    return window.i18n?.t(key) || key;
+  }
+
   static async load(formName, container = null, data = null) {
     const cacheKey = `form_${formName.replace(/\//g, '_')}`;
     let schema = cache.get(cacheKey);
@@ -74,8 +81,8 @@ class form {
   static render(schema) {
     return `
       <div class="form-container">
-        ${schema.title ? `<h2>${schema.title}</h2>` : ''}
-        ${schema.description ? `<p class="form-desc">${schema.description}</p>` : ''}
+        ${schema.title ? `<h2>${this.t(schema.title)}</h2>` : ''}
+        ${schema.description ? `<p class="form-desc">${this.t(schema.description)}</p>` : ''}
 
         <form id="${schema.id}" data-form-id="${schema.id}" method="post">
           ${schema.toolbar ? `<div class="form-toolbar">${this.renderFields(schema.toolbar)}</div>` : ''}
@@ -103,12 +110,12 @@ class form {
   }
 
   static renderRepeatable(field, path) {
-    const addText = field.addText || 'Agregar';
+    const addText = this.t(field.addText) || 'Agregar';
 
     return `
       <div class="form-repeatable" data-field-path="${path}">
         <div class="repeatable-header">
-          <h4>${field.label}</h4>
+          <h4>${this.t(field.label)}</h4>
           <button type="button" class="btn btn-primary btn-sm repeatable-add" data-path="${path}">
             ${addText}
           </button>
@@ -135,26 +142,28 @@ class form {
   }
 
   static renderField(field, path) {
-    const common = `name="${path}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} ${field.step ? `step="${field.step}"` : ''}`;
+    const placeholder = this.t(field.placeholder) || '';
+    const common = `name="${path}" placeholder="${placeholder}" ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} ${field.step ? `step="${field.step}"` : ''}`;
+    const label = this.t(field.label);
 
     switch(field.type) {
       case 'button':
-        return `<button type="${field.action || 'button'}" class="btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}" ${field.onclick ? `onclick="${field.onclick}"` : ''}>${field.label}</button>`;
+        return `<button type="${field.action || 'button'}" class="btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}" ${field.onclick ? `onclick="${field.onclick}"` : ''}>${label}</button>`;
 
       case 'select':
         return `
           <div class="form-group">
-            <label>${field.label}</label>
+            <label>${label}</label>
             <select ${common}>
               <option value="">Selecciona...</option>
-              ${field.options?.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('') || ''}
+              ${field.options?.map(opt => `<option value="${opt.value}">${this.t(opt.label)}</option>`).join('') || ''}
             </select>
           </div>`;
 
       case 'textarea':
         return `
           <div class="form-group">
-            <label>${field.label}</label>
+            <label>${label}</label>
             <textarea ${common}></textarea>
           </div>`;
 
@@ -163,14 +172,14 @@ class form {
           <div class="form-group form-checkbox">
             <label>
               <input type="checkbox" name="${path}" ${field.required ? 'required' : ''}>
-              ${field.label}
+              ${label}
             </label>
           </div>`;
 
       default:
         return `
           <div class="form-group">
-            <label>${field.label}</label>
+            <label>${label}</label>
             <input type="${field.type}" ${common}>
           </div>`;
     }
@@ -249,9 +258,8 @@ class form {
 
     const index = container.children.length;
     const itemPath = `${path}[${index}]`;
-    const removeText = fieldDef.removeText || 'Eliminar';
+    const removeText = this.t(fieldDef.removeText) || 'Eliminar';
 
-    // ✅ NUEVO: Soporte para columns en repeatable
     const columns = fieldDef.columns;
     const gap = fieldDef.gap || 'normal';
     
@@ -292,7 +300,7 @@ class form {
 
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
-      const cleanPart = part.replace(/\[\d+\]/g, ''); // Remover índices [0], [1], etc
+      const cleanPart = part.replace(/\[\d+\]/g, '');
       
       result = current.find(f => f.name === cleanPart);
 
@@ -301,7 +309,6 @@ class form {
         return null;
       }
 
-      // Si no es el último segmento y tiene fields, continuar buscando
       if (i < parts.length - 1) {
         if (result.fields) {
           current = result.fields;

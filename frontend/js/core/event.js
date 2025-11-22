@@ -25,15 +25,19 @@ class events {
     const delegatedHandler = (e) => {
       let target = e.target;
 
-      if (target.matches(selector)) {
+      if (!target || target.nodeType !== 1) return;
+
+      if (target.matches && target.matches(selector)) {
         handler.call(target, e);
         return;
       }
 
-      const closest = target.closest(selector);
-      if (closest) {
-        handler.call(closest, e);
-        return;
+      if (target.closest) {
+        const closest = target.closest(selector);
+        if (closest) {
+          handler.call(closest, e);
+          return;
+        }
       }
     };
 

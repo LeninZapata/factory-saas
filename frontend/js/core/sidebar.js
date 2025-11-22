@@ -149,6 +149,8 @@ class sidebar {
           this.toggleSubmenu(item);
           e.stopPropagation();
         } else if (menuData.view) {
+          this.setActiveMenu(item);
+          
           const pluginName = this.detectPluginFromMenuId(menuId);
           
           const menuResources = {
@@ -164,6 +166,11 @@ class sidebar {
         }
       });
     });
+  }
+
+  static setActiveMenu(activeItem) {
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    activeItem.classList.add('active');
   }
 
   static detectPluginFromMenuId(menuId) {

@@ -1,8 +1,33 @@
 class view {
   static views = {};
   static loadedPlugins = {};
+  static viewNavigationCache = new Map();
 
   static async loadView(viewName, container = null, pluginContext = null, menuResources = null) {
+    const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
+    
+    if (!container && window.appConfig?.cache?.viewNavigation) {
+      if (this.viewNavigationCache.has(navCacheKey)) {
+        const cachedData = this.viewNavigationCache.get(navCacheKey);
+        const content = document.getElementById('content');
+        if (content) {
+          content.innerHTML = cachedData.html;
+          
+          document.body.setAttribute('data-view', cachedData.viewId);
+          document.body.className = document.body.className
+            .split(' ')
+            .filter(c => !c.startsWith('layout-'))
+            .join(' ');
+          if (cachedData.layout) {
+            document.body.classList.add(`layout-${cachedData.layout}`);
+          }
+          
+          await this.reInitializeCachedView(cachedData);
+          return;
+        }
+      }
+    }
+
     let basePath;
     let cacheKey;
 
@@ -49,6 +74,18 @@ class view {
 
         await this.loadAndInitResources(combinedData);
 
+        if (!container && window.appConfig?.cache?.viewNavigation) {
+          const content = document.getElementById('content');
+          if (content) {
+            this.viewNavigationCache.set(navCacheKey, {
+              html: content.innerHTML,
+              viewId: combinedData.id,
+              layout: combinedData.layout,
+              viewData: combinedData
+            });
+          }
+        }
+
         return;
       }
     }
@@ -91,6 +128,18 @@ class view {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       await this.loadAndInitResources(combinedData);
+
+      if (!container && window.appConfig?.cache?.viewNavigation) {
+        const content = document.getElementById('content');
+        if (content) {
+          this.viewNavigationCache.set(navCacheKey, {
+            html: content.innerHTML,
+            viewId: combinedData.id,
+            layout: combinedData.layout,
+            viewData: combinedData
+          });
+        }
+      }
 
     } catch (error) {
       console.error('VIEW: Error cargando vista:', error);
@@ -449,6 +498,41 @@ class view {
         }
       });
     }
+  }
+
+  static async reInitializeCachedView(cachedData) {
+    const viewData = cachedData.viewData;
+    const content = document.getElementById('content');
+    
+    if (viewData.tabs && content) {
+      const tabsContainer = content.querySelector('.view-tabs-container');
+      if (tabsContainer && window.tabs) {
+        await tabs.render(viewData, tabsContainer);
+      }
+    }
+    
+    await this.loadDynamicComponents(content);
+  }
+
+  static clearNavigationCache(viewName = null, pluginContext = null) {
+    if (viewName) {
+      const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
+      this.viewNavigationCache.delete(navCacheKey);
+    } else {
+      this.viewNavigationCache.clear();
+    }
+  }
+
+  static refreshView(viewName, pluginContext = null) {
+    this.clearNavigationCache(viewName, pluginContext);
+    this.loadView(viewName, null, pluginContext);
+  }
+
+  static getNavigationCacheStats() {
+    return {
+      size: this.viewNavigationCache.size,
+      keys: Array.from(this.viewNavigationCache.keys())
+    };
   }
 }
 

@@ -25,7 +25,7 @@
   },
   {
     "id": 4,
-    "nombre": "Monitor Samsung 27\" 4K",
+    "nombre": "Monitor Samsung 27' 4K",
     "categoria": "Electrónica",
     "precio": 449.99,
     "cantidad": 12,
@@ -57,7 +57,7 @@
   },
   {
     "id": 8,
-    "nombre": "Tablet iPad Pro 12.9\"",
+    "nombre": "Tablet iPad Pro 12.9'",
     "categoria": "Electrónica",
     "precio": 1099.99,
     "cantidad": 3,

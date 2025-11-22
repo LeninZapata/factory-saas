@@ -42,6 +42,7 @@ window.appConfig = {
     modals: !IS_DEV,
     forms: !IS_DEV,
     views: !IS_DEV,
+    viewNavigation: !!IS_DEV,
     validation: !IS_DEV,
     ttl: 60 * 60 * 1000
   }
