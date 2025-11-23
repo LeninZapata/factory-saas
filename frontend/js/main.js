@@ -6,7 +6,8 @@ window.appConfig = {
   i18n: {
     enabled: true,
     defaultLang: 'es',
-    availableLangs: ['es', 'en']
+    availableLangs: ['es', 'en'],
+    refreshOnChange: false  // ✅ false = cambio dinámico SIN recargar | true = recargar página
   },
   
   auth: {
@@ -50,18 +51,18 @@ window.appConfig = {
 
 const SCRIPTS_TO_LOAD = [
   'js/core/loader.js',
+  'js/core/layout.js',
   'js/core/i18n.js',
   'js/core/api.js',
   'js/core/event.js',
   'js/core/cache.js',
   'js/core/hook.js',
   'js/core/auth.js',
-  'js/core/layout.js',
   'js/core/view.js',
   'js/core/sidebar.js',
   'js/core/validator.js',
   'js/core/conditions.js',
-  'js/components/form.js',
+  'js/core/form.js',
   'js/components/modal.js',
   'js/components/tabs.js',
   'js/components/widget.js',
@@ -101,11 +102,9 @@ async function initializeApp() {
       }
 
       await auth.showApp();
-
-      // ✅ Inicializar langSelector (ahora desde el componente)
-      if (window.initLangSelector) {
-        window.initLangSelector();
-      }
+      
+      // ✅ REMOVIDO: Ya no se llama aquí
+      // El langSelector se inicializa dentro de auth.showApp()
     }
 
     // Cleanup
@@ -126,7 +125,6 @@ async function initializeApp() {
     `;
   }
 }
-
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {

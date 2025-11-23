@@ -1,4 +1,14 @@
 <?php
+// ✅ AHORA (bueno): Detectar y cargar SOLO el plugin solicitado
+$path = $_SERVER['REQUEST_URI'];
+$path = parse_url($path, PHP_URL_PATH);
+
+// Detectar si es una ruta de plugin: /plugin/webscraper/...
+if (preg_match('#^/plugin/([^/]+)#', $path, $matches)) {
+  $pluginName = $matches[1];
+  pluginLoader::load($pluginName, $router); // Solo carga ESE plugin
+}
+
 // Auto-registro de recursos con carga LAZY (solo el schema necesario)
 $router->group('/api', function($router) {
 
@@ -99,6 +109,22 @@ $router->group('/api', function($router) {
     response::success($stats);
   })->middleware('auth');
 });
+
+/*// Ruta de admin para listar plugins
+$router->get('/admin/plugins', function() {
+  // Aquí SÍ puedes cargar todos para mostrar info
+  $plugins = pluginLoader::getAvailable(); // No los carga, solo lista
+  
+  response::success($plugins);
+})->middleware('auth');
+
+// O si necesitas ejecutar hooks de todos los plugins
+$router->post('/system/rebuild', function() {
+  pluginLoader::loadAll($router); // Cargar todos para rebuild
+  
+  // Ejecutar hooks...
+  response::success(['message' => 'Rebuild complete']);
+})->middleware('auth');*/
 
 // En apis.php (solo desarrollo)
 /*if (IS_DEV && $requestedResource) {

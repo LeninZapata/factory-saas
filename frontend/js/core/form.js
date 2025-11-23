@@ -55,6 +55,20 @@ class form {
     const instanceSchema = JSON.parse(JSON.stringify(schema));
     instanceSchema.id = instanceId;
 
+    // ✅ EJECUTAR HOOKS DEL FORMULARIO
+    if (schema.id && window.hook) {
+      const hookName = `hook_form_${schema.id.replace(/-/g, '_')}`;
+      const hookFields = hook.execute(hookName, []);
+      
+      if (hookFields.length > 0) {
+        console.log(`📋 Form Hook: ${hookName} agregó ${hookFields.length} campos`);
+        
+        // Agregar campos del hook al final de fields (antes del statusbar)
+        if (!instanceSchema.fields) instanceSchema.fields = [];
+        instanceSchema.fields.push(...hookFields);
+      }
+    }
+
     this.schemas.set(instanceId, instanceSchema);
 
     const html = this.render(instanceSchema);
@@ -143,34 +157,43 @@ class form {
 
   static renderField(field, path) {
     const placeholder = this.t(field.placeholder) || '';
-    const common = `name="${path}" placeholder="${placeholder}" ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} ${field.step ? `step="${field.step}"` : ''}`;
     const label = this.t(field.label);
+    
+    // ✅ Atributos data-i18n para cambio dinámico de idioma
+    const labelI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
+    const placeholderI18n = field.placeholder?.startsWith('i18n:') ? `data-i18n-placeholder="${field.placeholder.replace('i18n:', '')}"` : '';
+    
+    const common = `name="${path}" placeholder="${placeholder}" ${placeholderI18n} ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} ${field.step ? `step="${field.step}"` : ''}`;
 
     switch(field.type) {
       case 'button':
-        return `<button type="${field.action || 'button'}" class="btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}" ${field.onclick ? `onclick="${field.onclick}"` : ''}>${label}</button>`;
+        const buttonI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
+        return `<button type="${field.action || 'button'}" class="btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}" ${buttonI18n} ${field.onclick ? `onclick="${field.onclick}"` : ''}>${label}</button>`;
 
       case 'select':
         return `
           <div class="form-group">
-            <label>${label}</label>
+            <label ${labelI18n}>${label}</label>
             <select ${common}>
               <option value="">Selecciona...</option>
-              ${field.options?.map(opt => `<option value="${opt.value}">${this.t(opt.label)}</option>`).join('') || ''}
+              ${field.options?.map(opt => {
+                const optI18n = opt.label?.startsWith('i18n:') ? `data-i18n="${opt.label.replace('i18n:', '')}"` : '';
+                return `<option value="${opt.value}" ${optI18n}>${this.t(opt.label)}</option>`;
+              }).join('') || ''}
             </select>
           </div>`;
 
       case 'textarea':
         return `
           <div class="form-group">
-            <label>${label}</label>
+            <label ${labelI18n}>${label}</label>
             <textarea ${common}></textarea>
           </div>`;
 
       case 'checkbox':
         return `
           <div class="form-group form-checkbox">
-            <label>
+            <label ${labelI18n}>
               <input type="checkbox" name="${path}" ${field.required ? 'required' : ''}>
               ${label}
             </label>
@@ -179,7 +202,7 @@ class form {
       default:
         return `
           <div class="form-group">
-            <label>${label}</label>
+            <label ${labelI18n}>${label}</label>
             <input type="${field.type}" ${common}>
           </div>`;
     }
@@ -289,7 +312,7 @@ class form {
     if (container.children.length > 1) {
       item.remove();
     } else {
-      console.warn('⚠️  No se puede eliminar el último item');
+      console.warn('⚠️ No se puede eliminar el último item');
     }
   }
 

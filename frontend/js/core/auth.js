@@ -101,12 +101,10 @@ class auth {
       view.loadView(this.config.redirectAfterLogin);
     }
 
-    // Inicializar selector de idioma
-    setTimeout(() => {
-      if (window.initLangSelector) {
-        window.initLangSelector();
-      }
-    }, 150);
+    // ✅ Inicializar selector de idioma DESPUÉS de todo
+    if (window.initLangSelector) {
+      window.initLangSelector();
+    }
   }
 
   static async login(credentials) {

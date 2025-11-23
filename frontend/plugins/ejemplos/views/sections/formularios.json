@@ -32,8 +32,22 @@
       ]
     },
     {
+      "id": "columnas-overflow",
+      "title": "🔽 Overflow de Columnas",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>🔽 Prueba de Overflow en Columnas</h3><p>Este ejemplo demuestra cómo se comporta el sistema cuando hay <strong>más campos que columnas</strong>:</p><div style='background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6; margin: 1rem 0;'><h4 style='margin: 0 0 0.5rem; color: #1e40af;'>🎯 Casos de Prueba:</h4><ul style='margin: 0; padding-left: 1.5rem; color: #1e3a8a;'><li><strong>2 columnas + 3 campos:</strong> El 3er campo baja a la 2da fila</li><li><strong>3 columnas + 4 campos:</strong> El 4to campo baja a la 2da fila</li><li><strong>3 columnas + 5 campos:</strong> Los campos 4 y 5 bajan a la 2da fila</li><li><strong>4 columnas + 6 campos:</strong> Los campos 5 y 6 bajan a la 2da fila</li></ul></div><p>Los campos marcados con 🔽 deberían aparecer en una nueva fila.</p>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/form-grouped-fields-test"
+        }
+      ]
+    },
+    {
       "id": "repetibles-agrupados",
-      "title": "🔁📊 Repetibles Agrupados",
+      "title": "📝📊 Repetibles Agrupados",
       "content": [
         {
           "type": "html",
@@ -65,7 +79,7 @@
     },
     {
       "id": "campos-repetibles",
-      "title": "🔁 Campos Repetibles",
+      "title": "📝 Campos Repetibles",
       "content": [
         {
           "type": "html",
@@ -79,7 +93,7 @@
     },
     {
       "id": "repetibles-anidados",
-      "title": "🔁🔁 Repetibles Anidados",
+      "title": "📝📝 Repetibles Anidados",
       "content": [
         {
           "type": "html",

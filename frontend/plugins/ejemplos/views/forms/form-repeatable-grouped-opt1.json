@@ -107,6 +107,13 @@
           "label": "CVV",
           "placeholder": "123",
           "maxlength": 3
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "label": "Name on Card",
+          "placeholder": "Lenin...",
+          "maxlength": 3
         }
       ]
     }

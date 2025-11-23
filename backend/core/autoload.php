@@ -1,39 +1,46 @@
 <?php
-// Autoload bajo demanda con SPL
 spl_autoload_register(function ($class) {
-  // Convertir nombre de clase a minúsculas para los helpers
   $classLower = strtolower($class);
 
-  // Buscar en helpers
+  // Helpers
   $helperFile = __DIR__ . '/' . $classLower . '.php';
   if (file_exists($helperFile)) {
     require_once $helperFile;
     return;
   }
 
-  // Buscar en core (resource, controller, etc)
+  // Core
   $coreFile = __DIR__ . '/' . $class . '.php';
   if (file_exists($coreFile)) {
     require_once $coreFile;
     return;
   }
 
-  // Buscar en middleware
+  // Middleware
   $mwFile = __DIR__ . '/../middleware/' . $class . '.php';
   if (file_exists($mwFile)) {
     require_once $mwFile;
     return;
   }
+
+  // Services principales
+  $serviceFile = __DIR__ . '/../services/' . $classLower . '.php';
+  if (file_exists($serviceFile)) {
+    require_once $serviceFile;
+    return;
+  }
+
+  // Buscar en integrations (ai/deepseek, email/plusemail, etc)
+  $servicesDir = __DIR__ . '/../services/integrations/';
+  if (is_dir($servicesDir)) {
+    foreach (scandir($servicesDir) as $category) {
+      if ($category === '.' || $category === '..') continue;
+      
+      $integrationFile = $servicesDir . $category . '/' . $classLower . '/' . $classLower . '.php';
+      if (file_exists($integrationFile)) {
+        require_once $integrationFile;
+        return;
+      }
+    }
+  }
 });
-
-// Pre-cargar solo los esenciales que se usan siempre
-require_once __DIR__ . '/response.php';
-require_once __DIR__ . '/db.php';
-
-// Al final de autoload.php (solo desarrollo)
-/*if (IS_DEV) {
-  register_shutdown_function(function() {
-    $files = get_included_files();
-    log::debug('Files loaded', ['count' => count($files), 'files' => $files]);
-  });
-}*/

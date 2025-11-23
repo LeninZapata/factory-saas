@@ -4,8 +4,15 @@ class i18n {
   static pluginTranslations = new Map();
   static defaultLang = 'es';
   static availableLangs = ['es', 'en'];
+  static config = {};
 
   static async init(config = {}) {
+    // ✅ Configuración con refresh por defecto
+    this.config = {
+      refreshOnChange: true,  // true = recargar página | false = cambio dinámico
+      ...config
+    };
+
     // ✅ Prioridad: storage > config > default
     const storedLang = this.getLangFromStorage();
     this.currentLang = storedLang || config.defaultLang || 'es';
@@ -18,6 +25,7 @@ class i18n {
     if (window.appConfig?.isDevelopment) {
       const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
       console.log(`i18n: Idioma '${this.currentLang}' desde ${source}`);
+      console.log(`i18n: Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
     }
   }
 
@@ -131,10 +139,82 @@ class i18n {
     this.currentLang = lang;
     this.saveLangToStorage(lang);
 
-    // Trigger evento para actualizar UI
-    if (window.events) {
-      document.dispatchEvent(new CustomEvent('lang-changed', { detail: { lang } }));
+    // ✅ NUEVO: Decidir entre refresh o dinámico
+    if (this.config.refreshOnChange) {
+      // Modo refresh: recargar página
+      console.log('🔄 i18n: Recargando página...');
+      window.location.reload();
+    } else {
+      // Modo dinámico: actualizar sin recargar
+      console.log('⚡ i18n: Actualizando dinámicamente...');
+      this.updateDynamicContent();
+      
+      // Trigger evento para componentes personalizados
+      document.dispatchEvent(new CustomEvent('lang-changed', { 
+        detail: { lang, method: 'dynamic' } 
+      }));
     }
+  }
+
+  // ✅ NUEVO: Actualizar contenido dinámicamente
+  static updateDynamicContent() {
+    // 1. Actualizar elementos con data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const params = this.parseDataParams(el);
+      el.textContent = this.t(key, params);
+    });
+
+    // 2. Actualizar placeholders con data-i18n-placeholder
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      el.placeholder = this.t(key);
+    });
+
+    // 3. Actualizar titles con data-i18n-title
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.getAttribute('data-i18n-title');
+      el.title = this.t(key);
+    });
+
+    // 4. Actualizar labels de formularios
+    document.querySelectorAll('label[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      
+      // Preservar checkbox/radio inputs dentro del label
+      const input = el.querySelector('input[type="checkbox"], input[type="radio"]');
+      if (input) {
+        const inputHTML = input.outerHTML;
+        el.innerHTML = inputHTML + ' ' + this.t(key);
+      } else {
+        el.textContent = this.t(key);
+      }
+    });
+
+    console.log(`✅ i18n: ${document.querySelectorAll('[data-i18n]').length} elementos actualizados`);
+  }
+
+  // ✅ NUEVO: Parsear parámetros de data attributes
+  static parseDataParams(element) {
+    const params = {};
+    const paramsAttr = element.getAttribute('data-i18n-params');
+    
+    if (paramsAttr) {
+      try {
+        Object.assign(params, JSON.parse(paramsAttr));
+      } catch (e) {
+        console.warn('i18n: Error parseando data-i18n-params');
+      }
+    }
+    
+    return params;
+  }
+
+  // ✅ NUEVO: Método helper para agregar atributo data-i18n
+  static markElement(key, params = null) {
+    const attrs = `data-i18n="${key}"`;
+    const paramsAttr = params ? ` data-i18n-params='${JSON.stringify(params)}'` : '';
+    return attrs + paramsAttr;
   }
 
   static getLang() {
