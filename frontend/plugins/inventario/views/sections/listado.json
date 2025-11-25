@@ -25,12 +25,37 @@
           "component": "datatable",
           "order": 10,
           "config": {
-            "source": "db_inventario.json",
+            "pluginName": "inventario",
+            "dataSource": {
+              "type": "auto",
+              "mock": {
+                "enabled": true,
+                "file": "dev/db_inventario.json"
+              },
+              "api": {
+                "enabled": false,
+                "endpoint": "/api/producto",
+                "method": "GET"
+              }
+            },
             "columns": ["id", "nombre", "categoria", "precio", "cantidad", "estado"],
             "actions": {
               "edit": {
                 "name": "✏️ Editar",
-                "onclick": "modal.open('inventario|forms/producto', {title: '✏️ Editar Producto: {nombre}', width: '60%', maxWidth: '700px'}); toast.info('Cargando producto #{id}...')"
+                "dataLoader": {
+                  "type": "auto",
+                  "mock": {
+                    "enabled": true,
+                    "file": "dev/db_inventario.json",
+                    "filterBy": "id"
+                  },
+                  "api": {
+                    "enabled": false,
+                    "endpoint": "/api/producto/{id}",
+                    "method": "GET"
+                  }
+                },
+                "onclick": "modal.openWithData('inventario|forms/producto', {id: {id}, title: '✏️ Editar: {nombre}', width: '60%', maxWidth: '700px'})"
               },
               "delete": {
                 "name": "🗑️ Eliminar",

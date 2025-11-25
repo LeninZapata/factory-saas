@@ -4,6 +4,14 @@
   "description": "Completa la información del producto",
   "fields": [
     {
+      "name": "id",
+      "label": "ID",
+      "type": "number",
+      "required": false,
+      "readonly": true,
+      "placeholder": "Auto-generado"
+    },
+    {
       "name": "nombre",
       "label": "Nombre del Producto",
       "type": "text",
@@ -16,12 +24,12 @@
       "type": "select",
       "required": true,
       "options": [
-        { "value": "electronica", "label": "📱 Electrónica" },
-        { "value": "accesorios", "label": "🖱️ Accesorios" },
-        { "value": "mobiliario", "label": "🪑 Mobiliario" },
-        { "value": "audio", "label": "🎧 Audio" },
-        { "value": "almacenamiento", "label": "💾 Almacenamiento" },
-        { "value": "oficina", "label": "🖨️ Oficina" }
+        { "value": "Electrónica", "label": "📱 Electrónica" },
+        { "value": "Accesorios", "label": "🖱️ Accesorios" },
+        { "value": "Mobiliario", "label": "🪑 Mobiliario" },
+        { "value": "Audio", "label": "🎧 Audio" },
+        { "value": "Almacenamiento", "label": "💾 Almacenamiento" },
+        { "value": "Oficina", "label": "🖨️ Oficina" }
       ]
     },
     {
@@ -48,28 +56,10 @@
       "type": "select",
       "required": true,
       "options": [
-        { "value": "activo", "label": "✅ Activo" },
-        { "value": "inactivo", "label": "❌ Inactivo" },
-        { "value": "bajo_stock", "label": "⚠️ Bajo Stock" }
+        { "value": "Activo", "label": "✅ Activo" },
+        { "value": "Inactivo", "label": "❌ Inactivo" },
+        { "value": "Bajo Stock", "label": "⚠️ Bajo Stock" }
       ]
-    },
-    {
-      "name": "descripcion",
-      "label": "Descripción",
-      "type": "textarea",
-      "placeholder": "Descripción detallada del producto..."
-    },
-    {
-      "name": "codigo_barras",
-      "label": "Código de Barras",
-      "type": "text",
-      "placeholder": "Ej: 7501234567890"
-    },
-    {
-      "name": "proveedor",
-      "label": "Proveedor",
-      "type": "text",
-      "placeholder": "Nombre del proveedor"
     }
   ],
   "statusbar": [

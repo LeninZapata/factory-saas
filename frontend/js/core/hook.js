@@ -53,6 +53,11 @@ class hook {
           if (pluginConfig.hasHooks) {
             await this.loadPluginHook(pluginInfo.name);
           }
+
+          // ✅ PreCargar vistas si preloadViews es true
+          if (pluginConfig.menu?.preloadViews === true) {
+            await this.preloadPluginViews(pluginInfo.name, pluginConfig);
+          }
         }
       });
 
@@ -65,6 +70,43 @@ class hook {
 
     } catch (error) {
       console.error('Hooks: Error cargando plugins:', error);
+    }
+  }
+
+  static async preloadPluginViews(pluginName, pluginConfig) {
+    if (!pluginConfig.menu?.items) return;
+
+    const viewsToPreload = [];
+    const collectViews = (items) => {
+      items.forEach(item => {
+        if (item.view) {
+          viewsToPreload.push(item.view);
+        }
+        if (item.items?.length > 0) {
+          collectViews(item.items);
+        }
+      });
+    };
+
+    collectViews(pluginConfig.menu.items);
+
+    for (const viewPath of viewsToPreload) {
+      try {
+        const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+        const fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
+        const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+        
+        const response = await fetch(fullPath + cacheBuster);
+        
+        if (response.ok) {
+          const viewData = await response.json();
+          const cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
+          window.cache?.set(cacheKey, viewData);
+          console.log(`📦 PreCargada: ${pluginName}/${viewPath}`);
+        }
+      } catch (error) {
+        console.warn(`⚠️ No se pudo precargar: ${pluginName}/${viewPath}`);
+      }
     }
   }
 
@@ -90,6 +132,8 @@ class hook {
   }
 
   static processMenuItems(items, parentPlugin = '') {
+    console.log(`🔧 HOOK: Procesando ${items.length} items del menú${parentPlugin ? ` (plugin: ${parentPlugin})` : ''}`);
+    
     return items
       .map(item => {
         const processedItem = {
@@ -104,6 +148,12 @@ class hook {
 
         if (item.styles) {
           processedItem.styles = item.styles;
+        }
+
+        // ✅ Copiar preloadViews si existe
+        if (item.preloadViews !== undefined) {
+          processedItem.preloadViews = item.preloadViews;
+          console.log(`   ✅ Item "${item.id}" tiene preloadViews: ${item.preloadViews}`);
         }
 
         if (item.items?.length > 0) {

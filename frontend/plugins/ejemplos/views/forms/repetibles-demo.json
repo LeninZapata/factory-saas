@@ -1,15 +1,20 @@
 {
   "id": "repetibles-demo",
   "title": "Campos Repetibles",
-  "description": "Ejemplo de campos que se pueden repetir dinámicamente",
+  "description": "Ejemplo de campos que se pueden repetir dinámicamente con diferentes posiciones del botón",
   "fields": [
     {
       "name": "contactos",
       "label": "📞 Lista de Contactos",
       "type": "repeatable",
+      "buttonPosition": "top",
       "addText": "➕ Agregar Contacto",
       "removeText": "🗑️ Eliminar",
       "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 Posición del botón: TOP (arriba)</strong><br>El botón está en el header junto al título (posición por defecto)</div>"
+        },
         {
           "name": "nombre",
           "label": "Nombre",
@@ -35,9 +40,14 @@
       "name": "direcciones",
       "label": "🏠 Direcciones",
       "type": "repeatable",
+      "buttonPosition": "bottom",
       "addText": "➕ Agregar Dirección",
       "removeText": "❌ Quitar",
       "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 Posición del botón: BOTTOM (abajo)</strong><br>El botón aparece debajo de todos los items repetidos</div>"
+        },
         {
           "name": "tipo",
           "label": "Tipo",
@@ -60,6 +70,68 @@
           "type": "checkbox"
         }
       ]
+    },
+    {
+      "name": "experiencias",
+      "label": "💼 Experiencia Laboral",
+      "type": "repeatable",
+      "buttonPosition": "middle",
+      "addText": "➕ Agregar Experiencia",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 Posición del botón: MIDDLE (en medio)</strong><br>El botón está entre el header y los items, separado del título</div>"
+        },
+        {
+          "name": "empresa",
+          "label": "Empresa",
+          "type": "text",
+          "placeholder": "Nombre de la empresa"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "cargo",
+              "label": "Cargo",
+              "type": "text",
+              "placeholder": "Tu cargo"
+            },
+            {
+              "name": "area",
+              "label": "Área",
+              "type": "text",
+              "placeholder": "Departamento"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "fecha_inicio",
+              "label": "Fecha Inicio",
+              "type": "date"
+            },
+            {
+              "name": "fecha_fin",
+              "label": "Fecha Fin",
+              "type": "date"
+            }
+          ]
+        },
+        {
+          "name": "descripcion",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "Describe tus responsabilidades..."
+        }
+      ]
     }
   ],
   "statusbar": [
@@ -67,7 +139,15 @@
       "name": "submit",
       "type": "button",
       "label": "💾 Guardar",
-      "action": "submit"
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); toast.success('✅ Datos guardados');"
+    },
+    {
+      "name": "reset",
+      "type": "button",
+      "label": "🔄 Limpiar",
+      "style": "secondary",
+      "onclick": "event.preventDefault(); this.closest('form').reset();"
     }
   ]
 }

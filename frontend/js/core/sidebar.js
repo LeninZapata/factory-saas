@@ -158,6 +158,10 @@ class sidebar {
             styles: menuData.styles || []
           };
           
+          // ✅ Precargar vistas hermanas con preloadViews: true
+          console.log(`🔍 SIDEBAR: Click en menú "${menuId}" (level: ${level}, plugin: ${pluginName || 'core'})`);
+          this.preloadSiblingViews(menuId, level, pluginName);
+          
           if (pluginName) {
             view.loadView(menuData.view, null, pluginName, menuResources);
           } else {
@@ -166,6 +170,108 @@ class sidebar {
         }
       });
     });
+  }
+
+  static preloadSiblingViews(currentMenuId, currentLevel, pluginName) {
+    console.log(`🔎 PRELOAD: Buscando hermanos de "${currentMenuId}" (level: ${currentLevel})`);
+    
+    const parentMenu = this.findParentMenu(currentMenuId, currentLevel);
+    const siblings = parentMenu ? parentMenu.items : this.menuData.menu;
+    
+    console.log(`📋 PRELOAD: Hermanos encontrados:`, siblings?.map(s => `${s.id} (preload: ${s.preloadViews})`));
+    
+    if (!siblings) {
+      console.log(`⚠️ PRELOAD: No se encontraron hermanos`);
+      return;
+    }
+    
+    let preloadCount = 0;
+    siblings.forEach(sibling => {
+      if (sibling.id !== currentMenuId && sibling.preloadViews === true && sibling.view) {
+        console.log(`🎯 PRELOAD: Iniciando precarga de "${sibling.id}" -> ${sibling.view}`);
+        this.preloadView(sibling.view, pluginName);
+        preloadCount++;
+      }
+    });
+    
+    if (preloadCount === 0) {
+      console.log(`ℹ️ PRELOAD: Ningún hermano tiene preloadViews: true`);
+    } else {
+      console.log(`✅ PRELOAD: Se iniciaron ${preloadCount} precargas`);
+    }
+  }
+
+  static async preloadView(viewPath, pluginName) {
+    try {
+      let basePath, fullPath, cacheKey;
+      
+      console.log(`🚀 PRELOAD VIEW: Iniciando "${viewPath}" (plugin: ${pluginName || 'core'})`);
+      
+      if (pluginName) {
+        basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+        fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
+        cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
+      } else {
+        basePath = window.appConfig?.routes?.coreSections || 'js/views';
+        fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
+        cacheKey = `view_${viewPath.replace(/\//g, '_')}`;
+      }
+      
+      console.log(`📂 PRELOAD VIEW: Ruta construida: ${fullPath}`);
+      console.log(`🔑 PRELOAD VIEW: Cache key: ${cacheKey}`);
+      
+      // Verificar si ya está en caché
+      if (window.cache?.get(cacheKey)) {
+        console.log(`✅ Ya en caché: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
+        return;
+      }
+      
+      console.log(`⏳ PRELOAD VIEW: Haciendo fetch...`);
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const response = await fetch(fullPath + cacheBuster);
+      
+      console.log(`📡 PRELOAD VIEW: Response status: ${response.status}`);
+      
+      if (response.ok) {
+        const viewData = await response.json();
+        window.cache?.set(cacheKey, viewData);
+        console.log(`📦 PreCargada: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
+      } else {
+        console.warn(`❌ PRELOAD VIEW: Response no OK (${response.status})`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ No se pudo precargar: ${pluginName ? pluginName + '/' : ''}${viewPath}`, error);
+    }
+  }
+
+  static findParentMenu(menuId, level) {
+    console.log(`🔍 FIND PARENT: Buscando padre de "${menuId}" (level: ${level})`);
+    
+    if (level === 0) {
+      console.log(`ℹ️ FIND PARENT: Level 0, no hay padre (items de raíz)`);
+      return null;
+    }
+    
+    const findRecursive = (items, targetId, currentLevel = 0) => {
+      for (const item of items) {
+        if (item.items && item.items.length > 0) {
+          const hasChild = item.items.some(child => child.id === targetId);
+          if (hasChild && currentLevel === level - 1) {
+            console.log(`✅ FIND PARENT: Padre encontrado: "${item.id}"`);
+            return item;
+          }
+          const found = findRecursive(item.items, targetId, currentLevel + 1);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    const parent = findRecursive(this.menuData.menu, menuId);
+    if (!parent) {
+      console.log(`⚠️ FIND PARENT: No se encontró padre`);
+    }
+    return parent;
   }
 
   static setActiveMenu(activeItem) {

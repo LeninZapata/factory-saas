@@ -48,6 +48,12 @@
         "title": "🎯 Condiciones",
         "view": "sections/conditions-demo",
         "order": 6
+      },
+      {
+        "id": "ejemplos-grouper",
+        "title": "📦 Grouper",
+        "view": "sections/grouper-demo",
+        "order": 7
       }
     ]
   },

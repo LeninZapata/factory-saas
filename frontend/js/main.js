@@ -51,6 +51,7 @@ window.appConfig = {
 
 const SCRIPTS_TO_LOAD = [
   'js/core/loader.js',
+  'js/core/dataLoader.js',
   'js/core/layout.js',
   'js/core/i18n.js',
   'js/core/api.js',
@@ -69,6 +70,7 @@ const SCRIPTS_TO_LOAD = [
   'js/components/toast.js',
   'js/components/dataTable.js',
   'js/components/langSelector.js',
+  'js/components/grouper.js',
 ];
 
 async function initializeApp() {

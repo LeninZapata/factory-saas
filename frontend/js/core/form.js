@@ -119,24 +119,63 @@ class form {
         return this.renderGroup(field, path);
       }
 
+      // ✅ NUEVO: Soporte para grouper
+      if (field.type === 'grouper') {
+        return this.renderGrouper(field, path);
+      }
+
       return this.renderField(field, fieldPath);
     }).join('');
   }
 
   static renderRepeatable(field, path) {
     const addText = this.t(field.addText) || 'Agregar';
+    const buttonPosition = field.buttonPosition || 'top'; // top, middle, bottom
 
-    return `
-      <div class="form-repeatable" data-field-path="${path}">
-        <div class="repeatable-header">
-          <h4>${this.t(field.label)}</h4>
-          <button type="button" class="btn btn-primary btn-sm repeatable-add" data-path="${path}">
-            ${addText}
-          </button>
-        </div>
-        <div class="repeatable-items" data-path="${path}"></div>
-      </div>
+    // Botón de agregar
+    const addButton = `
+      <button type="button" class="btn btn-primary btn-sm repeatable-add" data-path="${path}">
+        ${addText}
+      </button>
     `;
+
+    // Estructura según posición del botón
+    if (buttonPosition === 'middle') {
+      return `
+        <div class="form-repeatable" data-field-path="${path}">
+          <div class="repeatable-header">
+            <h4>${this.t(field.label)}</h4>
+          </div>
+          <div class="repeatable-add-container" style="margin: 0.5rem 0;">
+            ${addButton}
+          </div>
+          <div class="repeatable-items" data-path="${path}"></div>
+        </div>
+      `;
+    } else if (buttonPosition === 'bottom') {
+      return `
+        <div class="form-repeatable" data-field-path="${path}">
+          <div class="repeatable-header">
+            <h4>${this.t(field.label)}</h4>
+          </div>
+          <div class="repeatable-items" data-path="${path}"></div>
+          <div class="repeatable-add-container" style="margin: 0.5rem 0; text-align: center;">
+            ${addButton}
+          </div>
+        </div>
+      `;
+    } else {
+      // top (default)
+      return `
+        <div class="form-repeatable" data-field-path="${path}">
+          <div class="repeatable-header">
+            <h4>${this.t(field.label)}</h4>
+            ${addButton}
+          </div>
+          <div class="repeatable-items" data-path="${path}"></div>
+        </div>
+      `;
+    }
   }
 
   static renderGroup(field, basePath) {
@@ -155,7 +194,192 @@ class form {
     `;
   }
 
+  /**
+   * ✅ NUEVO: Renderiza un grouper (agrupador visual)
+   * Soporta dos modos: linear (acordeón) y tabs
+   */
+  static renderGrouper(field, parentPath) {
+    const mode = field.mode || 'linear';
+    const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    let html = '';
+
+    if (mode === 'linear') {
+      html += this.renderGrouperLinear(field, grouperId, parentPath);
+    } else if (mode === 'tabs') {
+      html += this.renderGrouperTabs(field, grouperId, parentPath);
+    }
+
+    // Inicializar eventos después de renderizar
+    setTimeout(() => {
+      this.bindGrouperEvents(grouperId, mode);
+    }, 100);
+
+    return html;
+  }
+
+  /**
+   * ✅ NUEVO: Renderiza grouper en modo linear (acordeón)
+   */
+  static renderGrouperLinear(field, grouperId, parentPath) {
+    const collapsible = field.collapsible !== false;
+    const openFirst = field.openFirst !== false;
+    
+    let html = `<div class="grouper grouper-linear" id="${grouperId}">`;
+
+    field.groups.forEach((group, index) => {
+      const isOpen = openFirst && index === 0;
+      const contentId = `${grouperId}-content-${index}`;
+
+      html += `
+        <div class="grouper-section ${isOpen ? 'open' : ''} ${!collapsible ? 'non-collapsible' : ''}" data-group-index="${index}">
+          <div class="grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}" 
+               ${collapsible ? `data-toggle="${contentId}"` : ''}>
+            <h3 class="grouper-title">${group.title || `Grupo ${index + 1}`}</h3>
+            ${collapsible ? '<span class="grouper-toggle">▼</span>' : ''}
+          </div>
+          <div class="grouper-content" id="${contentId}" ${!isOpen && collapsible ? 'style="display:none"' : ''}>
+      `;
+
+      // Renderizar campos del grupo
+      if (group.fields && Array.isArray(group.fields)) {
+        html += this.renderFields(group.fields, parentPath);
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  /**
+   * ✅ NUEVO: Renderiza grouper en modo tabs
+   */
+  static renderGrouperTabs(field, grouperId, parentPath) {
+    const activeIndex = field.activeIndex || 0;
+    
+    let html = `<div class="grouper grouper-tabs" id="${grouperId}">`;
+
+    // Tabs header
+    html += `<div class="grouper-tabs-header">`;
+    field.groups.forEach((group, index) => {
+      const isActive = index === activeIndex;
+      html += `
+        <button type="button" class="grouper-tab-btn ${isActive ? 'active' : ''}" 
+                data-tab-index="${index}">
+          ${group.title || `Tab ${index + 1}`}
+        </button>
+      `;
+    });
+    html += `</div>`;
+
+    // Tabs content
+    html += `<div class="grouper-tabs-content">`;
+    field.groups.forEach((group, index) => {
+      const isActive = index === activeIndex;
+      html += `
+        <div class="grouper-tab-panel ${isActive ? 'active' : ''}" 
+             data-panel-index="${index}">
+      `;
+
+      // Renderizar campos del grupo
+      if (group.fields && Array.isArray(group.fields)) {
+        html += this.renderFields(group.fields, parentPath);
+      }
+
+      html += `</div>`;
+    });
+    html += `</div>`;
+
+    html += `</div>`;
+    return html;
+  }
+
+  /**
+   * ✅ NUEVO: Bind eventos del grouper
+   */
+  static bindGrouperEvents(grouperId, mode) {
+    const container = document.getElementById(grouperId);
+    if (!container) return;
+
+    if (mode === 'linear') {
+      // Eventos para acordeón
+      container.querySelectorAll('.grouper-header.collapsible').forEach(header => {
+        // Solo agregar listener si no lo tiene
+        if (header.dataset.listenerAttached) return;
+        header.dataset.listenerAttached = 'true';
+        
+        header.addEventListener('click', function() {
+          const targetId = this.dataset.toggle;
+          const content = document.getElementById(targetId);
+          const section = this.closest('.grouper-section');
+
+          if (!content) return;
+
+          const isOpen = section.classList.contains('open');
+
+          if (isOpen) {
+            section.classList.remove('open');
+            content.style.display = 'none';
+          } else {
+            section.classList.add('open');
+            content.style.display = 'block';
+          }
+        });
+      });
+
+    } else if (mode === 'tabs') {
+      // Eventos para tabs - SOLO los botones directos de este grouper
+      const directTabButtons = [];
+      
+      // Obtener SOLO los botones del primer nivel (no de groupers anidados)
+      const headerContainer = container.querySelector(':scope > .grouper-tabs-header');
+      if (headerContainer) {
+        headerContainer.querySelectorAll(':scope > .grouper-tab-btn').forEach(btn => {
+          directTabButtons.push(btn);
+        });
+      }
+
+      directTabButtons.forEach(button => {
+        // Solo agregar listener si no lo tiene
+        if (button.dataset.listenerAttached) return;
+        button.dataset.listenerAttached = 'true';
+        
+        button.addEventListener('click', function(e) {
+          e.stopPropagation(); // Evitar propagación a tabs padres
+          
+          const index = parseInt(this.dataset.tabIndex);
+          const parentGrouper = this.closest('.grouper-tabs');
+
+          // Desactivar todos los tabs SOLO de este grouper
+          parentGrouper.querySelectorAll(':scope > .grouper-tabs-header > .grouper-tab-btn').forEach(btn => 
+            btn.classList.remove('active')
+          );
+          parentGrouper.querySelectorAll(':scope > .grouper-tabs-content > .grouper-tab-panel').forEach(panel => 
+            panel.classList.remove('active')
+          );
+
+          // Activar el seleccionado
+          this.classList.add('active');
+          const targetPanel = parentGrouper.querySelector(`:scope > .grouper-tabs-content > .grouper-tab-panel[data-panel-index="${index}"]`);
+          if (targetPanel) {
+            targetPanel.classList.add('active');
+          }
+        });
+      });
+    }
+  }
+
   static renderField(field, path) {
+    // ✅ NUEVO: Manejar type "html" (sin wrapper de form-group)
+    if (field.type === 'html') {
+      return field.content || '';
+    }
+
     const placeholder = this.t(field.placeholder) || '';
     const label = this.t(field.label);
     
