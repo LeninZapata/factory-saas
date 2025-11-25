@@ -9,14 +9,38 @@ class form {
     return window.i18n?.t(key) || key;
   }
 
-  static async load(formName, container = null, data = null) {
+  /**
+   * Cargar formulario
+   * @param {string} formName - Ruta del formulario
+   * @param {HTMLElement} container - Contenedor donde renderizar
+   * @param {object} data - Datos para prellenar
+   * @param {boolean} isCore - TRUE para forzar búsqueda en /js/views/, FALSE para plugin
+   * @param {function} afterRender - Callback a ejecutar después de renderizar el formulario
+   */
+  static async load(formName, container = null, data = null, isCore = null, afterRender = null) {
     const cacheKey = `form_${formName.replace(/\//g, '_')}`;
     let schema = cache.get(cacheKey);
 
     if (!schema) {
       let url;
 
-      if (formName.includes('/')) {
+      // ✅ CASO 1: isCore = true → Forzar búsqueda en core
+      if (isCore === true) {
+        const basePath = window.appConfig?.routes?.coreViews || 'js/views';
+        url = `${window.BASE_URL}${basePath}/${formName}.json`;
+        console.log(`📋 FORM (CORE): ${url}`);
+      }
+      // ✅ CASO 2: isCore = false → Forzar búsqueda en plugin
+      else if (isCore === false) {
+        const parts = formName.split('/');
+        const pluginName = parts[0];
+        const restPath = parts.slice(1).join('/');
+        const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+        url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
+        console.log(`📋 FORM (PLUGIN): ${url}`);
+      }
+      // ✅ CASO 3: isCore = null → Detección automática (legacy)
+      else if (formName.includes('/')) {
         const parts = formName.split('/');
         const firstPart = parts[0];
 
@@ -26,15 +50,18 @@ class form {
         if (isPlugin) {
           const pluginName = parts[0];
           const restPath = parts.slice(1).join('/');
-          const basePath = window.appConfig?.routes?.pluginForms?.replace('{pluginName}', pluginName);
-          url = `${window.BASE_URL}${basePath}/${restPath}.json`;
+          const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+          url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
+          console.log(`📋 FORM (AUTO-PLUGIN): ${url}`);
         } else {
-          const basePath = window.appConfig?.routes?.coreForms || 'js/views/forms';
+          const basePath = window.appConfig?.routes?.coreViews || 'js/views';
           url = `${window.BASE_URL}${basePath}/${formName}.json`;
+          console.log(`📋 FORM (AUTO-CORE): ${url}`);
         }
       } else {
-        const basePath = window.appConfig?.routes?.coreForms || 'js/views/forms';
+        const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
+        console.log(`📋 FORM (LEGACY): ${url}`);
       }
 
       const cacheBuster = window.appConfig?.cache?.forms ? '' : `?t=${Date.now()}`;
@@ -63,7 +90,6 @@ class form {
       if (hookFields.length > 0) {
         console.log(`📋 Form Hook: ${hookName} agregó ${hookFields.length} campos`);
         
-        // Agregar campos del hook al final de fields (antes del statusbar)
         if (!instanceSchema.fields) instanceSchema.fields = [];
         instanceSchema.fields.push(...hookFields);
       }
@@ -79,6 +105,7 @@ class form {
 
     this.bindEventsOnce();
 
+    // ✅ NUEVO: Ejecutar callback afterRender después de que todo esté listo
     setTimeout(() => {
       const formEl = document.getElementById(instanceId);
       if (formEl) {
@@ -86,10 +113,23 @@ class form {
         if (window.conditions) {
           conditions.init(instanceId);
         }
+
+        // ✅ Ejecutar callback si existe
+        if (typeof afterRender === 'function') {
+          console.log(`✅ FORM: Ejecutando afterRender callback para ${schema.id}`);
+          try {
+            afterRender(instanceId, formEl);
+          } catch (error) {
+            console.error('❌ FORM: Error en afterRender callback:', error);
+          }
+        }
       } else {
         console.error('❌ Formulario no encontrado en DOM');
       }
     }, 10);
+
+    // ✅ Retornar instanceId para que modal pueda usarlo
+    return instanceId;
   }
 
   static render(schema) {
@@ -119,7 +159,6 @@ class form {
         return this.renderGroup(field, path);
       }
 
-      // ✅ NUEVO: Soporte para grouper
       if (field.type === 'grouper') {
         return this.renderGrouper(field, path);
       }
@@ -130,16 +169,14 @@ class form {
 
   static renderRepeatable(field, path) {
     const addText = this.t(field.addText) || 'Agregar';
-    const buttonPosition = field.buttonPosition || 'top'; // top, middle, bottom
+    const buttonPosition = field.buttonPosition || 'top';
 
-    // Botón de agregar
     const addButton = `
       <button type="button" class="btn btn-primary btn-sm repeatable-add" data-path="${path}">
         ${addText}
       </button>
     `;
 
-    // Estructura según posición del botón
     if (buttonPosition === 'middle') {
       return `
         <div class="form-repeatable" data-field-path="${path}">
@@ -165,7 +202,6 @@ class form {
         </div>
       `;
     } else {
-      // top (default)
       return `
         <div class="form-repeatable" data-field-path="${path}">
           <div class="repeatable-header">
@@ -194,10 +230,6 @@ class form {
     `;
   }
 
-  /**
-   * ✅ NUEVO: Renderiza un grouper (agrupador visual)
-   * Soporta dos modos: linear (acordeón) y tabs
-   */
   static renderGrouper(field, parentPath) {
     const mode = field.mode || 'linear';
     const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -210,7 +242,6 @@ class form {
       html += this.renderGrouperTabs(field, grouperId, parentPath);
     }
 
-    // Inicializar eventos después de renderizar
     setTimeout(() => {
       this.bindGrouperEvents(grouperId, mode);
     }, 100);
@@ -218,9 +249,6 @@ class form {
     return html;
   }
 
-  /**
-   * ✅ NUEVO: Renderiza grouper en modo linear (acordeón)
-   */
   static renderGrouperLinear(field, grouperId, parentPath) {
     const collapsible = field.collapsible !== false;
     const openFirst = field.openFirst !== false;
@@ -241,7 +269,6 @@ class form {
           <div class="grouper-content" id="${contentId}" ${!isOpen && collapsible ? 'style="display:none"' : ''}>
       `;
 
-      // Renderizar campos del grupo
       if (group.fields && Array.isArray(group.fields)) {
         html += this.renderFields(group.fields, parentPath);
       }
@@ -256,15 +283,11 @@ class form {
     return html;
   }
 
-  /**
-   * ✅ NUEVO: Renderiza grouper en modo tabs
-   */
   static renderGrouperTabs(field, grouperId, parentPath) {
     const activeIndex = field.activeIndex || 0;
     
     let html = `<div class="grouper grouper-tabs" id="${grouperId}">`;
 
-    // Tabs header
     html += `<div class="grouper-tabs-header">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
@@ -277,7 +300,6 @@ class form {
     });
     html += `</div>`;
 
-    // Tabs content
     html += `<div class="grouper-tabs-content">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
@@ -286,7 +308,6 @@ class form {
              data-panel-index="${index}">
       `;
 
-      // Renderizar campos del grupo
       if (group.fields && Array.isArray(group.fields)) {
         html += this.renderFields(group.fields, parentPath);
       }
@@ -299,24 +320,16 @@ class form {
     return html;
   }
 
-  /**
-   * ✅ NUEVO: Bind eventos del grouper
-   */
   static bindGrouperEvents(grouperId, mode) {
     const container = document.getElementById(grouperId);
     if (!container) return;
 
     if (mode === 'linear') {
-      // Eventos para acordeón
       container.querySelectorAll('.grouper-header.collapsible').forEach(header => {
-        // Solo agregar listener si no lo tiene
-        if (header.dataset.listenerAttached) return;
-        header.dataset.listenerAttached = 'true';
-        
-        header.addEventListener('click', function() {
-          const targetId = this.dataset.toggle;
+        header.addEventListener('click', (e) => {
+          const targetId = header.dataset.toggle;
           const content = document.getElementById(targetId);
-          const section = this.closest('.grouper-section');
+          const section = header.closest('.grouper-section');
 
           if (!content) return;
 
@@ -331,41 +344,19 @@ class form {
           }
         });
       });
-
     } else if (mode === 'tabs') {
-      // Eventos para tabs - SOLO los botones directos de este grouper
-      const directTabButtons = [];
-      
-      // Obtener SOLO los botones del primer nivel (no de groupers anidados)
-      const headerContainer = container.querySelector(':scope > .grouper-tabs-header');
-      if (headerContainer) {
-        headerContainer.querySelectorAll(':scope > .grouper-tab-btn').forEach(btn => {
-          directTabButtons.push(btn);
-        });
-      }
+      const tabButtons = container.querySelectorAll('.grouper-tab-btn');
+      const tabPanels = container.querySelectorAll('.grouper-tab-panel');
 
-      directTabButtons.forEach(button => {
-        // Solo agregar listener si no lo tiene
-        if (button.dataset.listenerAttached) return;
-        button.dataset.listenerAttached = 'true';
-        
-        button.addEventListener('click', function(e) {
-          e.stopPropagation(); // Evitar propagación a tabs padres
-          
-          const index = parseInt(this.dataset.tabIndex);
-          const parentGrouper = this.closest('.grouper-tabs');
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const index = parseInt(button.dataset.tabIndex);
 
-          // Desactivar todos los tabs SOLO de este grouper
-          parentGrouper.querySelectorAll(':scope > .grouper-tabs-header > .grouper-tab-btn').forEach(btn => 
-            btn.classList.remove('active')
-          );
-          parentGrouper.querySelectorAll(':scope > .grouper-tabs-content > .grouper-tab-panel').forEach(panel => 
-            panel.classList.remove('active')
-          );
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabPanels.forEach(panel => panel.classList.remove('active'));
 
-          // Activar el seleccionado
-          this.classList.add('active');
-          const targetPanel = parentGrouper.querySelector(`:scope > .grouper-tabs-content > .grouper-tab-panel[data-panel-index="${index}"]`);
+          button.classList.add('active');
+          const targetPanel = container.querySelector(`[data-panel-index="${index}"]`);
           if (targetPanel) {
             targetPanel.classList.add('active');
           }
@@ -375,19 +366,21 @@ class form {
   }
 
   static renderField(field, path) {
-    // ✅ NUEVO: Manejar type "html" (sin wrapper de form-group)
     if (field.type === 'html') {
       return field.content || '';
     }
 
-    const placeholder = this.t(field.placeholder) || '';
-    const label = this.t(field.label);
-    
-    // ✅ Atributos data-i18n para cambio dinámico de idioma
+    const label = this.t(field.label) || path;
     const labelI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
-    const placeholderI18n = field.placeholder?.startsWith('i18n:') ? `data-i18n-placeholder="${field.placeholder.replace('i18n:', '')}"` : '';
-    
-    const common = `name="${path}" placeholder="${placeholder}" ${placeholderI18n} ${field.required ? 'required' : ''} ${field.min ? `min="${field.min}"` : ''} ${field.step ? `step="${field.step}"` : ''}`;
+
+    const common = `
+      name="${path}" 
+      placeholder="${this.t(field.placeholder) || ''}" 
+      ${field.required ? 'required' : ''}
+      ${field.min !== undefined ? `min="${field.min}"` : ''}
+      ${field.max !== undefined ? `max="${field.max}"` : ''}
+      ${field.step !== undefined ? `step="${field.step}"` : ''}
+    `.trim();
 
     switch(field.type) {
       case 'button':

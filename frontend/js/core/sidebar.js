@@ -24,7 +24,7 @@ class sidebar {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard",
+            view: "dashboard/dashboard",
             order: 1
           }
         ];
@@ -212,7 +212,7 @@ class sidebar {
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
       } else {
-        basePath = window.appConfig?.routes?.coreSections || 'js/views';
+        basePath = window.appConfig?.routes?.coreViews || 'js/views';
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         cacheKey = `view_${viewPath.replace(/\//g, '_')}`;
       }
@@ -323,7 +323,7 @@ class sidebar {
 
   static getFirstView() {
     if (!this.menuData || !this.menuData.menu || this.menuData.menu.length === 0) {
-      return 'dashboard';
+      return 'dashboard/dashboard';
     }
     
     const findFirstView = (items) => {
@@ -339,7 +339,7 @@ class sidebar {
       return null;
     };
     
-    return findFirstView(this.menuData.menu) || 'dashboard';
+    return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
   }
 }
 

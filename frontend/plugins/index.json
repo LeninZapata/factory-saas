@@ -5,16 +5,16 @@
       "description": "Proveedor de autenticación JWT"
     },
     {
-      "name": "user",
-      "description": "Módulo de gestión de usuarios"
-    },
-    {
       "name": "ejemplos",
       "description": "Ejemplos de uso del sistema"
     },
     {
       "name": "inventario",
       "description": "Módulo de gestión de inventario y productos"
+    },
+    {
+      "name": "admin",
+      "description": "Administración del sistema"
     }
   ]
 }

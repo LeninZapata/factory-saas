@@ -2,12 +2,14 @@ class auth {
   static config = {};
   static provider = null;
   static user = null;
+  static userPermissions = null;
+  static userPreferences = null;
 
   static async init(config) {
     this.config = {
       enabled: true,
       provider: 'auth-jwt',
-      loginView: 'auth/login',
+      loginView: 'core:auth/login',
       redirectAfterLogin: 'dashboard',
       ...config
     };
@@ -49,6 +51,9 @@ class auth {
 
     if (isAuth) {
       this.user = await this.provider?.getUser();
+      
+      // Cargar permisos del usuario
+      await this.loadUserPermissions();
     } else {
       this.showLogin();
     }
@@ -132,6 +137,108 @@ class auth {
   static getUser() { return this.user; }
   static isAuthenticated() { return !!this.user; }
   static getToken() { return this.provider?.getToken?.(); }
+
+  /**
+   * Cargar permisos del usuario después del login
+   */
+  static async loadUserPermissions() {
+    const currentUser = await this.provider.getUser();
+    if (!currentUser || !currentUser.config) return;
+
+    // Parse config
+    const config = typeof currentUser.config === 'string' ?
+      JSON.parse(currentUser.config) :
+      currentUser.config;
+
+    this.userPermissions = config.permissions;
+    this.userPreferences = config.preferences;
+
+    console.log('🔐 Auth: Permisos cargados:', this.userPermissions);
+
+    // Aplicar preferencias
+    this.applyUserPreferences();
+
+    // Filtrar menú según permisos
+    this.filterMenuByPermissions();
+  }
+
+  /**
+   * Aplicar preferencias del usuario
+   */
+  static applyUserPreferences() {
+    if (!this.userPreferences) return;
+
+    // Tema
+    if (this.userPreferences.theme) {
+      document.body.dataset.theme = this.userPreferences.theme;
+    }
+
+    // Idioma
+    if (this.userPreferences.language && window.i18n) {
+      i18n.setLanguage(this.userPreferences.language);
+    }
+  }
+
+  /**
+   * Filtrar menú según permisos del usuario
+   */
+  static filterMenuByPermissions() {
+    if (!this.userPermissions?.plugins) return;
+
+    // Admin tiene acceso a todo
+    if (this.user?.role === 'admin') return;
+
+    for (const [pluginName, plugin] of Object.entries(window.hooks.plugins)) {
+      const perms = this.userPermissions.plugins[pluginName];
+
+      // Plugin deshabilitado para este usuario
+      if (!perms || perms.enabled === false) {
+        plugin.enabled = false;
+        continue;
+      }
+
+      // Filtrar menús si no tiene acceso a todos
+      if (perms.menus !== '*' && plugin.menu?.items) {
+        plugin.menu.items = plugin.menu.items.filter(item => {
+          return perms.menus[item.id] === true;
+        });
+      }
+    }
+
+    // Reconstruir menú
+    if (window.sidebar) {
+      sidebar.renderMenu();
+    }
+  }
+
+  /**
+   * Verificar si el usuario tiene permiso
+   */
+  static hasPermission(plugin, menu = null, view = null) {
+    // Admin siempre tiene permiso
+    if (this.user?.role === 'admin') return true;
+
+    if (!this.userPermissions?.plugins) return true;
+
+    const perms = this.userPermissions.plugins[plugin];
+    
+    // Plugin deshabilitado
+    if (!perms || perms.enabled === false) return false;
+
+    // Verificar menú específico
+    if (menu) {
+      if (perms.menus === '*') return true;
+      return perms.menus?.[menu] === true;
+    }
+
+    // Verificar vista específica
+    if (view) {
+      if (perms.views === '*') return true;
+      return perms.views?.[view] === true;
+    }
+
+    return true;
+  }
 }
 
 window.auth = auth;

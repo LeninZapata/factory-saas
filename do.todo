@@ -19,3 +19,14 @@ y no solo la tab activa.
 mediante que debe los elementos tenede un data-attribute con el texto del key del idioma
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
+☐ console.log inteligentes:
+ _ pide a la AI que te muestre como hacer console.log que muestren en modulo primero que se esta ejecutando por archivo
+ _ que muestren por ejemplo en el main si quieres solo mostrar los console log de un modulo o archivo
+ _ que muestren el tiempo que tarda en ejecutarse una funcion o metodo y que lo muestre en el console log
+ _ que muestren advertencias si una funcion tarda mas de X tiempo en ejecutarse 
+ _ Que muestre colores por medio de warn, log, debug, info, success... (si se puede poner colores en esto)
+ _ Identificar si es un componente, modulo o archivo y mostrarlo en el console log
+☐ Log de backend para ver errores a nivel de vistas
+ _ que se pueda separar estos logs por usuario/años/mes/dia. entonces se podria ver todo lo que pasa
+ _ que estos los se puede ver visualmente y clasificar estos logs son en archivos de texto .log
+ _ que se pueda buscar en estos logs por palabras claves o errores comunes

@@ -3,7 +3,15 @@ class view {
   static loadedPlugins = {};
   static viewNavigationCache = new Map();
 
-  static async loadView(viewName, container = null, pluginContext = null, menuResources = null) {
+  /**
+   * Cargar vista
+   * @param {string} viewName - Nombre/ruta de la vista
+   * @param {HTMLElement} container - Contenedor donde renderizar
+   * @param {string} pluginContext - Nombre del plugin (si aplica)
+   * @param {object} menuResources - Recursos adicionales del menú
+   * @param {function} afterRender - Callback a ejecutar después de renderizar
+   */
+  static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null) {
     const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
     
     if (!container && window.appConfig?.cache?.viewNavigation) {
@@ -23,6 +31,17 @@ class view {
           }
           
           await this.reInitializeCachedView(cachedData);
+          
+          // ✅ Ejecutar afterRender si existe
+          if (typeof afterRender === 'function') {
+            console.log('✅ VIEW: Ejecutando afterRender (desde caché)');
+            try {
+              afterRender(cachedData.viewId, content);
+            } catch (error) {
+              console.error('❌ VIEW: Error en afterRender:', error);
+            }
+          }
+          
           return;
         }
       }
@@ -31,39 +50,50 @@ class view {
     let basePath;
     let cacheKey;
 
+    // ✅ CASO 1: Plugin explícito (pasado como parámetro)
     if (pluginContext) {
       basePath = `plugins/${pluginContext}/views`;
       cacheKey = `plugin_view_${pluginContext}_${viewName.replace(/\//g, '_')}`;
+      console.log(`👁️ VIEW (PLUGIN): ${basePath}/${viewName}.json`);
     }
+    // ✅ CASO 2: Ruta con "/" → Detectar si es plugin o core
     else if (viewName.includes('/')) {
-      // Detectar vistas core comunes y buscar ahí primero
-      const isCoreView = viewName.startsWith('auth/') || 
-                         viewName.startsWith('_sections/') || 
-                         viewName.startsWith('_modals/') ||
-                         viewName.startsWith('forms/');
+      const parts = viewName.split('/');
+      const firstPart = parts[0];
       
-      if (!isCoreView) {
-        // Solo buscar en plugins si NO es una vista core común
-        const result = await this.findViewInPlugins(viewName, container);
-        if (result) return;
+      const isPlugin = window.hook?.isPluginEnabled?.(firstPart);
+      
+      if (isPlugin) {
+        basePath = `plugins/${firstPart}/views`;
+        const restPath = parts.slice(1).join('/');
+        viewName = restPath || viewName;
+        cacheKey = `plugin_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
+        console.log(`👁️ VIEW (AUTO-PLUGIN): ${basePath}/${restPath}.json`);
+      } else {
+        basePath = 'js/views';
+        cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+        console.log(`👁️ VIEW (CORE): ${basePath}/${viewName}.json`);
       }
-
-      basePath = 'js/views';
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
-    } else {
+    }
+    // ✅ CASO 3: Sin "/" → Vista simple (dashboard, etc)
+    else {
       const pluginConfig = this.loadedPlugins[viewName];
       if (pluginConfig && pluginConfig.hasViews) {
         basePath = `plugins/${viewName}/views`;
         cacheKey = `plugin_view_${viewName}`;
+        console.log(`👁️ VIEW (SIMPLE-PLUGIN): ${basePath}/${viewName}.json`);
       } else {
         basePath = 'js/views';
         cacheKey = `core_view_${viewName}`;
+        console.log(`👁️ VIEW (SIMPLE-CORE): ${basePath}/${viewName}.json`);
       }
     }
 
+    // Intentar cargar desde caché
     if (window.appConfig?.cache?.views) {
       const cached = cache.get(cacheKey);
       if (cached) {
+        console.log(`✅ VIEW: Cargada desde caché`);
         const combinedData = this.combineResources(cached, menuResources);
 
         if (container) {
@@ -73,6 +103,17 @@ class view {
         }
 
         await this.loadAndInitResources(combinedData);
+
+        // ✅ Ejecutar afterRender después de cargar recursos
+        if (typeof afterRender === 'function') {
+          const viewContainer = container || document.getElementById('content');
+          console.log('✅ VIEW: Ejecutando afterRender callback');
+          try {
+            afterRender(combinedData.id, viewContainer);
+          } catch (error) {
+            console.error('❌ VIEW: Error en afterRender callback:', error);
+          }
+        }
 
         if (!container && window.appConfig?.cache?.viewNavigation) {
           const content = document.getElementById('content');
@@ -90,6 +131,7 @@ class view {
       }
     }
 
+    // Cargar desde servidor
     try {
       const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
       const url = `${window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
@@ -97,11 +139,12 @@ class view {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${url}`);
       }
 
       const viewData = await response.json();
 
+      // Validar estructura (solo en desarrollo)
       if (window.validator) {
         const validation = validator.validate('view', viewData, `${viewName}.json`);
         if (!validation.valid) {
@@ -115,10 +158,12 @@ class view {
 
       const combinedData = this.combineResources(viewData, menuResources);
 
+      // Guardar en caché
       if (window.appConfig?.cache?.views) {
         cache.set(cacheKey, viewData, window.appConfig.cache.ttl);
       }
 
+      // Renderizar
       if (container) {
         this.renderViewInContainer(combinedData, container);
       } else {
@@ -129,6 +174,18 @@ class view {
 
       await this.loadAndInitResources(combinedData);
 
+      // ✅ Ejecutar afterRender después de cargar recursos
+      if (typeof afterRender === 'function') {
+        const viewContainer = container || document.getElementById('content');
+        console.log('✅ VIEW: Ejecutando afterRender callback');
+        try {
+          afterRender(combinedData.id, viewContainer);
+        } catch (error) {
+          console.error('❌ VIEW: Error en afterRender callback:', error);
+        }
+      }
+
+      // Guardar en caché de navegación
       if (!container && window.appConfig?.cache?.viewNavigation) {
         const content = document.getElementById('content');
         if (content) {
@@ -142,7 +199,7 @@ class view {
       }
 
     } catch (error) {
-      console.error('VIEW: Error cargando vista:', error);
+      console.error('❌ VIEW: Error cargando vista:', error);
       this.renderError(viewName, container);
     }
   }
@@ -261,18 +318,16 @@ class view {
   }
 
   static renderViewInContainer(viewData, container) {
-    const viewClass = `view-${viewData.id}`;
-    document.body.classList.add(viewClass);
-
     container.innerHTML = this.generateViewHTML(viewData);
     this.setupView(viewData, container);
   }
 
   static generateViewHTML(viewData) {
-    if (viewData.hideLayout) {
+    if (viewData.type === 'tabs') {
       return `
-        <div class="view-container view-fullscreen">
-          ${this.renderContent(viewData.content)}
+        <div class="view-container">
+          <h1>${viewData.title}</h1>
+          <div class="view-tabs-container" data-view-id="${viewData.id}"></div>
         </div>
       `;
     }
@@ -453,8 +508,8 @@ class view {
   static renderError(viewName, container = null) {
     const errorHTML = `
       <div class="view-error">
-        <h2>Error</h2>
-        <p>No se pudo cargar la vista: ${viewName}</p>
+        <h2>❌ Error</h2>
+        <p>No se pudo cargar la vista: <strong>${viewName}</strong></p>
         <p>Verifica que el archivo exista en la ruta configurada</p>
       </div>
     `;

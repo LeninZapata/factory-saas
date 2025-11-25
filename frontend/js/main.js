@@ -7,7 +7,7 @@ window.appConfig = {
     enabled: true,
     defaultLang: 'es',
     availableLangs: ['es', 'en'],
-    refreshOnChange: false  // ✅ false = cambio dinámico SIN recargar | true = recargar página
+    refreshOnChange: false  // false = cambio dinámico SIN recargar | true = recargar página
   },
   
   auth: {
@@ -26,12 +26,8 @@ window.appConfig = {
   },
   
   routes: {
-    coreSections: 'js/views',
-    coreForms: 'js/views/forms',
-    coreModals: 'js/views/modals',
+    coreViews: 'js/views',
     pluginViews: 'plugins/{pluginName}/views',
-    pluginForms: 'plugins/{pluginName}/views/forms',
-    pluginModals: 'plugins/{pluginName}/views/modals',
     pluginModels: 'plugins/{pluginName}/models',
     coreModels: 'js/models',
     components: 'js/components',
@@ -50,27 +46,34 @@ window.appConfig = {
 };
 
 const SCRIPTS_TO_LOAD = [
-  'js/core/loader.js',
-  'js/core/dataLoader.js',
-  'js/core/layout.js',
-  'js/core/i18n.js',
-  'js/core/api.js',
-  'js/core/event.js',
-  'js/core/cache.js',
-  'js/core/hook.js',
-  'js/core/auth.js',
-  'js/core/view.js',
-  'js/core/sidebar.js',
-  'js/core/validator.js',
-  'js/core/conditions.js',
-  'js/core/form.js',
+  // Utils
+  // Components
+  'js/components/langSelector.js',
+  'js/components/toast.js',
+  'js/components/grouper.js',
   'js/components/modal.js',
   'js/components/tabs.js',
   'js/components/widget.js',
-  'js/components/toast.js',
   'js/components/dataTable.js',
-  'js/components/langSelector.js',
-  'js/components/grouper.js',
+  'js/components/permissions.js',
+  // Core
+  'js/core/api.js',
+  'js/core/cache.js',
+  'js/core/event.js',
+  'js/core/i18n.js',
+  'js/core/loader.js',
+  'js/core/cache.js',
+  'js/core/event.js',
+  'js/core/validator.js',
+  'js/core/conditions.js',
+  'js/core/dataLoader.js',
+  'js/core/hook.js',
+  'js/core/form.js',
+  'js/core/auth.js',
+  'js/core/user.js',
+  'js/core/view.js',
+  'js/core/sidebar.js',
+  'js/core/layout.js',
 ];
 
 async function initializeApp() {

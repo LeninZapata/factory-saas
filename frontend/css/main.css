@@ -19,6 +19,7 @@
 @import url('./components/toast.css');
 @import url('./components/langSelector.css');
 @import url('./components/grouper.css');
+@import url('./components/permissions.css');
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

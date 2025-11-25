@@ -68,32 +68,114 @@ class modal {
         return;
       }
 
-      // Formulario de plugin: "ejemplos|forms/login"
+      // ✅ CORE: Formulario del core con prefijo "core:"
+      if (typeof resource === 'string' && resource.startsWith('core:')) {
+        const corePath = resource.replace('core:', '');
+        console.log(`📋 MODAL (CORE): Cargando formulario "${corePath}"`);
+        
+        // ✅ Usar afterRender desde options si existe
+        const afterRenderCallback = options.afterRender || null;
+        
+        if (afterRenderCallback) {
+          console.log('📋 MODAL: Usando afterRender desde options');
+        }
+        
+        await form.load(corePath, content, null, true, afterRenderCallback);
+        return;
+      }
+
+      // ✅ Formulario de plugin con prefijo "plugin:"
+      if (typeof resource === 'string' && resource.startsWith('plugin:')) {
+        const pluginPath = resource.replace('plugin:', '');
+        console.log(`📋 MODAL (PLUGIN): Cargando formulario "${pluginPath}"`);
+        
+        // ✅ Usar afterRender desde options si existe
+        const afterRenderCallback = options.afterRender || null;
+        
+        if (afterRenderCallback) {
+          console.log('📋 MODAL: Usando afterRender desde options (plugin)');
+        }
+        
+        await form.load(pluginPath, content, null, false, afterRenderCallback);
+        return;
+      }
+
+      // Formulario de plugin (legacy): "ejemplos|forms/login"
       if (typeof resource === 'string' && resource.includes('|forms/')) {
         const [pluginName, formPath] = resource.split('|');
         const formName = formPath.replace('forms/', '');
+        console.log(`📋 MODAL (PLUGIN|): Cargando "${pluginName}/${formName}"`);
+        // ✅ Pasar isCore=false para forzar búsqueda en plugin
+        await form.load(`${pluginName}/${formName}`, content, null, false);
+        return;
+      }
 
-        await form.load(`${pluginName}/${formName}`, content);
+      // Formulario del core (sin prefijo): "user/forms/user-form" o "auth/forms/login-form"
+      // Aquí form.load() hará detección automática
+      if (typeof resource === 'string' && resource.includes('/forms/')) {
+        console.log(`📋 MODAL (AUTO): Cargando formulario "${resource}"`);
+        await form.load(resource, content);
+        return;
+      }
+
+      // ✅ Vista del core con prefijo "core:"
+      if (typeof resource === 'string' && resource.startsWith('core:sections/')) {
+        const corePath = resource.replace('core:sections/', '');
+        console.log(`👁️ MODAL (CORE SECTION): Cargando vista "${corePath}"`);
+        
+        // ✅ Usar afterRender desde options si existe
+        const afterRenderCallback = options.afterRender || null;
+        
+        if (afterRenderCallback) {
+          console.log('👁️ MODAL: Usando afterRender para vista (core)');
+        }
+        
+        await view.loadView(corePath, content, null, null, afterRenderCallback);
         return;
       }
 
       // Vista de plugin: "user|sections/user"
       if (typeof resource === 'string' && resource.includes('|')) {
         const [plugin, viewPath] = resource.split('|');
-        await view.loadView(`${viewPath}`, content);
+        console.log(`👁️ MODAL (PLUGIN|): Cargando vista "${plugin}/${viewPath}"`);
+        
+        // ✅ Usar afterRender desde options si existe
+        const afterRenderCallback = options.afterRender || null;
+        
+        if (afterRenderCallback) {
+          console.log('👁️ MODAL: Usando afterRender para vista (plugin)');
+        }
+        
+        await view.loadView(`${viewPath}`, content, plugin, null, afterRenderCallback);
         return;
       }
 
       // Vista simple: "dashboard" o "sections/user"
       if (typeof resource === 'string') {
-        await view.loadView(resource, content);
+        console.log(`👁️ MODAL (AUTO): Cargando vista "${resource}"`);
+        
+        // ✅ Usar afterRender desde options si existe
+        const afterRenderCallback = options.afterRender || null;
+        
+        if (afterRenderCallback) {
+          console.log('👁️ MODAL: Usando afterRender para vista');
+        }
+        
+        await view.loadView(resource, content, null, null, afterRenderCallback);
         return;
       }
 
       // Objeto con configuración
       if (typeof resource === 'object') {
         if (resource.view) {
-          await view.loadView(resource.view, content);
+          // ✅ Usar afterRender desde options si existe
+          const afterRenderCallback = options.afterRender || null;
+          
+          if (afterRenderCallback) {
+            console.log('👁️ MODAL: Usando afterRender para vista (object)');
+          }
+          
+          await view.loadView(resource.view, content, null, null, afterRenderCallback);
           return;
         }
       }

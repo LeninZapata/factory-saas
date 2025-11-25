@@ -4,7 +4,7 @@
   "content": [
     {
       "type": "html",
-      "content": "<div class='auth-container'><div class='auth-card'><div class='auth-header'><h1>🔐 Iniciar Sesión</h1><p>Ingresa tus credenciales</p></div><div class='form-container'><div class='dynamic-form' data-form-json='auth/login-form'></div></div></div></div>"
+      "content": "<div class='auth-container'><div class='auth-card'><div class='auth-header'><h1>🔐 Iniciar Sesión</h1><p>Ingresa tus credenciales</p></div><div class='form-container'><div class='dynamic-form' data-form-json='core:auth/forms/login-form'></div></div></div></div>"
     }
   ]
 }
