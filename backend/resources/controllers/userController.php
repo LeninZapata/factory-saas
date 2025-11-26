@@ -1,5 +1,4 @@
 <?php
-// userController - Override del controller para user
 class userController extends controller {
 
   function __construct() {
@@ -9,13 +8,26 @@ class userController extends controller {
   // Override create para hashear contraseña
   function create() {
     $data = request::data();
-    
-    log::debug('UserController - create - Data recibida', $data);
+
+    log::debug('UserController - create', $data);
 
     // Validar campos requeridos
-    if (!isset($data['user']) || !isset($data['pass'])) {
-      log::error('UserController - create - Campos faltantes', ['user' => isset($data['user']), 'pass' => isset($data['pass'])]);
-      response::json(['success' => false, 'error' => 'Usuario y contraseña son requeridos'], 200);
+    if (!isset($data['user']) || !isset($data['pass']) || !isset($data['role'])) {
+      log::error('UserController - Campos faltantes');
+      response::json([
+        'success' => false,
+        'error' => 'Los campos user, pass y role son requeridos'
+      ], 200);
+    }
+
+    // Validar email si existe
+    if (isset($data['email']) && !empty($data['email'])) {
+      if (!validation::email($data['email'])) {
+        response::json([
+          'success' => false,
+          'error' => 'Email inválido'
+        ], 200);
+      }
     }
 
     // Hashear contraseña
@@ -30,32 +42,34 @@ class userController extends controller {
     $data['dc'] = date('Y-m-d H:i:s');
     $data['tc'] = time();
 
-    log::debug('UserController - create - Data procesada', $data);
-
     // Validar user único
     if (db::table('user')->where('user', $data['user'])->exists()) {
-      log::warning('UserController - create - Usuario ya existe', ['user' => $data['user']]);
-      response::json(['success' => false, 'error' => 'El usuario ya existe'], 200);
+      log::warning('UserController - Usuario ya existe', ['user' => $data['user']]);
+      response::json([
+        'success' => false,
+        'error' => 'El usuario ya existe'
+      ], 200);
     }
 
     // Validar email único si se proporciona
     if (isset($data['email']) && !empty($data['email'])) {
       if (db::table('user')->where('email', $data['email'])->exists()) {
-        log::warning('UserController - create - Email ya existe', ['email' => $data['email']]);
-        response::json(['success' => false, 'error' => 'El email ya existe'], 200);
+        log::warning('UserController - Email ya existe', ['email' => $data['email']]);
+        response::json([
+          'success' => false,
+          'error' => 'El email ya existe'
+        ], 200);
       }
     }
 
     try {
       $id = db::table('user')->insert($data);
-      log::info('UserController - create - Usuario creado', ['id' => $id]);
+      log::info('UserController - Usuario creado', ['id' => $id]);
       response::success(['id' => $id], 'Usuario creado', 201);
     } catch (Exception $e) {
-      log::error('UserController - create - Error SQL', [
-        'message' => $e->getMessage(),
-        'data' => $data
-      ]);
-      response::json(['success' => false, 'error' => 'Error al crear usuario: ' . $e->getMessage()], 200);
+      log::error('UserController - Error SQL', ['message' => $e->getMessage()]);
+      // Errores fatales sí usan 500
+      response::serverError('Error al crear usuario', IS_DEV ? $e->getMessage() : null);
     }
   }
 
@@ -70,7 +84,17 @@ class userController extends controller {
     if (isset($data['pass']) && !empty($data['pass'])) {
       $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
     } else {
-      unset($data['pass']); // No actualizar si está vacío
+      unset($data['pass']);
+    }
+
+    // Validar email si existe
+    if (isset($data['email']) && !empty($data['email'])) {
+      if (!validation::email($data['email'])) {
+        response::json([
+          'success' => false,
+          'error' => 'Email inválido'
+        ], 200);
+      }
     }
 
     // Convertir config a JSON si es array
@@ -82,7 +106,10 @@ class userController extends controller {
     if (isset($data['user'])) {
       $query = db::table('user')->where('user', $data['user'])->where('id', '!=', $id);
       if ($query->exists()) {
-        response::error('El usuario ya existe', 400);
+        response::json([
+          'success' => false,
+          'error' => 'El usuario ya existe'
+        ], 200);
       }
     }
 
@@ -90,7 +117,10 @@ class userController extends controller {
     if (isset($data['email']) && !empty($data['email'])) {
       $query = db::table('user')->where('email', $data['email'])->where('id', '!=', $id);
       if ($query->exists()) {
-        response::error('El email ya existe', 400);
+        response::json([
+          'success' => false,
+          'error' => 'El email ya existe'
+        ], 200);
       }
     }
 
@@ -106,7 +136,12 @@ class userController extends controller {
   function show($id) {
     $data = db::table('user')->find($id);
     if (!$data) response::notFound('Usuario no encontrado');
-    
+
+    // Parsear config si es string JSON
+    if (isset($data['config']) && is_string($data['config'])) {
+      $data['config'] = json_decode($data['config'], true);
+    }
+
     unset($data['pass']);
     response::success($data);
   }
@@ -118,7 +153,7 @@ class userController extends controller {
     // Filtros dinámicos
     foreach ($_GET as $key => $value) {
       if (in_array($key, ['page', 'per_page', 'sort', 'order'])) continue;
-      if ($key === 'pass') continue; // No permitir filtrar por contraseña
+      if ($key === 'pass') continue;
       $query = $query->where($key, $value);
     }
 
@@ -132,9 +167,12 @@ class userController extends controller {
     $perPage = request::query('per_page', 50);
     $data = $query->paginate($page, $perPage)->get();
 
-    // Remover contraseñas
+    // Remover contraseñas y parsear config
     foreach ($data as &$user) {
       unset($user['pass']);
+      if (isset($user['config']) && is_string($user['config'])) {
+        $user['config'] = json_decode($user['config'], true);
+      }
     }
 
     response::success($data);

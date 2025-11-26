@@ -1,8 +1,5 @@
 class admin {
-  static API = {
-    user: '/api/user'
-  };
-
+  static API = { user: '/api/user' };
   static currentFormId = null;
 
   static initFormUser(formId) {
@@ -10,10 +7,7 @@ class admin {
 
     setTimeout(() => {
       const container = document.getElementById('permissions-container');
-      if (!container) {
-        console.warn('⚠️ Admin: permissions-container no encontrado');
-        return;
-      }
+      if (!container) return;
 
       const pluginsData = this.getPlugins();
       const defaultConfig = {
@@ -47,34 +41,36 @@ class admin {
     return plugins;
   }
 
+  static getPermissionsData() {
+    const selectorEl = document.querySelector('.permissions-selector');
+    if (!selectorEl?.id) return { permissions: { plugins: {} } };
+
+    const hiddenInput = document.getElementById(`${selectorEl.id}-data`);
+    if (!hiddenInput?.value) return { permissions: { plugins: {} } };
+
+    try {
+      return JSON.parse(hiddenInput.value);
+    } catch (error) {
+      logger.warn('p:admin', 'Error parseando permisos');
+      return { permissions: { plugins: {} } };
+    }
+  }
+
   static async saveUser(formId) {
     const formData = form.getData(formId);
-    if (!formData || !formData.username || !formData.email || !formData.role) {
-      if (window.toast) toast.error('❌ Completa los campos requeridos');
-      return;
-    }
+    
+    // Validar campos requeridos
+    const rules = { username: 'required', email: 'required|email', role: 'required' };
+    if (!this.validateForm(formData, rules)) return;
 
-    const selectorEl = document.querySelector('.permissions-selector');
-    const selectorId = selectorEl?.id;
-    let permsData = { permissions: { plugins: {} } };
-
-    if (selectorId) {
-      const hiddenInput = document.getElementById(`${selectorId}-data`);
-      if (hiddenInput?.value) {
-        try {
-          permsData = JSON.parse(hiddenInput.value);
-        } catch (error) {
-          console.warn('⚠️ Admin: Error parseando permisos:', error);
-        }
-      }
-    }
+    const permsData = this.getPermissionsData();
 
     const userData = {
       user: formData.username,
       email: formData.email,
-      role: formData.role,          // ✅ Cambiado: role -> rol
+      role: formData.role,
       pass: formData.password || null,
-      config: {                    // ✅ Cambiado: JSON.stringify -> objeto directo
+      config: {
         ...permsData,
         preferences: {
           theme: formData.preferences_theme || 'light',
@@ -84,73 +80,67 @@ class admin {
       }
     };
 
-    if (!userData.pass) delete userData.pass;  // ✅ Cambiado: password -> pass
+    if (!userData.pass) delete userData.pass;
 
     await this.request('create', userData);
   }
 
+  static validateForm(data, rules) {
+    const required = ['username', 'email', 'role'];
+    for (const field of required) {
+      if (!data[field]) {
+        if (window.toast) toast.error(`❌ El campo ${field} es requerido`);
+        return false;
+      }
+    }
+    return true;
+  }
+
   static async request(action, data = null) {
+    const actions = {
+      create: { method: 'post', url: this.API.user, success: 'Usuario guardado' },
+      update: { method: 'put', url: `${this.API.user}/${data.id}`, success: 'Usuario actualizado' },
+      delete: { method: 'delete', url: `${this.API.user}/${data}`, success: 'Usuario eliminado' },
+      get: { method: 'get', url: `${this.API.user}/${data}`, success: null }
+    };
+
+    const config = actions[action];
+    if (!config) return;
+
     try {
+      logger.debug('p:admin', `Ejecutando ${action}`, data);
+
       let response;
+      if (config.method === 'get') {
+        response = await api.get(config.url);
+      } else if (config.method === 'post') {
+        response = await api.post(config.url, data);
+      } else if (config.method === 'put') {
+        response = await api.put(config.url, data);
+      } else if (config.method === 'delete') {
+        response = await api.delete(config.url);
+      }
 
-      switch(action) {
-        case 'create':
-          logger.debug('p:admin', 'Enviando data:', data);
-          response = await api.post(this.API.user, data);
-          
-          // Verificar si la respuesta tiene success: false
-          if (response.success === false) {
-            logger.warn('p:admin', 'Error de validación:', response.error);
-            if (window.toast) toast.error(`❌ ${response.error || 'Error al crear usuario'}`);
-            return response;
-          }
-          
-          logger.success('p:admin', 'Usuario creado:', response);
-          if (window.toast) toast.success('✅ Usuario guardado');
-          setTimeout(() => { modal.closeAll(); /*location.reload();*/ }, 200);
-          break;
+      if (response.success === false) {
+        logger.warn('p:admin', 'Error de validación', response.error);
+        if (window.toast) toast.error(`❌ ${response.error || 'Error en la operación'}`);
+        return response;
+      }
 
-        case 'update':
-          logger.debug('p:admin', 'Actualizando usuario:', data);
-          response = await api.put(`${this.API.user}/${data.id}`, data);
-          
-          if (response.success === false) {
-            logger.warn('p:admin', 'Error de validación:', response.error);
-            if (window.toast) toast.error(`❌ ${response.error || 'Error al actualizar usuario'}`);
-            return response;
-          }
-          
-          logger.success('p:admin', 'Usuario actualizado:', response);
-          if (window.toast) toast.success('✅ Usuario actualizado');
-          setTimeout(() => { modal.closeAll(); location.reload(); }, 1000);
-          break;
+      logger.success('p:admin', `${action} exitoso`);
+      if (config.success && window.toast) toast.success(`✅ ${config.success}`);
 
-        case 'delete':
-          logger.debug('p:admin', 'Eliminando usuario:', data);
-          response = await api.delete(`${this.API.user}/${data}`);
-          
-          if (response.success === false) {
-            logger.warn('p:admin', 'Error de validación:', response.error);
-            if (window.toast) toast.error(`❌ ${response.error || 'Error al eliminar usuario'}`);
-            return response;
-          }
-          
-          logger.success('p:admin', 'Usuario eliminado');
-          if (window.toast) toast.success('✅ Usuario eliminado');
-          setTimeout(() => location.reload(), 1000);
-          break;
-
-        case 'get':
-          logger.debug('p:admin', 'Obteniendo usuario:', data);
-          response = await api.get(`${this.API.user}/${data}`);
-          logger.info('p:admin', 'Usuario obtenido:', response);
-          return response;
+      if (action !== 'get') {
+        setTimeout(() => {
+          modal.closeAll();
+          if (action !== 'create') location.reload();
+        }, action === 'create' ? 200 : 1000);
       }
 
       return response;
 
     } catch (error) {
-      logger.error('p:admin', 'Error en acción:', action, error);
+      logger.error('p:admin', 'Error en acción', error);
       if (window.toast) toast.error(`❌ Error de conexión: ${error.message}`);
     }
   }

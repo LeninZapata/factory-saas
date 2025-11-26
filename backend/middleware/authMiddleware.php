@@ -1,8 +1,7 @@
 <?php
-// authMiddleware - Verificar autenticación
+// authMiddleware - Verificar autenticación con sesiones
 class authMiddleware {
   function handle() {
-    // Verificar token JWT o sesión
     $token = $this->getToken();
 
     if (!$token) {
@@ -10,34 +9,74 @@ class authMiddleware {
       return false;
     }
 
-    // Verificar si el token es válido (ejemplo simple)
-    if (!$this->validateToken($token)) {
+    $userId = $this->validateToken($token);
+
+    if (!$userId) {
       response::unauthorized('Token inválido o expirado');
       return false;
     }
 
-    // Token válido, continuar
+    // Guardar user_id en globals para usarlo en controllers si es necesario
+    $GLOBALS['auth_user_id'] = $userId;
+
     return true;
   }
 
-  // Obtener token del header
+  // Obtener token del header Authorization
   private function getToken() {
-    $headers = getallheaders();
-    if (isset($headers['Authorization'])) {
-      $auth = $headers['Authorization'];
-      if (preg_match('/Bearer\s+(.*)$/i', $auth, $matches)) {
+    // Método 1: getallheaders() (más compatible)
+    if (function_exists('getallheaders')) {
+      $headers = getallheaders();
+      if (isset($headers['Authorization'])) {
+        if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+          return $matches['1'];
+        }
+      }
+    }
+
+    // Método 2: $_SERVER (fallback)
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+      if (preg_match('/Bearer\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
         return $matches[1];
       }
     }
+
+    // Método 3: apache_request_headers (algunos servidores)
+    if (function_exists('apache_request_headers')) {
+      $headers = apache_request_headers();
+      if (isset($headers['Authorization'])) {
+        if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+          return $matches[1];
+        }
+      }
+    }
+
     return null;
   }
 
-  // Validar token (implementar según tu lógica)
+  // Validar token contra sesiones guardadas
   private function validateToken($token) {
-    // Ejemplo básico - implementar con JWT o tu método de auth
-    // return jwt::validate($token);
+    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
 
-    // Por ahora, aceptar cualquier token para testing
-    return !empty($token);
+    if (!file_exists($sessionFile)) {
+      log::warning('authMiddleware', "Token no encontrado: {$token}");
+      return null;
+    }
+
+    $session = json_decode(file_get_contents($sessionFile), true);
+
+    if (!$session || !isset($session['user_id'])) {
+      log::error('authMiddleware', 'Sesión corrupta');
+      return null;
+    }
+
+    // Verificar expiración
+    if (strtotime($session['expires_at']) < time()) {
+      log::info('authMiddleware', 'Token expirado');
+      unlink($sessionFile); // Eliminar sesión expirada
+      return null;
+    }
+
+    return $session['user_id'];
   }
 }
