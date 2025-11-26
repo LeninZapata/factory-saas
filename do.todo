@@ -19,7 +19,7 @@ y no solo la tab activa.
 mediante que debe los elementos tenede un data-attribute con el texto del key del idioma
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
-☐ console.log inteligentes:
+✔ console.log inteligentes: @done(25-11-2025 20:45)
  _ pide a la AI que te muestre como hacer console.log que muestren en modulo primero que se esta ejecutando por archivo
  _ que muestren por ejemplo en el main si quieres solo mostrar los console log de un modulo o archivo
  _ que muestren el tiempo que tarda en ejecutarse una funcion o metodo y que lo muestre en el console log

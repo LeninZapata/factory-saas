@@ -2,8 +2,8 @@
 spl_autoload_register(function ($class) {
   $classLower = strtolower($class);
 
-  // Helpers
-  $helperFile = __DIR__ . '/' . $classLower . '.php';
+  // Helpers (primera prioridad)
+  $helperFile = __DIR__ . '/../helpers/' . $classLower . '.php';
   if (file_exists($helperFile)) {
     require_once $helperFile;
     return;
@@ -13,6 +13,13 @@ spl_autoload_register(function ($class) {
   $coreFile = __DIR__ . '/' . $class . '.php';
   if (file_exists($coreFile)) {
     require_once $coreFile;
+    return;
+  }
+
+  // Controllers personalizados (resources/controllers/)
+  $controllerFile = __DIR__ . '/../resources/controllers/' . $class . '.php';
+  if (file_exists($controllerFile)) {
+    require_once $controllerFile;
     return;
   }
 

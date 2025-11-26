@@ -58,11 +58,28 @@ class router {
     $this->matchDynamic($method, $path);
   }
 
-  // Path actual
+  // Path actual - Normalizado sin prefijo de carpeta y sin slashes duplicados
   private function getPath() {
     $uri = $_SERVER['REQUEST_URI'];
     if (($pos = strpos($uri, '?')) !== false) $uri = substr($uri, 0, $pos);
-    return '/' . trim(parse_url($uri, PHP_URL_PATH), '/');
+
+    $path = parse_url($uri, PHP_URL_PATH);
+
+    // Remover slashes duplicados: //api/user -> /api/user
+    $path = preg_replace('#/+#', '/', $path);
+
+    // Remover el prefijo de la carpeta del proyecto si existe
+    // /factory-saas/api/system -> /api/system
+    if (preg_match('#^(/[^/]+)?(/api/.*)$#', $path, $matches)) {
+      $path = $matches[2];
+    }
+
+    // Eliminar trailing slash (excepto si es solo "/")
+    if ($path !== '/') {
+      $path = rtrim($path, '/');
+    }
+
+    return $path;
   }
 
   // Match dinámico

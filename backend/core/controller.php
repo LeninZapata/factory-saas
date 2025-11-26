@@ -4,7 +4,7 @@ class controller {
   private $config, $table, $resource;
 
   function __construct($resourceName) {
-    $configFile = BASE_PATH . "/resources/{$resourceName}.json";
+    $configFile = BACKEND_PATH . "resources/{$resourceName}.json";
 
     if (!file_exists($configFile)) {
       response::error("Resource '$resourceName' not found", 404);
@@ -15,7 +15,7 @@ class controller {
     $this->resource = $resourceName;
 
     // Cargar handlers personalizados si existen
-    $handlerFile = BASE_PATH . "/resources/handlers/{$resourceName}Handlers.php";
+    $handlerFile = BACKEND_PATH . "resources/handlers/{$resourceName}Handlers.php";
     if (file_exists($handlerFile)) require_once $handlerFile;
   }
 
