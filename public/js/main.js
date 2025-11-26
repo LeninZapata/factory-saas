@@ -7,7 +7,7 @@ window.appConfig = {
     enabled: true,
     defaultLang: 'es',
     availableLangs: ['es', 'en'],
-    refreshOnChange: false  // false = cambio dinámico SIN recargar | true = recargar página
+    refreshOnChange: false
   },
 
   auth: {
@@ -15,13 +15,14 @@ window.appConfig = {
     provider: 'auth-jwt',
     loginView: 'auth/login',
     redirectAfterLogin: 'dashboard',
-    storageKey: 'fabrica_auth',
-    tokenTTL: 24 * 60 * 60 * 1000,
+    storageKey: 'factory_auth',
+    tokenTTL: 24 * 60 * 60 * 1000, // Fallback: solo si backend no envía ttl_ms
+    sessionCheckInterval: 5 * 60 * 1000, // 5 minutos - verificación automática
     api: {
-      login: '/api/auth/login',
-      logout: '/api/auth/logout',
-      refresh: '/api/auth/refresh',
-      me: '/api/auth/me'
+      login: '/api/user/login',     // POST - Login
+      logout: '/api/user/logout',   // POST - Logout
+      refresh: '/api/user/refresh', // POST - Refresh token (futuro)
+      me: '/api/user/profile'       // GET - Obtener perfil (verificar sesión)
     }
   },
 
@@ -39,14 +40,13 @@ window.appConfig = {
     modals: !IS_DEV,
     forms: !IS_DEV,
     views: !IS_DEV,
-    viewNavigation: !!IS_DEV,
+    viewNavigation: !!IS_DEV, // creo que es view tabs
     validation: !IS_DEV,
     ttl: 60 * 60 * 1000
   }
 };
 
 const SCRIPTS_TO_LOAD = [
-  // Utils
   // Core
   'js/core/logger.js',
   'js/core/api.js',
@@ -54,8 +54,6 @@ const SCRIPTS_TO_LOAD = [
   'js/core/event.js',
   'js/core/i18n.js',
   'js/core/loader.js',
-  'js/core/cache.js',
-  'js/core/event.js',
   'js/core/validator.js',
   'js/core/conditions.js',
   'js/core/dataLoader.js',
@@ -77,7 +75,9 @@ const SCRIPTS_TO_LOAD = [
 
 async function initializeApp() {
   try {
-    const cacheBuster = IS_DEV ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+    const cacheBuster = window.appConfig.isDevelopment
+      ? `?v=${Date.now()}`
+      : `?v=${window.appConfig.version}`;
 
     const scriptPromises = SCRIPTS_TO_LOAD.map(url =>
       fetch(url + cacheBuster).then(r => {
@@ -127,6 +127,7 @@ async function initializeApp() {
     `;
   }
 }
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {

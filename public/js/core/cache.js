@@ -87,6 +87,33 @@ class cache {
       .forEach(key => localStorage.removeItem(key));
   }
 
+  // Verificar si una clave específica ha expirado sin eliminarla
+  static isExpired(key) {
+    const stored = localStorage.getItem(`cache_${key}`);
+    if (!stored) return true;
+
+    try {
+      const item = JSON.parse(stored);
+      return Date.now() > item.expiry;
+    } catch (error) {
+      return true;
+    }
+  }
+
+  // Obtener tiempo restante antes de expiración (en ms)
+  static getTimeToExpire(key) {
+    const stored = localStorage.getItem(`cache_${key}`);
+    if (!stored) return 0;
+
+    try {
+      const item = JSON.parse(stored);
+      const remaining = item.expiry - Date.now();
+      return remaining > 0 ? remaining : 0;
+    } catch (error) {
+      return 0;
+    }
+  }
+
   static getStats() {
     const memoryKeys = Array.from(this.memoryCache.keys());
     const localKeys = Object.keys(localStorage)
@@ -144,7 +171,9 @@ class cache {
         return stats;
       },
       get: (key) => this.get(key),
-      delete: (key) => this.delete(key)
+      delete: (key) => this.delete(key),
+      isExpired: (key) => this.isExpired(key),
+      timeToExpire: (key) => this.getTimeToExpire(key)
     };
   }
 }
@@ -155,6 +184,6 @@ window.addEventListener('load', () => cache.cleanup());
 
 window.cache = cache;
 
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+if (window.appConfig.isDevelopment) {
   cache.enableDebug();
 }

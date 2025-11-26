@@ -1,7 +1,7 @@
 class authJwtAuthProvider {
   static init() {
     if (!window.events) {
-      logger.error('p:auth-provider', 'events.js no está cargado!');
+      logger.error('p:auth-jwt', 'events.js no está cargado!');
       return;
     }
 
@@ -10,14 +10,21 @@ class authJwtAuthProvider {
 
   static setupLoginHandler() {
     const listenerId = events.on('form[data-form-id*="login-form"]', 'submit', async function(e) {
-      logger.info('p:auth-provider', 'Interceptando submit del login');
+      logger.info('p:auth-jwt', 'Interceptando submit del login');
 
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
 
       const form = this;
-      const data = Object.fromEntries(new FormData(form));
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+
+      // Validar campos requeridos
+      if (!data.user || !data.pass) {
+        authJwtAuthProvider.showError(form, 'Usuario y contraseña son requeridos');
+        return;
+      }
 
       const btn = form.querySelector('button[type="submit"]');
 
@@ -26,22 +33,23 @@ class authJwtAuthProvider {
         btn.textContent = 'Ingresando...';
       }
 
+      // Llamar al login del provider
       const result = await auth.login(data);
 
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Iniciar Sesión';
+        btn.textContent = 'Ingresar';
       }
 
       if (!result.success) {
-        logger.warn('p:auth-provider', 'Login falló:', result.error);
+        logger.warn('p:auth-jwt', 'Login falló:', result.error);
         authJwtAuthProvider.showError(form, result.error || 'Error al iniciar sesión');
       } else {
-        logger.success('p:auth-provider', 'Login exitoso');
+        logger.success('p:auth-jwt', 'Login exitoso');
       }
     }, document);
 
-    logger.debug('p:auth-provider', 'Handler registrado con ID:', listenerId);
+    logger.debug('p:auth-jwt', 'Handler registrado con ID:', listenerId);
   }
 
   static showError(form, message) {

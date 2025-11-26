@@ -108,7 +108,6 @@ class admin {
     if (!config) return;
 
     try {
-      logger.debug('p:admin', `Ejecutando ${action}`, data);
 
       let response;
       if (config.method === 'get') {

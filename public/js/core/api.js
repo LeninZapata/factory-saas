@@ -3,22 +3,42 @@ class api {
   static headers = { 'Content-Type': 'application/json', ...window.appConfig?.api?.headers };
 
   static async request(endpoint, options = {}) {
-    const fullURL = `${this.baseURL}${endpoint}`;
+    // ✅ Normalizar URL: eliminar slashes duplicados (excepto en protocolo)
+    let fullURL = `${this.baseURL}${endpoint}`;
 
-    // Auto-agregar token si existe
+    // Separar protocolo del resto
+    const protocolMatch = fullURL.match(/^(https?:\/\/)/);
+    const protocol = protocolMatch ? protocolMatch[1] : '';
+    const urlWithoutProtocol = protocol ? fullURL.slice(protocol.length) : fullURL;
+
+    // Eliminar slashes duplicados en la ruta
+    const normalizedPath = urlWithoutProtocol.replace(/\/+/g, '/');
+
+    // Reconstruir URL
+    fullURL = protocol + normalizedPath;
+
+    // 🔍 Log temporal para debug
+    logger.info('cor:api', `📡 Ejecutando: ${options.method || 'GET'} ${fullURL}`);
+
     const headers = { ...this.headers };
     if (auth?.getToken?.()) headers['Authorization'] = `Bearer ${auth.getToken()}`;
 
     try {
       const res = await fetch(fullURL, { ...options, headers });
 
-      // Logout automático si 401
-      if (res.status === 401 && auth?.isAuthenticated?.()) auth.logout();
+      // Manejo mejorado de 401
+      if (res.status === 401) {
+        if (auth?.isAuthenticated?.()) {
+          logger.warn('cor:api', 'Token inválido (401), cerrando sesión');
+          auth.handleExpiredSession();
+        }
+        throw new Error('No autorizado');
+      }
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     } catch (error) {
-      console.error(`API Error: ${fullURL}`, error);
+      logger.error('cor:api', `Error: ${fullURL}`, error.message);
       throw error;
     }
   }

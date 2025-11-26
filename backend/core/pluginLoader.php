@@ -70,10 +70,8 @@ class pluginLoader {
     }
     
     self::$loaded[$pluginName] = $config;
-    
-    if (IS_DEV) {
-      log::debug("Plugin loaded", ['plugin' => $pluginName]);
-    }
+
+    log::debug("Plugin loaded", ['plugin' => $pluginName]);
     
     return true;
   }

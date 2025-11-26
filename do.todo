@@ -34,3 +34,6 @@ mediante que debe los elementos tenede un data-attribute con el texto del key de
 ☐ Por ejemplo si el modal se le agrega boton como de guardar como se le agrega que tiene que guardar el formularo actual
 actualmente el modal y si adentro hay un form pues hace un lastst para ver el ultimo form y guardar de eso
 pero si se pone el boton en el modal como se haria para que reacione a ese formulario.
+☐ Sistema de idioma en el backend como frontend en los mensajes de errores e integracion con plugins que manejen sus propios idiomas
+ _ que se pueda editar los textos de los idiomas del backend
+☐ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla

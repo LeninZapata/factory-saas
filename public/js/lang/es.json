@@ -53,6 +53,8 @@
   "auth.password": "Contraseña",
   "auth.remember": "Recordar sesión",
   "auth.forgot": "¿Olvidó su contraseña?",
+  "auth.field.user": "Usuario",
+  "auth.field.user.placeholder": "Ingresa tu usuario",
   "auth.field.email": "Correo Electrónico",
   "auth.field.email.placeholder": "tu@email.com",
   "auth.field.password": "Contraseña",

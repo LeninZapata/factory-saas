@@ -53,6 +53,8 @@
   "auth.password": "Password",
   "auth.remember": "Remember me",
   "auth.forgot": "Forgot password?",
+  "auth.field.user": "Username",
+  "auth.field.user.placeholder": "Enter your username",
   "auth.field.email": "Email",
   "auth.field.email.placeholder": "your@email.com",
   "auth.field.password": "Password",

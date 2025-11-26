@@ -208,7 +208,7 @@ class i18n {
     return params;
   }
 
-  // ✅ NUEVO: Método helper para agregar atributo data-i18n
+  // Método helper para agregar atributo data-i18n
   static markElement(key, params = null) {
     const attrs = `data-i18n="${key}"`;
     const paramsAttr = params ? ` data-i18n-params='${JSON.stringify(params)}'` : '';

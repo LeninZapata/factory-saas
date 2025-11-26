@@ -1,88 +1,104 @@
 <?php
-// routes/api.php - Router principal con carga bajo demanda
+// routes/api.php - Router híbrido: Rutas manuales + Auto-registro CRUD
 
 $requestUri = $_SERVER['REQUEST_URI'];
 $path = parse_url($requestUri, PHP_URL_PATH);
 
 // Normalizar path: remover slashes duplicados y prefijos
-$path = preg_replace('#/+#', '/', $path); // //api -> /api
+$path = preg_replace('#/+#', '/', $path);
 if (preg_match('#^(/[^/]+)?(/api/.*)$#', $path, $matches)) {
-  $path = $matches[2]; // /factory-saas/api/user -> /api/user
+  $path = $matches[2];
 }
-$path = rtrim($path, '/'); // /api/user/ -> /api/user
+$path = rtrim($path, '/');
 
-$manualRouteLoaded = false;
-
-// Extraer el módulo: /api/system -> system, /api/user/123 -> user
+// Extraer el módulo: /api/user -> user
+$module = null;
 if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
   $module = $matches[1];
-  $manualRoutes = ROUTES_PATH . 'apis/' . $module . '.php';
-
-  if (file_exists($manualRoutes)) {
-    require_once $manualRoutes;
-    $manualRouteLoaded = true;
-  }
 }
 
-// Si no hay ruta manual, usar auto-registro de recursos (CRUD)
-if (!$manualRouteLoaded) {
-  $router->group('/api', function($router) use ($path) {
+// ✅ PASO 1: Cargar rutas manuales si existen (login, profile, etc.)
+$manualRoutes = ROUTES_PATH . 'apis/' . $module . '.php';
+if ($module && file_exists($manualRoutes)) {
+  require_once $manualRoutes;
+  log::debug('router', "Rutas manuales cargadas: {$module}.php");
+}
 
-    preg_match('#^/api/([^/]+)#', $path, $matches);
-    $requestedResource = $matches[1] ?? null;
+// ✅ PASO 2: Agregar rutas CRUD desde JSON (si no están definidas manualmente)
+$router->group('/api', function($router) use ($module) {
 
-    if ($requestedResource) {
-      $resourceFile = BACKEND_PATH . "resources/{$requestedResource}.json";
+  if (!$module) return;
 
-      if (file_exists($resourceFile)) {
-        $config = json_decode(file_get_contents($resourceFile), true);
+  $resourceFile = BACKEND_PATH . "resources/{$module}.json";
 
-        // Verificar si existe controller personalizado
-        $controllerClass = $requestedResource . 'Controller';
-        $ctrl = class_exists($controllerClass) ? new $controllerClass() : new controller($requestedResource);
+  if (!file_exists($resourceFile)) return;
 
-        $globalMw = $config['middleware'] ?? [];
+  $config = json_decode(file_get_contents($resourceFile), true);
 
-        // Rutas CRUD estándar
-        $crudRoutes = [
-          'list' => ['get', "/{$requestedResource}", 'list'],
-          'show' => ['get', "/{$requestedResource}/{id}", 'show'],
-          'create' => ['post', "/{$requestedResource}", 'create'],
-          'update' => ['put', "/{$requestedResource}/{id}", 'update'],
-          'delete' => ['delete', "/{$requestedResource}/{id}", 'delete']
-        ];
+  // Verificar si existe controller personalizado
+  $controllerClass = $module . 'Controller';
+  $ctrl = class_exists($controllerClass)
+    ? new $controllerClass()
+    : new controller($module);
 
-        foreach ($crudRoutes as $key => $routeData) {
-          list($method, $routePath, $action) = $routeData;
-          $routeConfig = $config['routes'][$key] ?? [];
-          $routeMw = array_merge($globalMw, $routeConfig['middleware'] ?? []);
-          $route = $router->$method($routePath, [$ctrl, $action]);
-          if (!empty($routeMw)) $route->middleware($routeMw);
-        }
+  $globalMw = $config['middleware'] ?? [];
 
-        // Rutas custom
-        if (isset($config['routes']['custom'])) {
-          foreach ($config['routes']['custom'] as $custom) {
-            $method = strtolower($custom['method']);
-            $customPath = $custom['path'];
-            $actionName = $custom['name'];
-            $customMw = array_merge($globalMw, $custom['middleware'] ?? []);
+  // ✅ Rutas CRUD estándar (solo si no están definidas manualmente)
+  $crudRoutes = [
+    'list'   => ['get',    "/{$module}",      'list'],
+    'show'   => ['get',    "/{$module}/{id}", 'show'],
+    'create' => ['post',   "/{$module}",      'create'],
+    'update' => ['put',    "/{$module}/{id}", 'update'],
+    'delete' => ['delete', "/{$module}/{id}", 'delete']
+  ];
 
-            preg_match_all('/\{(\w+)\}/', $customPath, $matches);
-            $paramNames = $matches[1];
+  foreach ($crudRoutes as $key => $routeData) {
+    list($method, $routePath, $action) = $routeData;
 
-            $route = $router->$method($customPath, function(...$params) use ($ctrl, $actionName, $paramNames) {
-              $namedParams = [];
-              foreach ($paramNames as $index => $name) {
-                $namedParams[$name] = $params[$index] ?? null;
-              }
-              $ctrl->handleCustomAction($actionName, $namedParams);
-            });
+    // Obtener configuración de la ruta desde JSON
+    $routeConfig = $config['routes'][$key] ?? [];
 
-            if (!empty($customMw)) $route->middleware($customMw);
-          }
-        }
-      }
+    // Si la ruta no está habilitada en JSON, saltarla
+    if (isset($routeConfig['enabled']) && $routeConfig['enabled'] === false) {
+      continue;
     }
-  });
-}
+
+    $routeMw = array_merge($globalMw, $routeConfig['middleware'] ?? []);
+
+    // Registrar ruta CRUD
+    $route = $router->$method($routePath, [$ctrl, $action]);
+
+    if (!empty($routeMw)) {
+      $route->middleware($routeMw);
+    }
+
+    log::debug('router', "Ruta CRUD auto-registrada: {$method} {$routePath}");
+  }
+
+  // ✅ Rutas custom desde JSON (si existen)
+  if (isset($config['routes']['custom'])) {
+    foreach ($config['routes']['custom'] as $custom) {
+      $method = strtolower($custom['method']);
+      $customPath = $custom['path'];
+      $actionName = $custom['name'];
+      $customMw = array_merge($globalMw, $custom['middleware'] ?? []);
+
+      preg_match_all('/\{(\w+)\}/', $customPath, $matches);
+      $paramNames = $matches[1];
+
+      $route = $router->$method($customPath, function(...$params) use ($ctrl, $actionName, $paramNames) {
+        $namedParams = [];
+        foreach ($paramNames as $index => $name) {
+          $namedParams[$name] = $params[$index] ?? null;
+        }
+        $ctrl->handleCustomAction($actionName, $namedParams);
+      });
+
+      if (!empty($customMw)) {
+        $route->middleware($customMw);
+      }
+
+      log::debug('router', "Ruta custom auto-registrada: {$method} {$customPath}");
+    }
+  }
+});

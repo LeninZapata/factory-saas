@@ -4,14 +4,38 @@ class view {
   static viewNavigationCache = new Map();
 
   /**
-   * Cargar vista
-   * @param {string} viewName - Nombre/ruta de la vista
-   * @param {HTMLElement} container - Contenedor donde renderizar
-   * @param {string} pluginContext - Nombre del plugin (si aplica)
-   * @param {object} menuResources - Recursos adicionales del menú
-   * @param {function} afterRender - Callback a ejecutar después de renderizar
+   * Cargar vista con validación OPTIMIZADA:
+   * 1. Validación rápida en cache (síncrona, no bloquea)
+   * 2. Si pasa, carga la vista inmediatamente
+   * 3. Validación completa con servidor en segundo plano
    */
   static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null) {
+    // ✅ Paso 1: Validación rápida en cache (síncrona, no bloquea)
+    if (window.auth?.isAuthenticated?.()) {
+      const tokenKey = window.authJwtProvider?.tokenKey || 'auth_token';
+      
+      // Verificación rápida en cache local
+      if (cache.isExpired(tokenKey)) {
+        logger.warn('cor:view', 'Token expirado en cache local');
+        auth.handleExpiredSession();
+        return;
+      }
+
+      // ✅ Paso 2: Validación completa con servidor (async, NO BLOQUEANTE)
+      if (window.auth?.checkSession) {
+        auth.checkSession(true).then(sessionValid => {
+          if (!sessionValid) {
+            logger.warn('cor:view', 'Sesión inválida en servidor');
+            auth.handleExpiredSession();
+          }
+        }).catch(error => {
+          logger.error('cor:view', 'Error validando sesión:', error);
+        });
+      }
+    }
+
+    // ✅ Paso 3: Continuar con la carga normal de la vista (sin esperar)
+
     const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
 
     if (!container && window.appConfig?.cache?.viewNavigation) {
@@ -251,37 +275,19 @@ class view {
 
         if (response.ok) {
           const viewData = await response.json();
-
-          if (window.appConfig?.cache?.views) {
-            const cacheKey = `plugin_view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
-            cache.set(cacheKey, viewData, window.appConfig.cache.ttl);
-          }
-
-          if (container) {
-            this.renderViewInContainer(viewData, container);
-          } else {
-            this.renderView(viewData);
-          }
+          this.renderView(viewData);
+          await this.loadViewResources(viewData);
           return true;
         }
       } catch (error) {
         continue;
       }
     }
-
     return false;
   }
 
-  static registerPlugin(pluginName, pluginConfig) {
-    this.loadedPlugins[pluginName] = pluginConfig;
-  }
-
-  static getLoadedPlugins() {
-    return this.loadedPlugins;
-  }
-
-  static isPluginLoaded(pluginName) {
-    return !!this.loadedPlugins[pluginName];
+  static registerPlugin(pluginName, pluginData) {
+    this.loadedPlugins[pluginName] = pluginData;
   }
 
   static renderView(viewData) {
@@ -299,6 +305,7 @@ class view {
     }
 
     content.innerHTML = this.generateViewHTML(viewData);
+
     this.setupView(viewData);
   }
 
@@ -308,22 +315,12 @@ class view {
   }
 
   static generateViewHTML(viewData) {
-    if (viewData.type === 'tabs') {
-      return `
-        <div class="view-container">
-          <h1>${viewData.title}</h1>
-          <div class="view-tabs-container" data-view-id="${viewData.id}"></div>
-        </div>
-      `;
-    }
-
     return `
-      <div class="view-container">
-        <h1>${viewData.title}</h1>
-
-        ${viewData.toolbar ? `
-          <div class="view-toolbar">
-            ${this.renderContent(viewData.toolbar)}
+      <div class="view-container" data-view="${viewData.id}">
+        ${viewData.header ? `
+          <div class="view-header">
+            ${viewData.header.title ? `<h1>${viewData.header.title}</h1>` : ''}
+            ${viewData.header.subtitle ? `<p>${viewData.header.subtitle}</p>` : ''}
           </div>
         ` : ''}
 

@@ -4,6 +4,7 @@ class auth {
   static user = null;
   static userPermissions = null;
   static userPreferences = null;
+  static sessionCheckInterval = null;
 
   static async init(config) {
     this.config = {
@@ -11,20 +12,18 @@ class auth {
       provider: 'auth-jwt',
       loginView: 'core:auth/login',
       redirectAfterLogin: 'dashboard',
+      sessionCheckInterval: 5 * 60 * 1000, // 5 minutos
       ...config
     };
 
     if (!this.config.enabled) return;
 
-    // Cargar provider.js
     const providerUrl = `${window.BASE_URL}plugins/${this.config.provider}/provider.js`;
     await loader.loadScript(providerUrl);
 
-    // Cargar auth-provider.js
     const authProviderUrl = `${window.BASE_URL}plugins/${this.config.provider}/auth-provider.js`;
     await loader.loadScript(authProviderUrl);
 
-    // Convertir 'auth-jwt' → 'authJwt' → 'authJwtProvider'
     const providerName = this.config.provider
       .split('-')
       .map((word, index) =>
@@ -41,50 +40,106 @@ class auth {
       return;
     }
 
-    // Inicializar provider con config
     if (this.provider?.init) {
       this.provider.init(this.config);
     }
 
-    // Verificar sesión
     const isAuth = await this.provider?.check();
 
     if (isAuth) {
       this.user = await this.provider?.getUser();
-
-      // Cargar permisos del usuario
       await this.loadUserPermissions();
+      this.startSessionMonitoring();
     } else {
       this.showLogin();
     }
   }
 
+  // Monitoreo periódico de sesión
+  static startSessionMonitoring() {
+    if (this.sessionCheckInterval) {
+      clearInterval(this.sessionCheckInterval);
+    }
+
+    this.sessionCheckInterval = setInterval(async () => {
+      const isValid = await this.checkSession(true);
+      if (!isValid) {
+        this.handleExpiredSession();
+      }
+    }, this.config.sessionCheckInterval);
+  }
+
+  static stopSessionMonitoring() {
+    if (this.sessionCheckInterval) {
+      clearInterval(this.sessionCheckInterval);
+      this.sessionCheckInterval = null;
+    }
+  }
+
+  // Verificar validez de sesión (silenciosa o con mensaje)
+  static async checkSession(silent = false) {
+    if (!this.provider) return false;
+
+    const tokenKey = this.provider.tokenKey || 'auth_token';
+    
+    // Verificar si el token ha expirado en cache
+    if (cache.isExpired(tokenKey)) {
+      if (!silent) logger.warn('cor:auth', 'Token expirado en cache');
+      return false;
+    }
+
+    // Verificar con el servidor
+    try {
+      const isValid = await this.provider.check();
+      if (!isValid && !silent) {
+        logger.warn('cor:auth', 'Sesión inválida en servidor');
+      }
+      return isValid;
+    } catch (error) {
+      if (!silent) logger.error('cor:auth', 'Error verificando sesión:', error);
+      return false;
+    }
+  }
+
+  // Manejar sesión expirada
+  static handleExpiredSession() {
+    this.stopSessionMonitoring();
+    
+    if (window.toast) {
+      toast.show({
+        message: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+        type: 'warning',
+        duration: 5000
+      });
+    }
+
+    setTimeout(() => {
+      this.user = null;
+      this.provider?.clearSession?.();
+      this.showLogin();
+    }, 2000);
+  }
+
   static showLogin() {
-    // Inicializar layout auth (sin header/sidebar)
     if (window.layout) {
       layout.init('auth');
     }
 
-    // Agregar data-view al body
     document.body.setAttribute('data-view', 'login-view');
 
-    // Cargar vista de login
     if (window.view) {
       view.loadView(this.config.loginView);
     }
   }
 
   static async showApp() {
-    // Re-inicializar layout completo (solo si no existe)
     const layoutExists = document.querySelector('.layout .header');
     if (!layoutExists && window.layout) {
       layout.init('app');
     }
 
-    // Remover data-view
     document.body.removeAttribute('data-view');
 
-    // Cargar hooks ANTES de sidebar
     if (window.hook?.loadPluginHooks) {
       await hook.loadPluginHooks();
 
@@ -95,18 +150,15 @@ class auth {
       }
     }
 
-    // Inicializar sidebar (con los menús cargados)
     if (window.sidebar) {
       await sidebar.init();
     }
 
-    // Cargar dashboard (solo si no hay vista cargada)
     const contentHasView = document.querySelector('#content .view-container');
     if (!contentHasView && window.view) {
       view.loadView(this.config.redirectAfterLogin);
     }
 
-    // ✅ Inicializar selector de idioma DESPUÉS de todo
     if (window.initLangSelector) {
       window.initLangSelector();
     }
@@ -123,12 +175,14 @@ class auth {
     if (result.success) {
       this.user = result.user;
       await this.showApp();
+      this.startSessionMonitoring();
     }
 
     return result;
   }
 
   static async logout() {
+    this.stopSessionMonitoring();
     await this.provider.logout();
     this.user = null;
     this.showLogin();
@@ -138,14 +192,10 @@ class auth {
   static isAuthenticated() { return !!this.user; }
   static getToken() { return this.provider?.getToken?.(); }
 
-  /**
-   * Cargar permisos del usuario después del login
-   */
   static async loadUserPermissions() {
     const currentUser = await this.provider.getUser();
     if (!currentUser || !currentUser.config) return;
 
-    // Parse config
     const config = typeof currentUser.config === 'string' ?
       JSON.parse(currentUser.config) :
       currentUser.config;
@@ -155,49 +205,36 @@ class auth {
 
     logger.success('cor:auth', 'Permisos cargados');
 
-    // Aplicar preferencias
     this.applyUserPreferences();
-
-    // Filtrar menú según permisos
     this.filterMenuByPermissions();
   }
 
-  /**
-   * Aplicar preferencias del usuario
-   */
   static applyUserPreferences() {
     if (!this.userPreferences) return;
 
-    // Tema
     if (this.userPreferences.theme) {
       document.body.dataset.theme = this.userPreferences.theme;
     }
 
-    // Idioma
+    // ✅ Aplicar idioma del usuario (si existe)
     if (this.userPreferences.language && window.i18n) {
-      i18n.setLanguage(this.userPreferences.language);
+      i18n.setLang(this.userPreferences.language);
     }
   }
 
-  /**
-   * Filtrar menú según permisos del usuario
-   */
   static filterMenuByPermissions() {
     if (!this.userPermissions?.plugins) return;
 
-    // Admin tiene acceso a todo
     if (this.user?.role === 'admin') return;
 
     for (const [pluginName, plugin] of Object.entries(window.hooks.plugins)) {
       const perms = this.userPermissions.plugins[pluginName];
 
-      // Plugin deshabilitado para este usuario
       if (!perms || perms.enabled === false) {
         plugin.enabled = false;
         continue;
       }
 
-      // Filtrar menús si no tiene acceso a todos
       if (perms.menus !== '*' && plugin.menu?.items) {
         plugin.menu.items = plugin.menu.items.filter(item => {
           return perms.menus[item.id] === true;
@@ -205,33 +242,25 @@ class auth {
       }
     }
 
-    // Reconstruir menú
     if (window.sidebar) {
       sidebar.renderMenu();
     }
   }
 
-  /**
-   * Verificar si el usuario tiene permiso
-   */
   static hasPermission(plugin, menu = null, view = null) {
-    // Admin siempre tiene permiso
     if (this.user?.role === 'admin') return true;
 
     if (!this.userPermissions?.plugins) return true;
 
     const perms = this.userPermissions.plugins[plugin];
 
-    // Plugin deshabilitado
     if (!perms || perms.enabled === false) return false;
 
-    // Verificar menú específico
     if (menu) {
       if (perms.menus === '*') return true;
       return perms.menus?.[menu] === true;
     }
 
-    // Verificar vista específica
     if (view) {
       if (perms.views === '*') return true;
       return perms.views?.[view] === true;

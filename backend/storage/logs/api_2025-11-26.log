@@ -1,12 +1,54 @@
-[2025-11-26 04:37:09] DEBUG: UserController - create - Data recibida | {"user":"admin2","email":"admin2@factory.com","role":"admin","pass":"123","config":{"permissions":{"plugins":{"ejemplos":{"enabled":false},"inventario":{"enabled":false},"admin":{"enabled":true,"menus":"*"}}},"preferences":{"theme":"light","language":"es","notifications":false}}}
-[2025-11-26 04:37:09] DEBUG: UserController - create - Data procesada | {"user":"admin2","email":"admin2@factory.com","role":"admin","pass":"$2y$10$u61uE3uJW0mpVyJ8xzaZvuL7KgvSs9U3SoPnGiVxtk1tgjeUiX\/am","config":"{\"permissions\":{\"plugins\":{\"ejemplos\":{\"enabled\":false},\"inventario\":{\"enabled\":false},\"admin\":{\"enabled\":true,\"menus\":\"*\"}}},\"preferences\":{\"theme\":\"light\",\"language\":\"es\",\"notifications\":false}}","dc":"2025-11-26 04:37:09","tc":1764131829}
-[2025-11-26 04:37:09] WARNING: UserController - create - Usuario ya existe | {"user":"admin2"}
-[2025-11-26 04:37:14] DEBUG: UserController - create - Data recibida | {"user":"admin3","email":"admin2@factory.com","role":"admin","pass":"123","config":{"permissions":{"plugins":{"ejemplos":{"enabled":false},"inventario":{"enabled":false},"admin":{"enabled":true,"menus":"*"}}},"preferences":{"theme":"light","language":"es","notifications":false}}}
-[2025-11-26 04:37:14] DEBUG: UserController - create - Data procesada | {"user":"admin3","email":"admin2@factory.com","role":"admin","pass":"$2y$10$uYtN\/qGyKC.EzuAfe.uenu\/iklVFtgmcV.Va\/X\/T6eJUwS5m3klau","config":"{\"permissions\":{\"plugins\":{\"ejemplos\":{\"enabled\":false},\"inventario\":{\"enabled\":false},\"admin\":{\"enabled\":true,\"menus\":\"*\"}}},\"preferences\":{\"theme\":\"light\",\"language\":\"es\",\"notifications\":false}}","dc":"2025-11-26 04:37:14","tc":1764131834}
-[2025-11-26 04:37:14] [WARNING]: UserController - create - Email ya existe | {"email":"admin2@factory.com"}
-[2025-11-26 04:37:21] DEBUG: UserController - create - Data recibida | {"user":"admin3","email":"admin3@test.com","role":"admin","pass":"123","config":{"permissions":{"plugins":{"ejemplos":{"enabled":false},"inventario":{"enabled":false},"admin":{"enabled":true,"menus":"*"}}},"preferences":{"theme":"light","language":"es","notifications":false}}}
-[2025-11-26 04:37:21] [DEBUG]: UserController - create - Data procesada | {"user":"admin3","email":"admin3@test.com","role":"admin","pass":"$2y$10$1ase6T\/C6RbkezoNscG29uXtM7WHGWuWfmNepSRTPiNjcoT2cg31m","config":"{\"permissions\":{\"plugins\":{\"ejemplos\":{\"enabled\":false},\"inventario\":{\"enabled\":false},\"admin\":{\"enabled\":true,\"menus\":\"*\"}}},\"preferences\":{\"theme\":\"light\",\"language\":\"es\",\"notifications\":false}}","dc":"2025-11-26 04:37:21","tc":1764131841}
-[2025-11-26 04:37:21] [INFO]: UserController - create - Usuario creado | {"id":"2"}
-[2025-11-26 04:41:01] DEBUG: UserController - create - Data recibida | {"user":"admin4","email":"admin4@test.com","role":"editor","pass":"123","config":{"permissions":{"plugins":{"ejemplos":{"enabled":true,"menus":"*"},"inventario":{"enabled":true,"menus":{"inventario-listado":{"enabled":true,"tabs":[]},"inventario-stock":true}},"admin":{"enabled":true,"menus":"*"}}},"preferences":{"theme":"light","language":"es","notifications":false}}}
-[2025-11-26 04:41:01] DEBUG: UserController - create - Data procesada | {"user":"admin4","email":"admin4@test.com","role":"editor","pass":"$2y$10$9x8Y27sBqvoiUhbOk1w7..n1FQFXNrd11N5rvWAEMGsyNX\/lWpU\/C","config":"{\"permissions\":{\"plugins\":{\"ejemplos\":{\"enabled\":true,\"menus\":\"*\"},\"inventario\":{\"enabled\":true,\"menus\":{\"inventario-listado\":{\"enabled\":true,\"tabs\":[]},\"inventario-stock\":true}},\"admin\":{\"enabled\":true,\"menus\":\"*\"}}},\"preferences\":{\"theme\":\"light\",\"language\":\"es\",\"notifications\":false}}","dc":"2025-11-26 04:41:01","tc":1764132061}
-[2025-11-26 04:41:01] INFO: UserController - create - Usuario creado | {"id":"3"}
+[2025-11-26 12:49:26] DEBUG: UserController - create | {"user":"admin5","email":"admin5@gmail.com","role":"editor","pass":"123","config":{"permissions":{"plugins":[]},"preferences":{"theme":"light","language":"es","notifications":false}}}
+[2025-11-26 12:49:26] INFO: UserController - Usuario creado | {"id":"4"}
+[2025-11-26 14:12:47] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:12:47] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:12:47] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:12:47] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:12:47] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:12:47] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:13:51] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:13:54] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:13:54] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:13:54] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:13:54] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:13:54] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:13:54] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:14:47] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:14:47] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:14:47] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:14:47] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:14:47] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:14:47] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:14:47] DEBUG: UserController - create | {"user":"admin123","email":"admin@ejemplo.com","role":"editor","pass":"123","config":{"permissions":{"plugins":[]},"preferences":{"theme":"light","language":"es","notifications":false}}}
+[2025-11-26 14:14:47] INFO: UserController - Usuario creado | {"id":"5"}
+[2025-11-26 14:15:05] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:15:05] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:15:05] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:15:05] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:15:05] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:15:05] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:15:05] DEBUG: UserController - create | {"user":"admin55","email":"admin55@gmail.com","role":"admin","pass":"123","config":{"permissions":{"plugins":[]},"preferences":{"theme":"light","language":"es","notifications":false}}}
+[2025-11-26 14:15:06] INFO: UserController - Usuario creado | {"id":"6"}
+[2025-11-26 14:18:51] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:18:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:18:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:18:51] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:18:51] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:18:51] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"
+[2025-11-26 14:23:51] DEBUG: router | "Rutas manuales cargadas: user.php"
+[2025-11-26 14:23:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user"
+[2025-11-26 14:23:51] DEBUG: router | "Ruta CRUD auto-registrada: get \/user\/{id}"
+[2025-11-26 14:23:51] DEBUG: router | "Ruta CRUD auto-registrada: post \/user"
+[2025-11-26 14:23:51] DEBUG: router | "Ruta CRUD auto-registrada: put \/user\/{id}"
+[2025-11-26 14:23:51] DEBUG: router | "Ruta CRUD auto-registrada: delete \/user\/{id}"

@@ -8,77 +8,112 @@ class authJwtProvider {
     logger.debug('p:auth-provider', 'Configuración inicializada');
   }
 
+  // Verificar si hay sesión válida
   static async check() {
     const token = cache.getLocal(this.tokenKey);
 
-    if (!token) return false;
-
-    if (window.appConfig?.isDevelopment) {
-      return true;
+    if (!token) {
+      logger.debug('p:auth-provider', 'No hay token guardado');
+      return false;
     }
 
     try {
       const response = await api.get(this.config.api.me);
-      if (response.user) {
-        cache.setLocal(this.userKey, response.user, this.config.tokenTTL);
+
+      if (response.success && response.data) {
+        cache.setLocal(this.userKey, response.data, this.config.tokenTTL);
+        logger.success('p:auth-provider', 'Sesión válida');
         return true;
       }
-    } catch {}
-    return false;
+
+      logger.warn('p:auth-provider', 'Respuesta inesperada del servidor');
+      this.clearSession();
+      return false;
+
+    } catch (error) {
+      logger.warn('p:auth-provider', 'Token inválido o expirado:', error.message);
+      this.clearSession();
+      return false;
+    }
   }
 
+  // Login - SIEMPRE contra backend real (sin mock)
   static async login(credentials) {
-    if (window.appConfig?.isDevelopment) {
-      return this.mockLogin(credentials);
-    }
-
     try {
+      logger.debug('p:auth-provider', 'Iniciando login con:', { user: credentials.user });
+
       const response = await api.post(this.config.api.login, credentials);
 
-      if (response.token) {
-        cache.setLocal(this.tokenKey, response.token, this.config.tokenTTL);
-        cache.setLocal(this.userKey, response.user, this.config.tokenTTL);
-        return { success: true, user: response.user };
+      logger.debug('p:auth-provider', 'Respuesta del servidor:', response);
+
+      if (response.success === true && response.data) {
+        const { token, user, ttl_ms } = response.data;
+
+        if (!token || !user) {
+          logger.error('p:auth-provider', 'Respuesta incompleta del servidor');
+          return {
+            success: false,
+            error: 'Error en la respuesta del servidor'
+          };
+        }
+
+        // Usar TTL que viene del backend (en milisegundos)
+        const tokenTTL = ttl_ms || this.config.tokenTTL; // Fallback al config si no viene
+
+        // Guardar token y usuario con el TTL del backend
+        cache.setLocal(this.tokenKey, token, tokenTTL);
+        cache.setLocal(this.userKey, user, tokenTTL);
+
+        logger.success('p:auth-provider', `Login exitoso para: ${user.user} (TTL: ${tokenTTL}ms)`);
+        return { success: true, user };
       }
 
-      return { success: false, error: response.error || 'Credenciales inválidas' };
+      logger.warn('p:auth-provider', 'Credenciales incorrectas');
+      return {
+        success: false,
+        error: response.error || 'Usuario o contraseña incorrectos'
+      };
+
     } catch (error) {
       logger.error('p:auth-provider', 'Error en login:', error.message);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: 'Error de conexión con el servidor'
+      };
     }
   }
 
-  static mockLogin(credentials) {
-    if (credentials.email === 'admin@test.com' && credentials.password === '123456') {
-      const user = { id: 1, name: 'Admin Demo', email: credentials.email, role: 'Admin' };
-      const token = 'mock-token-' + Date.now();
-
-      cache.setLocal(this.tokenKey, token, this.config.tokenTTL);
-      cache.setLocal(this.userKey, user, this.config.tokenTTL);
-
-      logger.success('p:auth-provider', 'Login mock exitoso');
-      return { success: true, user };
-    }
-
-    logger.warn('p:auth-provider', 'Credenciales mock incorrectas');
-    return { success: false, error: 'Credenciales inválidas' };
-  }
-
+  // Logout - SIEMPRE contra backend real
   static async logout() {
-    if (!window.appConfig?.isDevelopment) {
-      try { await api.post(this.config.api.logout); } catch {}
+    const token = this.getToken();
+
+    if (token) {
+      try {
+        await api.post(this.config.api.logout);
+        logger.success('p:auth-provider', 'Logout en backend exitoso');
+      } catch (error) {
+        logger.warn('p:auth-provider', 'Error en logout:', error.message);
+      }
     }
-    cache.delete(this.tokenKey);
-    cache.delete(this.userKey);
-    logger.debug('p:auth-provider', 'Logout completado');
+
+    this.clearSession();
+    logger.debug('p:auth-provider', 'Sesión local limpiada');
   }
 
+  // Obtener token
   static getToken() {
     return cache.getLocal(this.tokenKey);
   }
 
+  // Obtener usuario
   static async getUser() {
     return cache.getLocal(this.userKey);
+  }
+
+  // Limpiar sesión
+  static clearSession() {
+    cache.delete(this.tokenKey);
+    cache.delete(this.userKey);
   }
 }
 

@@ -1,5 +1,5 @@
 <?php
-// authMiddleware - Verificar autenticación con sesiones
+// authMiddleware - Verificar autenticación usando SOLO sesiones (sin BD)
 class authMiddleware {
   function handle() {
     $token = $this->getToken();
@@ -9,15 +9,24 @@ class authMiddleware {
       return false;
     }
 
-    $userId = $this->validateToken($token);
+    // ✅ Validar usando SOLO archivo de sesión (sin BD)
+    $session = $this->getSessionFromToken($token);
 
-    if (!$userId) {
-      response::unauthorized('Token inválido o expirado');
+    if (!$session) {
+      response::unauthorized('Token inválido');
+      return false;
+    }
+
+    // Verificar expiración
+    if (strtotime($session['expires_at']) < time()) {
+      $this->deleteSession($token);
+      response::unauthorized('Token expirado');
       return false;
     }
 
     // Guardar user_id en globals para usarlo en controllers si es necesario
-    $GLOBALS['auth_user_id'] = $userId;
+    $GLOBALS['auth_user_id'] = $session['user_id'];
+    $GLOBALS['auth_user'] = $session['user']; // ✅ También el usuario completo
 
     return true;
   }
@@ -54,8 +63,8 @@ class authMiddleware {
     return null;
   }
 
-  // Validar token contra sesiones guardadas
-  private function validateToken($token) {
+  // ✅ Obtener sesión desde archivo (sin BD)
+  private function getSessionFromToken($token) {
     $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
 
     if (!file_exists($sessionFile)) {
@@ -70,13 +79,15 @@ class authMiddleware {
       return null;
     }
 
-    // Verificar expiración
-    if (strtotime($session['expires_at']) < time()) {
-      log::info('authMiddleware', 'Token expirado');
-      unlink($sessionFile); // Eliminar sesión expirada
-      return null;
-    }
+    return $session;
+  }
 
-    return $session['user_id'];
+  // Eliminar sesión expirada
+  private function deleteSession($token) {
+    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    if (file_exists($sessionFile)) {
+      unlink($sessionFile);
+      log::info('authMiddleware', 'Token expirado eliminado');
+    }
   }
 }

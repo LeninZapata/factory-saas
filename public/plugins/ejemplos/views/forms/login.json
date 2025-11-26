@@ -5,7 +5,7 @@
   "fields": [
     {
       "name": "email",
-      "label": "Correo Electrónico",
+      "label": "Correo Electrónico..",
       "type": "email",
       "required": true,
       "placeholder": "tu@email.com"
@@ -27,7 +27,7 @@
     {
       "name": "submit",
       "type": "button",
-      "label": "🚀 Ingresar",
+      "label": "🚀 Ingresar.",
       "action": "submit"
     },
     {

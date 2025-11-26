@@ -23,6 +23,13 @@ spl_autoload_register(function ($class) {
     return;
   }
 
+  // Handlers personalizados (resources/handlers/)
+  $handlerFile = __DIR__ . '/../resources/handlers/' . $class . '.php';
+  if (file_exists($handlerFile)) {
+    require_once $handlerFile;
+    return;
+  }
+
   // Middleware
   $mwFile = __DIR__ . '/../middleware/' . $class . '.php';
   if (file_exists($mwFile)) {

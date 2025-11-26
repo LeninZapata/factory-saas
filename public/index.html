@@ -10,12 +10,19 @@
 <div id="app"></div>
 <script>
   var VERSION = '1.0.0';
-  
+
   // ✅ Detectar automáticamente la ruta base del proyecto
   var BASE_URL = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-  
-  var IS_DEV = window.location.hostname === 'localhost' ||
-                  window.location.hostname === '127.0.0.1';
+
+  var IS_DEV =  window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1' ||
+                window.location.hostname.includes('.local') ||
+                window.location.hostname.startsWith('192.168.') ||
+                window.location.hostname.startsWith('10.') ||
+                window.location.hostname === '0.0.0.0' ||
+                window.location.port === '3000' ||
+                window.location.port === '5173' ||
+                window.location.port === '8080';
 
   let appVersion = sessionStorage.getItem('appVersion');
   if (!appVersion || IS_DEV) {
@@ -27,7 +34,7 @@
   script.type = 'module';
   script.src = `${BASE_URL}js/main.js?v=${appVersion}`;
   document.head.appendChild(script);
-  
+
   // console.log('🔧 BASE_URL:', BASE_URL); // ← Para debug
 </script>
 </body>

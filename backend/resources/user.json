@@ -5,17 +5,33 @@
   "middleware": ["throttle:100,1"],
 
   "routes": {
-    "list": { "method": "GET", "path": "/api/user", "middleware": ["auth"] },
-    "show": { "method": "GET", "path": "/api/user/{id}", "middleware": ["auth"] },
-    "create": { "method": "POST", "path": "/api/user", "middleware": ["json"] },
-    "update": { "method": "PUT", "path": "/api/user/{id}", "middleware": ["auth", "json"] },
-    "delete": { "method": "DELETE", "path": "/api/user/{id}", "middleware": ["auth"] },
+    "list": {
+      "method": "GET",
+      "path": "/api/user",
+      "middleware": ["auth"]
+    },
+    "show": {
+      "method": "GET",
+      "path": "/api/user/{id}",
+      "middleware": ["auth"]
+    },
+    "create": {
+      "method": "POST",
+      "path": "/api/user",
+      "middleware": ["json"]
+    },
+    "update": {
+      "method": "PUT",
+      "path": "/api/user/{id}",
+      "middleware": ["auth", "json"]
+    },
+    "delete": {
+      "method": "DELETE",
+      "path": "/api/user/{id}",
+      "middleware": ["auth"]
+    },
 
-    "custom": [
-      { "name": "login", "method": "POST", "path": "/api/user/login", "handler": "login", "middleware": ["json"] },
-      { "name": "profile", "method": "GET", "path": "/api/user/profile", "handler": "profile", "middleware": ["auth"] },
-      { "name": "logout", "method": "POST", "path": "/api/user/logout", "handler": "logout", "middleware": ["auth"] }
-    ]
+    "custom": []
   },
 
   "fields": [
