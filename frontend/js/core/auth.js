@@ -37,7 +37,7 @@ class auth {
     this.provider = window[providerClassName];
 
     if (!this.provider) {
-      console.error('AUTH: Provider no encontrado!');
+      logger.error('cor:auth', 'Provider no encontrado!');
       return;
     }
 
@@ -51,7 +51,7 @@ class auth {
 
     if (isAuth) {
       this.user = await this.provider?.getUser();
-      
+
       // Cargar permisos del usuario
       await this.loadUserPermissions();
     } else {
@@ -114,7 +114,7 @@ class auth {
 
   static async login(credentials) {
     if (!this.provider) {
-      console.error('AUTH: Provider no está definido!');
+      logger.error('cor:auth', 'Provider no está definido!');
       return { success: false, error: 'Provider no inicializado' };
     }
 
@@ -153,7 +153,7 @@ class auth {
     this.userPermissions = config.permissions;
     this.userPreferences = config.preferences;
 
-    console.log('🔐 Auth: Permisos cargados:', this.userPermissions);
+    logger.success('cor:auth', 'Permisos cargados');
 
     // Aplicar preferencias
     this.applyUserPreferences();
@@ -221,7 +221,7 @@ class auth {
     if (!this.userPermissions?.plugins) return true;
 
     const perms = this.userPermissions.plugins[plugin];
-    
+
     // Plugin deshabilitado
     if (!perms || perms.enabled === false) return false;
 

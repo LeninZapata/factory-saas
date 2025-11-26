@@ -38,16 +38,16 @@ class conditions {
     // Función recursiva para observar todos los contenedores de repetibles
     const observeRepeatableContainers = (rootElement) => {
       const repeatableContainers = rootElement.querySelectorAll('.repeatable-items');
-      
+
       repeatableContainers.forEach(container => {
         // Verificar si ya está siendo observado para evitar duplicados
         if (container.dataset.conditionsObserved === 'true') {
           return;
         }
-        
+
         // Marcar como observado
         container.dataset.conditionsObserved = 'true';
-        
+
         // Crear un MutationObserver para detectar cuando se agregan nuevos items
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
@@ -55,12 +55,10 @@ class conditions {
               mutation.addedNodes.forEach(node => {
                 // Solo procesar elementos (no nodos de texto)
                 if (node.nodeType === 1 && node.classList.contains('repeatable-item')) {
-                  console.log('🔄 Nuevo item repeatable agregado, re-evaluando condiciones...');
-                  
                   // Pequeño delay para asegurar que el DOM esté listo
                   setTimeout(() => {
                     this.evaluate(formId);
-                    
+
                     // ✅ IMPORTANTE: Observar también los repetibles anidados dentro del nuevo item
                     observeRepeatableContainers(node);
                   }, 50);
@@ -129,12 +127,7 @@ class conditions {
       'change',
       (e) => {
         const fieldName = this.getFieldName(e.target);
-        
-        // Debug: ver qué campo cambió
-        console.log('🔍 Campo cambiado:', fieldName, 'Valor:', e.target.value);
-        
         if (watchedFields.has(fieldName)) {
-          console.log('✅ Re-evaluando condiciones...');
           this.evaluate(formId);
         }
       },
@@ -158,12 +151,10 @@ class conditions {
     if (!this.watchers.has(formId)) {
       this.watchers.set(formId, []);
     }
-    
+
     // Agregar los event listener IDs al array existente
     const watchers = this.watchers.get(formId);
     watchers.push(watcherId, inputWatcherId);
-    
-    console.log('👁️ Campos observados:', Array.from(watchedFields));
   }
 
   static evaluate(formId) {
@@ -190,7 +181,7 @@ class conditions {
   static evaluateRepeatable(formEl, targetFieldPath, rule) {
     // Encontrar todos los repeatable-items
     const repeatableItems = formEl.querySelectorAll('.repeatable-item');
-    
+
     if (repeatableItems.length === 0) {
       // Si no hay items todavía, ocultar todos los campos condicionales
       this.applyVisibilityToAll(formEl, targetFieldPath, false);
@@ -200,15 +191,15 @@ class conditions {
     // Evaluar cada item individualmente
     repeatableItems.forEach(item => {
       const shouldShow = this.checkConditions(item, rule, targetFieldPath);
-      
+
       // Buscar el campo target dentro de este item específico
       const pathParts = targetFieldPath.split('.');
       const fieldName = pathParts[pathParts.length - 1];
-      
+
       const targetField = item.querySelector(`[name*=".${fieldName}"]`);
       if (targetField) {
         const fieldElement = targetField.closest('.form-group, .form-checkbox');
-        
+
         if (fieldElement) {
           if (shouldShow) {
             fieldElement.style.display = '';
@@ -227,12 +218,12 @@ class conditions {
   static applyVisibilityToAll(formEl, fieldPath, shouldShow) {
     const pathParts = fieldPath.split('.');
     const fieldName = pathParts[pathParts.length - 1];
-    
+
     const matchingFields = formEl.querySelectorAll(`[name*=".${fieldName}"]`);
-    
+
     matchingFields.forEach(field => {
       const fieldElement = field.closest('.form-group, .form-checkbox');
-      
+
       if (fieldElement) {
         if (shouldShow) {
           fieldElement.style.display = '';
@@ -249,16 +240,16 @@ class conditions {
 
   static applyVisibilitySimple(formEl, fieldPath, shouldShow) {
     const fieldElement = this.findFieldElement(formEl, fieldPath);
-    
+
     if (!fieldElement) {
-      console.warn(`Conditions: No se encontró el elemento para "${fieldPath}"`);
+      logger.warn('cor:conditions', `No se encontró el elemento para "${fieldPath}"`);
       return;
     }
 
     if (shouldShow) {
       fieldElement.style.display = '';
       fieldElement.classList.remove('wpfw-depend-on');
-      
+
       const inputs = fieldElement.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
         input.disabled = false;
@@ -266,7 +257,7 @@ class conditions {
     } else {
       fieldElement.style.display = 'none';
       fieldElement.classList.add('wpfw-depend-on');
-      
+
       const inputs = fieldElement.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
         input.disabled = true;
@@ -294,13 +285,13 @@ class conditions {
 
     // Buscar el campo en el contexto
     let fieldEl = null;
-    
+
     // Si el contexto es un repeatable-item, buscar solo dentro de él
     if (context.classList && context.classList.contains('repeatable-item')) {
       // Buscar por el nombre del campo sin índices
       const fields = context.querySelectorAll(`[name*=".${field}"]`);
       fieldEl = fields.length > 0 ? fields[0] : null;
-      
+
       // Si no se encuentra, intentar con el nombre exacto
       if (!fieldEl) {
         fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
@@ -309,9 +300,9 @@ class conditions {
       // Búsqueda normal en form/view
       fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
     }
-    
+
     if (!fieldEl) {
-      console.warn(`Conditions: Campo "${field}" no encontrado en contexto`);
+      logger.warn('cor:conditions', `Campo "${field}" no encontrado en contexto`);
       return false;
     }
 
@@ -375,7 +366,7 @@ class conditions {
         return !String(fieldValue).toLowerCase().includes(String(targetValue).toLowerCase());
 
       default:
-        console.warn(`Conditions: Operador desconocido "${operator}"`);
+        logger.warn('cor:conditions', `Operador desconocido "${operator}"`);
         return false;
     }
   }
@@ -465,7 +456,7 @@ class conditions {
     const pathParts = fieldPath.split('.');
     if (pathParts.length > 1) {
       const baseField = pathParts[pathParts.length - 1]; // última parte
-      
+
       // Buscar cualquier campo que termine con ese nombre
       const fields = formEl.querySelectorAll(`[name*=".${baseField}"]`);
       if (fields.length > 0) {
@@ -492,7 +483,7 @@ class conditions {
         } else if (watcher.type === 'observer') {
           // Es un MutationObserver
           watcher.observer.disconnect();
-          
+
           // Limpiar marca de observado
           if (watcher.container) {
             delete watcher.container.dataset.conditionsObserved;
@@ -507,24 +498,15 @@ class conditions {
   }
 
   static debug(formId) {
-    console.group(`🔍 Conditions Debug: ${formId}`);
-    
+    logger.debug('cor:conditions', `Debug: ${formId}`);
+
     const rules = this.rules.get(formId);
     if (!rules) {
-      console.log('No hay reglas registradas para este formulario');
-      console.groupEnd();
+      logger.debug('cor:conditions', 'No hay reglas registradas para este formulario');
       return;
     }
 
-    console.log('Reglas activas:', rules.size);
-    rules.forEach((rule, fieldPath) => {
-      console.log(`\n📋 Campo: ${fieldPath}`);
-      console.log('  Contexto:', rule.context);
-      console.log('  Lógica:', rule.logic);
-      console.log('  Condiciones:', rule.conditions);
-    });
-
-    console.groupEnd();
+    logger.debug('cor:conditions', `Reglas activas: ${rules.size}`);
   }
 }
 

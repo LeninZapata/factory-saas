@@ -5,7 +5,7 @@ class sidebar {
 
   static async init() {
     await this.loadMenu();
-    
+
     const firstView = this.getFirstView();
     if (firstView) {
       if (window.view && typeof view.loadView === 'function') {
@@ -18,7 +18,7 @@ class sidebar {
     try {
       if (window.hook && typeof hook.getMenuItems === 'function') {
         const pluginMenus = hook.getMenuItems();
-        
+
         const baseMenu = [
           {
             id: "dashboard",
@@ -28,10 +28,10 @@ class sidebar {
             order: 1
           }
         ];
-        
+
         const allMenuItems = [...baseMenu, ...pluginMenus];
         const uniqueMenuItems = this.removeDuplicateMenus(allMenuItems);
-        
+
         this.menuData.menu = uniqueMenuItems;
       } else {
         this.menuData.menu = [
@@ -43,11 +43,11 @@ class sidebar {
           }
         ];
       }
-      
+
       this.renderMenu();
-      
+
     } catch (error) {
-      console.error('SIDEBAR: Error cargando menú:', error);
+      logger.error('cor:sidebar', 'Error cargando menú:', error);
       this.menuData.menu = [
         {
           id: "dashboard",
@@ -72,12 +72,12 @@ class sidebar {
   static renderMenu() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
-    
+
     const menuHTML = this.generateMenuHtml(this.menuData.menu);
     const logoutButton = this.generateLogoutButton();
-    
+
     sidebar.innerHTML = menuHTML + logoutButton;
-    
+
     this.bindMenuEvents();
     this.bindLogoutEvent();
   }
@@ -87,10 +87,10 @@ class sidebar {
       const hasSubmenu = item.items && item.items.length > 0;
       const isSubmenu = level > 0;
       const itemClass = `menu-item ${hasSubmenu ? 'has-submenu' : ''} ${isSubmenu ? 'submenu-item' : ''} level-${level}`;
-      
+
       const showIcon = !isSubmenu && item.icon;
       const iconHtml = showIcon ? `<span class="menu-icon">${item.icon}</span>` : '';
-      
+
       return `
         <div class="${itemClass}" data-id="${item.id}" data-level="${level}">
           ${iconHtml}
@@ -109,7 +109,7 @@ class sidebar {
   static generateLogoutButton() {
     const user = window.auth?.getUser();
     const userName = user?.name || user?.email || 'Usuario';
-    
+
     return `
       <div class="sidebar-footer">
         <div class="sidebar-user">
@@ -138,30 +138,28 @@ class sidebar {
 
   static bindMenuEvents() {
     const menuItems = document.querySelectorAll('.menu-item');
-    
+
     menuItems.forEach(item => {
       item.addEventListener('click', async (e) => {
         const menuId = item.dataset.id;
         const level = parseInt(item.dataset.level) || 0;
         const menuData = this.findMenuData(menuId, level);
-        
+
         if (menuData.items && menuData.items.length > 0) {
           this.toggleSubmenu(item);
           e.stopPropagation();
         } else if (menuData.view) {
           this.setActiveMenu(item);
-          
+
           const pluginName = this.detectPluginFromMenuId(menuId);
-          
+
           const menuResources = {
             scripts: menuData.scripts || [],
             styles: menuData.styles || []
           };
-          
-          // ✅ Precargar vistas hermanas con preloadViews: true
-          console.log(`🔍 SIDEBAR: Click en menú "${menuId}" (level: ${level}, plugin: ${pluginName || 'core'})`);
+
           this.preloadSiblingViews(menuId, level, pluginName);
-          
+
           if (pluginName) {
             view.loadView(menuData.view, null, pluginName, menuResources);
           } else {
@@ -173,40 +171,28 @@ class sidebar {
   }
 
   static preloadSiblingViews(currentMenuId, currentLevel, pluginName) {
-    console.log(`🔎 PRELOAD: Buscando hermanos de "${currentMenuId}" (level: ${currentLevel})`);
-    
     const parentMenu = this.findParentMenu(currentMenuId, currentLevel);
     const siblings = parentMenu ? parentMenu.items : this.menuData.menu;
-    
-    console.log(`📋 PRELOAD: Hermanos encontrados:`, siblings?.map(s => `${s.id} (preload: ${s.preloadViews})`));
-    
-    if (!siblings) {
-      console.log(`⚠️ PRELOAD: No se encontraron hermanos`);
-      return;
-    }
-    
+
+    if (!siblings) return;
+
     let preloadCount = 0;
     siblings.forEach(sibling => {
       if (sibling.id !== currentMenuId && sibling.preloadViews === true && sibling.view) {
-        console.log(`🎯 PRELOAD: Iniciando precarga de "${sibling.id}" -> ${sibling.view}`);
         this.preloadView(sibling.view, pluginName);
         preloadCount++;
       }
     });
-    
-    if (preloadCount === 0) {
-      console.log(`ℹ️ PRELOAD: Ningún hermano tiene preloadViews: true`);
-    } else {
-      console.log(`✅ PRELOAD: Se iniciaron ${preloadCount} precargas`);
+
+    if (preloadCount > 0) {
+      logger.debug('cor:sidebar', `Precargadas ${preloadCount} vistas hermanas`);
     }
   }
 
   static async preloadView(viewPath, pluginName) {
     try {
       let basePath, fullPath, cacheKey;
-      
-      console.log(`🚀 PRELOAD VIEW: Iniciando "${viewPath}" (plugin: ${pluginName || 'core'})`);
-      
+
       if (pluginName) {
         basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
@@ -216,48 +202,33 @@ class sidebar {
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         cacheKey = `view_${viewPath.replace(/\//g, '_')}`;
       }
-      
-      console.log(`📂 PRELOAD VIEW: Ruta construida: ${fullPath}`);
-      console.log(`🔑 PRELOAD VIEW: Cache key: ${cacheKey}`);
-      
-      // Verificar si ya está en caché
+
       if (window.cache?.get(cacheKey)) {
-        console.log(`✅ Ya en caché: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
         return;
       }
-      
-      console.log(`⏳ PRELOAD VIEW: Haciendo fetch...`);
+
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
       const response = await fetch(fullPath + cacheBuster);
-      
-      console.log(`📡 PRELOAD VIEW: Response status: ${response.status}`);
-      
+
       if (response.ok) {
         const viewData = await response.json();
         window.cache?.set(cacheKey, viewData);
-        console.log(`📦 PreCargada: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
-      } else {
-        console.warn(`❌ PRELOAD VIEW: Response no OK (${response.status})`);
       }
     } catch (error) {
-      console.warn(`⚠️ No se pudo precargar: ${pluginName ? pluginName + '/' : ''}${viewPath}`, error);
+      logger.warn('cor:sidebar', `No se pudo precargar: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
     }
   }
 
   static findParentMenu(menuId, level) {
-    console.log(`🔍 FIND PARENT: Buscando padre de "${menuId}" (level: ${level})`);
-    
     if (level === 0) {
-      console.log(`ℹ️ FIND PARENT: Level 0, no hay padre (items de raíz)`);
       return null;
     }
-    
+
     const findRecursive = (items, targetId, currentLevel = 0) => {
       for (const item of items) {
         if (item.items && item.items.length > 0) {
           const hasChild = item.items.some(child => child.id === targetId);
           if (hasChild && currentLevel === level - 1) {
-            console.log(`✅ FIND PARENT: Padre encontrado: "${item.id}"`);
             return item;
           }
           const found = findRecursive(item.items, targetId, currentLevel + 1);
@@ -266,12 +237,8 @@ class sidebar {
       }
       return null;
     };
-    
-    const parent = findRecursive(this.menuData.menu, menuId);
-    if (!parent) {
-      console.log(`⚠️ FIND PARENT: No se encontró padre`);
-    }
-    return parent;
+
+    return findRecursive(this.menuData.menu, menuId);
   }
 
   static setActiveMenu(activeItem) {
@@ -285,7 +252,7 @@ class sidebar {
         return pluginName;
       }
     }
-    
+
     return null;
   }
 
@@ -302,14 +269,14 @@ class sidebar {
       }
       return null;
     };
-    
+
     return findRecursive(this.menuData.menu, menuId) || {};
   }
 
   static toggleSubmenu(element) {
     const isOpening = !element.classList.contains('open');
     element.classList.toggle('open');
-    
+
     if (isOpening) {
       const level = parseInt(element.dataset.level) || 0;
       const siblings = document.querySelectorAll(`.menu-item.level-${level}`);
@@ -325,7 +292,7 @@ class sidebar {
     if (!this.menuData || !this.menuData.menu || this.menuData.menu.length === 0) {
       return 'dashboard/dashboard';
     }
-    
+
     const findFirstView = (items) => {
       for (const item of items) {
         if (item.view) {
@@ -338,7 +305,7 @@ class sidebar {
       }
       return null;
     };
-    
+
     return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
   }
 }

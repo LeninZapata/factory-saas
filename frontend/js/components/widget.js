@@ -66,7 +66,7 @@ class widget {
         body.innerHTML = this.renderContent(config.content);
       }
     } catch (error) {
-      console.error('Error cargando widget:', error);
+      logger.error('com:widget', `Error cargando widget:`, error);
       body.innerHTML = '<div class="widget-error">Error al cargar</div>';
     }
   }

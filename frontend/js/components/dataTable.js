@@ -4,20 +4,20 @@ class datatable {
 
   static async render(config, container) {
     const tableId = `datatable-${++this.counter}`;
-    
+
     // Detectar plugin name
     const pluginName = config.pluginName || this.detectPluginName(container);
-    
+
     // Cargar datos usando dataLoader
     const data = await this.loadData(config, pluginName);
-    
+
     // Guardar referencia
     this.tables.set(tableId, { config, data, pluginName });
-    
+
     // Renderizar
     const html = this.generateHtml(tableId, config, data);
     container.innerHTML = html;
-    
+
     // Bind events
     this.bindEvents(tableId);
   }
@@ -28,7 +28,7 @@ class datatable {
     if (viewContainer?.dataset.plugin) {
       return viewContainer.dataset.plugin;
     }
-    
+
     // Estrategia 2: Buscar en el DOM la vista activa
     const activeView = document.querySelector('.view-container[data-view]');
     if (activeView?.dataset.view) {
@@ -38,19 +38,19 @@ class datatable {
         return parts[0];
       }
     }
-    
+
     // Estrategia 3: Buscar en view.currentPlugin
     if (window.view?.currentPlugin) {
       return window.view.currentPlugin;
     }
-    
+
     // Estrategia 4: Buscar clases CSS con patrón plugin-*
     const pluginClass = Array.from(container.classList || [])
       .find(cls => cls.startsWith('plugin-'));
     if (pluginClass) {
       return pluginClass.replace('plugin-', '');
     }
-    
+
     return null;
   }
 
@@ -60,24 +60,24 @@ class datatable {
       if (config.dataSource) {
         return await dataLoader.loadList(config.dataSource, pluginName);
       }
-      
+
       // Fallback al método antiguo (source directo)
       if (config.source) {
         // Validación minimalista: .json = archivo local, resto = API
-        const url = config.source.endsWith('.json') 
-          ? window.BASE_URL + config.source 
+        const url = config.source.endsWith('.json')
+          ? window.BASE_URL + config.source
           : config.source;
-        
+
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error loading data');
         return await response.json();
       }
-      
-      console.error('❌ DATATABLE: No se especificó dataSource ni source');
+
+      logger.error('com:datatable', 'No se especificó dataSource ni source');
       return [];
-      
+
     } catch (error) {
-      console.error('❌ DATATABLE: Error loading data', error);
+      logger.error('com:datatable', 'Error loading data:', error);
       return [];
     }
   }
@@ -105,7 +105,7 @@ class datatable {
 
   static renderRow(row, columns, actions) {
     const hasActions = actions && Object.keys(actions).length > 0;
-    
+
     return `
       <tr>
         ${columns.map(col => `<td>${row[col] || ''}</td>`).join('')}
@@ -115,18 +115,17 @@ class datatable {
   }
 
   static renderActions(row, actions) {
-    console.log('🎬 DATATABLE renderActions - Row:', row);
-    
+
     return Object.entries(actions).map(([key, action]) => {
       const onclick = this.replaceVars(action.onclick, row);
-      
+
       // Agregar data-loader-config si existe
       let dataAttrs = '';
       if (action.dataLoader) {
         const loaderConfig = JSON.stringify(action.dataLoader).replace(/"/g, '&quot;');
         dataAttrs = ` data-loader-config="${loaderConfig}" data-row-id="${row.id || row.ID || ''}"`;
       }
-      
+
       return `<button class="btn btn-sm btn-secondary" onclick="${onclick}"${dataAttrs}>${action.name}</button>`;
     }).join(' ');
   }
@@ -134,10 +133,10 @@ class datatable {
   static replaceVars(str, row) {
     return str.replace(/\{(\w+)\}/g, (match, key) => {
       if (row[key] === undefined) {
-        console.warn(`⚠️ DATATABLE: Key "${key}" no encontrada en row`);
+        logger.warn('com:datatable', `Key "${key}" no encontrada en row`);
         return match;
       }
-      
+
       // Escapar comillas simples, dobles y otros caracteres especiales
       const value = String(row[key])
         .replace(/\\/g, '\\\\')
@@ -145,7 +144,7 @@ class datatable {
         .replace(/"/g, '\\"')
         .replace(/\n/g, '\\n')
         .replace(/\r/g, '\\r');
-      
+
       return value;
     });
   }
@@ -161,7 +160,7 @@ class datatable {
   static refresh(tableId) {
     const table = this.tables.get(tableId);
     if (!table) return;
-    
+
     const container = document.getElementById(tableId).parentElement;
     this.render(table.config, container);
   }

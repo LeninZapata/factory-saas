@@ -81,7 +81,7 @@ class tabs {
       tabContent.appendChild(tempContainer);
 
     } catch (error) {
-      console.error(`Error cargando tab ${tabId}:`, error);
+      logger.error('com:tabs', `Error cargando tab ${tabId}:`, error);
       tabContent.innerHTML = '<div class="tab-error">Error cargando contenido</div>';
     }
   }
@@ -130,7 +130,7 @@ class tabs {
       try {
         await form.load(formJson, formContainer);
       } catch (error) {
-        console.error('Error cargando formulario:', error);
+        logger.error('com:tabs', 'Error cargando formulario:', error);
         formContainer.innerHTML = `<div class="error">Error: ${formJson}</div>`;
       }
     }
@@ -150,11 +150,11 @@ class tabs {
         } else if (window[componentName] && typeof window[componentName].render === 'function') {
           await window[componentName].render(config, compContainer);
         } else {
-          console.warn(`Componente ${componentName} no encontrado`);
+          logger.warn('com:tabs', `Componente ${componentName} no encontrado`);
           compContainer.innerHTML = `<div class="error">Componente '${componentName}' no disponible</div>`;
         }
       } catch (error) {
-        console.error(`Error cargando componente ${componentName}:`, error);
+        logger.error('com:tabs', `Error cargando componente ${componentName}:`, error);
         compContainer.innerHTML = `<div class="error">Error en componente: ${componentName}</div>`;
       }
     }

@@ -5,23 +5,21 @@ class ejemploChart {
 
   static init() {
     if (this.initialized) {
-      console.log('📊 Gráficos ya inicializados, recreando...');
+      logger.debug('p:chart', 'Gráficos ya inicializados, recreando...');
     }
-    
-    console.log('📊 Inicializando componente de gráficos');
-    
+
     // Verificar que los containers existan
     const chart1 = document.getElementById('chart1');
     const chart2 = document.getElementById('chart2');
-    
+
     if (!chart1 && !chart2) {
-      console.warn('⚠️ Containers de gráficos no encontrados');
+      logger.warn('p:chart', 'Containers de gráficos no encontrados');
       return;
     }
-    
+
     // Limpiar charts anteriores
     this.charts = {};
-    
+
     // Crear gráficos de ejemplo
     if (chart1) {
       this.createChart('chart1', {
@@ -31,7 +29,7 @@ class ejemploChart {
         color: '#3498db'
       });
     }
-    
+
     if (chart2) {
       this.createChart('chart2', {
         title: '👥 Usuarios Activos',
@@ -40,7 +38,7 @@ class ejemploChart {
         color: '#2ecc71'
       });
     }
-    
+
     this.bindEventsOnce();
     this.initialized = true;
   }
@@ -48,12 +46,12 @@ class ejemploChart {
   static createChart(containerId, config) {
     const container = document.getElementById(containerId);
     if (!container) {
-      console.warn(`⚠️ Container ${containerId} no encontrado`);
+      logger.warn('p:chart', `Container ${containerId} no encontrado`);
       return;
     }
-    
+
     const maxValue = Math.max(...config.data);
-    
+
     const html = `
       <div class="chart-card">
         <h3 class="chart-title">${config.title}</h3>
@@ -62,7 +60,7 @@ class ejemploChart {
             const percentage = (value / maxValue) * 100;
             return `
               <div class="chart-bar-container">
-                <div class="chart-bar" 
+                <div class="chart-bar"
                      style="height: ${percentage}%; background: ${config.color};"
                      data-value="${value}">
                   <span class="chart-value">${value}</span>
@@ -74,24 +72,24 @@ class ejemploChart {
         </div>
       </div>
     `;
-    
+
     container.innerHTML = html;
     this.charts[containerId] = config;
   }
 
   static bindEventsOnce() {
     if (this.registeredEvents.has('chart-events')) return;
-    
+
     events.on('.chart-bar', 'mouseenter', function(e) {
       this.style.opacity = '0.8';
       this.style.transform = 'scale(1.05)';
     }, document);
-    
+
     events.on('.chart-bar', 'mouseleave', function(e) {
       this.style.opacity = '1';
       this.style.transform = 'scale(1)';
     }, document);
-    
+
     this.registeredEvents.add('chart-events');
   }
 

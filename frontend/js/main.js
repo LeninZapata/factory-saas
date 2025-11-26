@@ -2,14 +2,14 @@ window.appConfig = {
   environment: IS_DEV ? 'development' : 'production',
   version: VERSION,
   isDevelopment: IS_DEV,
-  
+
   i18n: {
     enabled: true,
     defaultLang: 'es',
     availableLangs: ['es', 'en'],
     refreshOnChange: false  // false = cambio dinámico SIN recargar | true = recargar página
   },
-  
+
   auth: {
     enabled: true,
     provider: 'auth-jwt',
@@ -24,7 +24,7 @@ window.appConfig = {
       me: '/api/auth/me'
     }
   },
-  
+
   routes: {
     coreViews: 'js/views',
     pluginViews: 'plugins/{pluginName}/views',
@@ -34,7 +34,7 @@ window.appConfig = {
     utils: 'js/utils',
     validation: 'js/validation'
   },
-  
+
   cache: {
     modals: !IS_DEV,
     forms: !IS_DEV,
@@ -47,16 +47,8 @@ window.appConfig = {
 
 const SCRIPTS_TO_LOAD = [
   // Utils
-  // Components
-  'js/components/langSelector.js',
-  'js/components/toast.js',
-  'js/components/grouper.js',
-  'js/components/modal.js',
-  'js/components/tabs.js',
-  'js/components/widget.js',
-  'js/components/dataTable.js',
-  'js/components/permissions.js',
   // Core
+  'js/core/logger.js',
   'js/core/api.js',
   'js/core/cache.js',
   'js/core/event.js',
@@ -70,55 +62,60 @@ const SCRIPTS_TO_LOAD = [
   'js/core/hook.js',
   'js/core/form.js',
   'js/core/auth.js',
-  'js/core/user.js',
   'js/core/view.js',
   'js/core/sidebar.js',
   'js/core/layout.js',
+  // Components
+  'js/components/langSelector.js',
+  'js/components/toast.js',
+  'js/components/grouper.js',
+  'js/components/modal.js',
+  'js/components/tabs.js',
+  'js/components/widget.js',
+  'js/components/dataTable.js',
 ];
 
 async function initializeApp() {
   try {
-    console.log(`Sistema v${window.appConfig.version} [${window.appConfig.environment}]`);
-    
     const cacheBuster = IS_DEV ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-    
+
     const scriptPromises = SCRIPTS_TO_LOAD.map(url =>
       fetch(url + cacheBuster).then(r => {
         if (!r.ok) throw new Error(`Failed to load ${url}`);
         return r.text();
       })
     );
-    
+
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach(scriptContent => new Function(scriptContent)());
 
     // Inicializar i18n
     if (window.appConfig.i18n?.enabled && window.i18n) {
       await i18n.init(window.appConfig.i18n);
-      console.log(`i18n: Idioma ${i18n.getLang()} cargado`);
+      logger.success('m:main', `Idioma ${i18n.getLang()} cargado`);
     }
 
     // Inicializar auth
     if (window.appConfig.auth?.enabled && window.auth) {
+      logger.info('m:main', 'Inicializando autenticación...');
       await auth.init(window.appConfig.auth);
 
       if (!auth.isAuthenticated()) {
+        logger.warn('m:main', 'Usuario no autenticado, redirigiendo al login');
         return;
       }
 
+      logger.success('m:main', 'Usuario autenticado');
       await auth.showApp();
-      
-      // ✅ REMOVIDO: Ya no se llama aquí
-      // El langSelector se inicializa dentro de auth.showApp()
     }
 
     // Cleanup
     window.cache?.cleanup?.();
 
-    console.log('Sistema inicializado');
+    logger.success('m:main', 'Sistema inicializado correctamente');
 
   } catch (error) {
-    console.error('Error crítico:', error);
+    logger.error('m:main', 'Error crítico al inicializar:', error);
     document.getElementById('app').innerHTML = `
       <div style="padding: 20px; color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px;">
         <h2>Error de Carga</h2>

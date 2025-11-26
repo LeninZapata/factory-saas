@@ -3,6 +3,7 @@
   "title": "⚙️ Panel de Administración",
   "type": "tabs",
   "scripts": [
+    "plugins/admin/assets/js/permissions.js",
     "plugins/admin/assets/js/admin.js"
   ],
   "tabs": [
@@ -16,7 +17,7 @@
         },
         {
           "type": "html",
-          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', afterRender: function(formId){if(window.user&&window.user.initForm){user.initForm(formId);}}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button><button class='btn btn-secondary' onclick='user.exportUsers()'>📥 Exportar</button></div>"
+          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initFormUser(formId);}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button><button class='btn btn-secondary' onclick='alert(\"Exportar usuarios\")'>📥 Exportar</button></div>"
         },
         {
           "type": "component",
@@ -27,15 +28,15 @@
             "actions": {
               "edit": {
                 "name": "✏️ Editar",
-                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', afterRender: function(formId){if(window.user){user.initForm(formId);setTimeout(function(){user.loadUser({id});},100);}}})"
+                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', afterRender: function(formId){admin.initFormUser(formId);}})"
               },
               "permissions": {
                 "name": "🔐 Permisos",
-                "onclick": "modal.open('core:user/forms/user-form', {title: '🔐 Permisos - {username}', width: '90%', maxWidth: '900px', afterRender: function(formId){if(window.user){user.initForm(formId);setTimeout(function(){user.loadUser({id});},100);}}})"
+                "onclick": "modal.open('core:user/forms/user-form', {title: '🔐 Permisos - {username}', width: '90%', maxWidth: '900px', afterRender: function(formId){admin.initFormUser(formId);}})"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar usuario {username}?')) { user.deleteUser({id}) }"
+                "onclick": "if(confirm('¿Eliminar usuario {username}?')) { admin.request('delete', {id}) }"
               }
             }
           }

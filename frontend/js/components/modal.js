@@ -68,34 +68,22 @@ class modal {
         return;
       }
 
-      // ✅ CORE: Formulario del core con prefijo "core:"
+      // CORE: Formulario del core con prefijo "core:"
       if (typeof resource === 'string' && resource.startsWith('core:')) {
         const corePath = resource.replace('core:', '');
-        console.log(`📋 MODAL (CORE): Cargando formulario "${corePath}"`);
-        
-        // ✅ Usar afterRender desde options si existe
+        logger.debug('com:modal', `Cargando formulario core: "${corePath}"`);
+
         const afterRenderCallback = options.afterRender || null;
-        
-        if (afterRenderCallback) {
-          console.log('📋 MODAL: Usando afterRender desde options');
-        }
-        
         await form.load(corePath, content, null, true, afterRenderCallback);
         return;
       }
 
-      // ✅ Formulario de plugin con prefijo "plugin:"
+      // Formulario de plugin con prefijo "plugin:"
       if (typeof resource === 'string' && resource.startsWith('plugin:')) {
         const pluginPath = resource.replace('plugin:', '');
-        console.log(`📋 MODAL (PLUGIN): Cargando formulario "${pluginPath}"`);
-        
-        // ✅ Usar afterRender desde options si existe
+        logger.debug('com:modal', `Cargando formulario plugin: "${pluginPath}"`);
+
         const afterRenderCallback = options.afterRender || null;
-        
-        if (afterRenderCallback) {
-          console.log('📋 MODAL: Usando afterRender desde options (plugin)');
-        }
-        
         await form.load(pluginPath, content, null, false, afterRenderCallback);
         return;
       }
@@ -104,32 +92,24 @@ class modal {
       if (typeof resource === 'string' && resource.includes('|forms/')) {
         const [pluginName, formPath] = resource.split('|');
         const formName = formPath.replace('forms/', '');
-        console.log(`📋 MODAL (PLUGIN|): Cargando "${pluginName}/${formName}"`);
-        // ✅ Pasar isCore=false para forzar búsqueda en plugin
+        logger.debug('com:modal', `Cargando formulario plugin: "${pluginName}/${formName}"`);
         await form.load(`${pluginName}/${formName}`, content, null, false);
         return;
       }
 
       // Formulario del core (sin prefijo): "user/forms/user-form" o "auth/forms/login-form"
-      // Aquí form.load() hará detección automática
       if (typeof resource === 'string' && resource.includes('/forms/')) {
-        console.log(`📋 MODAL (AUTO): Cargando formulario "${resource}"`);
+        logger.debug('com:modal', `Cargando formulario: "${resource}"`);
         await form.load(resource, content);
         return;
       }
 
-      // ✅ Vista del core con prefijo "core:"
+      // Vista del core con prefijo "core:"
       if (typeof resource === 'string' && resource.startsWith('core:sections/')) {
         const corePath = resource.replace('core:sections/', '');
-        console.log(`👁️ MODAL (CORE SECTION): Cargando vista "${corePath}"`);
-        
-        // ✅ Usar afterRender desde options si existe
+        logger.debug('com:modal', `Cargando vista core: "${corePath}"`);
+
         const afterRenderCallback = options.afterRender || null;
-        
-        if (afterRenderCallback) {
-          console.log('👁️ MODAL: Usando afterRender para vista (core)');
-        }
-        
         await view.loadView(corePath, content, null, null, afterRenderCallback);
         return;
       }
@@ -137,30 +117,18 @@ class modal {
       // Vista de plugin: "user|sections/user"
       if (typeof resource === 'string' && resource.includes('|')) {
         const [plugin, viewPath] = resource.split('|');
-        console.log(`👁️ MODAL (PLUGIN|): Cargando vista "${plugin}/${viewPath}"`);
-        
-        // ✅ Usar afterRender desde options si existe
+        logger.debug('com:modal', `Cargando vista plugin: "${plugin}/${viewPath}"`);
+
         const afterRenderCallback = options.afterRender || null;
-        
-        if (afterRenderCallback) {
-          console.log('👁️ MODAL: Usando afterRender para vista (plugin)');
-        }
-        
         await view.loadView(`${viewPath}`, content, plugin, null, afterRenderCallback);
         return;
       }
 
       // Vista simple: "dashboard" o "sections/user"
       if (typeof resource === 'string') {
-        console.log(`👁️ MODAL (AUTO): Cargando vista "${resource}"`);
-        
-        // ✅ Usar afterRender desde options si existe
+        logger.debug('com:modal', `Cargando vista: "${resource}"`);
+
         const afterRenderCallback = options.afterRender || null;
-        
-        if (afterRenderCallback) {
-          console.log('👁️ MODAL: Usando afterRender para vista');
-        }
-        
         await view.loadView(resource, content, null, null, afterRenderCallback);
         return;
       }
@@ -168,13 +136,7 @@ class modal {
       // Objeto con configuración
       if (typeof resource === 'object') {
         if (resource.view) {
-          // ✅ Usar afterRender desde options si existe
           const afterRenderCallback = options.afterRender || null;
-          
-          if (afterRenderCallback) {
-            console.log('👁️ MODAL: Usando afterRender para vista (object)');
-          }
-          
           await view.loadView(resource.view, content, null, null, afterRenderCallback);
           return;
         }
@@ -183,7 +145,7 @@ class modal {
       throw new Error('Formato de recurso no válido');
 
     } catch (error) {
-      console.error('❌ Modal: Error cargando contenido:', error);
+      logger.error('com:modal', 'Error cargando contenido:', error);
       content.innerHTML = `
         <div class="alert alert-danger">
           <h4>Error</h4>
@@ -207,37 +169,32 @@ class modal {
   }
 
   static async openWithData(resource, options = {}) {
-    console.log('📦 MODAL: openWithData', { resource, options });
-    
-    // Si no hay ID, abrir modal normal
+    logger.debug('com:modal', 'openWithData', { resource, options });
+
     if (!options.id) {
-      console.warn('⚠️ MODAL: No se especificó ID para cargar datos');
+      logger.warn('com:modal', 'No se especificó ID para cargar datos');
       const result = this.open(resource, options);
       return result.modalId;
     }
-    
-    // Abrir el modal y obtener la promesa de carga
+
     const { modalId, loadPromise } = this.open(resource, options);
-    
-    // Detectar plugin name
+
     let pluginName = null;
     if (resource.includes('|')) {
       pluginName = resource.split('|')[0];
     }
-    
-    // Obtener configuración del dataLoader
+
     let dataLoaderConfig = options.dataLoader;
-    
+
     if (!dataLoaderConfig) {
-      console.log('🔍 MODAL: Buscando dataLoader en el evento...');
       const button = event?.target?.closest('[data-loader-config]');
       if (button) {
         const configStr = button.getAttribute('data-loader-config');
         dataLoaderConfig = JSON.parse(configStr.replace(/&quot;/g, '"'));
-        console.log('✅ MODAL: DataLoader encontrado en botón', dataLoaderConfig);
+        logger.debug('com:modal', 'DataLoader encontrado en botón');
       }
     }
-    
+
     if (!dataLoaderConfig && pluginName) {
       const pluginConfig = window.hook?.getPluginConfig(pluginName);
       if (pluginConfig?.backend) {
@@ -249,82 +206,68 @@ class modal {
           },
           mock: pluginConfig.mockData
         };
-        console.log('✅ MODAL: DataLoader construido desde plugin config', dataLoaderConfig);
+        logger.debug('com:modal', 'DataLoader construido desde plugin config');
       }
     }
-    
-    // Cargar datos si hay dataLoader
+
     if (dataLoaderConfig && window.dataLoader) {
       try {
-        // Esperar a que el formulario se cargue primero
-        console.log('⏳ MODAL: Esperando que termine de cargar el contenido...');
         await loadPromise;
-        console.log('✅ MODAL: Contenido cargado');
-        
-        // Cargar datos
-        console.log('⏳ MODAL: Cargando datos del registro...');
+        logger.debug('com:modal', 'Contenido cargado');
+
         const data = await dataLoader.loadDetail(dataLoaderConfig, options.id, pluginName);
-        console.log('✅ MODAL: Datos cargados', data);
-        
-        // Buscar el formulario real en el DOM (tiene ID con timestamp)
+        logger.debug('com:modal', 'Datos cargados', data);
+
         const modalContent = document.querySelector(`#${modalId} .modal-content`);
         const formElement = modalContent?.querySelector('form');
-        
+
         if (!formElement) {
-          console.error(`❌ MODAL: No se encontró ningún formulario en el modal`);
-          console.log(`🔍 MODAL: Formularios en el documento:`, 
-            Array.from(document.querySelectorAll('form')).map(f => f.id || 'sin-id')
-          );
+          logger.error('com:modal', 'No se encontró ningún formulario en el modal');
           if (window.toast) {
             toast.error('Error: No se encontró el formulario');
           }
           return modalId;
         }
-        
+
         const realFormId = formElement.getAttribute('id');
-        console.log(`✅ MODAL: Formulario encontrado con ID: "${realFormId}"`);
-        
-        // Llenar formulario
+        logger.debug('com:modal', `Formulario encontrado con ID: "${realFormId}"`);
+
         if (window.form) {
-          console.log(`📝 MODAL: Llenando formulario...`);
           form.fill(realFormId, data);
         }
-        
+
       } catch (error) {
-        console.error('❌ MODAL: Error cargando datos', error);
+        logger.error('com:modal', 'Error cargando datos', error);
         if (window.toast) {
           toast.error('Error al cargar los datos');
         }
       }
     } else {
-      console.warn('⚠️ MODAL: No se pudo cargar datos (sin dataLoader)');
+      logger.warn('com:modal', 'No se pudo cargar datos (sin dataLoader)');
     }
-    
+
     return modalId;
   }
 
   static waitForForm(formId, timeout = 3000) {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
-      
+
       const checkForm = () => {
         const formElement = document.getElementById(formId);
-        
+
         if (formElement) {
           const elapsed = Date.now() - startTime;
-          console.log(`✅ MODAL: Formulario encontrado después de ${elapsed}ms`);
+          logger.debug('com:modal', `Formulario encontrado después de ${elapsed}ms`);
           resolve(formElement);
         } else if (Date.now() - startTime >= timeout) {
-          console.error(`❌ MODAL: Timeout - Formulario "${formId}" no encontrado`);
-          console.log(`🔍 MODAL: Formularios disponibles:`, 
-            Array.from(document.querySelectorAll('form')).map(f => f.id || 'sin-id')
-          );
+          logger.error('com:modal', `Timeout - Formulario "${formId}" no encontrado`);
           reject(new Error(`Formulario ${formId} no encontrado`));
         } else {
           requestAnimationFrame(checkForm);
         }
       };
-      
+
       checkForm();
     });
   }

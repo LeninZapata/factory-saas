@@ -20,13 +20,10 @@ class i18n {
     this.availableLangs = config.availableLangs || ['es', 'en'];
 
     await this.loadCoreLang(this.currentLang);
-    
-    // Debug: mostrar de dónde viene el idioma
-    if (window.appConfig?.isDevelopment) {
-      const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
-      console.log(`i18n: Idioma '${this.currentLang}' desde ${source}`);
-      console.log(`i18n: Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
-    }
+
+    const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
+    logger.debug('cor:i18n', `Idioma '${this.currentLang}' desde ${source}`);
+    logger.debug('cor:i18n', `Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
   }
 
   static async loadCoreLang(lang) {
@@ -37,16 +34,16 @@ class i18n {
       try {
         const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
         const response = await fetch(`${window.BASE_URL}js/lang/${lang}.json${cacheBuster}`);
-        
+
         if (response.ok) {
           data = await response.json();
           cache.set(cacheKey, data, 60 * 60 * 1000);
         } else {
-          console.warn(`i18n: Idioma ${lang} no encontrado`);
+          logger.warn('cor:i18n', `Idioma ${lang} no encontrado`);
           return;
         }
       } catch (error) {
-        console.error('i18n: Error cargando idioma core:', error);
+        logger.error('cor:i18n', 'Error cargando idioma core:', error);
         return;
       }
     }
@@ -64,7 +61,7 @@ class i18n {
         ? `?v=${Date.now()}`
         : `?v=${window.appConfig.version}`;
         const response = await fetch(`${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json${cacheBuster}`);
-        
+
         if (response.ok) {
           data = await response.json();
           cache.set(cacheKey, data, 60 * 60 * 1000);
@@ -79,21 +76,21 @@ class i18n {
     if (!this.pluginTranslations.has(pluginName)) {
       this.pluginTranslations.set(pluginName, new Map());
     }
-    
+
     this.pluginTranslations.get(pluginName).set(lang, data);
   }
 
   static t(key, params = {}) {
     const lang = this.currentLang;
     const [prefix, ...rest] = key.split('.');
-    
+
     let translation = null;
 
     // Buscar en plugin primero (si key empieza con nombre de plugin)
     if (this.pluginTranslations.has(prefix)) {
       const pluginLangs = this.pluginTranslations.get(prefix);
       const pluginData = pluginLangs.get(lang);
-      
+
       if (pluginData) {
         translation = pluginData[key];
       }
@@ -113,7 +110,7 @@ class i18n {
 
     // Si aún no hay traducción, retornar la key
     if (!translation) {
-      console.warn(`i18n: Key no encontrada: ${key}`);
+      logger.warn('cor:i18n', `Key no encontrada: ${key}`);
       return key;
     }
 
@@ -125,7 +122,7 @@ class i18n {
 
   static async setLang(lang) {
     if (!this.availableLangs.includes(lang)) {
-      console.warn(`i18n: Idioma ${lang} no disponible`);
+      logger.warn('cor:i18n', `Idioma ${lang} no disponible`);
       return;
     }
 
@@ -142,16 +139,16 @@ class i18n {
     // ✅ NUEVO: Decidir entre refresh o dinámico
     if (this.config.refreshOnChange) {
       // Modo refresh: recargar página
-      console.log('🔄 i18n: Recargando página...');
+      logger.info('cor:i18n', '🔄 Recargando página...');
       window.location.reload();
     } else {
       // Modo dinámico: actualizar sin recargar
-      console.log('⚡ i18n: Actualizando dinámicamente...');
+      logger.info('cor:i18n', '⚡ Actualizando dinámicamente...');
       this.updateDynamicContent();
-      
+
       // Trigger evento para componentes personalizados
-      document.dispatchEvent(new CustomEvent('lang-changed', { 
-        detail: { lang, method: 'dynamic' } 
+      document.dispatchEvent(new CustomEvent('lang-changed', {
+        detail: { lang, method: 'dynamic' }
       }));
     }
   }
@@ -180,7 +177,7 @@ class i18n {
     // 4. Actualizar labels de formularios
     document.querySelectorAll('label[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      
+
       // Preservar checkbox/radio inputs dentro del label
       const input = el.querySelector('input[type="checkbox"], input[type="radio"]');
       if (input) {
@@ -191,22 +188,23 @@ class i18n {
       }
     });
 
-    console.log(`✅ i18n: ${document.querySelectorAll('[data-i18n]').length} elementos actualizados`);
+    const elementsCount = document.querySelectorAll('[data-i18n]').length;
+    logger.success('cor:i18n', `${elementsCount} elementos actualizados`);
   }
 
   // ✅ NUEVO: Parsear parámetros de data attributes
   static parseDataParams(element) {
     const params = {};
     const paramsAttr = element.getAttribute('data-i18n-params');
-    
+
     if (paramsAttr) {
       try {
         Object.assign(params, JSON.parse(paramsAttr));
       } catch (e) {
-        console.warn('i18n: Error parseando data-i18n-params');
+        logger.warn('cor:i18n', 'Error parseando data-i18n-params');
       }
     }
-    
+
     return params;
   }
 

@@ -30,3 +30,6 @@ mediante que debe los elementos tenede un data-attribute con el texto del key de
  _ que se pueda separar estos logs por usuario/años/mes/dia. entonces se podria ver todo lo que pasa
  _ que estos los se puede ver visualmente y clasificar estos logs son en archivos de texto .log
  _ que se pueda buscar en estos logs por palabras claves o errores comunes
+☐ Por ejemplo si el modal se le agrega boton como de guardar como se le agrega que tiene que guardar el formularo actual
+actualmente el modal y si adentro hay un form pues hace un lastst para ver el ultimo form y guardar de eso
+pero si se pone el boton en el modal como se haria para que reacione a ese formulario.

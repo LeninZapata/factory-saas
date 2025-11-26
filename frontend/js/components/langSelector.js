@@ -2,7 +2,7 @@
 window.initLangSelector = function() {
   const header = document.querySelector('.header, #header');
   if (!header) {
-    console.warn('langSelector: Header no encontrado');
+    logger.warn('com:langSelector', 'Header no encontrado');
     return;
   }
 

@@ -1,7 +1,7 @@
 class inventarioHooks {
   static hook_dashboard() {
-    console.log('✅ inventarioHooks: hook_dashboard ejecutado');
-    
+    logger.debug('p:inventario', 'hook_dashboard ejecutado');
+
     return [
       {
         id: 'inventario-resumen',
@@ -65,5 +65,5 @@ class inventarioHooks {
   }
 }
 
-// ✅ REGISTRAR GLOBALMENTE
+// Registrar globalmente
 window.inventarioHooks = inventarioHooks;

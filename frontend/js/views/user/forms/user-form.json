@@ -81,10 +81,6 @@
             },
             {
               "type": "html",
-              "content": "<script>(function(){ console.log('🔧 USER-FORM: Script inline ejecutándose...'); var formId = document.querySelector('form[data-form-id=\"user-form\"]')?.id; if (formId && window.user) { console.log('✅ USER-FORM: Inicializando user.initForm() con formId:', formId); setTimeout(function() { user.initForm(formId); }, 100); } else { console.warn('⚠️ USER-FORM: user o formId no disponible aún'); } })();</script>"
-            },
-            {
-              "type": "html",
               "content": "<div style='background: #f3f4f6; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; font-size: 0.8rem; color: #6b7280;'><strong>ℹ️ Cómo funciona:</strong><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem;'><li>✅ <strong>Plugin habilitado:</strong> Usuario ve el plugin en el menú</li><li>📋 <strong>Menús específicos:</strong> Solo ve los menús seleccionados</li><li>👁️ <strong>Vistas:</strong> Solo puede acceder a las vistas permitidas</li><li>⭐ <strong>Todos:</strong> Acceso completo a todo el plugin</li></ul></div>"
             }
           ]
@@ -143,7 +139,7 @@
             },
             {
               "type": "html",
-              "content": "<div style='margin-top: 1rem;'><button type='button' class='btn btn-secondary' onclick='user.updatePreview()'>🔄 Actualizar Preview</button></div>"
+              "content": "<div style='background: #f9fafb; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; font-size: 0.8rem; color: #6b7280;'><strong>ℹ️ Nota:</strong> El preview JSON se actualiza automáticamente al guardar el usuario.</div>"
             }
           ]
         }
@@ -156,7 +152,7 @@
       "type": "button",
       "label": "💾 Guardar Usuario",
       "action": "submit",
-      "onclick": "event.preventDefault(); user.save(this.closest('form').id);"
+      "onclick": "event.preventDefault(); admin.saveUser(this.closest('form').id);"
     },
     {
       "name": "cancel",
@@ -164,13 +160,6 @@
       "label": "❌ Cancelar",
       "style": "secondary",
       "onclick": "event.preventDefault(); modal.closeAll();"
-    },
-    {
-      "name": "update_preview",
-      "type": "button",
-      "label": "🔄 Actualizar Preview",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); user.updatePreview();"
     }
   ]
 }

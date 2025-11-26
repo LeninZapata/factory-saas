@@ -27,8 +27,6 @@ class grouper {
     const grouperId = `grouper-${++this.counter}`;
     const mode = config.mode || 'linear';
 
-    console.log(`📦 GROUPER: Renderizando en modo "${mode}"`, config);
-
     let html = '';
 
     if (mode === 'linear') {
@@ -36,7 +34,7 @@ class grouper {
     } else if (mode === 'tabs') {
       html = this.renderTabs(grouperId, config);
     } else {
-      console.error(`❌ GROUPER: Modo "${mode}" no válido`);
+      logger.error('com:grouper', `Modo "${mode}" no válido`);
       return;
     }
 
@@ -51,6 +49,8 @@ class grouper {
 
     // Bind eventos
     this.bindEvents(grouperId);
+
+    logger.success('com:grouper', `Renderizado en modo "${mode}" con ${config.groups?.length || 0} grupos`);
 
     return grouperId;
   }
@@ -162,12 +162,10 @@ class grouper {
           // Cerrar
           section.classList.remove('open');
           content.style.display = 'none';
-          console.log(`📦 GROUPER: Sección cerrada`);
         } else {
           // Abrir
           section.classList.add('open');
           content.style.display = 'block';
-          console.log(`📦 GROUPER: Sección abierta`);
         }
       });
     });
@@ -195,7 +193,7 @@ class grouper {
           targetPanel.classList.add('active');
         }
 
-        console.log(`📦 GROUPER: Tab ${index} activado`);
+        logger.debug('com:grouper', `Tab ${index} activado`);
       });
     });
   }
@@ -205,11 +203,16 @@ class grouper {
    */
   static switchTab(grouperId, tabIndex) {
     const container = document.getElementById(grouperId);
-    if (!container) return;
+    if (!container) {
+      logger.error('com:grouper', `Container no encontrado: ${grouperId}`);
+      return;
+    }
 
     const button = container.querySelector(`[data-tab-index="${tabIndex}"]`);
     if (button) {
       button.click();
+    } else {
+      logger.error('com:grouper', `Tab ${tabIndex} no encontrado en ${grouperId}`);
     }
   }
 
@@ -218,10 +221,16 @@ class grouper {
    */
   static toggleSection(grouperId, sectionIndex, forceOpen = null) {
     const container = document.getElementById(grouperId);
-    if (!container) return;
+    if (!container) {
+      logger.error('com:grouper', `Container no encontrado: ${grouperId}`);
+      return;
+    }
 
     const section = container.querySelector(`[data-group-index="${sectionIndex}"]`);
-    if (!section) return;
+    if (!section) {
+      logger.error('com:grouper', `Sección ${sectionIndex} no encontrada en ${grouperId}`);
+      return;
+    }
 
     const header = section.querySelector('.grouper-header');
     const isOpen = section.classList.contains('open');
@@ -243,12 +252,17 @@ class grouper {
    */
   static openAll(grouperId) {
     const container = document.getElementById(grouperId);
-    if (!container) return;
+    if (!container) {
+      logger.error('com:grouper', `Container no encontrado: ${grouperId}`);
+      return;
+    }
 
     const sections = container.querySelectorAll('.grouper-section');
     sections.forEach((section, index) => {
       this.toggleSection(grouperId, index, true);
     });
+
+    logger.debug('com:grouper', `Todas las secciones abiertas en ${grouperId}`);
   }
 
   /**
@@ -256,12 +270,17 @@ class grouper {
    */
   static closeAll(grouperId) {
     const container = document.getElementById(grouperId);
-    if (!container) return;
+    if (!container) {
+      logger.error('com:grouper', `Container no encontrado: ${grouperId}`);
+      return;
+    }
 
     const sections = container.querySelectorAll('.grouper-section');
     sections.forEach((section, index) => {
       this.toggleSection(grouperId, index, false);
     });
+
+    logger.debug('com:grouper', `Todas las secciones cerradas en ${grouperId}`);
   }
 }
 

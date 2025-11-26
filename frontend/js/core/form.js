@@ -24,22 +24,25 @@ class form {
     if (!schema) {
       let url;
 
-      // ✅ CASO 1: isCore = true → Forzar búsqueda en core
       if (isCore === true) {
         const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
-        console.log(`📋 FORM (CORE): ${url}`);
+        logger.debug('cor:form', `Cargando core: ${url}`);
       }
-      // ✅ CASO 2: isCore = false → Forzar búsqueda en plugin
       else if (isCore === false) {
         const parts = formName.split('/');
         const pluginName = parts[0];
         const restPath = parts.slice(1).join('/');
         const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
         url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
-        console.log(`📋 FORM (PLUGIN): ${url}`);
+        logger.debug('cor:form', `Cargando plugin: ${url}`);
       }
-      // ✅ CASO 3: isCore = null → Detección automática (legacy)
+      else if (formName.startsWith('core:')) {
+        formName = formName.replace('core:', '');
+        const basePath = window.appConfig?.routes?.coreViews || 'js/views';
+        url = `${window.BASE_URL}${basePath}/${formName}.json`;
+        logger.debug('cor:form', `Cargando core-prefix: ${url}`);
+      }
       else if (formName.includes('/')) {
         const parts = formName.split('/');
         const firstPart = parts[0];
@@ -52,16 +55,16 @@ class form {
           const restPath = parts.slice(1).join('/');
           const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
           url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
-          console.log(`📋 FORM (AUTO-PLUGIN): ${url}`);
+          logger.debug('cor:form', `Cargando auto-plugin: ${url}`);
         } else {
           const basePath = window.appConfig?.routes?.coreViews || 'js/views';
           url = `${window.BASE_URL}${basePath}/${formName}.json`;
-          console.log(`📋 FORM (AUTO-CORE): ${url}`);
+          logger.debug('cor:form', `Cargando auto-core: ${url}`);
         }
       } else {
         const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
-        console.log(`📋 FORM (LEGACY): ${url}`);
+        logger.debug('cor:form', `Cargando legacy: ${url}`);
       }
 
       const cacheBuster = window.appConfig?.cache?.forms ? '' : `?t=${Date.now()}`;
@@ -82,13 +85,12 @@ class form {
     const instanceSchema = JSON.parse(JSON.stringify(schema));
     instanceSchema.id = instanceId;
 
-    // ✅ EJECUTAR HOOKS DEL FORMULARIO
     if (schema.id && window.hook) {
       const hookName = `hook_form_${schema.id.replace(/-/g, '_')}`;
       const hookFields = hook.execute(hookName, []);
       
       if (hookFields.length > 0) {
-        console.log(`📋 Form Hook: ${hookName} agregó ${hookFields.length} campos`);
+        logger.debug('cor:form', `Hook ${hookName} agregó ${hookFields.length} campos`);
         
         if (!instanceSchema.fields) instanceSchema.fields = [];
         instanceSchema.fields.push(...hookFields);
@@ -105,7 +107,6 @@ class form {
 
     this.bindEventsOnce();
 
-    // ✅ NUEVO: Ejecutar callback afterRender después de que todo esté listo
     setTimeout(() => {
       const formEl = document.getElementById(instanceId);
       if (formEl) {
@@ -114,21 +115,19 @@ class form {
           conditions.init(instanceId);
         }
 
-        // ✅ Ejecutar callback si existe
         if (typeof afterRender === 'function') {
-          console.log(`✅ FORM: Ejecutando afterRender callback para ${schema.id}`);
+          logger.debug('cor:form', `Ejecutando afterRender para ${schema.id}`);
           try {
             afterRender(instanceId, formEl);
           } catch (error) {
-            console.error('❌ FORM: Error en afterRender callback:', error);
+            logger.error('cor:form', 'Error en afterRender:', error);
           }
         }
       } else {
-        console.error('❌ Formulario no encontrado en DOM');
+        logger.error('cor:form', 'Formulario no encontrado en DOM');
       }
     }, 10);
 
-    // ✅ Retornar instanceId para que modal pueda usarlo
     return instanceId;
   }
 
@@ -372,6 +371,7 @@ class form {
 
     const label = this.t(field.label) || path;
     const labelI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
+    const requiredAsterisk = field.required ? '<span style="color: #e74c3c; margin-left: 2px;">*</span>' : '';
 
     const common = `
       name="${path}" 
@@ -390,7 +390,7 @@ class form {
       case 'select':
         return `
           <div class="form-group">
-            <label ${labelI18n}>${label}</label>
+            <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <select ${common}>
               <option value="">Selecciona...</option>
               ${field.options?.map(opt => {
@@ -403,7 +403,7 @@ class form {
       case 'textarea':
         return `
           <div class="form-group">
-            <label ${labelI18n}>${label}</label>
+            <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <textarea ${common}></textarea>
           </div>`;
 
@@ -412,14 +412,14 @@ class form {
           <div class="form-group form-checkbox">
             <label ${labelI18n}>
               <input type="checkbox" name="${path}" ${field.required ? 'required' : ''}>
-              ${label}
+              ${label}${requiredAsterisk}
             </label>
           </div>`;
 
       default:
         return `
           <div class="form-group">
-            <label ${labelI18n}>${label}</label>
+            <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <input type="${field.type}" ${common}>
           </div>`;
     }
@@ -436,7 +436,7 @@ class form {
 
       const formEl = this.closest('form');
       if (!formEl) {
-        console.error('❌ No se encontró el formulario padre');
+        logger.error('cor:form', 'No se encontró el formulario padre');
         return;
       }
 
@@ -445,7 +445,7 @@ class form {
 
       const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
       if (!container) {
-        console.error('❌ Container no encontrado');
+        logger.error('cor:form', 'Container no encontrado');
         return;
       }
 
@@ -465,7 +465,7 @@ class form {
   static initRepeatables(formId) {
     const formEl = document.getElementById(formId);
     if (!formEl) {
-      console.error('❌ Formulario no encontrado:', formId);
+      logger.error('cor:form', 'Formulario no encontrado:', formId);
       return;
     }
 
@@ -481,18 +481,18 @@ class form {
   static addRepeatableItem(formId, path, container) {
     const schema = this.schemas.get(formId);
     if (!schema) {
-      console.error('❌ Schema no encontrado para:', formId);
+      logger.error('cor:form', 'Schema no encontrado para:', formId);
       return;
     }
 
     const fieldDef = this.findField(schema.fields, path);
     if (!fieldDef || !fieldDef.fields) {
-      console.error('❌ Field no encontrado o sin subcampos');
+      logger.error('cor:form', 'Field no encontrado o sin subcampos');
       return;
     }
 
     if (!container) {
-      console.error('❌ Container no proporcionado');
+      logger.error('cor:form', 'Container no proporcionado');
       return;
     }
 
@@ -529,7 +529,7 @@ class form {
     if (container.children.length > 1) {
       item.remove();
     } else {
-      console.warn('⚠️ No se puede eliminar el último item');
+      logger.warn('cor:form', 'No se puede eliminar el último item');
     }
   }
 
@@ -545,7 +545,7 @@ class form {
       result = current.find(f => f.name === cleanPart);
 
       if (!result) {
-        console.warn(`❌ Campo "${cleanPart}" no encontrado en path: ${path}`);
+        logger.warn('cor:form', `Campo "${cleanPart}" no encontrado en path: ${path}`);
         return null;
       }
 
@@ -553,7 +553,7 @@ class form {
         if (result.fields) {
           current = result.fields;
         } else {
-          console.warn(`❌ Campo "${cleanPart}" no tiene subcampos pero el path continúa: ${path}`);
+          logger.warn('cor:form', `Campo "${cleanPart}" no tiene subcampos pero el path continúa: ${path}`);
           return null;
         }
       }

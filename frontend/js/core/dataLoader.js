@@ -1,7 +1,5 @@
 class dataLoader {
   static async load(config, pluginName = null) {
-    console.log('📥 DATALOADER: Iniciando carga de datos', config);
-
     const type = config.type || 'auto';
 
     // Modo AUTO: Detecta automáticamente si usar API o Mock
@@ -19,41 +17,33 @@ class dataLoader {
       return await this.loadFromMock(config, pluginName);
     }
 
-    console.error('❌ DATALOADER: Tipo de dataSource no válido:', type);
+    logger.error('cor:dataLoader', `Tipo de dataSource no válido: ${type}`);
     return null;
   }
 
   static async loadAuto(config, pluginName) {
-    console.log('🔍 DATALOADER AUTO: Detectando fuente de datos...');
-
     // 1. Verificar si el plugin tiene backend habilitado
     const pluginConfig = pluginName ? window.hook?.getPluginConfig(pluginName) : null;
     const backendEnabled = pluginConfig?.backend?.enabled || false;
-
-    console.log(`🔧 Backend plugin ${pluginName}:`, backendEnabled ? 'ENABLED' : 'DISABLED');
 
     // 2. Verificar si el config tiene API habilitada
     const apiEnabled = config.api?.enabled !== false;
 
     // 3. Decidir fuente
     if (backendEnabled && apiEnabled && config.api?.endpoint) {
-      console.log('✅ DATALOADER AUTO: Usando API');
       try {
         return await this.loadFromApi(config.api);
       } catch (error) {
-        console.warn('⚠️ DATALOADER AUTO: API falló, fallback a mock', error);
+        logger.warn('cor:dataLoader', `API falló, fallback a mock: ${error.message}`);
         return await this.loadFromMock(config.mock, pluginName);
       }
     }
 
     // Fallback a mock
-    console.log('✅ DATALOADER AUTO: Usando MOCK');
     return await this.loadFromMock(config.mock, pluginName);
   }
 
   static async loadFromApi(apiConfig) {
-    console.log('🌐 DATALOADER API: Cargando desde API', apiConfig);
-
     const endpoint = apiConfig.endpoint;
     const method = apiConfig.method || 'GET';
 
@@ -66,8 +56,6 @@ class dataLoader {
         response = await window.api.post(endpoint, apiConfig.body || {});
       }
 
-      console.log('✅ DATALOADER API: Datos cargados', response);
-
       // Si la respuesta tiene estructura {success, data}
       if (response.success && response.data) {
         return response.data;
@@ -77,16 +65,14 @@ class dataLoader {
       return response;
 
     } catch (error) {
-      console.error('❌ DATALOADER API: Error', error);
+      logger.error('cor:dataLoader', `Error en API ${endpoint}: ${error.message}`);
       throw error;
     }
   }
 
   static async loadFromMock(mockConfig, pluginName) {
-    console.log('📄 DATALOADER MOCK: Cargando desde mock', mockConfig);
-
     if (!mockConfig || !mockConfig.file) {
-      console.error('❌ DATALOADER MOCK: No se especificó archivo mock');
+      logger.error('cor:dataLoader', 'No se especificó archivo mock');
       return null;
     }
 
@@ -102,8 +88,6 @@ class dataLoader {
         mockPath = `${window.BASE_URL}${mockConfig.file}`;
       }
 
-      console.log('📂 DATALOADER MOCK: Ruta:', mockPath);
-
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
       const response = await fetch(mockPath + cacheBuster);
 
@@ -112,7 +96,6 @@ class dataLoader {
       }
 
       const data = await response.json();
-      console.log('✅ DATALOADER MOCK: Datos cargados', data);
 
       // Si tiene filtro (para obtener un registro específico)
       if (mockConfig.filterBy && mockConfig.filterValue) {
@@ -120,26 +103,22 @@ class dataLoader {
           ? data.find(item => item[mockConfig.filterBy] == mockConfig.filterValue)
           : data;
 
-        console.log(`🔍 DATALOADER MOCK: Filtrado por ${mockConfig.filterBy}=${mockConfig.filterValue}`, filtered);
         return filtered;
       }
 
       return data;
 
     } catch (error) {
-      console.error('❌ DATALOADER MOCK: Error cargando', error);
+      logger.error('cor:dataLoader', `Error cargando mock: ${error.message}`);
       throw error;
     }
   }
 
   static async loadList(dataSourceConfig, pluginName) {
-    console.log('📋 DATALOADER: Cargando LISTA');
     return await this.load(dataSourceConfig, pluginName);
   }
 
   static async loadDetail(dataLoaderConfig, id, pluginName) {
-    console.log(`🔍 DATALOADER: Cargando DETALLE (ID: ${id})`);
-
     // Configurar filtro para mock
     if (dataLoaderConfig.mock) {
       dataLoaderConfig.mock.filterValue = id;

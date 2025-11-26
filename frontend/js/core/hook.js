@@ -11,22 +11,27 @@ class hook {
     try {
       const registry = await api.get('plugins/index.json');
 
-      if (!registry || !registry.plugins || !Array.isArray(registry.plugins)) {
-        console.warn('plugins/index.json vacío o mal formado');
+      if (!registry?.plugins || !Array.isArray(registry.plugins)) {
+        logger.warn('cor:hook', 'plugins/index.json vacío o mal formado');
         return;
       }
 
       const pluginLoadPromises = registry.plugins.map(async (pluginInfo) => {
         const pluginConfig = await this.loadPluginConfig(pluginInfo.name);
 
-        if (pluginConfig && pluginConfig.enabled) {
+        if (pluginConfig?.enabled) {
           this.pluginRegistry.set(pluginInfo.name, pluginConfig);
 
           if (pluginConfig.autoload) {
             await this.loadPluginScript(pluginInfo.name, pluginConfig.autoload);
           }
 
-          // ✅ Cargar idiomas del plugin si tiene
+          // Cargar scripts globales del plugin
+          if (pluginConfig.scripts?.length > 0) {
+            await this.loadPluginResources(pluginConfig.scripts, pluginConfig.styles || []);
+          }
+
+          // Cargar idiomas del plugin
           if (window.i18n && pluginConfig.availableLanguages) {
             await i18n.loadPluginLang(pluginInfo.name, i18n.getLang());
           }
@@ -42,9 +47,16 @@ class hook {
             };
 
             if (pluginConfig.menu.items?.length > 0) {
-              menuItem.items = this.processMenuItems(pluginConfig.menu.items, pluginConfig.name);
+              menuItem.items = this.processMenuItems(
+                pluginConfig.menu.items,
+                pluginConfig.name,
+                pluginConfig.scripts || [],
+                pluginConfig.styles || []
+              );
             } else if (pluginConfig.menu.view) {
               menuItem.view = pluginConfig.menu.view;
+              if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
+              if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
             }
 
             this.menuItems.push(menuItem);
@@ -54,7 +66,7 @@ class hook {
             await this.loadPluginHook(pluginInfo.name);
           }
 
-          // ✅ PreCargar vistas si preloadViews es true
+          // PreCargar vistas si está configurado
           if (pluginConfig.menu?.preloadViews === true) {
             await this.preloadPluginViews(pluginInfo.name, pluginConfig);
           }
@@ -62,14 +74,13 @@ class hook {
       });
 
       await Promise.all(pluginLoadPromises);
-
       this.menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
       const endTime = performance.now();
-      console.log(`Hooks: ${this.loadedHooks.size} plugins cargados en ${(endTime - startTime).toFixed(0)}ms`);
+      logger.debug('cor:hook', `${this.loadedHooks.size} plugins cargados en ${(endTime - startTime).toFixed(0)}ms`);
 
     } catch (error) {
-      console.error('Hooks: Error cargando plugins:', error);
+      logger.error('cor:hook', 'Error cargando plugins:', error);
     }
   }
 
@@ -79,12 +90,8 @@ class hook {
     const viewsToPreload = [];
     const collectViews = (items) => {
       items.forEach(item => {
-        if (item.view) {
-          viewsToPreload.push(item.view);
-        }
-        if (item.items?.length > 0) {
-          collectViews(item.items);
-        }
+        if (item.view) viewsToPreload.push(item.view);
+        if (item.items?.length > 0) collectViews(item.items);
       });
     };
 
@@ -95,17 +102,16 @@ class hook {
         const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
         const fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-        
+
         const response = await fetch(fullPath + cacheBuster);
-        
+
         if (response.ok) {
           const viewData = await response.json();
           const cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
           window.cache?.set(cacheKey, viewData);
-          console.log(`📦 PreCargada: ${pluginName}/${viewPath}`);
         }
       } catch (error) {
-        console.warn(`⚠️ No se pudo precargar: ${pluginName}/${viewPath}`);
+        logger.warn('cor:hook', `No se pudo precargar: ${pluginName}/${viewPath}`);
       }
     }
   }
@@ -113,27 +119,30 @@ class hook {
   static async loadPluginScript(pluginName, scriptFile) {
     try {
       const scriptPath = `plugins/${pluginName}/${scriptFile}`;
-      const cacheBuster = window.appConfig?.isDevelopment
-        ? `?v=${Date.now()}`
-        : `?v=${window.appConfig.version}`;
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
 
       const response = await fetch(`${window.BASE_URL}${scriptPath}${cacheBuster}`);
-      if (!response.ok) {
-        console.warn(`Autoload no encontrado: ${scriptPath}`);
-        return;
-      }
+      if (!response.ok) return;
 
       const scriptContent = await response.text();
       new Function(scriptContent)();
 
     } catch (error) {
-      console.error(`Error cargando autoload ${pluginName}:`, error.message);
+      logger.error('cor:hook', `Error cargando autoload ${pluginName}:`, error.message);
     }
   }
 
-  static processMenuItems(items, parentPlugin = '') {
-    console.log(`🔧 HOOK: Procesando ${items.length} items del menú${parentPlugin ? ` (plugin: ${parentPlugin})` : ''}`);
-    
+  static async loadPluginResources(scripts = [], styles = []) {
+    if (window.loader && typeof loader.loadResources === 'function') {
+      try {
+        await loader.loadResources(scripts, styles);
+      } catch (error) {
+        logger.error('cor:hook', 'Error cargando recursos:', error);
+      }
+    }
+  }
+
+  static processMenuItems(items, parentPlugin = '', pluginScripts = [], pluginStyles = []) {
     return items
       .map(item => {
         const processedItem = {
@@ -142,22 +151,26 @@ class hook {
           order: item.order || 999
         };
 
-        if (item.scripts) {
-          processedItem.scripts = item.scripts;
+        // Combinar scripts del plugin + scripts del item
+        const itemScripts = item.scripts || [];
+        const combinedScripts = [...pluginScripts, ...itemScripts];
+        if (combinedScripts.length > 0) {
+          processedItem.scripts = combinedScripts;
         }
 
-        if (item.styles) {
-          processedItem.styles = item.styles;
+        // Combinar styles del plugin + styles del item
+        const itemStyles = item.styles || [];
+        const combinedStyles = [...pluginStyles, ...itemStyles];
+        if (combinedStyles.length > 0) {
+          processedItem.styles = combinedStyles;
         }
 
-        // ✅ Copiar preloadViews si existe
         if (item.preloadViews !== undefined) {
           processedItem.preloadViews = item.preloadViews;
-          console.log(`   ✅ Item "${item.id}" tiene preloadViews: ${item.preloadViews}`);
         }
 
         if (item.items?.length > 0) {
-          processedItem.items = this.processMenuItems(item.items, parentPlugin);
+          processedItem.items = this.processMenuItems(item.items, parentPlugin, pluginScripts, pluginStyles);
         } else if (item.view) {
           processedItem.view = item.view;
         }
@@ -173,9 +186,7 @@ class hook {
 
   static async loadPluginConfig(pluginName) {
     try {
-      const cacheBuster = window.appConfig?.isDevelopment
-        ? `?v=${Date.now()}`
-        : `?v=${window.appConfig.version}`;
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
       return await api.get(`plugins/${pluginName}/index.json${cacheBuster}`);
     } catch (error) {
       return { name: pluginName, enabled: false, hasHooks: false };
@@ -185,9 +196,7 @@ class hook {
   static async loadPluginHook(pluginName) {
     try {
       const hookPath = `plugins/${pluginName}/hooks.js`;
-      const cacheBuster = window.appConfig?.isDevelopment
-        ? `?v=${Date.now()}`
-        : `?v=${window.appConfig.version}`;
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
 
       const response = await fetch(`${window.BASE_URL}${hookPath}${cacheBuster}`);
       if (!response.ok) return;
@@ -201,7 +210,7 @@ class hook {
       }
 
     } catch (error) {
-      console.error(`Hook ${pluginName}:`, error.message);
+      logger.error('cor:hook', `Error cargando hook ${pluginName}:`, error.message);
     }
   }
 
@@ -244,7 +253,7 @@ class hook {
             results = [...results, ...itemsWithOrder];
           }
         } catch (error) {
-          console.error(`Hook ${hookName} en ${pluginName}:`, error);
+          logger.error('cor:hook', `Error en hook ${hookName} (${pluginName}):`, error);
         }
       }
     }

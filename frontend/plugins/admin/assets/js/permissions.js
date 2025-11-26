@@ -16,7 +16,7 @@ class permissions {
   static async render(containerId, config = {}, pluginsData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
-      console.error('❌ Permissions: Container no encontrado:', containerId);
+      logger.error('p:permissions', 'Container no encontrado:', containerId);
       return;
     }
 
@@ -24,7 +24,6 @@ class permissions {
     const selectorId = `permissions-${Date.now()}`;
 
     // Cargar tabs de todas las vistas
-    console.log('📋 Permissions: Cargando tabs de vistas...');
     await this.loadAllViewsTabs(pluginsData);
 
     const html = `
@@ -53,7 +52,7 @@ class permissions {
     this.instances.set(selectorId, { config, pluginsData });
     this.bindEvents(selectorId);
     
-    console.log('✅ Permissions: Renderizado exitosamente');
+    logger.success('p:permissions', 'Renderizado exitosamente');
   }
 
   /**
@@ -79,14 +78,12 @@ class permissions {
           // Extraer tabs si existen
           if (viewData?.tabs && Array.isArray(viewData.tabs)) {
             this.viewsCache.set(cacheKey, viewData.tabs);
-            console.log(`✅ Permissions: Cargadas ${viewData.tabs.length} tabs de ${plugin.name}/${viewPath}`);
           } else {
             // Sin tabs, guardar null
             this.viewsCache.set(cacheKey, null);
-            console.log(`ℹ️ Permissions: ${plugin.name}/${viewPath} no tiene tabs`);
           }
         } catch (error) {
-          console.warn(`⚠️ Permissions: Error cargando ${plugin.name}/${viewPath}:`, error.message);
+          logger.error('p:permissions', `Error cargando ${plugin.name}/${viewPath}:`, error.message);
           this.viewsCache.set(cacheKey, null);
         }
       }

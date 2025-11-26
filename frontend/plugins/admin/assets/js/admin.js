@@ -1,119 +1,130 @@
-/**
- * Admin Panel Helper
- * Funciones auxiliares para el panel de administración
- */
-
 class admin {
-  static initialized = false;
+  static API = {
+    users: '/api/users'
+  };
 
-  /**
-   * Inicializar panel de administración
-   */
-  static init() {
-    if (this.initialized) {
-      console.log('⚙️ Admin: Ya inicializado');
+  static currentFormId = null;
+
+  static initFormUser(formId) {
+    this.currentFormId = formId;
+    
+    setTimeout(() => {
+      const container = document.getElementById('permissions-container');
+      if (!container) {
+        console.warn('⚠️ Admin: permissions-container no encontrado');
+        return;
+      }
+
+      const pluginsData = this.getPlugins();
+      const defaultConfig = {
+        permissions: { plugins: {} },
+        preferences: { theme: 'light', language: 'es', notifications: true }
+      };
+
+      if (window.permissions) {
+        permissions.render('permissions-container', defaultConfig, pluginsData);
+      }
+    }, 200);
+  }
+
+  static getPlugins() {
+    const plugins = [];
+    
+    if (window.hook?.pluginRegistry) {
+      for (const [name, config] of window.hook.pluginRegistry) {
+        if (config.enabled) {
+          plugins.push({
+            name,
+            hasMenu: config.hasMenu || false,
+            hasViews: config.hasViews || false,
+            menu: config.menu || null,
+            description: config.description || ''
+          });
+        }
+      }
+    }
+    
+    return plugins;
+  }
+
+  static async saveUser(formId) {
+    const formData = form.getData(formId);
+    if (!formData || !formData.username || !formData.email || !formData.role) {
+      if (window.toast) toast.error('❌ Completa los campos requeridos');
       return;
     }
 
-    console.log('⚙️ Admin: Inicializando panel...');
+    const selectorEl = document.querySelector('.permissions-selector');
+    const selectorId = selectorEl?.id;
+    let permsData = { permissions: { plugins: {} } };
     
-    // Aquí puedes agregar inicializaciones adicionales
-    // Por ejemplo: cargar configuración actual, etc.
-    
-    this.initialized = true;
-    console.log('✅ Admin: Panel inicializado');
+    if (selectorId) {
+      const hiddenInput = document.getElementById(`${selectorId}-data`);
+      if (hiddenInput?.value) {
+        try {
+          permsData = JSON.parse(hiddenInput.value);
+        } catch (error) {
+          console.warn('⚠️ Admin: Error parseando permisos:', error);
+        }
+      }
+    }
+
+    const userData = {
+      username: formData.username,
+      email: formData.email,
+      role: formData.role,
+      password: formData.password || null,
+      config: JSON.stringify({
+        ...permsData,
+        preferences: {
+          theme: formData.preferences_theme || 'light',
+          language: formData.preferences_language || 'es',
+          notifications: formData.preferences_notifications || false
+        }
+      })
+    };
+
+    if (!userData.password) delete userData.password;
+
+    await this.request('create', userData);
   }
 
-  /**
-   * Guardar configuración del sistema
-   */
-  static async saveConfig() {
-    console.log('⚙️ Admin: Guardando configuración...');
-    
-    // Obtener datos del formulario de configuración
-    const configForm = document.querySelector('form[data-form-id*="config"]');
-    let formData = {};
-    
-    if (configForm && typeof form !== 'undefined' && form.getData) {
-      const formId = configForm.id;
-      formData = form.getData(formId);
-    }
-    
-    console.log('📋 Datos de configuración:', formData);
-    
+  static async request(action, data = null) {
     try {
-      // TODO: Implementar llamada al API
-      // await api.post('/api/config', formData);
+      let response;
       
-      if (typeof toast !== 'undefined') {
-        toast.success('✅ Configuración guardada correctamente');
+      switch(action) {
+        case 'create':
+          response = await api.post(this.API.users, data);
+          if (window.toast) toast.success('✅ Usuario guardado');
+          setTimeout(() => { modal.closeAll(); location.reload(); }, 1000);
+          break;
+          
+        case 'update':
+          response = await api.put(`${this.API.users}/${data.id}`, data);
+          if (window.toast) toast.success('✅ Usuario actualizado');
+          setTimeout(() => { modal.closeAll(); location.reload(); }, 1000);
+          break;
+          
+        case 'delete':
+          response = await api.delete(`${this.API.users}/${data}`);
+          if (window.toast) toast.success('✅ Usuario eliminado');
+          setTimeout(() => location.reload(), 1000);
+          break;
+          
+        case 'get':
+          response = await api.get(`${this.API.users}/${data}`);
+          return response;
       }
+      
+      console.log('✅ Admin:', action, response);
+      return response;
+      
     } catch (error) {
-      console.error('❌ Error al guardar configuración:', error);
-      if (typeof toast !== 'undefined') {
-        toast.error('❌ Error al guardar configuración');
-      }
-    }
-  }
-
-  /**
-   * Restaurar configuración a valores por defecto
-   */
-  static async resetConfig() {
-    if (!confirm('¿Restaurar la configuración a los valores por defecto?')) {
-      return;
-    }
-
-    console.log('⚙️ Admin: Restaurando configuración...');
-
-    try {
-      // TODO: Implementar llamada al API
-      // await api.post('/api/config/reset');
-      
-      if (typeof toast !== 'undefined') {
-        toast.success('✅ Configuración restaurada');
-      }
-      
-      setTimeout(() => location.reload(), 1000);
-    } catch (error) {
-      console.error('❌ Error al restaurar configuración:', error);
-      if (typeof toast !== 'undefined') {
-        toast.error('❌ Error al restaurar configuración');
-      }
-    }
-  }
-
-  /**
-   * Limpiar caché del sistema
-   */
-  static async clearCache() {
-    console.log('⚙️ Admin: Limpiando caché...');
-
-    try {
-      // Limpiar caché local
-      if (typeof cache !== 'undefined') {
-        cache.clear();
-      }
-
-      // TODO: Limpiar caché del servidor
-      // await api.post('/api/cache/clear');
-      
-      if (typeof toast !== 'undefined') {
-        toast.success('✅ Caché limpiada correctamente');
-      }
-      
-      setTimeout(() => location.reload(), 1000);
-    } catch (error) {
-      console.error('❌ Error al limpiar caché:', error);
-      if (typeof toast !== 'undefined') {
-        toast.error('❌ Error al limpiar caché');
-      }
+      console.error('❌ Admin:', action, error);
+      if (window.toast) toast.error(`❌ Error: ${action}`);
     }
   }
 }
 
 window.admin = admin;
-
-// Auto-inicializar cuando se carga el script
-console.log('📦 Admin: Script cargado');
-admin.init();
