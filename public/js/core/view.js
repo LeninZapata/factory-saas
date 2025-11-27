@@ -6,34 +6,8 @@ class view {
   static SESSION_CHECK_INTERVAL = 30000; // 30 segundos
 
   static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null, menuId = null) {
-    // Validar sesión solo si han pasado 30 segundos desde la última validación
-    if (window.auth?.isAuthenticated?.()) {
-      const now = Date.now();
-      const shouldCheck = (now - this.lastSessionCheck) > this.SESSION_CHECK_INTERVAL;
-
-      if (shouldCheck) {
-        const tokenKey = window.authJwtProvider?.tokenKey || 'auth_token';
-        
-        if (cache.isExpired(tokenKey)) {
-          logger.warn('cor:view', 'Token expirado en cache local');
-          auth.handleExpiredSession();
-          return;
-        }
-
-        // Validación asíncrona en segundo plano
-        if (window.auth?.checkSession) {
-          this.lastSessionCheck = now;
-          auth.checkSession(true).then(sessionValid => {
-            if (!sessionValid) {
-              logger.warn('cor:view', 'Sesión inválida en servidor');
-              auth.handleExpiredSession();
-            }
-          }).catch(error => {
-            logger.error('cor:view', 'Error validando sesión:', error);
-          });
-        }
-      }
-    }
+    // ✅ NO verificar sesión aquí - se hace en auth.startSessionMonitoring()
+    // La verificación cada X minutos es suficiente, no necesitamos verificar en cada clic
 
     const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
 

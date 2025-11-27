@@ -129,7 +129,17 @@ class userController extends controller {
     $data['tu'] = time();
 
     $affected = db::table('user')->where('id', $id)->update($data);
-    response::success(['affected' => $affected], 'Usuario actualizado');
+
+    // INVALIDAR SESIONES si se modificó el config (permisos)
+    if (isset($data['config'])) {
+      $cleaned = sessionCleanup::cleanByUserId($id);
+      log::info('UserController', "Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas");
+    }
+
+    response::success([
+      'affected' => $affected,
+      'sessions_invalidated' => isset($data['config']) ? $cleaned : 0
+    ], 'Usuario actualizado');
   }
 
   // Override show para no devolver la contraseña

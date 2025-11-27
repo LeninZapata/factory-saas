@@ -12,7 +12,7 @@ class auth {
       provider: 'auth-jwt',
       loginView: 'core:auth/login',
       redirectAfterLogin: 'dashboard',
-      sessionCheckInterval: 5 * 60 * 1000,
+      sessionCheckInterval: 30 * 1000,
       ...config
     };
 
@@ -62,9 +62,35 @@ class auth {
     }
 
     this.sessionCheckInterval = setInterval(async () => {
-      const isValid = await this.checkSession(true);
-      if (!isValid) {
+      const result = await this.checkSessionWithServer();
+      
+      if (!result.valid) {
+        logger.warn('cor:auth', 'Sesión inválida detectada');
         this.handleExpiredSession();
+        return;
+      }
+
+      // ✅ Detectar si la sesión fue actualizada (permisos cambiados)
+      if (result.updated) {
+        logger.info('cor:auth', '🔄 Cambios detectados en la sesión, recargando permisos...');
+        
+        // Actualizar datos del usuario
+        this.user = result.user;
+        
+        // Limpiar caches
+        this.clearAppCaches();
+        
+        // Recargar permisos
+        this.loadUserPermissions();
+        
+        // Recargar plugins y sidebar
+        await this.reloadAppAfterPermissionChange();
+        
+        toast.show({
+          message: '✅ Tus permisos han sido actualizados',
+          type: 'success',
+          duration: 3000
+        });
       }
     }, this.config.sessionCheckInterval);
   }
@@ -81,16 +107,20 @@ class auth {
 
     const tokenKey = this.provider.tokenKey || 'auth_token';
     
+    // Verificar expiración local primero
     if (cache.isExpired(tokenKey)) {
-      if (!silent) logger.warn('cor:auth', 'Token expirado en cache');
+      if (!silent) logger.warn('cor:auth', 'Token expirado en cache local');
       return false;
     }
 
     try {
+      // ✅ Verificar sesión en el servidor
       const isValid = await this.provider.check();
-      if (!isValid && !silent) {
-        logger.warn('cor:auth', 'Sesión inválida en servidor');
+      
+      if (!isValid) {
+        if (!silent) logger.warn('cor:auth', 'Sesión inválida en servidor (puede haber sido eliminada)');
       }
+      
       return isValid;
     } catch (error) {
       if (!silent) logger.error('cor:auth', 'Error verificando sesión:', error);
@@ -98,15 +128,74 @@ class auth {
     }
   }
 
+  // ✅ Verificar sesión con el servidor y detectar cambios
+  static async checkSessionWithServer() {
+    try {
+      // ✅ Usar /user/profile que SÍ existe en el backend
+      const response = await api.get('/user/profile');
+      
+      if (response.success && response.data) {
+        return {
+          valid: true,
+          updated: false, // Por ahora no detectamos cambios automáticos
+          user: response.data,
+          expiresIn: null
+        };
+      }
+      
+      return { valid: false };
+    } catch (error) {
+      // Si es 401 Unauthorized, la sesión es inválida
+      if (error.status === 401 || error.response?.status === 401) {
+        logger.warn('cor:auth', 'Sesión inválida (401)');
+        return { valid: false };
+      }
+      
+      logger.error('cor:auth', 'Error verificando sesión:', error);
+      return { valid: false };
+    }
+  }
+
+  // ✅ Recargar app después de cambio de permisos
+  static async reloadAppAfterPermissionChange() {
+    logger.info('cor:auth', 'Recargando aplicación con nuevos permisos...');
+    
+    // Recargar plugins
+    if (window.hook?.loadPluginHooks) {
+      await hook.loadPluginHooks();
+      
+      if (window.view && hook.getEnabledPlugins) {
+        hook.getEnabledPlugins().forEach(plugin => {
+          view.registerPlugin(plugin.name, plugin);
+        });
+      }
+    }
+    
+    // Filtrar plugins por nuevos permisos
+    this.filterPluginsByPermissions();
+    
+    // Recargar sidebar
+    if (window.sidebar) {
+      await sidebar.init();
+    }
+    
+    logger.success('cor:auth', 'Aplicación recargada con nuevos permisos');
+  }
+
   static handleExpiredSession() {
     this.stopSessionMonitoring();
     
     if (window.toast) {
+      // ✅ Asegurar que message sea string
+      const message = 'Tu sesión ha expirado o fue invalidada. Por favor, inicia sesión nuevamente.';
+      
       toast.show({
-        message: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+        message: message,
         type: 'warning',
         duration: 5000
       });
+      
+      logger.warn('cor:auth', message);
     }
 
     setTimeout(() => {
