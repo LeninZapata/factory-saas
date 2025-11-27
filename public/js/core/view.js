@@ -2,39 +2,38 @@ class view {
   static views = {};
   static loadedPlugins = {};
   static viewNavigationCache = new Map();
+  static lastSessionCheck = 0;
+  static SESSION_CHECK_INTERVAL = 30000; // 30 segundos
 
-  /**
-   * Cargar vista con validación OPTIMIZADA:
-   * 1. Validación rápida en cache (síncrona, no bloquea)
-   * 2. Si pasa, carga la vista inmediatamente
-   * 3. Validación completa con servidor en segundo plano
-   */
   static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null) {
-    // ✅ Paso 1: Validación rápida en cache (síncrona, no bloquea)
+    // Validar sesión solo si han pasado 30 segundos desde la última validación
     if (window.auth?.isAuthenticated?.()) {
-      const tokenKey = window.authJwtProvider?.tokenKey || 'auth_token';
-      
-      // Verificación rápida en cache local
-      if (cache.isExpired(tokenKey)) {
-        logger.warn('cor:view', 'Token expirado en cache local');
-        auth.handleExpiredSession();
-        return;
-      }
+      const now = Date.now();
+      const shouldCheck = (now - this.lastSessionCheck) > this.SESSION_CHECK_INTERVAL;
 
-      // ✅ Paso 2: Validación completa con servidor (async, NO BLOQUEANTE)
-      if (window.auth?.checkSession) {
-        auth.checkSession(true).then(sessionValid => {
-          if (!sessionValid) {
-            logger.warn('cor:view', 'Sesión inválida en servidor');
-            auth.handleExpiredSession();
-          }
-        }).catch(error => {
-          logger.error('cor:view', 'Error validando sesión:', error);
-        });
+      if (shouldCheck) {
+        const tokenKey = window.authJwtProvider?.tokenKey || 'auth_token';
+        
+        if (cache.isExpired(tokenKey)) {
+          logger.warn('cor:view', 'Token expirado en cache local');
+          auth.handleExpiredSession();
+          return;
+        }
+
+        // Validación asíncrona en segundo plano
+        if (window.auth?.checkSession) {
+          this.lastSessionCheck = now;
+          auth.checkSession(true).then(sessionValid => {
+            if (!sessionValid) {
+              logger.warn('cor:view', 'Sesión inválida en servidor');
+              auth.handleExpiredSession();
+            }
+          }).catch(error => {
+            logger.error('cor:view', 'Error validando sesión:', error);
+          });
+        }
       }
     }
-
-    // ✅ Paso 3: Continuar con la carga normal de la vista (sin esperar)
 
     const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
 
@@ -44,7 +43,6 @@ class view {
         const content = document.getElementById('content');
         if (content) {
           content.innerHTML = cachedData.html;
-
           document.body.setAttribute('data-view', cachedData.viewId);
           document.body.className = document.body.className
             .split(' ')
@@ -53,9 +51,7 @@ class view {
           if (cachedData.layout) {
             document.body.classList.add(`layout-${cachedData.layout}`);
           }
-
           await this.reInitializeCachedView(cachedData);
-
           if (typeof afterRender === 'function') {
             try {
               afterRender(cachedData.viewId, content);
@@ -63,7 +59,6 @@ class view {
               logger.error('cor:view', 'Error en afterRender:', error);
             }
           }
-
           return;
         }
       }
@@ -84,97 +79,55 @@ class view {
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
       const firstPart = parts[0];
-
       const isPlugin = window.hook?.isPluginEnabled?.(firstPart);
-
       if (isPlugin) {
         basePath = `plugins/${firstPart}/views`;
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
         cacheKey = `plugin_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
+        pluginContext = firstPart;
       } else {
         basePath = 'js/views';
         cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
       }
     }
     else {
-      const pluginConfig = this.loadedPlugins[viewName];
-      if (pluginConfig && pluginConfig.hasViews) {
-        basePath = `plugins/${viewName}/views`;
-        cacheKey = `plugin_view_${viewName}`;
-      } else {
-        basePath = 'js/views';
-        cacheKey = `core_view_${viewName}`;
-      }
-    }
-
-    if (window.appConfig?.cache?.views) {
-      const cached = cache.get(cacheKey);
-      if (cached) {
-        logger.debug('cor:view', `Cargada desde caché: ${viewName}`);
-        const combinedData = this.combineResources(cached, menuResources);
-
-        if (container) {
-          this.renderViewInContainer(combinedData, container);
-        } else {
-          this.renderView(combinedData);
-        }
-
-        await this.loadAndInitResources(combinedData);
-
-        if (typeof afterRender === 'function') {
-          const viewContainer = container || document.getElementById('content');
-          try {
-            afterRender(combinedData.id, viewContainer);
-          } catch (error) {
-            logger.error('cor:view', 'Error en afterRender:', error);
-          }
-        }
-
-        if (!container && window.appConfig?.cache?.viewNavigation) {
-          const content = document.getElementById('content');
-          if (content) {
-            this.viewNavigationCache.set(navCacheKey, {
-              html: content.innerHTML,
-              viewId: combinedData.id,
-              layout: combinedData.layout,
-              viewData: combinedData
-            });
-          }
-        }
-
-        return;
-      }
+      basePath = 'js/views';
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
     }
 
     try {
-      const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
-      const url = `${window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
+      let viewData = cache.get(cacheKey);
 
-      const response = await fetch(url);
+      if (!viewData) {
+        const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
+        const url = `${window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
+        const response = await fetch(url);
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${url}`);
-      }
-
-      const viewData = await response.json();
-
-      if (window.validator) {
-        const validation = validator.validate('view', viewData, `${viewName}.json`);
-        if (!validation.valid) {
-          logger.error('cor:view', validation.message);
-          if (window.appConfig?.isDevelopment) {
-            this.renderError(`${validation.message}`, container);
-            return;
+        if (!response.ok) {
+          if (container) {
+            throw new Error(`Vista no encontrada: ${viewName}`);
           }
+          const found = await this.findViewInPlugins(viewName, container);
+          if (!found) {
+            throw new Error(`Vista no encontrada: ${viewName}`);
+          }
+          return;
+        }
+
+        viewData = await response.json();
+
+        if (window.appConfig?.cache?.views) {
+          cache.set(cacheKey, viewData);
         }
       }
 
-      const combinedData = this.combineResources(viewData, menuResources);
-
-      if (window.appConfig?.cache?.views) {
-        cache.set(cacheKey, viewData, window.appConfig.cache.ttl);
+      // ✅ Filtrar tabs según permisos ANTES de renderizar
+      if (viewData.tabs && pluginContext) {
+        viewData.tabs = this.filterTabsByPermissions(viewData.tabs, pluginContext, viewData.id);
       }
+
+      const combinedData = this.combineResources(viewData, menuResources);
 
       if (container) {
         this.renderViewInContainer(combinedData, container);
@@ -182,14 +135,12 @@ class view {
         this.renderView(combinedData);
       }
 
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       await this.loadAndInitResources(combinedData);
 
       if (typeof afterRender === 'function') {
-        const viewContainer = container || document.getElementById('content');
+        const content = container || document.getElementById('content');
         try {
-          afterRender(combinedData.id, viewContainer);
+          afterRender(combinedData.id, content);
         } catch (error) {
           logger.error('cor:view', 'Error en afterRender:', error);
         }
@@ -211,6 +162,76 @@ class view {
       logger.error('cor:view', `Error cargando vista ${viewName}:`, error);
       this.renderError(viewName, container);
     }
+  }
+
+  // Filtrar tabs según permisos del usuario
+  static filterTabsByPermissions(tabs, pluginName, menuId) {
+    if (window.auth?.user?.role === 'admin') return tabs;
+
+    if (!window.auth?.userPermissions?.plugins) {
+      logger.warn('cor:view', 'Usuario sin permisos - ocultando tabs');
+      return [];
+    }
+
+    const pluginPerms = window.auth.userPermissions.plugins[pluginName];
+
+    if (!pluginPerms || pluginPerms.enabled === false) {
+      logger.warn('cor:view', `Plugin ${pluginName} sin permisos`);
+      return [];
+    }
+
+    if (!pluginPerms.menus || pluginPerms.menus === '*') {
+      logger.debug('cor:view', `Plugin ${pluginName} con acceso total`);
+      return tabs;
+    }
+
+    const menuPerms = pluginPerms.menus[menuId];
+
+    // Si menuPerms es boolean true, mostrar todas
+    if (menuPerms === true) {
+      logger.debug('cor:view', `Menú ${menuId} con acceso total`);
+      return tabs;
+    }
+
+    // Si no hay permisos del menú, NO mostrar tabs
+    if (!menuPerms || typeof menuPerms !== 'object') {
+      logger.warn('cor:view', `Sin permisos para menú ${menuId}`);
+      return [];
+    }
+
+    // Si enabled === false, no mostrar tabs
+    if (menuPerms.enabled === false) {
+      logger.warn('cor:view', `Menú ${menuId} deshabilitado`);
+      return [];
+    }
+
+    // Si tabs === '*', mostrar todas
+    if (menuPerms.tabs === '*') {
+      logger.debug('cor:view', `Todas las tabs permitidas para ${menuId}`);
+      return tabs;
+    }
+
+    // Si tabs no está definido o es array vacío, NO mostrar tabs
+    if (!menuPerms.tabs || (Array.isArray(menuPerms.tabs) && menuPerms.tabs.length === 0)) {
+      logger.warn('cor:view', `Sin permisos de tabs para ${menuId}`);
+      return [];
+    }
+
+    // Si tabs es un objeto, filtrar
+    if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
+      const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
+      logger.info('cor:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
+      
+      if (filteredTabs.length === 0) {
+        logger.warn('cor:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
+      }
+      
+      return filteredTabs;
+    }
+
+    // Default: no mostrar
+    logger.warn('cor:view', `Configuración de tabs no válida para ${menuId}`);
+    return [];
   }
 
   static combineResources(viewData, menuResources) {
@@ -243,9 +264,7 @@ class view {
     }
 
     await this.loadViewResources(viewData);
-
     await new Promise(resolve => setTimeout(resolve, 20));
-
     await this.initViewComponents(viewData);
   }
 
@@ -292,20 +311,15 @@ class view {
 
   static renderView(viewData) {
     const content = document.getElementById('content');
-
     document.body.setAttribute('data-view', viewData.id);
-
     document.body.className = document.body.className
       .split(' ')
       .filter(c => !c.startsWith('layout-'))
       .join(' ');
-
     if (viewData.layout) {
       document.body.classList.add(`layout-${viewData.layout}`);
     }
-
     content.innerHTML = this.generateViewHTML(viewData);
-
     this.setupView(viewData);
   }
 
@@ -346,7 +360,6 @@ class view {
 
     if (viewData.id && window.hook) {
       const hookName = `hook_${viewData.id}`;
-
       const existingContent = Array.isArray(viewData.content) ?
         viewData.content.map(item => ({
           order: item.order || 999,
@@ -357,7 +370,6 @@ class view {
 
       if (hookResults.length > existingContent.length) {
         viewData.content = hookResults;
-
         const contentContainer = viewContainer.querySelector('.view-content');
         if (contentContainer) {
           contentContainer.innerHTML = this.renderContent(hookResults);
@@ -384,7 +396,6 @@ class view {
 
     viewData.scripts.forEach((scriptPath) => {
       const componentName = this.extractComponentName(scriptPath);
-
       if (componentName && window[componentName]) {
         if (typeof window[componentName].init === 'function') {
           try {
@@ -399,7 +410,6 @@ class view {
 
   static extractComponentName(scriptPath) {
     const fileName = scriptPath.split('/').pop().replace('.js', '');
-
     const possibleNames = [
       fileName,
       `ejemplo${fileName.charAt(0).toUpperCase() + fileName.slice(1)}`,
@@ -419,11 +429,9 @@ class view {
     if (typeof content === 'string') {
       return content;
     }
-
     if (Array.isArray(content)) {
       return content.map(item => this.renderContentItem(item)).join('');
     }
-
     return this.renderContentItem(content);
   }
 
@@ -449,50 +457,64 @@ class view {
     return '';
   }
 
+  static async reInitializeCachedView(cachedData) {
+    const viewData = cachedData.viewData;
+    if (!viewData) return;
+
+    if (viewData.tabs) {
+      const tabsContainer = document.querySelector('.view-tabs-container');
+      if (tabsContainer) {
+        await tabs.render(viewData, tabsContainer);
+      }
+    } else {
+      await this.loadDynamicComponents(document.getElementById('content'));
+    }
+
+    setTimeout(() => this.initFormValidation(), 0);
+  }
+
   static async loadDynamicComponents(container) {
-    const formContainers = container.querySelectorAll('.dynamic-form[data-form-json]');
-
-    for (const formContainer of formContainers) {
-      const formJson = formContainer.dataset.formJson;
-
-      try {
-        await form.load(formJson, formContainer);
-      } catch (error) {
-        logger.error('cor:view', `Error cargando formulario ${formJson}:`, error);
-        formContainer.innerHTML = `<div class="error">Error cargando formulario: ${formJson}</div>`;
+    const dynamicForms = container.querySelectorAll('.dynamic-form');
+    dynamicForms.forEach(async el => {
+      const formJson = el.getAttribute('data-form-json');
+      if (formJson && window.form) {
+        await form.load(formJson, el);
       }
-    }
+    });
 
-    const componentContainers = container.querySelectorAll('.dynamic-component[data-component]');
+    const dynamicComponents = container.querySelectorAll('.dynamic-component');
+    dynamicComponents.forEach(el => {
+      const componentName = el.getAttribute('data-component');
+      const configStr = el.getAttribute('data-config');
+      const config = configStr ? JSON.parse(configStr.replace(/&quot;/g, '"')) : {};
 
-    for (const compContainer of componentContainers) {
-      const componentName = compContainer.dataset.component;
-      const configStr = compContainer.dataset.config;
-
-      try {
-        const config = configStr ? JSON.parse(configStr) : {};
-
-        if (componentName === 'datatable' && window.datatable) {
-          await datatable.render(config, compContainer);
-        } else if (window[componentName] && typeof window[componentName].render === 'function') {
-          await window[componentName].render(config, compContainer);
-        } else {
-          logger.warn('cor:view', `Componente ${componentName} no encontrado`);
-          compContainer.innerHTML = `<div class="error">Componente '${componentName}' no disponible</div>`;
+      if (componentName && window[componentName]) {
+        if (typeof window[componentName].render === 'function') {
+          window[componentName].render(el, config);
+        } else if (typeof window[componentName].init === 'function') {
+          window[componentName].init(el, config);
         }
-      } catch (error) {
-        logger.error('cor:view', `Error cargando componente ${componentName}:`, error);
-        compContainer.innerHTML = `<div class="error">Error en componente: ${componentName}</div>`;
       }
-    }
+    });
+  }
+
+  static initFormValidation() {
+    const formElements = document.querySelectorAll('form[data-validation]');
+    formElements.forEach(formEl => {
+      if (window.form && typeof form.validate === 'function') {
+        const formId = formEl.id;
+        if (formId) {
+          form.initValidation?.(formId);
+        }
+      }
+    });
   }
 
   static renderError(viewName, container = null) {
     const errorHTML = `
       <div class="view-error">
-        <h2>❌ Error</h2>
+        <h2>Error cargando vista</h2>
         <p>No se pudo cargar la vista: <strong>${viewName}</strong></p>
-        <p>Verifica que el archivo exista en la ruta configurada</p>
       </div>
     `;
 
@@ -500,76 +522,10 @@ class view {
       container.innerHTML = errorHTML;
     } else {
       const content = document.getElementById('content');
-      content.innerHTML = errorHTML;
-    }
-  }
-
-  static initFormValidation() {
-    document.removeEventListener('blur', this.handleInputBlur, true);
-    document.removeEventListener('submit', this.handleFormSubmit, true);
-
-    document.addEventListener('blur', this.handleInputBlur, true);
-    document.addEventListener('submit', this.handleFormSubmit, true);
-  }
-
-  static handleInputBlur(e) {
-    if (e.target.matches('input, select, textarea')) {
-      e.target.classList.add('touched');
-      if (!e.target.validity.valid) {
-        e.target.style.borderColor = '#dc3545';
-      } else {
-        e.target.style.borderColor = '';
+      if (content) {
+        content.innerHTML = errorHTML;
       }
     }
-  }
-
-  static handleFormSubmit(e) {
-    if (e.target.matches('form')) {
-      const inputs = e.target.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        input.classList.add('touched');
-        if (!input.validity.valid) {
-          input.style.borderColor = '#dc3545';
-        } else {
-          input.style.borderColor = '';
-        }
-      });
-    }
-  }
-
-  static async reInitializeCachedView(cachedData) {
-    const viewData = cachedData.viewData;
-    const content = document.getElementById('content');
-
-    if (viewData.tabs && content) {
-      const tabsContainer = content.querySelector('.view-tabs-container');
-      if (tabsContainer && window.tabs) {
-        await tabs.render(viewData, tabsContainer);
-      }
-    }
-
-    await this.loadDynamicComponents(content);
-  }
-
-  static clearNavigationCache(viewName = null, pluginContext = null) {
-    if (viewName) {
-      const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
-      this.viewNavigationCache.delete(navCacheKey);
-    } else {
-      this.viewNavigationCache.clear();
-    }
-  }
-
-  static refreshView(viewName, pluginContext = null) {
-    this.clearNavigationCache(viewName, pluginContext);
-    this.loadView(viewName, null, pluginContext);
-  }
-
-  static getNavigationCacheStats() {
-    return {
-      size: this.viewNavigationCache.size,
-      keys: Array.from(this.viewNavigationCache.keys())
-    };
   }
 }
 

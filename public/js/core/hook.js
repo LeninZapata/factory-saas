@@ -2,6 +2,7 @@ class hook {
   static hooks = new Map();
   static loadedHooks = new Set();
   static pluginRegistry = new Map();
+  static pluginRegistryOriginal = new Map(); // ← Copia sin filtrar
   static menuItems = [];
 
   static async loadPluginHooks() {
@@ -21,6 +22,9 @@ class hook {
 
         if (pluginConfig?.enabled) {
           this.pluginRegistry.set(pluginInfo.name, pluginConfig);
+          
+          // ✅ Guardar copia original (sin filtrar)
+          this.pluginRegistryOriginal.set(pluginInfo.name, JSON.parse(JSON.stringify(pluginConfig)));
 
           if (pluginConfig.autoload) {
             await this.loadPluginScript(pluginInfo.name, pluginConfig.autoload);
@@ -81,10 +85,8 @@ class hook {
 
   static async loadPluginLanguages(pluginName) {
     if (!window.i18n) return;
-
     const currentLang = i18n.getLang();
     const loaded = await this.tryLoadPluginLang(pluginName, currentLang);
-
     if (loaded) {
       const pluginConfig = this.pluginRegistry.get(pluginName);
       if (pluginConfig) {
@@ -95,22 +97,25 @@ class hook {
   }
 
   static async tryLoadPluginLang(pluginName, lang) {
-    try {
-      const langPath = `${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json`;
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-      const response = await fetch(langPath + cacheBuster);
-      if (!response.ok) return false;
+    const langPath = `${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json`;
+    const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+    
+    // Usar loader.loadJson con opción optional y silent
+    const translations = await loader.loadJson(langPath + cacheBuster, { 
+      optional: true, 
+      silent: true 
+    });
 
-      const translations = await response.json();
-      if (!i18n.pluginTranslations.has(pluginName)) {
-        i18n.pluginTranslations.set(pluginName, new Map());
-      }
-      i18n.pluginTranslations.get(pluginName).set(lang, translations);
-      cache.set(`i18n_plugin_${pluginName}_${lang}`, translations, 60 * 60 * 1000);
-      return true;
-    } catch (error) {
-      return false;
+    if (!translations) return false;
+
+    // Guardar traducciones
+    if (!i18n.pluginTranslations.has(pluginName)) {
+      i18n.pluginTranslations.set(pluginName, new Map());
     }
+    i18n.pluginTranslations.get(pluginName).set(lang, translations);
+    cache.set(`i18n_plugin_${pluginName}_${lang}`, translations, 60 * 60 * 1000);
+    
+    return true;
   }
 
   static async preloadPluginViews(pluginName, pluginConfig) {
@@ -168,23 +173,18 @@ class hook {
           title: item.title,
           order: item.order || 999
         };
-
         const itemScripts = item.scripts || [];
         const combinedScripts = [...pluginScripts, ...itemScripts];
         if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
-
         const itemStyles = item.styles || [];
         const combinedStyles = [...pluginStyles, ...itemStyles];
         if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
-
         if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
-
         if (item.items?.length > 0) {
           processedItem.items = this.processMenuItems(item.items, parentPlugin, pluginScripts, pluginStyles);
         } else if (item.view) {
           processedItem.view = item.view;
         }
-
         return processedItem;
       })
       .sort((a, b) => (a.order || 100) - (b.order || 100));
@@ -194,7 +194,7 @@ class hook {
   static getMenuItems() {
     const filtered = this.menuItems.filter(item => {
       const pluginConfig = this.pluginRegistry.get(item.id);
-      if (!pluginConfig) return true; // Dashboard u otros menús base
+      if (!pluginConfig) return true;
       const isEnabled = pluginConfig.enabled === true;
       if (!isEnabled) {
         logger.debug('cor:hook', `Menú "${item.id}" oculto (enabled=${pluginConfig.enabled})`);
@@ -203,6 +203,25 @@ class hook {
     });
     logger.debug('cor:hook', `getMenuItems: ${filtered.length}/${this.menuItems.length} menús visibles`);
     return filtered;
+  }
+
+  // ✅ NUEVO: Obtener TODOS los plugins (sin filtrar por permisos)
+  static getAllPluginsForPermissions() {
+    const plugins = [];
+    
+    // Usar la copia original (sin filtrar)
+    for (const [name, config] of this.pluginRegistryOriginal) {
+      plugins.push({
+        name,
+        hasMenu: config.hasMenu || false,
+        hasViews: config.hasViews || false,
+        menu: config.menu || null,
+        description: config.description || ''
+      });
+    }
+
+    logger.debug('cor:hook', `getAllPluginsForPermissions: ${plugins.length} plugins disponibles`);
+    return plugins;
   }
 
   static async loadPluginConfig(pluginName) {

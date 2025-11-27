@@ -48,8 +48,9 @@ class auth {
     if (isAuth) {
       this.user = await this.provider?.getUser();
       this.normalizeConfig();
-      await this.loadUserPermissions();
+      this.loadUserPermissions(); // ← Cargar ANTES de showApp
       this.startSessionMonitoring();
+      await this.showApp();
     } else {
       this.showLogin();
     }
@@ -136,6 +137,7 @@ class auth {
 
     document.body.removeAttribute('data-view');
 
+    // Cargar plugins
     if (window.hook?.loadPluginHooks) {
       await hook.loadPluginHooks();
 
@@ -146,8 +148,10 @@ class auth {
       }
     }
 
+    // Filtrar plugins DESPUÉS de cargarlos
     this.filterPluginsByPermissions();
 
+    // Inicializar sidebar (ya con plugins filtrados)
     if (window.sidebar) {
       await sidebar.init();
     }
@@ -173,6 +177,7 @@ class auth {
     if (result.success) {
       this.user = result.user;
       this.normalizeConfig();
+      this.loadUserPermissions(); // ← Cargar ANTES de showApp
       await this.showApp();
       this.startSessionMonitoring();
     }
@@ -182,72 +187,51 @@ class auth {
 
   static async logout() {
     this.stopSessionMonitoring();
-    
-    // Limpiar caches de app (NO token/user, eso lo hace provider)
     this.clearAppCaches();
-    
     await this.provider.logout();
     this.user = null;
-    
-    // Recargar página para reset completo
     window.location.reload();
   }
 
-  // Limpiar caches de aplicación (vistas, forms, plugins)
   static clearAppCaches() {
     logger.info('cor:auth', 'Limpiando caches de aplicación...');
 
-    // 1. Vistas
     if (window.view) {
-      if (view.viewNavigationCache) {
-        view.viewNavigationCache.clear();
-      }
+      if (view.viewNavigationCache) view.viewNavigationCache.clear();
       view.views = {};
       view.loadedPlugins = {};
     }
 
-    // 2. Formularios
     if (window.form) {
-      if (form.schemas) {
-        form.schemas.clear();
-      }
-      if (form.registeredEvents) {
-        form.registeredEvents.clear();
-      }
+      if (form.schemas) form.schemas.clear();
+      if (form.registeredEvents) form.registeredEvents.clear();
     }
 
-    // 3. Hooks/Plugins
     if (window.hook) {
       hook.menuItems = [];
       hook.pluginRegistry = new Map();
       hook.loadedHooks = new Set();
     }
 
-    // 4. Sidebar
     if (window.sidebar) {
       sidebar.menuData = { menu: [] };
     }
 
-    // 5. Eventos delegados
     if (window.events) {
       events.clear();
     }
 
-    // 6. Scripts/styles cargados
     if (window.loader) {
       loader.loaded = new Set();
     }
 
-    // 7. Permisos y preferencias
     this.userPermissions = null;
     this.userPreferences = null;
 
-    // 8. Traducciones de plugins
     if (window.i18n?.pluginTranslations) {
       i18n.pluginTranslations.clear();
     }
 
-    // 9. Limpiar cache general (vistas, forms, etc) pero NO token/user
     if (window.cache) {
       const keysToPreserve = ['cache_auth_token', 'cache_auth_user'];
       const allKeys = Object.keys(localStorage).filter(k => k.startsWith('cache_'));
@@ -258,7 +242,6 @@ class auth {
         }
       });
       
-      // Limpiar memoria cache
       if (cache.memoryCache) {
         cache.memoryCache.clear();
       }
@@ -298,11 +281,11 @@ class auth {
     };
   }
 
-  static async loadUserPermissions() {
-    const currentUser = await this.provider.getUser();
-    if (!currentUser) return;
+  // Cargar permisos SÍNCRONAMENTE (no async)
+  static loadUserPermissions() {
+    if (!this.user) return;
 
-    let config = currentUser.config;
+    let config = this.user.config;
     if (typeof config === 'string') {
       try {
         config = JSON.parse(config);
@@ -319,7 +302,7 @@ class auth {
     this.userPermissions = config.permissions || { plugins: {} };
     this.userPreferences = config.preferences || { theme: 'light', language: 'es', notifications: true };
 
-    logger.success('cor:auth', 'Permisos cargados');
+    logger.success('cor:auth', 'Permisos cargados:', this.userPermissions);
 
     this.applyUserPreferences();
   }
@@ -343,7 +326,15 @@ class auth {
     }
 
     if (!this.userPermissions?.plugins) {
-      logger.warn('cor:auth', 'Usuario sin permisos definidos');
+      logger.warn('cor:auth', 'Usuario sin permisos definidos - deshabilitar todos los plugins');
+      
+      // Si no hay permisos, deshabilitar TODOS los plugins
+      if (window.hook?.pluginRegistry) {
+        for (const [pluginName, plugin] of window.hook.pluginRegistry) {
+          plugin.enabled = false;
+          logger.debug('cor:auth', `Plugin deshabilitado por falta de permisos: ${pluginName}`);
+        }
+      }
       return;
     }
 
@@ -352,21 +343,40 @@ class auth {
       return;
     }
 
+    logger.info('cor:auth', 'Filtrando plugins por permisos...');
+
     for (const [pluginName, plugin] of window.hook.pluginRegistry) {
       const perms = this.userPermissions.plugins[pluginName];
 
-      if (!perms || perms.enabled === false) {
+      // Si el plugin NO está en permisos, deshabilitarlo
+      if (!perms) {
         plugin.enabled = false;
-        logger.debug('cor:auth', `Plugin deshabilitado: ${pluginName}`);
+        logger.debug('cor:auth', `Plugin deshabilitado (no en permisos): ${pluginName}`);
         continue;
       }
 
-      if (perms.menus !== '*' && plugin.menu?.items && typeof perms.menus === 'object') {
-        const allowedMenuIds = Object.keys(perms.menus).filter(key => perms.menus[key] === true);
-        plugin.menu.items = plugin.menu.items.filter(item => allowedMenuIds.includes(item.id));
-        logger.debug('cor:auth', `Menús filtrados para ${pluginName}:`, allowedMenuIds);
+      // Si perms.enabled === false, deshabilitarlo
+      if (perms.enabled === false) {
+        plugin.enabled = false;
+        logger.debug('cor:auth', `Plugin deshabilitado (enabled=false): ${pluginName}`);
+        continue;
+      }
+
+      // Si perms.enabled === true, habilitarlo
+      if (perms.enabled === true) {
+        plugin.enabled = true;
+        logger.debug('cor:auth', `Plugin habilitado: ${pluginName}`);
+
+        // Filtrar menús si es necesario
+        if (perms.menus !== '*' && plugin.menu?.items && typeof perms.menus === 'object') {
+          const allowedMenuIds = Object.keys(perms.menus).filter(key => perms.menus[key] === true);
+          plugin.menu.items = plugin.menu.items.filter(item => allowedMenuIds.includes(item.id));
+          logger.debug('cor:auth', `Menús filtrados para ${pluginName}:`, allowedMenuIds);
+        }
       }
     }
+
+    logger.success('cor:auth', 'Filtrado de plugins completado');
   }
 
   static hasPermission(plugin, menu = null, view = null) {

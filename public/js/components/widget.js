@@ -3,6 +3,11 @@ class widget {
   static draggedWidget = null;
 
   static async render(config, container) {
+    if (!container) {
+      logger.error('com:widget', 'Container no válido');
+      return;
+    }
+
     const gridId = `widget-grid-${Date.now()}`;
     this.grids.set(gridId, config);
 
@@ -10,6 +15,10 @@ class widget {
     container.innerHTML = `<div class="widget-grid" id="${gridId}" data-cols="${cols}"></div>`;
 
     const grid = document.getElementById(gridId);
+    if (!grid) {
+      logger.error('com:widget', 'No se pudo crear el grid');
+      return;
+    }
 
     for (const widgetConfig of config.widgets || []) {
       await this.addWidget(grid, widgetConfig);
@@ -19,6 +28,8 @@ class widget {
   }
 
   static async addWidget(grid, config) {
+    if (!grid) return;
+
     const widgetId = `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const widget = document.createElement('div');
     widget.className = 'widget-item';
@@ -84,7 +95,10 @@ class widget {
   }
 
   static bindDragEvents(grid) {
+    if (!grid) return;
+    
     const widgets = grid.querySelectorAll('.widget-item');
+    if (!widgets || widgets.length === 0) return;
 
     widgets.forEach(w => {
       w.addEventListener('dragstart', (e) => {
