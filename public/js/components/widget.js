@@ -2,7 +2,7 @@ class widget {
   static grids = new Map();
   static draggedWidget = null;
 
-  static async render(config, container) {
+  static async render(container, config) {
     if (!container) {
       logger.error('com:widget', 'Container no válido');
       return;
@@ -12,13 +12,16 @@ class widget {
     this.grids.set(gridId, config);
 
     const cols = config.columns || 2;
-    container.innerHTML = `<div class="widget-grid" id="${gridId}" data-cols="${cols}"></div>`;
-
-    const grid = document.getElementById(gridId);
-    if (!grid) {
-      logger.error('com:widget', 'No se pudo crear el grid');
-      return;
-    }
+    
+    // ✅ Crear elemento directamente en lugar de usar innerHTML
+    const grid = document.createElement('div');
+    grid.className = 'widget-grid';
+    grid.id = gridId;
+    grid.dataset.cols = cols;
+    
+    // Limpiar container y agregar grid
+    container.innerHTML = '';
+    container.appendChild(grid);
 
     for (const widgetConfig of config.widgets || []) {
       await this.addWidget(grid, widgetConfig);

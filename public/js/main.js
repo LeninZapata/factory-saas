@@ -12,17 +12,15 @@ window.appConfig = {
 
   auth: {
     enabled: true,
-    provider: 'auth-jwt',
     loginView: 'auth/login',
-    redirectAfterLogin: 'dashboard',
+    redirectAfterLogin: 'dashboard/dashboard',
     storageKey: 'factory_auth',
-    tokenTTL: 24 * 60 * 60 * 1000, // Fallback: solo si backend no envía ttl_ms
-    sessionCheckInterval: 5 * 60 * 1000, // 5 minutos - verificación automática
+    tokenTTL: 24 * 60 * 60 * 1000,
+    sessionCheckInterval: 10 * 1000, // ⚡ 10 segundos - TESTING (cambiar a 5*60*1000 en producción)
     api: {
-      login: '/api/user/login',     // POST - Login
-      logout: '/api/user/logout',   // POST - Logout
-      refresh: '/api/user/refresh', // POST - Refresh token (futuro)
-      me: '/api/user/profile'       // GET - Obtener perfil (verificar sesión)
+      login: '/api/user/login',
+      logout: '/api/user/logout',
+      me: '/api/user/profile'
     }
   },
 

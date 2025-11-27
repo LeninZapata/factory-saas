@@ -1,54 +1,44 @@
 class auth {
   static config = {};
-  static provider = null;
   static user = null;
   static userPermissions = null;
   static userPreferences = null;
   static sessionCheckInterval = null;
 
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
+  
   static async init(config) {
     this.config = {
       enabled: true,
-      provider: 'auth-jwt',
-      loginView: 'core:auth/login',
+      loginView: 'auth/login',
       redirectAfterLogin: 'dashboard',
-      sessionCheckInterval: 30 * 1000,
+      storageKey: 'factory_auth',
+      sessionCheckInterval: 5 * 60 * 1000,
+      tokenTTL: 24 * 60 * 60 * 1000,
+      api: {
+        login: '/api/user/login',
+        logout: '/api/user/logout',
+        me: '/api/user/profile'
+      },
       ...config
     };
 
     if (!this.config.enabled) return;
 
-    const providerUrl = `${window.BASE_URL}plugins/${this.config.provider}/provider.js`;
-    await loader.loadScript(providerUrl);
+    logger.debug('cor:auth', 'Inicializando autenticación...');
 
-    const authProviderUrl = `${window.BASE_URL}plugins/${this.config.provider}/auth-provider.js`;
-    await loader.loadScript(authProviderUrl);
+    // Interceptar formulario de login
+    this.setupLoginHandler();
 
-    const providerName = this.config.provider
-      .split('-')
-      .map((word, index) =>
-        index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
-      )
-      .join('');
-
-    const providerClassName = `${providerName}Provider`;
-    this.provider = window[providerClassName];
-
-    if (!this.provider) {
-      logger.error('cor:auth', 'Provider no encontrado!');
-      return;
-    }
-
-    if (this.provider?.init) {
-      this.provider.init(this.config);
-    }
-
-    const isAuth = await this.provider?.check();
+    // Verificar si hay sesión válida
+    const isAuth = await this.check();
 
     if (isAuth) {
-      this.user = await this.provider?.getUser();
+      this.user = await this.getUser();
       this.normalizeConfig();
-      this.loadUserPermissions(); // ← Cargar ANTES de showApp
+      this.loadUserPermissions();
       this.startSessionMonitoring();
       await this.showApp();
     } else {
@@ -56,12 +46,229 @@ class auth {
     }
   }
 
+  // ============================================
+  // AUTENTICACIÓN
+  // ============================================
+
+  static async check() {
+    const token = this.getToken();
+
+    if (!token) {
+      logger.debug('cor:auth', 'No hay token guardado');
+      return false;
+    }
+
+    // Verificar si el token está expirado localmente
+    if (cache.isExpired(`${this.config.storageKey}_token`)) {
+      logger.warn('cor:auth', 'Token expirado en cache local');
+      this.clearSession();
+      return false;
+    }
+
+    try {
+      const response = await api.get(this.config.api.me);
+
+      if (response.success && response.data) {
+        // Actualizar usuario en cache
+        cache.setLocal(`${this.config.storageKey}_user`, response.data, this.config.tokenTTL);
+        logger.success('cor:auth', 'Sesión válida');
+        return true;
+      }
+
+      logger.warn('cor:auth', 'Respuesta inesperada del servidor');
+      this.clearSession();
+      return false;
+
+    } catch (error) {
+      logger.warn('cor:auth', 'Token inválido o expirado:', error.message);
+      this.clearSession();
+      return false;
+    }
+  }
+
+  static async login(credentials) {
+    try {
+      logger.debug('cor:auth', 'Iniciando login...');
+
+      const response = await api.post(this.config.api.login, credentials);
+
+      logger.debug('cor:auth', 'Respuesta del servidor:', response);
+
+      if (response.success && response.data) {
+        const { token, user, ttl_ms } = response.data;
+
+        if (!token || !user) {
+          logger.error('cor:auth', 'Respuesta incompleta del servidor');
+          return {
+            success: false,
+            error: 'Error en la respuesta del servidor'
+          };
+        }
+
+        // Usar TTL del backend o fallback
+        const tokenTTL = ttl_ms || this.config.tokenTTL;
+
+        // Guardar en cache
+        cache.setLocal(`${this.config.storageKey}_token`, token, tokenTTL);
+        cache.setLocal(`${this.config.storageKey}_user`, user, tokenTTL);
+
+        // Guardar usuario en memoria
+        this.user = user;
+
+        logger.success('cor:auth', `Login exitoso para: ${user.user}`);
+        logger.info('cor:auth', `Token expira en: ${Math.round(tokenTTL / 1000 / 60)} minutos`);
+
+        // Cargar permisos y mostrar app
+        this.normalizeConfig();
+        this.loadUserPermissions();
+        await this.showApp();
+        this.startSessionMonitoring();
+
+        return { success: true, user, token, ttl_ms: tokenTTL };
+      }
+
+      logger.warn('cor:auth', 'Credenciales incorrectas');
+      return {
+        success: false,
+        error: response.error || 'Usuario o contraseña incorrectos'
+      };
+
+    } catch (error) {
+      logger.error('cor:auth', 'Error en login:', error.message);
+      return {
+        success: false,
+        error: 'Error de conexión con el servidor'
+      };
+    }
+  }
+
+  static async logout() {
+    this.stopSessionMonitoring();
+
+    const token = this.getToken();
+
+    if (token) {
+      try {
+        await api.post(this.config.api.logout);
+        logger.success('cor:auth', 'Logout en backend exitoso');
+      } catch (error) {
+        logger.warn('cor:auth', 'Error en logout:', error.message);
+      }
+    }
+
+    this.clearAppCaches();
+    this.clearSession();
+    this.user = null;
+    
+    logger.debug('cor:auth', 'Sesión cerrada');
+    
+    window.location.reload();
+  }
+
+  // ============================================
+  // MANEJO DEL FORMULARIO DE LOGIN
+  // ============================================
+
+  static setupLoginHandler() {
+    if (!window.events) {
+      logger.error('cor:auth', 'events.js no está cargado');
+      return;
+    }
+
+    events.on('form[data-form-id*="login-form"]', 'submit', async function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const form = this;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+
+      // Validar campos requeridos
+      if (!data.user || !data.pass) {
+        auth.showLoginError(form, 'Usuario y contraseña son requeridos');
+        return;
+      }
+
+      const btn = form.querySelector('button[type="submit"]');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Ingresando...';
+      }
+
+      // Login
+      const result = await auth.login(data);
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar';
+      }
+
+      if (!result.success) {
+        logger.warn('cor:auth', 'Login falló:', result.error);
+        auth.showLoginError(form, result.error || 'Error al iniciar sesión');
+      }
+    }, document);
+
+    logger.debug('cor:auth', 'Handler de login registrado');
+  }
+
+  static showLoginError(form, message) {
+    let error = form.querySelector('.form-error');
+    if (!error) {
+      error = document.createElement('div');
+      error.className = 'form-error';
+      form.insertBefore(error, form.firstChild);
+    }
+
+    error.innerHTML = `
+      <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; border: 1px solid #f5c6cb; margin-bottom: 1rem;">
+        ⚠️ ${message}
+      </div>
+    `;
+
+    setTimeout(() => error.remove(), 5000);
+  }
+
+  // ============================================
+  // SESIÓN
+  // ============================================
+
+  static getToken() {
+    return cache.getLocal(`${this.config.storageKey}_token`);
+  }
+
+  static async getUser() {
+    return cache.getLocal(`${this.config.storageKey}_user`);
+  }
+
+  static clearSession() {
+    cache.delete(`${this.config.storageKey}_token`);
+    cache.delete(`${this.config.storageKey}_user`);
+  }
+
+  static isAuthenticated() {
+    return !!this.user && !!this.getToken();
+  }
+
+  // ============================================
+  // MONITOREO DE SESIÓN
+  // ============================================
+
   static startSessionMonitoring() {
     if (this.sessionCheckInterval) {
       clearInterval(this.sessionCheckInterval);
     }
 
+    const intervalSeconds = Math.round(this.config.sessionCheckInterval / 1000);
+    const endpoint = this.config.api.me;
+    
+    logger.info('cor:auth', `⏱️ Iniciando monitoreo de sesión cada ${intervalSeconds} segundos`);
+    logger.info('cor:auth', `📡 Endpoint de verificación: ${endpoint}`);
+
     this.sessionCheckInterval = setInterval(async () => {
+      logger.debug('cor:auth', '🔍 Verificando sesión en servidor...');
       const result = await this.checkSessionWithServer();
       
       if (!result.valid) {
@@ -70,20 +277,14 @@ class auth {
         return;
       }
 
-      // ✅ Detectar si la sesión fue actualizada (permisos cambiados)
+      logger.debug('cor:auth', '✅ Sesión válida');
+
       if (result.updated) {
         logger.info('cor:auth', '🔄 Cambios detectados en la sesión, recargando permisos...');
         
-        // Actualizar datos del usuario
         this.user = result.user;
-        
-        // Limpiar caches
         this.clearAppCaches();
-        
-        // Recargar permisos
         this.loadUserPermissions();
-        
-        // Recargar plugins y sidebar
         await this.reloadAppAfterPermissionChange();
         
         toast.show({
@@ -99,94 +300,45 @@ class auth {
     if (this.sessionCheckInterval) {
       clearInterval(this.sessionCheckInterval);
       this.sessionCheckInterval = null;
+      logger.debug('cor:auth', 'Monitoreo de sesión detenido');
     }
   }
 
-  static async checkSession(silent = false) {
-    if (!this.provider) return false;
-
-    const tokenKey = this.provider.tokenKey || 'auth_token';
-    
-    // Verificar expiración local primero
-    if (cache.isExpired(tokenKey)) {
-      if (!silent) logger.warn('cor:auth', 'Token expirado en cache local');
-      return false;
-    }
-
-    try {
-      // ✅ Verificar sesión en el servidor
-      const isValid = await this.provider.check();
-      
-      if (!isValid) {
-        if (!silent) logger.warn('cor:auth', 'Sesión inválida en servidor (puede haber sido eliminada)');
-      }
-      
-      return isValid;
-    } catch (error) {
-      if (!silent) logger.error('cor:auth', 'Error verificando sesión:', error);
-      return false;
-    }
-  }
-
-  // ✅ Verificar sesión con el servidor y detectar cambios
   static async checkSessionWithServer() {
     try {
-      // ✅ Usar /user/profile que SÍ existe en el backend
-      const response = await api.get('/user/profile');
+      const endpoint = this.config.api.me;
+      const response = await api.get(endpoint);
       
       if (response.success && response.data) {
         return {
           valid: true,
-          updated: false, // Por ahora no detectamos cambios automáticos
+          updated: false,
           user: response.data,
           expiresIn: null
         };
       }
       
+      logger.warn('cor:auth', 'Respuesta inesperada del servidor:', response);
       return { valid: false };
     } catch (error) {
-      // Si es 401 Unauthorized, la sesión es inválida
       if (error.status === 401 || error.response?.status === 401) {
-        logger.warn('cor:auth', 'Sesión inválida (401)');
+        logger.warn('cor:auth', '❌ Sesión inválida (401 Unauthorized)');
         return { valid: false };
       }
       
-      logger.error('cor:auth', 'Error verificando sesión:', error);
-      return { valid: false };
-    }
-  }
-
-  // ✅ Recargar app después de cambio de permisos
-  static async reloadAppAfterPermissionChange() {
-    logger.info('cor:auth', 'Recargando aplicación con nuevos permisos...');
-    
-    // Recargar plugins
-    if (window.hook?.loadPluginHooks) {
-      await hook.loadPluginHooks();
+      logger.error('cor:auth', 'Error verificando sesión:', {
+        message: error.message,
+        status: error.status
+      });
       
-      if (window.view && hook.getEnabledPlugins) {
-        hook.getEnabledPlugins().forEach(plugin => {
-          view.registerPlugin(plugin.name, plugin);
-        });
-      }
+      return { valid: true };
     }
-    
-    // Filtrar plugins por nuevos permisos
-    this.filterPluginsByPermissions();
-    
-    // Recargar sidebar
-    if (window.sidebar) {
-      await sidebar.init();
-    }
-    
-    logger.success('cor:auth', 'Aplicación recargada con nuevos permisos');
   }
 
   static handleExpiredSession() {
     this.stopSessionMonitoring();
     
     if (window.toast) {
-      // ✅ Asegurar que message sea string
       const message = 'Tu sesión ha expirado o fue invalidada. Por favor, inicia sesión nuevamente.';
       
       toast.show({
@@ -201,10 +353,152 @@ class auth {
     setTimeout(() => {
       this.clearAppCaches();
       this.user = null;
-      this.provider?.clearSession?.();
+      this.clearSession();
       this.showLogin();
     }, 2000);
   }
+
+  // ============================================
+  // PERMISOS
+  // ============================================
+
+  static loadUserPermissions() {
+    if (!this.user || !this.user.config) {
+      logger.warn('cor:auth', 'No hay configuración de usuario');
+      return;
+    }
+
+    logger.info('cor:auth', '🔐 Iniciando carga de permisos del usuario...');
+    logger.debug('cor:auth', '👤 Usuario:', this.user.user, '| Role:', this.user.role);
+
+    const config = this.user.config;
+    this.userPermissions = config.permissions || {};
+    this.userPreferences = config.preferences || {};
+
+    logger.success('cor:auth', '✅ Permisos cargados exitosamente');
+    logger.debug('cor:auth', '📋 Config original (tipo):', typeof config);
+
+    if (this.userPermissions.plugins) {
+      const pluginsWithPerms = Object.keys(this.userPermissions.plugins);
+      logger.info('cor:auth', `📋 Plugins con permisos: [${pluginsWithPerms.map(p => `"${p}"`).join(', ')}]`);
+    }
+
+    this.filterPluginsByPermissions();
+  }
+
+  static filterPluginsByPermissions() {
+    if (!window.hook || !hook.pluginRegistry) {
+      logger.warn('cor:auth', 'hook.pluginRegistry no disponible');
+      return;
+    }
+
+    const permissions = this.userPermissions?.plugins || {};
+
+    logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
+
+    for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
+      const pluginPerms = permissions[pluginName];
+
+      if (!pluginPerms || pluginPerms.enabled === false) {
+        pluginConfig.enabled = false;
+        logger.warn('cor:auth', `❌ Plugin deshabilitado: ${pluginName}`);
+        continue;
+      }
+
+      logger.success('cor:auth', `✅ Plugin habilitado: ${pluginName}`);
+
+      if (!pluginConfig.hasMenu || !pluginConfig.menu) continue;
+
+      const menuPerms = pluginPerms.menus;
+
+      if (menuPerms === '*') {
+        logger.info('cor:auth', `  ✨ Acceso total a menús de: ${pluginName}`);
+        continue;
+      }
+
+      if (!menuPerms || typeof menuPerms !== 'object') {
+        pluginConfig.menu.items = [];
+        logger.warn('cor:auth', `  ⚠️ Sin permisos de menús para: ${pluginName}`);
+        continue;
+      }
+
+      const originalMenus = [...(pluginConfig.menu.items || [])];
+      logger.info('cor:auth', `  📂 Menús ANTES del filtrado (${originalMenus.length}): [${originalMenus.map(m => `"${m.id}"`).join(', ')}]`);
+
+      const allowedMenuIds = Object.keys(menuPerms).filter(key => {
+        const menuPerm = menuPerms[key];
+        if (menuPerm === true) return true;
+        if (typeof menuPerm === 'object' && menuPerm.enabled === true) return true;
+        return false;
+      });
+
+      logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}: [${allowedMenuIds.map(m => `"${m}"`).join(', ')}]`);
+
+      const filteredMenus = originalMenus.filter(menu => {
+        const isAllowed = allowedMenuIds.includes(menu.id);
+        if (isAllowed) {
+          logger.success('cor:auth', `    ✅ Menú "${menu.id}" permitido`);
+        } else {
+          logger.warn('cor:auth', `    ❌ Menú "${menu.id}" bloqueado`);
+        }
+        return isAllowed;
+      });
+
+      pluginConfig.menu.items = filteredMenus;
+
+      logger.info('cor:auth', `  📊 Filtrado completado: ${originalMenus.length} → ${filteredMenus.length} menús`);
+      logger.info('cor:auth', `  📂 Menús DESPUÉS del filtrado: [${filteredMenus.map(m => `"${m.id}"`).join(', ')}]`);
+    }
+
+    logger.success('cor:auth', '📊 RESUMEN DEL FILTRADO DE PLUGINS:');
+    for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
+      if (pluginConfig.enabled && pluginConfig.hasMenu) {
+        const menuCount = pluginConfig.menu.items?.length || 0;
+        logger.success('cor:auth', `  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
+      } else if (!pluginConfig.enabled) {
+        logger.warn('cor:auth', `  ❌ ${pluginName}: deshabilitado`);
+      }
+    }
+
+    logger.success('cor:auth', '✅ Filtrado de plugins completado');
+  }
+
+  static getTabPermissions(menuId) {
+    if (!this.userPermissions?.plugins) return null;
+
+    for (const pluginName in this.userPermissions.plugins) {
+      const plugin = this.userPermissions.plugins[pluginName];
+      
+      if (plugin.menus && plugin.menus[menuId]) {
+        const menuPerm = plugin.menus[menuId];
+        
+        if (menuPerm === true) return '*';
+        if (typeof menuPerm === 'object' && menuPerm.tabs) {
+          return menuPerm.tabs;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static normalizeConfig() {
+    if (!this.user || !this.user.config) return;
+
+    if (typeof this.user.config === 'string') {
+      try {
+        this.user.config = JSON.parse(this.user.config);
+        logger.debug('cor:auth', 'Config parseado de string a objeto');
+      } catch (e) {
+        logger.error('cor:auth', 'Error parseando config:', e);
+        this.user.config = { permissions: {}, preferences: {} };
+      }
+    }
+  }
+
+  // ============================================
+  // UI
+  // ============================================
 
   static showLogin() {
     if (window.layout) {
@@ -220,66 +514,21 @@ class auth {
 
   static async showApp() {
     const layoutExists = document.querySelector('.layout .header');
+    
     if (!layoutExists && window.layout) {
       layout.init('app');
     }
 
-    document.body.removeAttribute('data-view');
+    document.body.setAttribute('data-view', 'app-view');
 
-    // Cargar plugins
-    if (window.hook?.loadPluginHooks) {
-      await hook.loadPluginHooks();
-
-      if (window.view && hook.getEnabledPlugins) {
-        hook.getEnabledPlugins().forEach(plugin => {
-          view.registerPlugin(plugin.name, plugin);
-        });
-      }
-    }
-
-    // Filtrar plugins DESPUÉS de cargarlos
-    this.filterPluginsByPermissions();
-
-    // Inicializar sidebar (ya con plugins filtrados)
     if (window.sidebar) {
       await sidebar.init();
     }
 
-    const contentHasView = document.querySelector('#content .view-container');
-    if (!contentHasView && window.view) {
-      view.loadView(this.config.redirectAfterLogin);
+    if (window.view) {
+      const viewToLoad = this.config.redirectAfterLogin || 'dashboard';
+      view.loadView(viewToLoad);
     }
-
-    if (window.initLangSelector) {
-      window.initLangSelector();
-    }
-  }
-
-  static async login(credentials) {
-    if (!this.provider) {
-      logger.error('cor:auth', 'Provider no está definido!');
-      return { success: false, error: 'Provider no inicializado' };
-    }
-
-    const result = await this.provider.login(credentials);
-
-    if (result.success) {
-      this.user = result.user;
-      this.normalizeConfig();
-      this.loadUserPermissions(); // ← Cargar ANTES de showApp
-      await this.showApp();
-      this.startSessionMonitoring();
-    }
-
-    return result;
-  }
-
-  static async logout() {
-    this.stopSessionMonitoring();
-    this.clearAppCaches();
-    await this.provider.logout();
-    this.user = null;
-    window.location.reload();
   }
 
   static clearAppCaches() {
@@ -303,257 +552,35 @@ class auth {
     }
 
     if (window.sidebar) {
-      sidebar.menuData = { menu: [] };
-    }
-
-    if (window.events) {
-      events.clear();
-    }
-
-    if (window.loader) {
-      loader.loaded = new Set();
-    }
-
-    this.userPermissions = null;
-    this.userPreferences = null;
-
-    if (window.i18n?.pluginTranslations) {
-      i18n.pluginTranslations.clear();
-    }
-
-    if (window.cache) {
-      const keysToPreserve = ['cache_auth_token', 'cache_auth_user'];
-      const allKeys = Object.keys(localStorage).filter(k => k.startsWith('cache_'));
-      
-      allKeys.forEach(key => {
-        if (!keysToPreserve.includes(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-      
-      if (cache.memoryCache) {
-        cache.memoryCache.clear();
-      }
+      sidebar.menuItems = [];
     }
 
     logger.success('cor:auth', 'Caches de aplicación limpiados');
   }
 
-  static getUser() { return this.user; }
-  static isAuthenticated() { return !!this.user; }
-  static getToken() { return this.provider?.getToken?.(); }
-
-  static normalizeConfig() {
-    if (!this.user) return;
-
-    const defaults = { 
-      permissions: { plugins: {} }, 
-      preferences: { theme: 'light', language: 'es', notifications: true }
-    };
-
-    if (!this.user.config || typeof this.user.config !== 'object' || Array.isArray(this.user.config)) {
-      this.user.config = defaults;
-      return;
-    }
-
-    this.user.config = {
-      permissions: {
-        plugins: this.user.config.permissions?.plugins || {}
-      },
-      preferences: {
-        theme: this.user.config.preferences?.theme || 'light',
-        language: this.user.config.preferences?.language || 'es',
-        notifications: this.user.config.preferences?.notifications !== undefined 
-          ? this.user.config.preferences.notifications 
-          : true
-      }
-    };
-  }
-
-  // Cargar permisos SÍNCRONAMENTE (no async)
-  static loadUserPermissions() {
-    logger.info('cor:auth', '🔐 Iniciando carga de permisos del usuario...');
+  static async reloadAppAfterPermissionChange() {
+    logger.info('cor:auth', 'Recargando aplicación con nuevos permisos...');
     
-    if (!this.user) {
-      logger.warn('cor:auth', '❌ No hay usuario autenticado');
-      return;
+    if (window.hook?.loadPluginHooks) {
+      await hook.loadPluginHooks();
+      
+      if (window.view && hook.getEnabledPlugins) {
+        const enabledPlugins = hook.getEnabledPlugins();
+        view.loadedPlugins = {};
+        
+        for (const plugin of enabledPlugins) {
+          view.loadedPlugins[plugin.name] = true;
+        }
+      }
     }
-
-    logger.info('cor:auth', '👤 Usuario:', this.user.user, '| Role:', this.user.role);
-
-    let config = this.user.config;
-    logger.debug('cor:auth', '📄 Config original (tipo):', typeof config);
     
-    if (typeof config === 'string') {
-      logger.info('cor:auth', '🔄 Config es string, parseando JSON...');
-      try {
-        config = JSON.parse(config);
-        logger.success('cor:auth', '✅ JSON parseado correctamente');
-      } catch (error) {
-        logger.error('cor:auth', '❌ Error parseando config:', error);
-        config = { permissions: { plugins: {} }, preferences: {} };
-      }
+    this.filterPluginsByPermissions();
+    
+    if (window.sidebar) {
+      await sidebar.init();
     }
-
-    if (!config || typeof config !== 'object') {
-      logger.warn('cor:auth', '⚠️ Config no válido, usando defaults');
-      config = { permissions: { plugins: {} }, preferences: {} };
-    }
-
-    this.userPermissions = config.permissions || { plugins: {} };
-    this.userPreferences = config.preferences || { theme: 'light', language: 'es', notifications: true };
-
-    logger.success('cor:auth', '✅ Permisos cargados exitosamente');
-    logger.info('cor:auth', '📋 Plugins con permisos:', Object.keys(this.userPermissions.plugins));
-    logger.debug('cor:auth', '🔍 Detalle de permisos:', JSON.stringify(this.userPermissions, null, 2));
-
-    this.applyUserPreferences();
-  }
-
-  static applyUserPreferences() {
-    if (!this.userPreferences) return;
-
-    if (this.userPreferences.theme) {
-      document.body.dataset.theme = this.userPreferences.theme;
-    }
-
-    if (this.userPreferences.language && window.i18n) {
-      i18n.setLang(this.userPreferences.language);
-    }
-  }
-
-  static filterPluginsByPermissions() {
-    if (this.user?.role === 'admin') {
-      logger.debug('cor:auth', 'Usuario admin - sin filtros');
-      return;
-    }
-
-    if (!this.userPermissions?.plugins) {
-      logger.warn('cor:auth', 'Usuario sin permisos definidos - deshabilitar todos los plugins');
-      
-      // Si no hay permisos, deshabilitar TODOS los plugins
-      if (window.hook?.pluginRegistry) {
-        for (const [pluginName, plugin] of window.hook.pluginRegistry) {
-          plugin.enabled = false;
-          logger.debug('cor:auth', `Plugin deshabilitado por falta de permisos: ${pluginName}`);
-        }
-      }
-      return;
-    }
-
-    if (!window.hook?.pluginRegistry) {
-      logger.warn('cor:auth', 'PluginRegistry no disponible');
-      return;
-    }
-
-    logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
-    logger.info('cor:auth', '📋 Permisos del usuario:', JSON.stringify(this.userPermissions.plugins, null, 2));
-
-    for (const [pluginName, plugin] of window.hook.pluginRegistry) {
-      logger.info('cor:auth', `\n🔹 Procesando plugin: ${pluginName}`);
-      
-      const perms = this.userPermissions.plugins[pluginName];
-      logger.debug('cor:auth', `  Permisos para ${pluginName}:`, perms);
-
-      // Si el plugin NO está en permisos, deshabilitarlo
-      if (!perms) {
-        plugin.enabled = false;
-        logger.warn('cor:auth', `  ❌ Plugin deshabilitado (no en permisos): ${pluginName}`);
-        continue;
-      }
-
-      // Si perms.enabled === false, deshabilitarlo
-      if (perms.enabled === false) {
-        plugin.enabled = false;
-        logger.warn('cor:auth', `  ❌ Plugin deshabilitado (enabled=false): ${pluginName}`);
-        continue;
-      }
-
-      // Si perms.enabled === true, habilitarlo
-      if (perms.enabled === true) {
-        plugin.enabled = true;
-        logger.success('cor:auth', `  ✅ Plugin habilitado: ${pluginName}`);
-
-        // Log del estado ANTES del filtrado
-        if (plugin.menu?.items) {
-          logger.info('cor:auth', `  📂 Menús ANTES del filtrado (${plugin.menu.items.length}):`, 
-            plugin.menu.items.map(item => item.id));
-        }
-
-        // Filtrar menús si es necesario
-        if (perms.menus !== '*' && plugin.menu?.items && typeof perms.menus === 'object') {
-          logger.info('cor:auth', `  🔍 Filtrando menús para ${pluginName}...`);
-          logger.debug('cor:auth', `  Permisos de menús:`, perms.menus);
-          
-          const allowedMenuIds = Object.keys(perms.menus).filter(key => {
-            const menuPerm = perms.menus[key];
-            logger.debug('cor:auth', `    - Evaluando menú "${key}":`, menuPerm);
-            
-            // Aceptar boolean true O objetos con enabled: true
-            if (menuPerm === true) {
-              logger.success('cor:auth', `      ✅ Menú "${key}" permitido (boolean true)`);
-              return true;
-            }
-            if (typeof menuPerm === 'object' && menuPerm.enabled === true) {
-              logger.success('cor:auth', `      ✅ Menú "${key}" permitido (enabled: true)`, menuPerm);
-              return true;
-            }
-            logger.warn('cor:auth', `      ❌ Menú "${key}" bloqueado`, menuPerm);
-            return false;
-          });
-          
-          logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}:`, allowedMenuIds);
-          
-          const itemsBeforeFilter = plugin.menu.items.length;
-          plugin.menu.items = plugin.menu.items.filter(item => allowedMenuIds.includes(item.id));
-          const itemsAfterFilter = plugin.menu.items.length;
-          
-          logger.success('cor:auth', `  📊 Filtrado completado: ${itemsBeforeFilter} → ${itemsAfterFilter} menús`);
-          logger.info('cor:auth', `  📂 Menús DESPUÉS del filtrado:`, 
-            plugin.menu.items.map(item => item.id));
-        } else if (perms.menus === '*') {
-          logger.info('cor:auth', `  ⭐ Acceso total a todos los menús de ${pluginName}`);
-        } else {
-          logger.info('cor:auth', `  ℹ️ Sin filtrado de menús para ${pluginName}`);
-        }
-      }
-    }
-
-    // Resumen final
-    logger.success('cor:auth', '\n📊 RESUMEN DEL FILTRADO DE PLUGINS:');
-    const summary = [];
-    for (const [pluginName, plugin] of window.hook.pluginRegistry) {
-      if (plugin.enabled) {
-        const menuCount = plugin.menu?.items?.length || 0;
-        summary.push(`  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
-      } else {
-        summary.push(`  ❌ ${pluginName}: deshabilitado`);
-      }
-    }
-    logger.info('cor:auth', summary.join('\n'));
-    logger.success('cor:auth', '✅ Filtrado de plugins completado\n');
-  }
-
-  static hasPermission(plugin, menu = null, view = null) {
-    if (this.user?.role === 'admin') return true;
-
-    if (!this.userPermissions?.plugins) return false;
-
-    const perms = this.userPermissions.plugins[plugin];
-
-    if (!perms || perms.enabled === false) return false;
-
-    if (menu) {
-      if (perms.menus === '*') return true;
-      return perms.menus?.[menu] === true;
-    }
-
-    if (view) {
-      if (perms.views === '*') return true;
-      return perms.views?.[view] === true;
-    }
-
-    return true;
+    
+    logger.success('cor:auth', 'Aplicación recargada con nuevos permisos');
   }
 }
 

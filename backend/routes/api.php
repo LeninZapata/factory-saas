@@ -21,7 +21,7 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
 $manualRoutes = ROUTES_PATH . 'apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
   require_once $manualRoutes;
-  log::debug('router', "Rutas manuales cargadas: {$module}.php");
+  // log::debug('router', "Rutas manuales cargadas: {$module}.php");
 }
 
 // ✅ PASO 2: Agregar rutas CRUD desde JSON (si no están definidas manualmente)
@@ -72,7 +72,7 @@ $router->group('/api', function($router) use ($module) {
       $route->middleware($routeMw);
     }
 
-    log::debug('router', "Ruta CRUD auto-registrada: {$method} {$routePath}");
+    // log::debug('router', "Ruta CRUD auto-registrada: {$method} {$routePath}");
   }
 
   // ✅ Rutas custom desde JSON (si existen)

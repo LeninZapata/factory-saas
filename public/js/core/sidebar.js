@@ -18,13 +18,15 @@ class sidebar {
     try {
       if (window.hook && typeof hook.getMenuItems === 'function') {
         const pluginMenus = hook.getMenuItems();
+        
+        logger.info('cor:sidebar', `Menús cargados: ${pluginMenus.length}`);
 
         const baseMenu = [
           {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard/dashboard",
+            view: "dashboard",
             order: 1
           }
         ];
@@ -34,6 +36,7 @@ class sidebar {
 
         this.menuData.menu = uniqueMenuItems;
       } else {
+        logger.warn('cor:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
         this.menuData.menu = [
           {
             id: "dashboard",
@@ -107,8 +110,9 @@ class sidebar {
   }
 
   static generateLogoutButton() {
-    const user = window.auth?.getUser();
-    const userName = user?.name || user?.email || 'Usuario';
+    // ✅ auth.user está en memoria (no es Promise)
+    const user = window.auth?.user;
+    const userName = user?.user || user?.email || 'Usuario';
 
     return `
       <div class="sidebar-footer">
@@ -290,7 +294,7 @@ class sidebar {
 
   static getFirstView() {
     if (!this.menuData || !this.menuData.menu || this.menuData.menu.length === 0) {
-      return 'dashboard/dashboard';
+      return 'dashboard';
     }
 
     const findFirstView = (items) => {
@@ -306,8 +310,9 @@ class sidebar {
       return null;
     };
 
-    return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
+    return findFirstView(this.menuData.menu) || 'dashboard';
   }
+
 }
 
 window.sidebar = sidebar;

@@ -21,7 +21,14 @@ class api {
     logger.info('cor:api', `📡 Ejecutando: ${options.method || 'GET'} ${fullURL}`);
 
     const headers = { ...this.headers };
-    if (auth?.getToken?.()) headers['Authorization'] = `Bearer ${auth.getToken()}`;
+    const token = auth?.getToken?.();
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      logger.debug('cor:api', `🔑 Token incluido: ${token.substring(0, 20)}...`);
+    } else {
+      logger.warn('cor:api', '⚠️ NO se encontró token para esta petición');
+    }
 
     try {
       const res = await fetch(fullURL, { ...options, headers });
