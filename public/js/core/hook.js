@@ -192,17 +192,51 @@ class hook {
 
   // Filtrar menús solo por plugins enabled=true
   static getMenuItems() {
-    const filtered = this.menuItems.filter(item => {
-      const pluginConfig = this.pluginRegistry.get(item.id);
-      if (!pluginConfig) return true;
-      const isEnabled = pluginConfig.enabled === true;
-      if (!isEnabled) {
-        logger.debug('cor:hook', `Menú "${item.id}" oculto (enabled=${pluginConfig.enabled})`);
+    const menuItems = [];
+    
+    // Reconstruir menuItems desde pluginRegistry (que ya está filtrado por auth.js)
+    for (const [pluginName, pluginConfig] of this.pluginRegistry) {
+      // Solo incluir plugins habilitados
+      if (pluginConfig.enabled !== true) {
+        logger.debug('cor:hook', `Plugin "${pluginName}" oculto (enabled=${pluginConfig.enabled})`);
+        continue;
       }
-      return isEnabled;
+      
+      // Si el plugin tiene menú, agregarlo
+      if (pluginConfig.hasMenu && pluginConfig.menu) {
+        const menuItem = {
+          id: pluginConfig.name || pluginName,
+          title: pluginConfig.menu.title,
+          icon: pluginConfig.menu.icon,
+          order: pluginConfig.menu.order || 100
+        };
+        
+        // Usar los items YA FILTRADOS del pluginConfig.menu
+        if (pluginConfig.menu.items?.length > 0) {
+          menuItem.items = pluginConfig.menu.items;
+        } else if (pluginConfig.menu.view) {
+          menuItem.view = pluginConfig.menu.view;
+          if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
+          if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
+        }
+        
+        menuItems.push(menuItem);
+      }
+    }
+    
+    // Ordenar por order
+    menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    logger.debug('cor:hook', `getMenuItems: ${menuItems.length} plugins visibles`);
+    
+    // Log detallado de items por plugin
+    menuItems.forEach(item => {
+      if (item.items) {
+        logger.debug('cor:hook', `  - ${item.id}: ${item.items.length} submenú${item.items.length !== 1 ? 's' : ''}`);
+      }
     });
-    logger.debug('cor:hook', `getMenuItems: ${filtered.length}/${this.menuItems.length} menús visibles`);
-    return filtered;
+    
+    return menuItems;
   }
 
   // ✅ NUEVO: Obtener TODOS los plugins (sin filtrar por permisos)

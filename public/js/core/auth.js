@@ -283,26 +283,40 @@ class auth {
 
   // Cargar permisos SÍNCRONAMENTE (no async)
   static loadUserPermissions() {
-    if (!this.user) return;
+    logger.info('cor:auth', '🔐 Iniciando carga de permisos del usuario...');
+    
+    if (!this.user) {
+      logger.warn('cor:auth', '❌ No hay usuario autenticado');
+      return;
+    }
+
+    logger.info('cor:auth', '👤 Usuario:', this.user.user, '| Role:', this.user.role);
 
     let config = this.user.config;
+    logger.debug('cor:auth', '📄 Config original (tipo):', typeof config);
+    
     if (typeof config === 'string') {
+      logger.info('cor:auth', '🔄 Config es string, parseando JSON...');
       try {
         config = JSON.parse(config);
+        logger.success('cor:auth', '✅ JSON parseado correctamente');
       } catch (error) {
-        logger.error('cor:auth', 'Error parseando config:', error);
+        logger.error('cor:auth', '❌ Error parseando config:', error);
         config = { permissions: { plugins: {} }, preferences: {} };
       }
     }
 
     if (!config || typeof config !== 'object') {
+      logger.warn('cor:auth', '⚠️ Config no válido, usando defaults');
       config = { permissions: { plugins: {} }, preferences: {} };
     }
 
     this.userPermissions = config.permissions || { plugins: {} };
     this.userPreferences = config.preferences || { theme: 'light', language: 'es', notifications: true };
 
-    logger.success('cor:auth', 'Permisos cargados:', this.userPermissions);
+    logger.success('cor:auth', '✅ Permisos cargados exitosamente');
+    logger.info('cor:auth', '📋 Plugins con permisos:', Object.keys(this.userPermissions.plugins));
+    logger.debug('cor:auth', '🔍 Detalle de permisos:', JSON.stringify(this.userPermissions, null, 2));
 
     this.applyUserPreferences();
   }
@@ -343,40 +357,92 @@ class auth {
       return;
     }
 
-    logger.info('cor:auth', 'Filtrando plugins por permisos...');
+    logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
+    logger.info('cor:auth', '📋 Permisos del usuario:', JSON.stringify(this.userPermissions.plugins, null, 2));
 
     for (const [pluginName, plugin] of window.hook.pluginRegistry) {
+      logger.info('cor:auth', `\n🔹 Procesando plugin: ${pluginName}`);
+      
       const perms = this.userPermissions.plugins[pluginName];
+      logger.debug('cor:auth', `  Permisos para ${pluginName}:`, perms);
 
       // Si el plugin NO está en permisos, deshabilitarlo
       if (!perms) {
         plugin.enabled = false;
-        logger.debug('cor:auth', `Plugin deshabilitado (no en permisos): ${pluginName}`);
+        logger.warn('cor:auth', `  ❌ Plugin deshabilitado (no en permisos): ${pluginName}`);
         continue;
       }
 
       // Si perms.enabled === false, deshabilitarlo
       if (perms.enabled === false) {
         plugin.enabled = false;
-        logger.debug('cor:auth', `Plugin deshabilitado (enabled=false): ${pluginName}`);
+        logger.warn('cor:auth', `  ❌ Plugin deshabilitado (enabled=false): ${pluginName}`);
         continue;
       }
 
       // Si perms.enabled === true, habilitarlo
       if (perms.enabled === true) {
         plugin.enabled = true;
-        logger.debug('cor:auth', `Plugin habilitado: ${pluginName}`);
+        logger.success('cor:auth', `  ✅ Plugin habilitado: ${pluginName}`);
+
+        // Log del estado ANTES del filtrado
+        if (plugin.menu?.items) {
+          logger.info('cor:auth', `  📂 Menús ANTES del filtrado (${plugin.menu.items.length}):`, 
+            plugin.menu.items.map(item => item.id));
+        }
 
         // Filtrar menús si es necesario
         if (perms.menus !== '*' && plugin.menu?.items && typeof perms.menus === 'object') {
-          const allowedMenuIds = Object.keys(perms.menus).filter(key => perms.menus[key] === true);
+          logger.info('cor:auth', `  🔍 Filtrando menús para ${pluginName}...`);
+          logger.debug('cor:auth', `  Permisos de menús:`, perms.menus);
+          
+          const allowedMenuIds = Object.keys(perms.menus).filter(key => {
+            const menuPerm = perms.menus[key];
+            logger.debug('cor:auth', `    - Evaluando menú "${key}":`, menuPerm);
+            
+            // Aceptar boolean true O objetos con enabled: true
+            if (menuPerm === true) {
+              logger.success('cor:auth', `      ✅ Menú "${key}" permitido (boolean true)`);
+              return true;
+            }
+            if (typeof menuPerm === 'object' && menuPerm.enabled === true) {
+              logger.success('cor:auth', `      ✅ Menú "${key}" permitido (enabled: true)`, menuPerm);
+              return true;
+            }
+            logger.warn('cor:auth', `      ❌ Menú "${key}" bloqueado`, menuPerm);
+            return false;
+          });
+          
+          logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}:`, allowedMenuIds);
+          
+          const itemsBeforeFilter = plugin.menu.items.length;
           plugin.menu.items = plugin.menu.items.filter(item => allowedMenuIds.includes(item.id));
-          logger.debug('cor:auth', `Menús filtrados para ${pluginName}:`, allowedMenuIds);
+          const itemsAfterFilter = plugin.menu.items.length;
+          
+          logger.success('cor:auth', `  📊 Filtrado completado: ${itemsBeforeFilter} → ${itemsAfterFilter} menús`);
+          logger.info('cor:auth', `  📂 Menús DESPUÉS del filtrado:`, 
+            plugin.menu.items.map(item => item.id));
+        } else if (perms.menus === '*') {
+          logger.info('cor:auth', `  ⭐ Acceso total a todos los menús de ${pluginName}`);
+        } else {
+          logger.info('cor:auth', `  ℹ️ Sin filtrado de menús para ${pluginName}`);
         }
       }
     }
 
-    logger.success('cor:auth', 'Filtrado de plugins completado');
+    // Resumen final
+    logger.success('cor:auth', '\n📊 RESUMEN DEL FILTRADO DE PLUGINS:');
+    const summary = [];
+    for (const [pluginName, plugin] of window.hook.pluginRegistry) {
+      if (plugin.enabled) {
+        const menuCount = plugin.menu?.items?.length || 0;
+        summary.push(`  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
+      } else {
+        summary.push(`  ❌ ${pluginName}: deshabilitado`);
+      }
+    }
+    logger.info('cor:auth', summary.join('\n'));
+    logger.success('cor:auth', '✅ Filtrado de plugins completado\n');
   }
 
   static hasPermission(plugin, menu = null, view = null) {

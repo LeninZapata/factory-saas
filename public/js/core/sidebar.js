@@ -161,9 +161,9 @@ class sidebar {
           this.preloadSiblingViews(menuId, level, pluginName);
 
           if (pluginName) {
-            view.loadView(menuData.view, null, pluginName, menuResources);
+            view.loadView(menuData.view, null, pluginName, menuResources, null, menuId);
           } else {
-            view.loadView(menuData.view, null, null, menuResources);
+            view.loadView(menuData.view, null, null, menuResources, null, menuId);
           }
         }
       });

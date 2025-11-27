@@ -5,7 +5,7 @@ class view {
   static lastSessionCheck = 0;
   static SESSION_CHECK_INTERVAL = 30000; // 30 segundos
 
-  static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null) {
+  static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null, menuId = null) {
     // Validar sesión solo si han pasado 30 segundos desde la última validación
     if (window.auth?.isAuthenticated?.()) {
       const now = Date.now();
@@ -124,7 +124,8 @@ class view {
 
       // ✅ Filtrar tabs según permisos ANTES de renderizar
       if (viewData.tabs && pluginContext) {
-        viewData.tabs = this.filterTabsByPermissions(viewData.tabs, pluginContext, viewData.id);
+        const effectiveMenuId = menuId || viewData.id;
+        viewData.tabs = this.filterTabsByPermissions(viewData.tabs, pluginContext, effectiveMenuId);
       }
 
       const combinedData = this.combineResources(viewData, menuResources);
