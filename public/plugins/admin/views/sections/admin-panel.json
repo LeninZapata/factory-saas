@@ -4,6 +4,7 @@
   "type": "tabs",
   "scripts": [
     "plugins/admin/assets/js/permissions.js",
+    "plugins/admin/assets/js/admin-permissions.js",
     "plugins/admin/assets/js/admin.js"
   ],
   "tabs": [
@@ -17,33 +18,62 @@
         },
         {
           "type": "html",
-          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initFormUser(formId);}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button><button class='btn btn-secondary' onclick='alert(\"Exportar usuarios\")'>📥 Exportar</button></div>"
+          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initForm(formId);}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button></div>"
         },
         {
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "js/views/user/mock-users.json",
-            "columns": ["id", "username", "email", "role", "created_at"],
+            "source": "api/user",
+            "columns": [
+              {
+                "id": {
+                  "name": "i18n:admin:user.column.id",
+                  "width": "80px",
+                  "align": "center",
+                  "sortable": true
+                }
+              },
+              {
+                "user": {
+                  "name": "i18n:admin:user.column.username",
+                  "width": "200px",
+                  "sortable": true
+                }
+              },
+              {
+                "email": {
+                  "name": "i18n:admin:user.column.email",
+                  "width": "250px"
+                }
+              },
+              {
+                "dc": {
+                  "name": "i18n:admin:user.column.created",
+                  "format": "datetime",
+                  "width": "180px",
+                  "align": "center"
+                }
+              },
+              {
+                "role": {
+                  "name": "i18n:admin:user.column.role",
+                  "format": "uppercase",
+                  "align": "center"
+                }
+              }
+            ],
             "actions": {
               "edit": {
                 "name": "✏️ Editar",
-                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', afterRender: function(formId){admin.initFormUser(formId);}})"
-              },
-              "permissions": {
-                "name": "🔐 Permisos",
-                "onclick": "modal.open('core:user/forms/user-form', {title: '🔐 Permisos - {username}', width: '90%', maxWidth: '900px', afterRender: function(formId){admin.initFormUser(formId);}})"
+                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initFormWithData(formId, {id});}})"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar usuario {username}?')) { admin.request('delete', {id}) }"
+                "onclick": "if(confirm('¿Eliminar usuario {user}?')) admin.delete({id}).then(r => r && location.reload())"
               }
             }
           }
-        },
-        {
-          "type": "html",
-          "content": "<div class='view-footer' style='margin-top: 2rem; padding: 1rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;'><div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;'><div><strong>💡 Acciones Rápidas:</strong><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem; font-size: 0.9rem;'><li><strong>Nuevo:</strong> Crear usuario con permisos personalizados</li><li><strong>Editar:</strong> Modificar datos básicos</li><li><strong>Permisos:</strong> Gestionar acceso a plugins/menús</li></ul></div><div><strong>🔐 Roles del Sistema:</strong><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem; font-size: 0.9rem;'><li><strong>Admin:</strong> Acceso total al sistema</li><li><strong>Editor:</strong> Puede crear/editar contenido</li><li><strong>Viewer:</strong> Solo lectura</li><li><strong>User:</strong> Usuario básico</li></ul></div></div></div>"
         }
       ]
     },
@@ -56,246 +86,8 @@
           "content": "<div class='view-header'><h2>⚙️ Configuración del Sistema</h2><p>Ajustes generales de la aplicación</p></div>"
         },
         {
-          "type": "grouper",
-          "mode": "linear",
-          "collapsible": true,
-          "openFirst": true,
-          "groups": [
-            {
-              "title": "🎨 Apariencia",
-              "fields": [
-                {
-                  "name": "app_name",
-                  "label": "Nombre de la Aplicación",
-                  "type": "text",
-                  "value": "Factory SaaS",
-                  "placeholder": "Nombre del sistema"
-                },
-                {
-                  "type": "group",
-                  "columns": 2,
-                  "gap": "normal",
-                  "fields": [
-                    {
-                      "name": "default_theme",
-                      "label": "Tema por Defecto",
-                      "type": "select",
-                      "options": [
-                        { "value": "light", "label": "☀️ Claro" },
-                        { "value": "dark", "label": "🌙 Oscuro" },
-                        { "value": "auto", "label": "🔄 Automático" }
-                      ]
-                    },
-                    {
-                      "name": "default_language",
-                      "label": "Idioma por Defecto",
-                      "type": "select",
-                      "options": [
-                        { "value": "es", "label": "🇪🇸 Español" },
-                        { "value": "en", "label": "🇺🇸 English" },
-                        { "value": "pt", "label": "🇧🇷 Português" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "logo_url",
-                  "label": "Logo URL",
-                  "type": "text",
-                  "placeholder": "https://example.com/logo.png"
-                }
-              ]
-            },
-            {
-              "title": "🔐 Seguridad",
-              "fields": [
-                {
-                  "type": "group",
-                  "columns": 2,
-                  "gap": "normal",
-                  "fields": [
-                    {
-                      "name": "session_timeout",
-                      "label": "Timeout de Sesión (minutos)",
-                      "type": "number",
-                      "value": 60,
-                      "min": 5,
-                      "max": 1440
-                    },
-                    {
-                      "name": "max_login_attempts",
-                      "label": "Intentos Máximos de Login",
-                      "type": "number",
-                      "value": 5,
-                      "min": 3,
-                      "max": 10
-                    }
-                  ]
-                },
-                {
-                  "name": "require_2fa",
-                  "label": "Requerir Autenticación 2FA",
-                  "type": "checkbox",
-                  "value": false
-                },
-                {
-                  "name": "password_policy",
-                  "label": "Política de Contraseñas",
-                  "type": "select",
-                  "options": [
-                    { "value": "basic", "label": "Básica (8 caracteres)" },
-                    { "value": "medium", "label": "Media (8 caracteres, mayúsculas y números)" },
-                    { "value": "strong", "label": "Fuerte (12 caracteres, mayúsculas, números y símbolos)" }
-                  ]
-                }
-              ]
-            },
-            {
-              "title": "📧 Email",
-              "fields": [
-                {
-                  "name": "smtp_host",
-                  "label": "Host SMTP",
-                  "type": "text",
-                  "placeholder": "smtp.example.com"
-                },
-                {
-                  "type": "group",
-                  "columns": 2,
-                  "gap": "normal",
-                  "fields": [
-                    {
-                      "name": "smtp_port",
-                      "label": "Puerto",
-                      "type": "number",
-                      "value": 587
-                    },
-                    {
-                      "name": "smtp_encryption",
-                      "label": "Encriptación",
-                      "type": "select",
-                      "options": [
-                        { "value": "tls", "label": "TLS" },
-                        { "value": "ssl", "label": "SSL" },
-                        { "value": "none", "label": "Ninguna" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "group",
-                  "columns": 2,
-                  "gap": "normal",
-                  "fields": [
-                    {
-                      "name": "smtp_username",
-                      "label": "Usuario SMTP",
-                      "type": "text"
-                    },
-                    {
-                      "name": "smtp_password",
-                      "label": "Contraseña SMTP",
-                      "type": "password"
-                    }
-                  ]
-                },
-                {
-                  "name": "from_email",
-                  "label": "Email Remitente",
-                  "type": "email",
-                  "placeholder": "noreply@example.com"
-                }
-              ]
-            },
-            {
-              "title": "💾 Caché y Rendimiento",
-              "fields": [
-                {
-                  "name": "enable_cache",
-                  "label": "Habilitar Caché",
-                  "type": "checkbox",
-                  "value": true
-                },
-                {
-                  "type": "group",
-                  "columns": 2,
-                  "gap": "normal",
-                  "fields": [
-                    {
-                      "name": "cache_ttl",
-                      "label": "TTL de Caché (segundos)",
-                      "type": "number",
-                      "value": 3600
-                    },
-                    {
-                      "name": "cache_driver",
-                      "label": "Driver de Caché",
-                      "type": "select",
-                      "options": [
-                        { "value": "redis", "label": "Redis" },
-                        { "value": "memcached", "label": "Memcached" },
-                        { "value": "file", "label": "Archivo" }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "enable_compression",
-                  "label": "Habilitar Compresión GZIP",
-                  "type": "checkbox",
-                  "value": true
-                }
-              ]
-            },
-            {
-              "title": "📊 Analytics y Logs",
-              "fields": [
-                {
-                  "name": "enable_analytics",
-                  "label": "Habilitar Analytics",
-                  "type": "checkbox",
-                  "value": true
-                },
-                {
-                  "name": "analytics_provider",
-                  "label": "Proveedor de Analytics",
-                  "type": "select",
-                  "options": [
-                    { "value": "google", "label": "Google Analytics" },
-                    { "value": "matomo", "label": "Matomo" },
-                    { "value": "custom", "label": "Personalizado" }
-                  ]
-                },
-                {
-                  "name": "log_level",
-                  "label": "Nivel de Logs",
-                  "type": "select",
-                  "options": [
-                    { "value": "debug", "label": "Debug" },
-                    { "value": "info", "label": "Info" },
-                    { "value": "warning", "label": "Warning" },
-                    { "value": "error", "label": "Error" }
-                  ]
-                },
-                {
-                  "name": "log_retention_days",
-                  "label": "Retención de Logs (días)",
-                  "type": "number",
-                  "value": 30,
-                  "min": 1,
-                  "max": 365
-                }
-              ]
-            }
-          ]
-        },
-        {
           "type": "html",
-          "content": "<div style='margin-top: 2rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;'><strong>⚠️ Advertencia:</strong> Los cambios en la configuración pueden afectar el funcionamiento del sistema. Asegúrate de probar en un ambiente de desarrollo antes de aplicar en producción.</div>"
-        },
-        {
-          "type": "html",
-          "content": "<div style='margin-top: 1rem; display: flex; gap: 0.5rem;'><button class='btn btn-primary' onclick='admin.saveConfig()'>💾 Guardar Configuración</button><button class='btn btn-secondary' onclick='admin.resetConfig()'>🔄 Restaurar Valores</button><button class='btn btn-danger' onclick=\"if(confirm('¿Limpiar toda la caché?')) admin.clearCache()\">🗑️ Limpiar Caché</button></div>"
+          "content": "<p>Configuración del sistema...</p>"
         }
       ]
     }

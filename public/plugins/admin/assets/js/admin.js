@@ -1,146 +1,66 @@
 class admin {
-  static API = { user: '/api/user' };
-  static currentFormId = null;
+  static API = '/api/user';
+  static currentId = null;
 
-  static initFormUser(formId) {
-    this.currentFormId = formId;
-
-    setTimeout(() => {
-      const container = document.getElementById('permissions-container');
-      if (!container) return;
-
-      const pluginsData = this.getPlugins();
-      const defaultConfig = {
-        permissions: { plugins: {} },
-        preferences: { theme: 'light', language: 'es', notifications: true }
-      };
-
-      if (window.permissions) {
-        permissions.render('permissions-container', defaultConfig, pluginsData);
-      }
-    }, 200);
+  // Inicializar formulario (crear nuevo)
+  static async initForm(formId) {
+    this.currentId = null;
+    if (window.adminPermissions) adminPermissions.init(formId);
   }
 
-  static getPlugins() {
-    const plugins = [];
-
-    if (window.hook?.pluginRegistry) {
-      for (const [name, config] of window.hook.pluginRegistry) {
-        if (config.enabled) {
-          plugins.push({
-            name,
-            hasMenu: config.hasMenu || false,
-            hasViews: config.hasViews || false,
-            menu: config.menu || null,
-            description: config.description || ''
-          });
-        }
-      }
-    }
-
-    return plugins;
-  }
-
-  static getPermissionsData() {
-    const selectorEl = document.querySelector('.permissions-selector');
-    if (!selectorEl?.id) return { permissions: { plugins: {} } };
-
-    const hiddenInput = document.getElementById(`${selectorEl.id}-data`);
-    if (!hiddenInput?.value) return { permissions: { plugins: {} } };
-
-    try {
-      return JSON.parse(hiddenInput.value);
-    } catch (error) {
-      logger.warn('p:admin', 'Error parseando permisos');
-      return { permissions: { plugins: {} } };
+  // Inicializar formulario con datos (editar)
+  static async initFormWithData(formId, id) {
+    this.currentId = id;
+    const data = await this.get(id);
+    if (data) {
+      form.fill(formId, { username: data.user, email: data.email, role: data.role });
+      if (window.adminPermissions) adminPermissions.load(formId, data);
     }
   }
 
-  static async saveUser(formId) {
-    const formData = form.getData(formId);
-    
-    // Validar campos requeridos
-    const rules = { username: 'required', email: 'required|email', role: 'required' };
-    if (!this.validateForm(formData, rules)) return;
+  // Guardar (create o update)
+  static async save(formId) {
+    const validation = form.validate(formId);
+    if (!validation.success) return toast.error(`❌ ${validation.message}`);
 
-    const permsData = this.getPermissionsData();
-
-    const userData = {
-      user: formData.username,
-      email: formData.email,
-      role: formData.role,
-      pass: formData.password || null,
-      config: {
-        ...permsData,
-        preferences: {
-          theme: formData.preferences_theme || 'light',
-          language: formData.preferences_language || 'es',
-          notifications: formData.preferences_notifications || false
-        }
-      }
+    const data = {
+      user: validation.data.username,
+      email: validation.data.email,
+      role: validation.data.role,
+      pass: validation.data.password || undefined,
+      config: window.adminPermissions ? adminPermissions.getData() : {}
     };
 
-    if (!userData.pass) delete userData.pass;
+    const result = this.currentId 
+      ? await this.update(this.currentId, data)
+      : await this.create(data);
 
-    await this.request('create', userData);
-  }
-
-  static validateForm(data, rules) {
-    const required = ['username', 'email', 'role'];
-    for (const field of required) {
-      if (!data[field]) {
-        if (window.toast) toast.error(`❌ El campo ${field} es requerido`);
-        return false;
-      }
+    if (result) {
+      toast.success(this.currentId ? '✅ Usuario actualizado' : '✅ Usuario creado');
+      setTimeout(() => { modal.closeAll(); location.reload(); }, 800);
     }
-    return true;
   }
 
-  static async request(action, data = null) {
-    const actions = {
-      create: { method: 'post', url: this.API.user, success: 'Usuario guardado' },
-      update: { method: 'put', url: `${this.API.user}/${data.id}`, success: 'Usuario actualizado' },
-      delete: { method: 'delete', url: `${this.API.user}/${data}`, success: 'Usuario eliminado' },
-      get: { method: 'get', url: `${this.API.user}/${data}`, success: null }
-    };
+  // CRUD básico
+  static async create(data) { return this.request('POST', this.API, data); }
+  static async update(id, data) { return this.request('PUT', `${this.API}/${id}`, {...data, id}); }
+  static async delete(id) { return this.request('DELETE', `${this.API}/${id}`); }
+  static async get(id) { return this.request('GET', `${this.API}/${id}`); }
+  static async list() { return this.request('GET', this.API); }
 
-    const config = actions[action];
-    if (!config) return;
-
+  // Request genérico
+  static async request(method, url, data = null) {
     try {
-
-      let response;
-      if (config.method === 'get') {
-        response = await api.get(config.url);
-      } else if (config.method === 'post') {
-        response = await api.post(config.url, data);
-      } else if (config.method === 'put') {
-        response = await api.put(config.url, data);
-      } else if (config.method === 'delete') {
-        response = await api.delete(config.url);
-      }
-
+      const response = await api[method.toLowerCase()](url, data);
       if (response.success === false) {
-        logger.warn('p:admin', 'Error de validación', response.error);
-        if (window.toast) toast.error(`❌ ${response.error || 'Error en la operación'}`);
-        return response;
+        toast.error(`❌ ${response.error || 'Error'}`);
+        return null;
       }
-
-      logger.success('p:admin', `${action} exitoso`);
-      if (config.success && window.toast) toast.success(`✅ ${config.success}`);
-
-      if (action !== 'get') {
-        setTimeout(() => {
-          modal.closeAll();
-          if (action !== 'create') location.reload();
-        }, action === 'create' ? 200 : 1000);
-      }
-
-      return response;
-
+      return response.data || response;
     } catch (error) {
-      logger.error('p:admin', 'Error en acción', error);
-      if (window.toast) toast.error(`❌ Error de conexión: ${error.message}`);
+      logger.error('p:admin', error);
+      toast.error(`❌ ${error.message}`);
+      return null;
     }
   }
 }

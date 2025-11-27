@@ -50,10 +50,15 @@ class dataLoader {
     try {
       let response;
 
+      // ✅ CAMBIO CRÍTICO: Usar api.js en lugar de fetch directo
       if (method === 'GET') {
-        response = await window.api.get(endpoint);
+        response = await api.get(endpoint);
       } else if (method === 'POST') {
-        response = await window.api.post(endpoint, apiConfig.body || {});
+        response = await api.post(endpoint, apiConfig.body || {});
+      } else if (method === 'PUT') {
+        response = await api.put(endpoint, apiConfig.body || {});
+      } else if (method === 'DELETE') {
+        response = await api.delete(endpoint);
       }
 
       // Si la respuesta tiene estructura {success, data}
@@ -89,6 +94,8 @@ class dataLoader {
       }
 
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
+      
+      // Para archivos mock locales, usar fetch directo (no necesitan auth)
       const response = await fetch(mockPath + cacheBuster);
 
       if (!response.ok) {

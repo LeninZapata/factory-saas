@@ -1,0 +1,12 @@
+{
+  "user.column.id": "ID",
+  "user.column.username": "Nombre de Usuario",
+  "user.column.email": "Correo Electrónico",
+  "user.column.role": "Rol",
+  "user.column.created": "Fecha de Creación",
+  "user.action.edit": "Editar Usuario",
+  "user.action.delete": "Eliminar Usuario",
+  "user.action.permissions": "Gestionar Permisos",
+  "title.users": "Gestión de Usuarios",
+  "description.users": "Administra los usuarios del sistema"
+}

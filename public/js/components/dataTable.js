@@ -4,32 +4,21 @@ class datatable {
 
   static async render(config, container) {
     const tableId = `datatable-${++this.counter}`;
-
-    // Detectar plugin name
     const pluginName = config.pluginName || this.detectPluginName(container);
-
-    // Cargar datos usando dataLoader
     const data = await this.loadData(config, pluginName);
 
-    // Guardar referencia
     this.tables.set(tableId, { config, data, pluginName });
 
-    // Renderizar
     const html = this.generateHtml(tableId, config, data);
     container.innerHTML = html;
 
-    // Bind events
     this.bindEvents(tableId);
   }
 
   static detectPluginName(container) {
-    // Estrategia 1: Buscar data-plugin en el contenedor o ancestros
     const viewContainer = container.closest('[data-plugin]');
-    if (viewContainer?.dataset.plugin) {
-      return viewContainer.dataset.plugin;
-    }
+    if (viewContainer?.dataset.plugin) return viewContainer.dataset.plugin;
 
-    // Estrategia 2: Buscar en el DOM la vista activa
     const activeView = document.querySelector('.view-container[data-view]');
     if (activeView?.dataset.view) {
       const viewPath = activeView.dataset.view;
@@ -39,38 +28,39 @@ class datatable {
       }
     }
 
-    // Estrategia 3: Buscar en view.currentPlugin
-    if (window.view?.currentPlugin) {
-      return window.view.currentPlugin;
-    }
+    if (window.view?.currentPlugin) return window.view.currentPlugin;
 
-    // Estrategia 4: Buscar clases CSS con patrón plugin-*
     const pluginClass = Array.from(container.classList || [])
       .find(cls => cls.startsWith('plugin-'));
-    if (pluginClass) {
-      return pluginClass.replace('plugin-', '');
-    }
+    if (pluginClass) return pluginClass.replace('plugin-', '');
 
     return null;
   }
 
   static async loadData(config, pluginName) {
     try {
-      // Si tiene dataSource, usar dataLoader
       if (config.dataSource) {
         return await dataLoader.loadList(config.dataSource, pluginName);
       }
 
-      // Fallback al método antiguo (source directo)
       if (config.source) {
-        // Validación minimalista: .json = archivo local, resto = API
-        const url = config.source.endsWith('.json')
-          ? window.BASE_URL + config.source
-          : config.source;
+        const isApiEndpoint = config.source.startsWith('api/') || config.source.startsWith('/api/');
+        
+        if (isApiEndpoint) {
+          const endpoint = config.source.startsWith('/') ? config.source : `/${config.source}`;
+          const response = await api.get(endpoint);
+          
+          if (response.success && response.data) return response.data;
+          return response;
+        } else {
+          const url = config.source.endsWith('.json')
+            ? window.BASE_URL + config.source
+            : config.source;
 
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Error loading data');
-        return await response.json();
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Error loading data');
+          return await response.json();
+        }
       }
 
       logger.error('com:datatable', 'No se especificó dataSource ni source');
@@ -83,7 +73,7 @@ class datatable {
   }
 
   static generateHtml(tableId, config, data) {
-    const columns = config.columns || Object.keys(data[0] || {});
+    const columns = this.processColumns(config.columns || Object.keys(data[0] || {}));
     const hasActions = config.actions && Object.keys(config.actions).length > 0;
 
     return `
@@ -91,7 +81,7 @@ class datatable {
         <table class="table">
           <thead>
             <tr>
-              ${columns.map(col => `<th>${this.formatHeader(col)}</th>`).join('')}
+              ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
               ${hasActions ? '<th>Acciones</th>' : ''}
             </tr>
           </thead>
@@ -103,23 +93,272 @@ class datatable {
     `;
   }
 
+  /**
+   * Procesar columnas - Sistema flexible y extensible
+   * 
+   * Formatos soportados:
+   * 
+   * 1. String simple:
+   *    ["id", "username", "email"]
+   * 
+   * 2. Objeto con parámetros:
+   *    {
+   *      "user": {
+   *        "name": "i18n:admin:user.field.username",
+   *        "sortable": true,
+   *        "width": "200px",
+   *        "align": "left"
+   *      }
+   *    }
+   * 
+   * 3. Mixto:
+   *    [
+   *      "id",
+   *      { "user": { "name": "i18n:core.username" } },
+   *      "email"
+   *    ]
+   */
+  static processColumns(columns) {
+    // Si es array simple de strings
+    if (Array.isArray(columns)) {
+      return columns.map(col => {
+        if (typeof col === 'string') {
+          // Formato simple: "username"
+          return {
+            field: col,
+            headerLabel: this.formatHeader(col),
+            name: col,
+            sortable: false,
+            width: null,
+            align: 'left'
+          };
+        } else if (typeof col === 'object') {
+          // Formato objeto: { "user": { "name": "...", ... } }
+          const field = Object.keys(col)[0];
+          const params = col[field];
+          
+          return {
+            field: field,
+            headerLabel: this.translateLabel(params.name || field),
+            name: params.name || field,
+            sortable: params.sortable || false,
+            width: params.width || null,
+            align: params.align || 'left',
+            format: params.format || null,
+            // Guardar todos los parámetros extra
+            ...params
+          };
+        }
+      });
+    }
+
+    // Si es objeto directo: { "user": {...}, "email": {...} }
+    if (typeof columns === 'object' && !Array.isArray(columns)) {
+      return Object.entries(columns).map(([field, params]) => {
+        if (typeof params === 'string') {
+          // Formato: { "user": "Username" }
+          return {
+            field: field,
+            headerLabel: this.translateLabel(params),
+            name: params,
+            sortable: false,
+            width: null,
+            align: 'left'
+          };
+        } else {
+          // Formato: { "user": { "name": "...", ... } }
+          return {
+            field: field,
+            headerLabel: this.translateLabel(params.name || field),
+            name: params.name || field,
+            sortable: params.sortable || false,
+            width: params.width || null,
+            align: params.align || 'left',
+            format: params.format || null,
+            ...params
+          };
+        }
+      });
+    }
+
+    return [];
+  }
+
+  /**
+   * Traducir label con soporte para i18n
+   * 
+   * Formatos:
+   * - "Username" → Retorna tal cual
+   * - "i18n:core.username" → Busca en traducciones core
+   * - "i18n:admin:user.name" → Busca en plugin "admin"
+   */
+  static translateLabel(label) {
+    if (!label || typeof label !== 'string') return '';
+
+    // Si no tiene i18n:, retornar tal cual
+    if (!label.startsWith('i18n:')) return label;
+
+    // Remover prefijo i18n:
+    const key = label.replace('i18n:', '');
+
+    // Detectar si es de plugin: "admin:user.name"
+    if (key.includes(':')) {
+      const [pluginName, pluginKey] = key.split(':', 2);
+      return this.translateFromPlugin(pluginName, pluginKey);
+    }
+
+    // Es de core: "core.username"
+    return this.translateFromCore(key);
+  }
+
+  /**
+   * Traducir desde traducciones core
+   */
+  static translateFromCore(key) {
+    if (window.i18n && typeof i18n.t === 'function') {
+      const translation = i18n.t(key);
+      // Si la traducción es igual a la key, significa que no se encontró
+      if (translation !== key) return translation;
+    }
+
+    // Fallback: formatear la key
+    logger.warn('com:datatable', `Traducción no encontrada: ${key}`);
+    return this.formatHeader(key.split('.').pop());
+  }
+
+  /**
+   * Traducir desde traducciones de plugin
+   */
+  static translateFromPlugin(pluginName, key) {
+    // Intentar obtener traducción del plugin
+    if (window.i18n && window.i18n.pluginTranslations) {
+      const pluginLangs = i18n.pluginTranslations.get(pluginName);
+      if (pluginLangs) {
+        const currentLang = i18n.getLang();
+        const translations = pluginLangs.get(currentLang);
+        
+        if (translations && translations[key]) {
+          return translations[key];
+        }
+      }
+    }
+
+    // Fallback: formatear la key
+    logger.warn('com:datatable', `Traducción de plugin no encontrada: ${pluginName}:${key}`);
+    return this.formatHeader(key.split('.').pop());
+  }
+
   static renderRow(row, columns, actions) {
     const hasActions = actions && Object.keys(actions).length > 0;
 
     return `
       <tr>
-        ${columns.map(col => `<td>${row[col] || ''}</td>`).join('')}
+        ${columns.map(col => this.renderCell(row, col)).join('')}
         ${hasActions ? `<td>${this.renderActions(row, actions)}</td>` : ''}
       </tr>
     `;
   }
 
-  static renderActions(row, actions) {
+  /**
+   * Renderizar celda con soporte para formato personalizado
+   */
+  static renderCell(row, column) {
+    let value = row[column.field] || '';
 
+    // Aplicar formato si existe
+    if (column.format) {
+      value = this.formatValue(value, column.format, row);
+    }
+
+    // Aplicar estilos
+    const style = [];
+    if (column.width) style.push(`width: ${column.width}`);
+    if (column.align) style.push(`text-align: ${column.align}`);
+
+    const styleAttr = style.length > 0 ? ` style="${style.join('; ')}"` : '';
+
+    return `<td${styleAttr}>${value}</td>`;
+  }
+
+  /**
+   * Formatear valor según tipo
+   * 
+   * Formatos soportados:
+   * - "date" → Formatear fecha
+   * - "datetime" → Formatear fecha y hora
+   * - "money" → Formatear moneda
+   * - "boolean" → Sí/No
+   * - function → Función personalizada
+   */
+  static formatValue(value, format, row) {
+    if (!value) return '';
+
+    // Si format es una función
+    if (typeof format === 'function') {
+      return format(value, row);
+    }
+
+    // Formatos predefinidos
+    switch (format) {
+      case 'date':
+        return this.formatDate(value);
+      
+      case 'datetime':
+        return this.formatDateTime(value);
+      
+      case 'money':
+        return this.formatMoney(value);
+      
+      case 'boolean':
+        return value ? 'Sí' : 'No';
+      
+      case 'uppercase':
+        return String(value).toUpperCase();
+      
+      case 'lowercase':
+        return String(value).toLowerCase();
+      
+      case 'capitalize':
+        return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+      
+      default:
+        return value;
+    }
+  }
+
+  static formatDate(value) {
+    try {
+      const date = new Date(value);
+      return date.toLocaleDateString();
+    } catch {
+      return value;
+    }
+  }
+
+  static formatDateTime(value) {
+    try {
+      const date = new Date(value);
+      return date.toLocaleString();
+    } catch {
+      return value;
+    }
+  }
+
+  static formatMoney(value) {
+    try {
+      return new Intl.NumberFormat('es-EC', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(value);
+    } catch {
+      return value;
+    }
+  }
+
+  static renderActions(row, actions) {
     return Object.entries(actions).map(([key, action]) => {
       const onclick = this.replaceVars(action.onclick, row);
 
-      // Agregar data-loader-config si existe
       let dataAttrs = '';
       if (action.dataLoader) {
         const loaderConfig = JSON.stringify(action.dataLoader).replace(/"/g, '&quot;');
@@ -137,7 +376,6 @@ class datatable {
         return match;
       }
 
-      // Escapar comillas simples, dobles y otros caracteres especiales
       const value = String(row[key])
         .replace(/\\/g, '\\\\')
         .replace(/'/g, "\\'")
@@ -154,7 +392,7 @@ class datatable {
   }
 
   static bindEvents(tableId) {
-    // Eventos futuros si son necesarios
+    // Eventos futuros
   }
 
   static refresh(tableId) {

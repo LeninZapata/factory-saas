@@ -26,15 +26,11 @@ class hook {
             await this.loadPluginScript(pluginInfo.name, pluginConfig.autoload);
           }
 
-          // Cargar scripts globales del plugin
           if (pluginConfig.scripts?.length > 0) {
             await this.loadPluginResources(pluginConfig.scripts, pluginConfig.styles || []);
           }
 
-          // Cargar idiomas del plugin
-          if (window.i18n && pluginConfig.availableLanguages) {
-            await i18n.loadPluginLang(pluginInfo.name, i18n.getLang());
-          }
+          await this.loadPluginLanguages(pluginInfo.name);
 
           if (pluginConfig.name === 'dashboard') return;
 
@@ -66,7 +62,6 @@ class hook {
             await this.loadPluginHook(pluginInfo.name);
           }
 
-          // PreCargar vistas si está configurado
           if (pluginConfig.menu?.preloadViews === true) {
             await this.preloadPluginViews(pluginInfo.name, pluginConfig);
           }
@@ -84,9 +79,42 @@ class hook {
     }
   }
 
+  static async loadPluginLanguages(pluginName) {
+    if (!window.i18n) return;
+
+    const currentLang = i18n.getLang();
+    const loaded = await this.tryLoadPluginLang(pluginName, currentLang);
+
+    if (loaded) {
+      const pluginConfig = this.pluginRegistry.get(pluginName);
+      if (pluginConfig) {
+        pluginConfig.hasLanguages = true;
+        pluginConfig.loadedLanguages = [currentLang];
+      }
+    }
+  }
+
+  static async tryLoadPluginLang(pluginName, lang) {
+    try {
+      const langPath = `${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json`;
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const response = await fetch(langPath + cacheBuster);
+      if (!response.ok) return false;
+
+      const translations = await response.json();
+      if (!i18n.pluginTranslations.has(pluginName)) {
+        i18n.pluginTranslations.set(pluginName, new Map());
+      }
+      i18n.pluginTranslations.get(pluginName).set(lang, translations);
+      cache.set(`i18n_plugin_${pluginName}_${lang}`, translations, 60 * 60 * 1000);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   static async preloadPluginViews(pluginName, pluginConfig) {
     if (!pluginConfig.menu?.items) return;
-
     const viewsToPreload = [];
     const collectViews = (items) => {
       items.forEach(item => {
@@ -94,7 +122,6 @@ class hook {
         if (item.items?.length > 0) collectViews(item.items);
       });
     };
-
     collectViews(pluginConfig.menu.items);
 
     for (const viewPath of viewsToPreload) {
@@ -102,17 +129,13 @@ class hook {
         const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
         const fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-
         const response = await fetch(fullPath + cacheBuster);
-
         if (response.ok) {
           const viewData = await response.json();
           const cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
           window.cache?.set(cacheKey, viewData);
         }
-      } catch (error) {
-        logger.warn('cor:hook', `No se pudo precargar: ${pluginName}/${viewPath}`);
-      }
+      } catch (error) {}
     }
   }
 
@@ -120,13 +143,10 @@ class hook {
     try {
       const scriptPath = `plugins/${pluginName}/${scriptFile}`;
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-
       const response = await fetch(`${window.BASE_URL}${scriptPath}${cacheBuster}`);
       if (!response.ok) return;
-
       const scriptContent = await response.text();
       new Function(scriptContent)();
-
     } catch (error) {
       logger.error('cor:hook', `Error cargando autoload ${pluginName}:`, error.message);
     }
@@ -136,9 +156,7 @@ class hook {
     if (window.loader && typeof loader.loadResources === 'function') {
       try {
         await loader.loadResources(scripts, styles);
-      } catch (error) {
-        logger.error('cor:hook', 'Error cargando recursos:', error);
-      }
+      } catch (error) {}
     }
   }
 
@@ -151,23 +169,15 @@ class hook {
           order: item.order || 999
         };
 
-        // Combinar scripts del plugin + scripts del item
         const itemScripts = item.scripts || [];
         const combinedScripts = [...pluginScripts, ...itemScripts];
-        if (combinedScripts.length > 0) {
-          processedItem.scripts = combinedScripts;
-        }
+        if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
 
-        // Combinar styles del plugin + styles del item
         const itemStyles = item.styles || [];
         const combinedStyles = [...pluginStyles, ...itemStyles];
-        if (combinedStyles.length > 0) {
-          processedItem.styles = combinedStyles;
-        }
+        if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
 
-        if (item.preloadViews !== undefined) {
-          processedItem.preloadViews = item.preloadViews;
-        }
+        if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
 
         if (item.items?.length > 0) {
           processedItem.items = this.processMenuItems(item.items, parentPlugin, pluginScripts, pluginStyles);
@@ -180,8 +190,19 @@ class hook {
       .sort((a, b) => (a.order || 100) - (b.order || 100));
   }
 
+  // Filtrar menús solo por plugins enabled=true
   static getMenuItems() {
-    return this.menuItems;
+    const filtered = this.menuItems.filter(item => {
+      const pluginConfig = this.pluginRegistry.get(item.id);
+      if (!pluginConfig) return true; // Dashboard u otros menús base
+      const isEnabled = pluginConfig.enabled === true;
+      if (!isEnabled) {
+        logger.debug('cor:hook', `Menú "${item.id}" oculto (enabled=${pluginConfig.enabled})`);
+      }
+      return isEnabled;
+    });
+    logger.debug('cor:hook', `getMenuItems: ${filtered.length}/${this.menuItems.length} menús visibles`);
+    return filtered;
   }
 
   static async loadPluginConfig(pluginName) {
@@ -197,21 +218,15 @@ class hook {
     try {
       const hookPath = `plugins/${pluginName}/hooks.js`;
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-
       const response = await fetch(`${window.BASE_URL}${hookPath}${cacheBuster}`);
       if (!response.ok) return;
-
       const scriptContent = await response.text();
       new Function(scriptContent)();
-
       const hookClassName = `${pluginName}Hooks`;
       if (window[hookClassName]) {
         this.loadedHooks.add(pluginName);
       }
-
-    } catch (error) {
-      logger.error('cor:hook', `Error cargando hook ${pluginName}:`, error.message);
-    }
+    } catch (error) {}
   }
 
   static getPluginConfig(pluginName) {
@@ -220,31 +235,37 @@ class hook {
 
   static isPluginEnabled(pluginName) {
     const config = this.pluginRegistry.get(pluginName);
-    return config ? config.enabled : false;
+    return config ? config.enabled === true : false;
   }
 
   static getEnabledPlugins() {
     const enabled = [];
     for (const [name, config] of this.pluginRegistry) {
-      if (config.enabled) {
+      if (config.enabled === true) {
         enabled.push({ name, ...config });
       }
     }
     return enabled;
   }
 
+  static hasPluginLanguages(pluginName) {
+    const config = this.pluginRegistry.get(pluginName);
+    return config?.hasLanguages || false;
+  }
+
+  static getPluginLanguages(pluginName) {
+    const config = this.pluginRegistry.get(pluginName);
+    return config?.loadedLanguages || [];
+  }
+
   static execute(hookName, defaultData = []) {
     let results = [...defaultData];
-
     for (const pluginName of this.loadedHooks) {
       if (!this.isPluginEnabled(pluginName)) continue;
-
       const hookClass = window[`${pluginName}Hooks`];
-
       if (hookClass && typeof hookClass[hookName] === 'function') {
         try {
           const hookResult = hookClass[hookName]();
-
           if (Array.isArray(hookResult)) {
             const itemsWithOrder = hookResult.map(item => ({
               order: item.order || 999,
@@ -252,12 +273,9 @@ class hook {
             }));
             results = [...results, ...itemsWithOrder];
           }
-        } catch (error) {
-          logger.error('cor:hook', `Error en hook ${hookName} (${pluginName}):`, error);
-        }
+        } catch (error) {}
       }
     }
-
     results.sort((a, b) => a.order - b.order);
     return results;
   }

@@ -9,14 +9,6 @@ class form {
     return window.i18n?.t(key) || key;
   }
 
-  /**
-   * Cargar formulario
-   * @param {string} formName - Ruta del formulario
-   * @param {HTMLElement} container - Contenedor donde renderizar
-   * @param {object} data - Datos para prellenar
-   * @param {boolean} isCore - TRUE para forzar búsqueda en /js/views/, FALSE para plugin
-   * @param {function} afterRender - Callback a ejecutar después de renderizar el formulario
-   */
   static async load(formName, container = null, data = null, isCore = null, afterRender = null) {
     const cacheKey = `form_${formName.replace(/\//g, '_')}`;
     let schema = cache.get(cacheKey);
@@ -27,7 +19,6 @@ class form {
       if (isCore === true) {
         const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
-        logger.debug('cor:form', `Cargando core: ${url}`);
       }
       else if (isCore === false) {
         const parts = formName.split('/');
@@ -35,13 +26,11 @@ class form {
         const restPath = parts.slice(1).join('/');
         const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
         url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
-        logger.debug('cor:form', `Cargando plugin: ${url}`);
       }
       else if (formName.startsWith('core:')) {
         formName = formName.replace('core:', '');
         const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
-        logger.debug('cor:form', `Cargando core-prefix: ${url}`);
       }
       else if (formName.includes('/')) {
         const parts = formName.split('/');
@@ -55,16 +44,13 @@ class form {
           const restPath = parts.slice(1).join('/');
           const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
           url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
-          logger.debug('cor:form', `Cargando auto-plugin: ${url}`);
         } else {
           const basePath = window.appConfig?.routes?.coreViews || 'js/views';
           url = `${window.BASE_URL}${basePath}/${formName}.json`;
-          logger.debug('cor:form', `Cargando auto-core: ${url}`);
         }
       } else {
         const basePath = window.appConfig?.routes?.coreViews || 'js/views';
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
-        logger.debug('cor:form', `Cargando legacy: ${url}`);
       }
 
       const cacheBuster = window.appConfig?.cache?.forms ? '' : `?t=${Date.now()}`;
@@ -88,10 +74,8 @@ class form {
     if (schema.id && window.hook) {
       const hookName = `hook_form_${schema.id.replace(/-/g, '_')}`;
       const hookFields = hook.execute(hookName, []);
-      
+
       if (hookFields.length > 0) {
-        logger.debug('cor:form', `Hook ${hookName} agregó ${hookFields.length} campos`);
-        
         if (!instanceSchema.fields) instanceSchema.fields = [];
         instanceSchema.fields.push(...hookFields);
       }
@@ -111,20 +95,18 @@ class form {
       const formEl = document.getElementById(instanceId);
       if (formEl) {
         this.initRepeatables(instanceId);
+        this.bindTransforms(instanceId);
         if (window.conditions) {
           conditions.init(instanceId);
         }
 
         if (typeof afterRender === 'function') {
-          logger.debug('cor:form', `Ejecutando afterRender para ${schema.id}`);
           try {
             afterRender(instanceId, formEl);
           } catch (error) {
             logger.error('cor:form', 'Error en afterRender:', error);
           }
         }
-      } else {
-        logger.error('cor:form', 'Formulario no encontrado en DOM');
       }
     }, 10);
 
@@ -216,9 +198,9 @@ class form {
   static renderGroup(field, basePath) {
     const columns = field.columns || 2;
     const gap = field.gap || 'normal';
-    
+
     const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
-    
+
     return `
       <div class="${groupClass}">
         ${field.fields ? field.fields.map(subField => {
@@ -232,7 +214,7 @@ class form {
   static renderGrouper(field, parentPath) {
     const mode = field.mode || 'linear';
     const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     let html = '';
 
     if (mode === 'linear') {
@@ -251,7 +233,7 @@ class form {
   static renderGrouperLinear(field, grouperId, parentPath) {
     const collapsible = field.collapsible !== false;
     const openFirst = field.openFirst !== false;
-    
+
     let html = `<div class="grouper grouper-linear" id="${grouperId}">`;
 
     field.groups.forEach((group, index) => {
@@ -260,7 +242,7 @@ class form {
 
       html += `
         <div class="grouper-section ${isOpen ? 'open' : ''} ${!collapsible ? 'non-collapsible' : ''}" data-group-index="${index}">
-          <div class="grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}" 
+          <div class="grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}"
                ${collapsible ? `data-toggle="${contentId}"` : ''}>
             <h3 class="grouper-title">${group.title || `Grupo ${index + 1}`}</h3>
             ${collapsible ? '<span class="grouper-toggle">▼</span>' : ''}
@@ -284,14 +266,14 @@ class form {
 
   static renderGrouperTabs(field, grouperId, parentPath) {
     const activeIndex = field.activeIndex || 0;
-    
+
     let html = `<div class="grouper grouper-tabs" id="${grouperId}">`;
 
     html += `<div class="grouper-tabs-header">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       html += `
-        <button type="button" class="grouper-tab-btn ${isActive ? 'active' : ''}" 
+        <button type="button" class="grouper-tab-btn ${isActive ? 'active' : ''}"
                 data-tab-index="${index}">
           ${group.title || `Tab ${index + 1}`}
         </button>
@@ -303,7 +285,7 @@ class form {
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       html += `
-        <div class="grouper-tab-panel ${isActive ? 'active' : ''}" 
+        <div class="grouper-tab-panel ${isActive ? 'active' : ''}"
              data-panel-index="${index}">
       `;
 
@@ -373,13 +355,25 @@ class form {
     const labelI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
     const requiredAsterisk = field.required ? '<span style="color: #e74c3c; margin-left: 2px;">*</span>' : '';
 
+    const transformClasses = [];
+    if (field.transform) {
+      const transforms = Array.isArray(field.transform) ? field.transform : [field.transform];
+      transforms.forEach(t => transformClasses.push(`form-transform-${t}`));
+    }
+
+    const classNames = [
+      field.className || '',
+      ...transformClasses
+    ].filter(c => c).join(' ');
+
     const common = `
-      name="${path}" 
-      placeholder="${this.t(field.placeholder) || ''}" 
+      name="${path}"
+      placeholder="${this.t(field.placeholder) || ''}"
       ${field.required ? 'required' : ''}
       ${field.min !== undefined ? `min="${field.min}"` : ''}
       ${field.max !== undefined ? `max="${field.max}"` : ''}
       ${field.step !== undefined ? `step="${field.step}"` : ''}
+      ${classNames ? `class="${classNames}"` : ''}
     `.trim();
 
     switch(field.type) {
@@ -398,6 +392,7 @@ class form {
                 return `<option value="${opt.value}" ${optI18n}>${this.t(opt.label)}</option>`;
               }).join('') || ''}
             </select>
+            <span class="form-error"></span>
           </div>`;
 
       case 'textarea':
@@ -405,6 +400,7 @@ class form {
           <div class="form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <textarea ${common}></textarea>
+            <span class="form-error"></span>
           </div>`;
 
       case 'checkbox':
@@ -414,6 +410,7 @@ class form {
               <input type="checkbox" name="${path}" ${field.required ? 'required' : ''}>
               ${label}${requiredAsterisk}
             </label>
+            <span class="form-error"></span>
           </div>`;
 
       default:
@@ -421,6 +418,7 @@ class form {
           <div class="form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <input type="${field.type}" ${common}>
+            <span class="form-error"></span>
           </div>`;
     }
   }
@@ -430,33 +428,18 @@ class form {
       return;
     }
 
-    events.on('.repeatable-add', 'click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const formEl = this.closest('form');
-      if (!formEl) {
-        logger.error('cor:form', 'No se encontró el formulario padre');
-        return;
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('repeatable-add')) {
+        const path = e.target.dataset.path;
+        this.addRepeatableItem(path);
       }
 
-      const formId = formEl.id;
-      const path = this.dataset.path;
-
-      const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
-      if (!container) {
-        logger.error('cor:form', 'Container no encontrado');
-        return;
+      if (e.target.classList.contains('repeatable-remove')) {
+        const item = e.target.closest('.repeatable-item');
+        if (item && confirm('¿Eliminar este elemento?')) {
+          item.remove();
+        }
       }
-
-      form.addRepeatableItem(formId, path, container);
-    });
-
-    events.on('.repeatable-remove', 'click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      form.removeRepeatableItem(this);
     });
 
     this.registeredEvents.add('form-events');
@@ -464,112 +447,87 @@ class form {
 
   static initRepeatables(formId) {
     const formEl = document.getElementById(formId);
-    if (!formEl) {
-      logger.error('cor:form', 'Formulario no encontrado:', formId);
-      return;
-    }
+    if (!formEl) return;
 
-    const repeatables = formEl.querySelectorAll('.form-repeatable');
+    const schema = this.schemas.get(formId);
+    if (!schema) return;
 
-    repeatables.forEach((rep) => {
-      const path = rep.dataset.fieldPath;
+    const findRepeatableFields = (fields, basePath = '') => {
+      const repeatables = [];
+      fields?.forEach(field => {
+        if (field.type === 'repeatable') {
+          const fieldPath = basePath ? `${basePath}.${field.name}` : field.name;
+          repeatables.push({ field, path: fieldPath });
+        } else if (field.type === 'group' && field.fields) {
+          repeatables.push(...findRepeatableFields(field.fields, basePath));
+        } else if (field.type === 'grouper' && field.groups) {
+          field.groups.forEach(group => {
+            if (group.fields) {
+              repeatables.push(...findRepeatableFields(group.fields, basePath));
+            }
+          });
+        }
+      });
+      return repeatables;
+    };
+
+    const repeatables = findRepeatableFields(schema.fields);
+
+    repeatables.forEach(({ field, path }) => {
       const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
-      this.addRepeatableItem(formId, path, container);
+      if (container) {
+        container.dataset.fieldSchema = JSON.stringify(field.fields);
+        container.dataset.itemCount = '0';
+      }
     });
   }
 
-  static addRepeatableItem(formId, path, container) {
-    const schema = this.schemas.get(formId);
-    if (!schema) {
-      logger.error('cor:form', 'Schema no encontrado para:', formId);
-      return;
-    }
+  static addRepeatableItem(path) {
+    const container = document.querySelector(`.repeatable-items[data-path="${path}"]`);
+    if (!container) return;
 
-    const fieldDef = this.findField(schema.fields, path);
-    if (!fieldDef || !fieldDef.fields) {
-      logger.error('cor:form', 'Field no encontrado o sin subcampos');
-      return;
-    }
+    const fieldSchema = JSON.parse(container.dataset.fieldSchema || '[]');
+    const itemCount = parseInt(container.dataset.itemCount || '0');
+    const newIndex = itemCount;
 
-    if (!container) {
-      logger.error('cor:form', 'Container no proporcionado');
-      return;
-    }
+    const itemPath = `${path}[${newIndex}]`;
 
-    const index = container.children.length;
-    const itemPath = `${path}[${index}]`;
-    const removeText = this.t(fieldDef.removeText) || 'Eliminar';
+    const itemFields = fieldSchema.map(field => {
+      const fieldPath = `${itemPath}.${field.name}`;
+      return this.renderField(field, fieldPath);
+    }).join('');
 
-    const columns = fieldDef.columns;
-    const gap = fieldDef.gap || 'normal';
-    
-    let contentClass = 'repeatable-content';
-    if (columns) {
-      contentClass += ` form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
-    }
-
-    const itemHTML = `
-      <div class="repeatable-item">
-        <div class="${contentClass}">
-          ${this.renderFields(fieldDef.fields, itemPath)}
+    const itemHtml = `
+      <div class="repeatable-item" data-index="${newIndex}">
+        <div class="repeatable-content">
+          ${itemFields}
         </div>
-        <button type="button" class="btn btn-danger btn-sm repeatable-remove">
-          ${removeText}
-        </button>
+        <div class="repeatable-remove">
+          <button type="button" class="btn btn-sm btn-danger repeatable-remove">Eliminar</button>
+        </div>
       </div>
     `;
 
-    container.insertAdjacentHTML('beforeend', itemHTML);
-  }
+    container.insertAdjacentHTML('beforeend', itemHtml);
+    container.dataset.itemCount = (newIndex + 1).toString();
 
-  static removeRepeatableItem(button) {
-    const item = button.closest('.repeatable-item');
-    const container = item.parentElement;
-
-    if (container.children.length > 1) {
-      item.remove();
-    } else {
-      logger.warn('cor:form', 'No se puede eliminar el último item');
-    }
-  }
-
-  static findField(fields, path) {
-    const parts = path.split('.');
-    let current = fields;
-    let result = null;
-
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      const cleanPart = part.replace(/\[\d+\]/g, '');
-      
-      result = current.find(f => f.name === cleanPart);
-
-      if (!result) {
-        logger.warn('cor:form', `Campo "${cleanPart}" no encontrado en path: ${path}`);
-        return null;
-      }
-
-      if (i < parts.length - 1) {
-        if (result.fields) {
-          current = result.fields;
-        } else {
-          logger.warn('cor:form', `Campo "${cleanPart}" no tiene subcampos pero el path continúa: ${path}`);
-          return null;
-        }
+    const formId = container.closest('form')?.id;
+    if (formId) {
+      this.bindTransforms(formId);
+      if (window.conditions) {
+        conditions.init(formId);
       }
     }
-
-    return result;
   }
 
   static getData(formId) {
     const formEl = document.getElementById(formId);
-    if (!formEl) return null;
+    if (!formEl) return {};
 
     const formData = new FormData(formEl);
     const data = {};
 
-    for (let [key, value] of formData.entries()) {
+    for (const [key, value] of formData.entries()) {
       this.setNestedValue(data, key, value);
     }
 
@@ -578,8 +536,8 @@ class form {
 
   static setNestedValue(obj, path, value) {
     const keys = path.replace(/\[/g, '.').replace(/\]/g, '').split('.');
-    let current = obj;
 
+    let current = obj;
     for (let i = 0; i < keys.length - 1; i++) {
       const key = keys[i];
       const nextKey = keys[i + 1];
@@ -604,6 +562,44 @@ class form {
     current[keys[keys.length - 1]] = value;
   }
 
+  static bindTransforms(formId) {
+    const formEl = document.getElementById(formId);
+    if (!formEl) return;
+
+    const transforms = {
+      lowercase: (value) => value.toLowerCase(),
+      uppercase: (value) => value.toUpperCase(),
+      trim: (value) => value.replace(/\s+/g, ''),
+      alphanumeric: (value) => value.replace(/[^a-zA-Z0-9]/g, ''),
+      numeric: (value) => value.replace(/[^0-9]/g, ''),
+      slug: (value) => value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    };
+
+    formEl.querySelectorAll('[class*="form-transform-"]').forEach(input => {
+      const classes = input.className.split(' ');
+      const transformClasses = classes.filter(c => c.startsWith('form-transform-'));
+
+      if (transformClasses.length === 0) return;
+
+      input.addEventListener('input', function(e) {
+        let value = e.target.value;
+
+        transformClasses.forEach(transformClass => {
+          const transformName = transformClass.replace('form-transform-', '');
+          if (transforms[transformName]) {
+            value = transforms[transformName](value);
+          }
+        });
+
+        if (e.target.value !== value) {
+          const cursorPos = e.target.selectionStart;
+          e.target.value = value;
+          e.target.setSelectionRange(cursorPos, cursorPos);
+        }
+      });
+    });
+  }
+
   static fill(formId, data) {
     const formEl = document.getElementById(formId);
     if (!formEl) return;
@@ -622,15 +618,169 @@ class form {
 
   static validate(formId) {
     const formEl = document.getElementById(formId);
-    if (!formEl) return false;
+    if (!formEl) {
+      return { success: false, errors: ['Formulario no encontrado'], message: 'Formulario no encontrado' };
+    }
 
-    return formEl.checkValidity();
+    const schema = this.schemas.get(formId);
+    if (!schema) {
+      return { success: true, errors: [], message: 'OK', data: this.getData(formId) };
+    }
+
+    const errors = [];
+    const formData = this.getData(formId);
+
+    formEl.querySelectorAll('.form-error').forEach(el => {
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+    formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+
+    const getValueByPath = (obj, path) => {
+      const keys = path.replace(/\[/g, '.').replace(/\]/g, '').split('.');
+      let current = obj;
+      for (let key of keys) {
+        if (current === null || current === undefined) return null;
+        current = current[key];
+      }
+      return current;
+    };
+
+    const validateField = (field, fieldPath) => {
+      if (field.type === 'button' || field.type === 'html') return;
+
+      const value = getValueByPath(formData, fieldPath);
+      const label = this.t(field.label) || field.name;
+      const fieldErrors = [];
+
+      // Validar campo requerido (propiedad booleana)
+      if (field.required) {
+        const isEmpty = value === null || value === undefined || value.toString().trim() === '';
+        if (isEmpty) {
+          fieldErrors.push(`${label} es requerido`);
+        }
+      }
+
+      // Validar regla 'required' dentro del string de validation
+      if (field.validation && field.validation.includes('required')) {
+        const isEmpty = value === null || value === undefined || value.toString().trim() === '';
+        if (isEmpty && !fieldErrors.some(err => err.includes('es requerido'))) {
+          fieldErrors.push(`${label} es requerido`);
+        }
+      }
+
+      // Validar otras reglas solo si hay valor
+      if (field.validation && value && value.toString().trim() !== '') {
+        const rules = field.validation.split('|');
+
+        for (const rule of rules) {
+          const [ruleName, ruleParam] = rule.split(':');
+
+          // Saltar 'required' porque ya se validó arriba
+          if (ruleName === 'required') continue;
+
+          if (ruleName === 'email') {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+              fieldErrors.push(`${label} debe ser un email válido`);
+            }
+          }
+          else if (ruleName === 'min') {
+            if (value.toString().length < parseInt(ruleParam)) {
+              fieldErrors.push(`${label} debe tener al menos ${ruleParam} caracteres`);
+            }
+          }
+          else if (ruleName === 'max') {
+            if (value.toString().length > parseInt(ruleParam)) {
+              fieldErrors.push(`${label} no puede tener más de ${ruleParam} caracteres`);
+            }
+          }
+          else if (ruleName === 'minValue') {
+            if (parseFloat(value) < parseFloat(ruleParam)) {
+              fieldErrors.push(`${label} debe ser mayor o igual a ${ruleParam}`);
+            }
+          }
+          else if (ruleName === 'maxValue') {
+            if (parseFloat(value) > parseFloat(ruleParam)) {
+              fieldErrors.push(`${label} debe ser menor o igual a ${ruleParam}`);
+            }
+          }
+          else if (ruleName === 'number') {
+            if (isNaN(value) || !isFinite(value)) {
+              fieldErrors.push(`${label} debe ser un número válido`);
+            }
+          }
+          else if (ruleName === 'url') {
+            if (!/^https?:\/\/.+/.test(value)) {
+              fieldErrors.push(`${label} debe ser una URL válida`);
+            }
+          }
+          else if (ruleName === 'alpha_num') {
+            if (!/^[a-zA-Z0-9]+$/.test(value)) {
+              fieldErrors.push(`${label} solo puede contener letras y números`);
+            }
+          }
+        }
+      }
+
+      if (fieldErrors.length > 0) {
+        errors.push(...fieldErrors);
+
+        const input = formEl.querySelector(`[name="${fieldPath}"]`);
+        if (input) {
+          const formGroup = input.closest('.form-group');
+          if (formGroup) {
+            formGroup.classList.add('has-error');
+            const errorEl = formGroup.querySelector('.form-error');
+            if (errorEl) {
+              errorEl.textContent = fieldErrors[0];
+              errorEl.style.display = 'block';
+            }
+          }
+        }
+      }
+    };
+
+    const processFields = (fields, basePath = '') => {
+      if (!fields) return;
+
+      fields.forEach(field => {
+        if (field.type === 'group' && field.fields) {
+          processFields(field.fields, basePath);
+        }
+        else if (field.type === 'grouper' && field.groups) {
+          field.groups.forEach(group => {
+            if (group.fields) processFields(group.fields, basePath);
+          });
+        }
+        else if (field.name) {
+          const fieldPath = basePath ? `${basePath}.${field.name}` : field.name;
+          validateField(field, fieldPath);
+        }
+      });
+    };
+
+    processFields(schema.fields);
+
+    const success = errors.length === 0;
+    const message = success ? 'Formulario válido' : `${errors.length} error${errors.length > 1 ? 'es' : ''} de validación`;
+
+    return {
+      success,
+      errors,
+      message,
+      data: success ? formData : null
+    };
   }
 
   static reset(formId) {
     const formEl = document.getElementById(formId);
     if (formEl) {
       formEl.reset();
+      formEl.querySelectorAll('.form-error').forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+      });
+      formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
     }
   }
 }

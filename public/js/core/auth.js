@@ -12,7 +12,7 @@ class auth {
       provider: 'auth-jwt',
       loginView: 'core:auth/login',
       redirectAfterLogin: 'dashboard',
-      sessionCheckInterval: 5 * 60 * 1000, // 5 minutos
+      sessionCheckInterval: 5 * 60 * 1000,
       ...config
     };
 
@@ -32,7 +32,6 @@ class auth {
       .join('');
 
     const providerClassName = `${providerName}Provider`;
-
     this.provider = window[providerClassName];
 
     if (!this.provider) {
@@ -48,6 +47,7 @@ class auth {
 
     if (isAuth) {
       this.user = await this.provider?.getUser();
+      this.normalizeConfig();
       await this.loadUserPermissions();
       this.startSessionMonitoring();
     } else {
@@ -55,7 +55,6 @@ class auth {
     }
   }
 
-  // Monitoreo periódico de sesión
   static startSessionMonitoring() {
     if (this.sessionCheckInterval) {
       clearInterval(this.sessionCheckInterval);
@@ -76,19 +75,16 @@ class auth {
     }
   }
 
-  // Verificar validez de sesión (silenciosa o con mensaje)
   static async checkSession(silent = false) {
     if (!this.provider) return false;
 
     const tokenKey = this.provider.tokenKey || 'auth_token';
     
-    // Verificar si el token ha expirado en cache
     if (cache.isExpired(tokenKey)) {
       if (!silent) logger.warn('cor:auth', 'Token expirado en cache');
       return false;
     }
 
-    // Verificar con el servidor
     try {
       const isValid = await this.provider.check();
       if (!isValid && !silent) {
@@ -101,7 +97,6 @@ class auth {
     }
   }
 
-  // Manejar sesión expirada
   static handleExpiredSession() {
     this.stopSessionMonitoring();
     
@@ -114,6 +109,7 @@ class auth {
     }
 
     setTimeout(() => {
+      this.clearAppCaches();
       this.user = null;
       this.provider?.clearSession?.();
       this.showLogin();
@@ -150,6 +146,8 @@ class auth {
       }
     }
 
+    this.filterPluginsByPermissions();
+
     if (window.sidebar) {
       await sidebar.init();
     }
@@ -174,6 +172,7 @@ class auth {
 
     if (result.success) {
       this.user = result.user;
+      this.normalizeConfig();
       await this.showApp();
       this.startSessionMonitoring();
     }
@@ -183,30 +182,146 @@ class auth {
 
   static async logout() {
     this.stopSessionMonitoring();
+    
+    // Limpiar caches de app (NO token/user, eso lo hace provider)
+    this.clearAppCaches();
+    
     await this.provider.logout();
     this.user = null;
-    this.showLogin();
+    
+    // Recargar página para reset completo
+    window.location.reload();
+  }
+
+  // Limpiar caches de aplicación (vistas, forms, plugins)
+  static clearAppCaches() {
+    logger.info('cor:auth', 'Limpiando caches de aplicación...');
+
+    // 1. Vistas
+    if (window.view) {
+      if (view.viewNavigationCache) {
+        view.viewNavigationCache.clear();
+      }
+      view.views = {};
+      view.loadedPlugins = {};
+    }
+
+    // 2. Formularios
+    if (window.form) {
+      if (form.schemas) {
+        form.schemas.clear();
+      }
+      if (form.registeredEvents) {
+        form.registeredEvents.clear();
+      }
+    }
+
+    // 3. Hooks/Plugins
+    if (window.hook) {
+      hook.menuItems = [];
+      hook.pluginRegistry = new Map();
+      hook.loadedHooks = new Set();
+    }
+
+    // 4. Sidebar
+    if (window.sidebar) {
+      sidebar.menuData = { menu: [] };
+    }
+
+    // 5. Eventos delegados
+    if (window.events) {
+      events.clear();
+    }
+
+    // 6. Scripts/styles cargados
+    if (window.loader) {
+      loader.loaded = new Set();
+    }
+
+    // 7. Permisos y preferencias
+    this.userPermissions = null;
+    this.userPreferences = null;
+
+    // 8. Traducciones de plugins
+    if (window.i18n?.pluginTranslations) {
+      i18n.pluginTranslations.clear();
+    }
+
+    // 9. Limpiar cache general (vistas, forms, etc) pero NO token/user
+    if (window.cache) {
+      const keysToPreserve = ['cache_auth_token', 'cache_auth_user'];
+      const allKeys = Object.keys(localStorage).filter(k => k.startsWith('cache_'));
+      
+      allKeys.forEach(key => {
+        if (!keysToPreserve.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Limpiar memoria cache
+      if (cache.memoryCache) {
+        cache.memoryCache.clear();
+      }
+    }
+
+    logger.success('cor:auth', 'Caches de aplicación limpiados');
   }
 
   static getUser() { return this.user; }
   static isAuthenticated() { return !!this.user; }
   static getToken() { return this.provider?.getToken?.(); }
 
+  static normalizeConfig() {
+    if (!this.user) return;
+
+    const defaults = { 
+      permissions: { plugins: {} }, 
+      preferences: { theme: 'light', language: 'es', notifications: true }
+    };
+
+    if (!this.user.config || typeof this.user.config !== 'object' || Array.isArray(this.user.config)) {
+      this.user.config = defaults;
+      return;
+    }
+
+    this.user.config = {
+      permissions: {
+        plugins: this.user.config.permissions?.plugins || {}
+      },
+      preferences: {
+        theme: this.user.config.preferences?.theme || 'light',
+        language: this.user.config.preferences?.language || 'es',
+        notifications: this.user.config.preferences?.notifications !== undefined 
+          ? this.user.config.preferences.notifications 
+          : true
+      }
+    };
+  }
+
   static async loadUserPermissions() {
     const currentUser = await this.provider.getUser();
-    if (!currentUser || !currentUser.config) return;
+    if (!currentUser) return;
 
-    const config = typeof currentUser.config === 'string' ?
-      JSON.parse(currentUser.config) :
-      currentUser.config;
+    let config = currentUser.config;
+    if (typeof config === 'string') {
+      try {
+        config = JSON.parse(config);
+      } catch (error) {
+        logger.error('cor:auth', 'Error parseando config:', error);
+        config = { permissions: { plugins: {} }, preferences: {} };
+      }
+    }
 
-    this.userPermissions = config.permissions;
-    this.userPreferences = config.preferences;
+    if (!config || typeof config !== 'object') {
+      config = { permissions: { plugins: {} }, preferences: {} };
+    }
+
+    this.userPermissions = config.permissions || { plugins: {} };
+    this.userPreferences = config.preferences || { theme: 'light', language: 'es', notifications: true };
 
     logger.success('cor:auth', 'Permisos cargados');
 
     this.applyUserPreferences();
-    this.filterMenuByPermissions();
   }
 
   static applyUserPreferences() {
@@ -216,41 +331,48 @@ class auth {
       document.body.dataset.theme = this.userPreferences.theme;
     }
 
-    // ✅ Aplicar idioma del usuario (si existe)
     if (this.userPreferences.language && window.i18n) {
       i18n.setLang(this.userPreferences.language);
     }
   }
 
-  static filterMenuByPermissions() {
-    if (!this.userPermissions?.plugins) return;
+  static filterPluginsByPermissions() {
+    if (this.user?.role === 'admin') {
+      logger.debug('cor:auth', 'Usuario admin - sin filtros');
+      return;
+    }
 
-    if (this.user?.role === 'admin') return;
+    if (!this.userPermissions?.plugins) {
+      logger.warn('cor:auth', 'Usuario sin permisos definidos');
+      return;
+    }
 
-    for (const [pluginName, plugin] of Object.entries(window.hooks.plugins)) {
+    if (!window.hook?.pluginRegistry) {
+      logger.warn('cor:auth', 'PluginRegistry no disponible');
+      return;
+    }
+
+    for (const [pluginName, plugin] of window.hook.pluginRegistry) {
       const perms = this.userPermissions.plugins[pluginName];
 
       if (!perms || perms.enabled === false) {
         plugin.enabled = false;
+        logger.debug('cor:auth', `Plugin deshabilitado: ${pluginName}`);
         continue;
       }
 
-      if (perms.menus !== '*' && plugin.menu?.items) {
-        plugin.menu.items = plugin.menu.items.filter(item => {
-          return perms.menus[item.id] === true;
-        });
+      if (perms.menus !== '*' && plugin.menu?.items && typeof perms.menus === 'object') {
+        const allowedMenuIds = Object.keys(perms.menus).filter(key => perms.menus[key] === true);
+        plugin.menu.items = plugin.menu.items.filter(item => allowedMenuIds.includes(item.id));
+        logger.debug('cor:auth', `Menús filtrados para ${pluginName}:`, allowedMenuIds);
       }
-    }
-
-    if (window.sidebar) {
-      sidebar.renderMenu();
     }
   }
 
   static hasPermission(plugin, menu = null, view = null) {
     if (this.user?.role === 'admin') return true;
 
-    if (!this.userPermissions?.plugins) return true;
+    if (!this.userPermissions?.plugins) return false;
 
     const perms = this.userPermissions.plugins[plugin];
 

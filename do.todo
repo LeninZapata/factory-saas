@@ -1,3 +1,7 @@
+por donde me quede:
+☐ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin
+por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'
+☐ 
 pendientes:
 ✔ Implementar el login @done(20-11-2025 19:10)
 ✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
@@ -37,3 +41,4 @@ pero si se pone el boton en el modal como se haria para que reacione a ese formu
 ☐ Sistema de idioma en el backend como frontend en los mensajes de errores e integracion con plugins que manejen sus propios idiomas
  _ que se pueda editar los textos de los idiomas del backend
 ☐ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla
+☐ mE FALTO en form transformation, MAX, MIN ya que como se pude manejar atributos toca asi, mirar user-form.json

@@ -276,6 +276,24 @@ textarea {
   margin-bottom: 0;
 }
 
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.form-error {
+  display: none;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-error:not(:empty) {
+  display: block;
+}
+
 /* ===================================
    Responsive
    ================================= */
@@ -326,4 +344,15 @@ textarea {
 .form-group label span[style*="color: #e74c3c"] {
   font-weight: bold;
   font-size: 1.1em;
+}
+/* ===================================
+   Validación - Estilos de Error Focus
+   ================================= */
+
+.form-group.has-error input:focus,
+.form-group.has-error select:focus,
+.form-group.has-error textarea:focus {
+  outline: none;
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }

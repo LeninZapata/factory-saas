@@ -15,7 +15,8 @@
               "name": "username",
               "label": "Nombre de Usuario",
               "type": "text",
-              "required": true,
+              "transform": ["lowercase", "alphanumeric"],
+              "validation": "required|alpha_num|min:3|max:50",
               "placeholder": "usuario123"
             },
             {
@@ -27,13 +28,15 @@
                   "name": "email",
                   "label": "Correo Electrónico",
                   "type": "email",
+                  "transform": ["lowercase", "trim"],
+                  "validation": "required|email",
                   "placeholder": "usuario@ejemplo.com"
                 },
                 {
                   "name": "role",
                   "label": "Rol",
                   "type": "select",
-                  "required": true,
+                  "validation": "required",
                   "options": [
                     { "value": "admin", "label": "👑 Administrador" },
                     { "value": "editor", "label": "✏️ Editor" },
@@ -52,12 +55,14 @@
                   "name": "password",
                   "label": "Contraseña",
                   "type": "password",
+                  "validation": "min:8",
                   "placeholder": "Mínimo 8 caracteres"
                 },
                 {
                   "name": "password_confirm",
                   "label": "Confirmar Contraseña",
                   "type": "password",
+                  "validation": "min:8",
                   "placeholder": "Repite la contraseña"
                 }
               ]
@@ -152,7 +157,7 @@
       "type": "button",
       "label": "💾 Guardar Usuario",
       "action": "submit",
-      "onclick": "event.preventDefault(); admin.saveUser(this.closest('form').id);"
+      "onclick": "event.preventDefault(); admin.save(this.closest('form').id);"
     },
     {
       "name": "cancel",
