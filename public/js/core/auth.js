@@ -287,8 +287,8 @@ class auth {
         this.loadUserPermissions();
         await this.reloadAppAfterPermissionChange();
         
-        toast.show({
-          message: '✅ Tus permisos han sido actualizados',
+        // ✅ Firma correcta: toast.show(message, options)
+        toast.show('✅ Tus permisos han sido actualizados', {
           type: 'success',
           duration: 3000
         });
@@ -341,8 +341,8 @@ class auth {
     if (window.toast) {
       const message = 'Tu sesión ha expirado o fue invalidada. Por favor, inicia sesión nuevamente.';
       
-      toast.show({
-        message: message,
+      // ✅ Firma correcta: toast.show(message, options)
+      toast.show(message, {
         type: 'warning',
         duration: 5000
       });
@@ -387,81 +387,87 @@ class auth {
   }
 
   static filterPluginsByPermissions() {
-    if (!window.hook || !hook.pluginRegistry) {
-      logger.warn('cor:auth', 'hook.pluginRegistry no disponible');
-      return;
-    }
-
-    const permissions = this.userPermissions?.plugins || {};
-
-    logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
-
-    for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
-      const pluginPerms = permissions[pluginName];
-
-      if (!pluginPerms || pluginPerms.enabled === false) {
-        pluginConfig.enabled = false;
-        logger.warn('cor:auth', `❌ Plugin deshabilitado: ${pluginName}`);
-        continue;
+      // ✅ Si es admin, NO filtrar nada
+      if (this.user?.role === 'admin') {
+        logger.info('cor:auth', '👑 Usuario admin detectado - sin filtrado de permisos');
+        return;
       }
 
-      logger.success('cor:auth', `✅ Plugin habilitado: ${pluginName}`);
-
-      if (!pluginConfig.hasMenu || !pluginConfig.menu) continue;
-
-      const menuPerms = pluginPerms.menus;
-
-      if (menuPerms === '*') {
-        logger.info('cor:auth', `  ✨ Acceso total a menús de: ${pluginName}`);
-        continue;
+      if (!window.hook || !hook.pluginRegistry) {
+        logger.warn('cor:auth', 'hook.pluginRegistry no disponible');
+        return;
       }
 
-      if (!menuPerms || typeof menuPerms !== 'object') {
-        pluginConfig.menu.items = [];
-        logger.warn('cor:auth', `  ⚠️ Sin permisos de menús para: ${pluginName}`);
-        continue;
-      }
+      const permissions = this.userPermissions?.plugins || {};
 
-      const originalMenus = [...(pluginConfig.menu.items || [])];
-      logger.info('cor:auth', `  📂 Menús ANTES del filtrado (${originalMenus.length}): [${originalMenus.map(m => `"${m.id}"`).join(', ')}]`);
+      logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
 
-      const allowedMenuIds = Object.keys(menuPerms).filter(key => {
-        const menuPerm = menuPerms[key];
-        if (menuPerm === true) return true;
-        if (typeof menuPerm === 'object' && menuPerm.enabled === true) return true;
-        return false;
-      });
+      for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
+        const pluginPerms = permissions[pluginName];
 
-      logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}: [${allowedMenuIds.map(m => `"${m}"`).join(', ')}]`);
-
-      const filteredMenus = originalMenus.filter(menu => {
-        const isAllowed = allowedMenuIds.includes(menu.id);
-        if (isAllowed) {
-          logger.success('cor:auth', `    ✅ Menú "${menu.id}" permitido`);
-        } else {
-          logger.warn('cor:auth', `    ❌ Menú "${menu.id}" bloqueado`);
+        if (!pluginPerms || pluginPerms.enabled === false) {
+          pluginConfig.enabled = false;
+          logger.warn('cor:auth', `❌ Plugin deshabilitado: ${pluginName}`);
+          continue;
         }
-        return isAllowed;
-      });
 
-      pluginConfig.menu.items = filteredMenus;
+        logger.success('cor:auth', `✅ Plugin habilitado: ${pluginName}`);
 
-      logger.info('cor:auth', `  📊 Filtrado completado: ${originalMenus.length} → ${filteredMenus.length} menús`);
-      logger.info('cor:auth', `  📂 Menús DESPUÉS del filtrado: [${filteredMenus.map(m => `"${m.id}"`).join(', ')}]`);
-    }
+        if (!pluginConfig.hasMenu || !pluginConfig.menu) continue;
 
-    logger.success('cor:auth', '📊 RESUMEN DEL FILTRADO DE PLUGINS:');
-    for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
-      if (pluginConfig.enabled && pluginConfig.hasMenu) {
-        const menuCount = pluginConfig.menu.items?.length || 0;
-        logger.success('cor:auth', `  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
-      } else if (!pluginConfig.enabled) {
-        logger.warn('cor:auth', `  ❌ ${pluginName}: deshabilitado`);
+        const menuPerms = pluginPerms.menus;
+
+        if (menuPerms === '*') {
+          logger.info('cor:auth', `  ✨ Acceso total a menús de: ${pluginName}`);
+          continue;
+        }
+
+        if (!menuPerms || typeof menuPerms !== 'object') {
+          pluginConfig.menu.items = [];
+          logger.warn('cor:auth', `  ⚠️ Sin permisos de menús para: ${pluginName}`);
+          continue;
+        }
+
+        const originalMenus = [...(pluginConfig.menu.items || [])];
+        logger.info('cor:auth', `  📂 Menús ANTES del filtrado (${originalMenus.length}): [${originalMenus.map(m => `"${m.id}"`).join(', ')}]`);
+
+        const allowedMenuIds = Object.keys(menuPerms).filter(key => {
+          const menuPerm = menuPerms[key];
+          if (menuPerm === true) return true;
+          if (typeof menuPerm === 'object' && menuPerm.enabled === true) return true;
+          return false;
+        });
+
+        logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}: [${allowedMenuIds.map(m => `"${m}"`).join(', ')}]`);
+
+        const filteredMenus = originalMenus.filter(menu => {
+          const isAllowed = allowedMenuIds.includes(menu.id);
+          if (isAllowed) {
+            logger.success('cor:auth', `    ✅ Menú "${menu.id}" permitido`);
+          } else {
+            logger.warn('cor:auth', `    ❌ Menú "${menu.id}" bloqueado`);
+          }
+          return isAllowed;
+        });
+
+        pluginConfig.menu.items = filteredMenus;
+
+        logger.info('cor:auth', `  📊 Filtrado completado: ${originalMenus.length} → ${filteredMenus.length} menús`);
+        logger.info('cor:auth', `  📂 Menús DESPUÉS del filtrado: [${filteredMenus.map(m => `"${m.id}"`).join(', ')}]`);
       }
-    }
 
-    logger.success('cor:auth', '✅ Filtrado de plugins completado');
-  }
+      logger.success('cor:auth', '📊 RESUMEN DEL FILTRADO DE PLUGINS:');
+      for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
+        if (pluginConfig.enabled && pluginConfig.hasMenu) {
+          const menuCount = pluginConfig.menu.items?.length || 0;
+          logger.success('cor:auth', `  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
+        } else if (!pluginConfig.enabled) {
+          logger.warn('cor:auth', `  ❌ ${pluginName}: deshabilitado`);
+        }
+      }
+
+      logger.success('cor:auth', '✅ Filtrado de plugins completado');
+    }
 
   static getTabPermissions(menuId) {
     if (!this.userPermissions?.plugins) return null;
@@ -521,6 +527,28 @@ class auth {
 
     document.body.setAttribute('data-view', 'app-view');
 
+    // ✅ CARGAR PLUGINS ANTES DEL SIDEBAR
+    if (window.hook?.loadPluginHooks) {
+      logger.info('cor:auth', 'Cargando plugins...');
+      await hook.loadPluginHooks();
+      
+      // Registrar plugins cargados en view
+      if (window.view && hook.getEnabledPlugins) {
+        const enabledPlugins = hook.getEnabledPlugins();
+        view.loadedPlugins = {};
+        
+        for (const plugin of enabledPlugins) {
+          view.loadedPlugins[plugin.name] = true;
+        }
+      }
+      
+      // Filtrar por permisos
+      this.filterPluginsByPermissions();
+      
+      logger.success('cor:auth', 'Plugins cargados y filtrados');
+    }
+
+    // ✅ AHORA SÍ INICIALIZAR SIDEBAR (con menús disponibles)
     if (window.sidebar) {
       await sidebar.init();
     }

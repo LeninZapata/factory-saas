@@ -7,3 +7,46 @@
 [2025-11-27 17:03:56] INFO: Login exitoso | {"user":"admin44","id":3}
 [2025-11-27 17:04:02] INFO: Logout exitoso | {"token":"b6960f62da..."}
 [2025-11-27 17:04:08] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 17:45:34] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 17:46:41] INFO: Logout exitoso | {"token":"610426fd3c..."}
+[2025-11-27 17:46:48] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-11-27 17:47:07] INFO: sessionCleanup | "Limpiadas 2 sesiones del usuario 4"
+[2025-11-27 17:47:07] INFO: UserController | "Sesiones invalidadas para user_id=4: 2 sesiones eliminadas"
+[2025-11-27 17:47:14] WARNING: authMiddleware | "Token no encontrado: 08ec9af49764dad0e9efee663a1939beefee46847d972a3e50f7708337608cb2"
+[2025-11-27 17:47:35] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 17:54:06] INFO: sessionCleanup | "Limpiadas 1 sesiones del usuario 4"
+[2025-11-27 17:54:06] INFO: UserController | "Sesiones invalidadas para user_id=4: 1 sesiones eliminadas"
+[2025-11-27 17:54:15] WARNING: authMiddleware | "Token no encontrado: 6d11de799c27ba2dd4a562db1835204045c9269214e55045968207e02940124b"
+[2025-11-27 17:54:25] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 17:54:40] INFO: sessionCleanup | "Limpiadas 1 sesiones del usuario 4"
+[2025-11-27 17:54:40] INFO: UserController | "Sesiones invalidadas para user_id=4: 1 sesiones eliminadas"
+[2025-11-27 17:54:45] WARNING: authMiddleware | "Token no encontrado: cb0b71172ab0e334a063f9c70ef3f7111bced140f0388a3a3e82f9c14ac92068"
+[2025-11-27 17:55:01] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 18:06:04] INFO: sessionCleanup | "Limpiadas 1 sesiones del usuario 4"
+[2025-11-27 18:06:04] INFO: UserController | "Sesiones invalidadas para user_id=4: 1 sesiones eliminadas"
+[2025-11-27 18:06:12] WARNING: authMiddleware | "Token no encontrado: 76744b8021f6c946a3e21c6b0b2ac12c02647d9603277152b30ac0898553201d"
+[2025-11-27 18:06:56] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 18:07:06] INFO: sessionCleanup | "Limpiadas 1 sesiones del usuario 4"
+[2025-11-27 18:07:06] INFO: UserController | "Sesiones invalidadas para user_id=4: 1 sesiones eliminadas"
+[2025-11-27 18:07:06] WARNING: authMiddleware | "Token no encontrado: f401e58d0d783a8e7444a75813308d5e3568b81571ff972be9dcf946bfc0c534"
+[2025-11-27 18:07:24] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 18:07:41] INFO: sessionCleanup | "Limpiadas 1 sesiones del usuario 4"
+[2025-11-27 18:07:41] INFO: UserController | "Sesiones invalidadas para user_id=4: 1 sesiones eliminadas"
+[2025-11-27 18:07:44] WARNING: authMiddleware | "Token no encontrado: d17a48f60e8cec8114c2e6a04613421ebabd9569c880800e7a237b54a8d84bf3"
+[2025-11-27 18:17:25] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 4"
+[2025-11-27 18:17:25] INFO: UserController | "Sesiones invalidadas para user_id=4: 0 sesiones eliminadas"
+[2025-11-27 18:17:35] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 4"
+[2025-11-27 18:17:35] INFO: UserController | "Sesiones invalidadas para user_id=4: 0 sesiones eliminadas"
+[2025-11-27 18:27:08] INFO: Logout exitoso | {"token":"2a1a619c44..."}
+[2025-11-27 18:27:22] WARNING: Login fallido | {"user":"admin6"}
+[2025-11-27 18:27:28] WARNING: Login fallido | {"user":"admin6"}
+[2025-11-27 18:27:39] INFO: Login exitoso | {"user":"admin6","id":7}
+[2025-11-27 18:41:04] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-11-27 18:41:40] INFO: Logout exitoso | {"token":"528990bda6..."}
+[2025-11-27 18:41:44] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-11-27 18:42:04] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 4"
+[2025-11-27 18:42:04] INFO: UserController | "Sesiones invalidadas para user_id=4: 0 sesiones eliminadas"
+[2025-11-27 18:42:10] INFO: Logout exitoso | {"token":"dec6b6c9f4..."}
+[2025-11-27 18:42:14] INFO: Login exitoso | {"user":"admin5","id":4}
+[2025-11-27 18:42:34] INFO: Logout exitoso | {"token":"ae942de3e4..."}
+[2025-11-27 18:42:39] INFO: Login exitoso | {"user":"admin44","id":3}

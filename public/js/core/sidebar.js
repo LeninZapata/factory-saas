@@ -26,7 +26,7 @@ class sidebar {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard",
+            view: "dashboard/dashboard",
             order: 1
           }
         ];
@@ -42,7 +42,7 @@ class sidebar {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard"
+            view: "dashboard/dashboard"
           }
         ];
       }
@@ -56,7 +56,7 @@ class sidebar {
           id: "dashboard",
           title: "Dashboard",
           icon: "📊",
-          view: "dashboard"
+          view: "dashboard/dashboard"
         }
       ];
       this.renderMenu();
@@ -294,7 +294,7 @@ class sidebar {
 
   static getFirstView() {
     if (!this.menuData || !this.menuData.menu || this.menuData.menu.length === 0) {
-      return 'dashboard';
+      return 'dashboard/dashboard';
     }
 
     const findFirstView = (items) => {
@@ -310,9 +310,8 @@ class sidebar {
       return null;
     };
 
-    return findFirstView(this.menuData.menu) || 'dashboard';
+    return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
   }
-
 }
 
 window.sidebar = sidebar;

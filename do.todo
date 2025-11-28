@@ -42,3 +42,13 @@ pero si se pone el boton en el modal como se haria para que reacione a ese formu
  _ que se pueda editar los textos de los idiomas del backend
 ☐ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla
 ☐ mE FALTO en form transformation, MAX, MIN ya que como se pude manejar atributos toca asi, mirar user-form.json
+___
+Despues:
+☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
+☐ Acciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo entonces 
+debe valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
+o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no
+☐ El componente de permission tiene una falla y es que tiene una falla que si editas puese ese componente las vistas de primer nivel seleccionada opr
+ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
+☐ En el condicionaal aunq funciona bien pero en consola log envia un error cada vez hace condiciones es como que buscar unos campos
+y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.

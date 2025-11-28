@@ -16,7 +16,7 @@ window.appConfig = {
     redirectAfterLogin: 'dashboard/dashboard',
     storageKey: 'factory_auth',
     tokenTTL: 24 * 60 * 60 * 1000,
-    sessionCheckInterval: 10 * 1000, // ⚡ 10 segundos - TESTING (cambiar a 5*60*1000 en producción)
+    sessionCheckInterval: 2*60*1000, // 2 minutos
     api: {
       login: '/api/user/login',
       logout: '/api/user/logout',

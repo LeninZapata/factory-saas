@@ -1,10 +1,6 @@
 {
   "plugins": [
     {
-      "name": "auth-jwt",
-      "description": "Proveedor de autenticación JWT"
-    },
-    {
       "name": "ejemplos",
       "description": "Ejemplos de uso del sistema"
     },

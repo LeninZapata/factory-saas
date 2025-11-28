@@ -130,6 +130,9 @@ class form {
 
   static renderFields(fields, path = '') {
     return fields.map((field) => {
+      // ✅ Validar role antes de renderizar
+      if (!this.hasRoleAccess(field)) return '';
+      
       const fieldPath = path ? `${path}.${field.name}` : field.name;
 
       if (field.type === 'repeatable') {
@@ -204,6 +207,9 @@ class form {
     return `
       <div class="${groupClass}">
         ${field.fields ? field.fields.map(subField => {
+          // ✅ Validar role antes de renderizar subfields
+          if (!this.hasRoleAccess(subField)) return '';
+          
           const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
           return this.renderField(subField, fieldPath);
         }).join('') : ''}
@@ -347,6 +353,9 @@ class form {
   }
 
   static renderField(field, path) {
+    // ✅ Validar role al inicio
+    if (!this.hasRoleAccess(field)) return '';
+    
     if (field.type === 'html') {
       return field.content || '';
     }
@@ -782,6 +791,21 @@ class form {
       });
       formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
     }
+  }
+
+  // Agregar este método al inicio de la clase form (después de la línea 10)
+  static hasRoleAccess(field) {
+    // Si el campo no tiene restricción de role, permitir acceso
+    if (!field.role) return true;
+    
+    // Obtener role del usuario actual
+    const userRole = window.auth?.user?.role;
+    
+    // Si no hay usuario autenticado, denegar acceso
+    if (!userRole) return false;
+    
+    // Validar si el role coincide
+    return userRole === field.role;
   }
 }
 

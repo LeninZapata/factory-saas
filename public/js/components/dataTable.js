@@ -7,7 +7,7 @@ class datatable {
     const pluginName = config.pluginName || this.detectPluginName(container);
     const data = await this.loadData(config, pluginName);
 
-    this.tables.set(tableId, { config, data, pluginName });
+    this.tables.set(tableId, { config, data, pluginName, container });
 
     const html = this.generateHtml(tableId, config, data);
     container.innerHTML = html;
@@ -77,7 +77,7 @@ class datatable {
     const hasActions = config.actions && Object.keys(config.actions).length > 0;
 
     return `
-      <div class="datatable-container" id="${tableId}">
+      <div class="datatable-container" id="${tableId}" data-datatable="${tableId}">
         <table class="table">
           <thead>
             <tr>
@@ -93,37 +93,10 @@ class datatable {
     `;
   }
 
-  /**
-   * Procesar columnas - Sistema flexible y extensible
-   * 
-   * Formatos soportados:
-   * 
-   * 1. String simple:
-   *    ["id", "username", "email"]
-   * 
-   * 2. Objeto con parámetros:
-   *    {
-   *      "user": {
-   *        "name": "i18n:admin:user.field.username",
-   *        "sortable": true,
-   *        "width": "200px",
-   *        "align": "left"
-   *      }
-   *    }
-   * 
-   * 3. Mixto:
-   *    [
-   *      "id",
-   *      { "user": { "name": "i18n:core.username" } },
-   *      "email"
-   *    ]
-   */
   static processColumns(columns) {
-    // Si es array simple de strings
     if (Array.isArray(columns)) {
       return columns.map(col => {
         if (typeof col === 'string') {
-          // Formato simple: "username"
           return {
             field: col,
             headerLabel: this.formatHeader(col),
@@ -133,7 +106,6 @@ class datatable {
             align: 'left'
           };
         } else if (typeof col === 'object') {
-          // Formato objeto: { "user": { "name": "...", ... } }
           const field = Object.keys(col)[0];
           const params = col[field];
           
@@ -145,18 +117,15 @@ class datatable {
             width: params.width || null,
             align: params.align || 'left',
             format: params.format || null,
-            // Guardar todos los parámetros extra
             ...params
           };
         }
       });
     }
 
-    // Si es objeto directo: { "user": {...}, "email": {...} }
     if (typeof columns === 'object' && !Array.isArray(columns)) {
       return Object.entries(columns).map(([field, params]) => {
         if (typeof params === 'string') {
-          // Formato: { "user": "Username" }
           return {
             field: field,
             headerLabel: this.translateLabel(params),
@@ -166,7 +135,6 @@ class datatable {
             align: 'left'
           };
         } else {
-          // Formato: { "user": { "name": "...", ... } }
           return {
             field: field,
             headerLabel: this.translateLabel(params.name || field),
@@ -184,53 +152,32 @@ class datatable {
     return [];
   }
 
-  /**
-   * Traducir label con soporte para i18n
-   * 
-   * Formatos:
-   * - "Username" → Retorna tal cual
-   * - "i18n:core.username" → Busca en traducciones core
-   * - "i18n:admin:user.name" → Busca en plugin "admin"
-   */
   static translateLabel(label) {
     if (!label || typeof label !== 'string') return '';
 
-    // Si no tiene i18n:, retornar tal cual
     if (!label.startsWith('i18n:')) return label;
 
-    // Remover prefijo i18n:
     const key = label.replace('i18n:', '');
 
-    // Detectar si es de plugin: "admin:user.name"
     if (key.includes(':')) {
       const [pluginName, pluginKey] = key.split(':', 2);
       return this.translateFromPlugin(pluginName, pluginKey);
     }
 
-    // Es de core: "core.username"
     return this.translateFromCore(key);
   }
 
-  /**
-   * Traducir desde traducciones core
-   */
   static translateFromCore(key) {
     if (window.i18n && typeof i18n.t === 'function') {
       const translation = i18n.t(key);
-      // Si la traducción es igual a la key, significa que no se encontró
       if (translation !== key) return translation;
     }
 
-    // Fallback: formatear la key
     logger.warn('com:datatable', `Traducción no encontrada: ${key}`);
     return this.formatHeader(key.split('.').pop());
   }
 
-  /**
-   * Traducir desde traducciones de plugin
-   */
   static translateFromPlugin(pluginName, key) {
-    // Intentar obtener traducción del plugin
     if (window.i18n && window.i18n.pluginTranslations) {
       const pluginLangs = i18n.pluginTranslations.get(pluginName);
       if (pluginLangs) {
@@ -243,7 +190,6 @@ class datatable {
       }
     }
 
-    // Fallback: formatear la key
     logger.warn('com:datatable', `Traducción de plugin no encontrada: ${pluginName}:${key}`);
     return this.formatHeader(key.split('.').pop());
   }
@@ -259,18 +205,13 @@ class datatable {
     `;
   }
 
-  /**
-   * Renderizar celda con soporte para formato personalizado
-   */
   static renderCell(row, column) {
     let value = row[column.field] || '';
 
-    // Aplicar formato si existe
     if (column.format) {
       value = this.formatValue(value, column.format, row);
     }
 
-    // Aplicar estilos
     const style = [];
     if (column.width) style.push(`width: ${column.width}`);
     if (column.align) style.push(`text-align: ${column.align}`);
@@ -280,25 +221,13 @@ class datatable {
     return `<td${styleAttr}>${value}</td>`;
   }
 
-  /**
-   * Formatear valor según tipo
-   * 
-   * Formatos soportados:
-   * - "date" → Formatear fecha
-   * - "datetime" → Formatear fecha y hora
-   * - "money" → Formatear moneda
-   * - "boolean" → Sí/No
-   * - function → Función personalizada
-   */
   static formatValue(value, format, row) {
     if (!value) return '';
 
-    // Si format es una función
     if (typeof format === 'function') {
       return format(value, row);
     }
 
-    // Formatos predefinidos
     switch (format) {
       case 'date':
         return this.formatDate(value);
@@ -395,12 +324,35 @@ class datatable {
     // Eventos futuros
   }
 
-  static refresh(tableId) {
+  // Método mejorado para refrescar tabla
+  static async refresh(tableId) {
     const table = this.tables.get(tableId);
-    if (!table) return;
+    if (!table) {
+      logger.warn('com:datatable', `Tabla ${tableId} no encontrada`);
+      return;
+    }
 
-    const container = document.getElementById(tableId).parentElement;
-    this.render(table.config, container);
+    const { config, pluginName, container } = table;
+    const data = await this.loadData(config, pluginName);
+    
+    this.tables.set(tableId, { config, data, pluginName, container });
+
+    const html = this.generateHtml(tableId, config, data);
+    container.innerHTML = html;
+
+    this.bindEvents(tableId);
+  }
+
+  // Método helper para refrescar la primera tabla visible
+  static async refreshFirst() {
+    const firstTable = document.querySelector('[data-datatable]');
+    if (!firstTable) {
+      logger.warn('com:datatable', 'No se encontró ninguna tabla');
+      return;
+    }
+
+    const tableId = firstTable.getAttribute('data-datatable');
+    await this.refresh(tableId);
   }
 }
 

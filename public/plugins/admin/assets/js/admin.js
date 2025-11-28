@@ -37,7 +37,17 @@ class admin {
 
     if (result) {
       toast.success(this.currentId ? '✅ Usuario actualizado' : '✅ Usuario creado');
-      setTimeout(() => { modal.closeAll(); location.reload(); }, 800);
+      setTimeout(() => {
+        modal.closeAll();
+        this.refreshTable();
+      }, 800);
+    }
+  }
+
+  // Refrescar tabla sin reload
+  static refreshTable() {
+    if (window.datatable) {
+      datatable.refreshFirst();
     }
   }
 

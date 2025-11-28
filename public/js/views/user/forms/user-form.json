@@ -82,6 +82,7 @@
             },
             {
               "type": "html",
+              "role": "admin",
               "content": "<div id='permissions-container' style='min-height: 200px;'></div>"
             },
             {
