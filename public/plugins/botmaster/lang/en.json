@@ -1,0 +1,99 @@
+{
+  "plugin_name": "BotMaster",
+  "plugin_description": "Bot automation system",
+  "menu": {
+    "dashboard": "Dashboard",
+    "families": "Bot Families",
+    "bots": "Bot Management",
+    "tasks": "Task Templates",
+    "monitor": "Live Monitor"
+  },
+  "dashboard": {
+    "total_bots": "Total Bots",
+    "active_bots": "Active Bots",
+    "inactive_bots": "Inactive Bots",
+    "families": "Families",
+    "templates": "Templates",
+    "tasks_today": "Tasks Completed Today",
+    "create_bot": "Create Bot",
+    "create_family": "Create Family",
+    "new_template": "New Template"
+  },
+  "families": {
+    "title": "Bot Families",
+    "description": "Manage bot groups with shared configurations",
+    "name": "Family Name",
+    "bot_count": "Bot Count",
+    "location": "Proxy Location",
+    "devices": "Device Distribution",
+    "tasks": "Assigned Tasks"
+  },
+  "bots": {
+    "title": "Bot Management",
+    "description": "Manage your individual bots",
+    "name": "Bot Name",
+    "device": "Device",
+    "status": "Status",
+    "last_used": "Last Used",
+    "actions": "Actions"
+  },
+  "tasks": {
+    "title": "Task Templates",
+    "description": "Define reusable action sequences",
+    "name": "Template Name",
+    "category": "Category",
+    "steps": "Steps",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "monitor": {
+    "title": "Live Monitor",
+    "description": "Visualize bot execution in real-time",
+    "bot_name": "Bot",
+    "current_task": "Current Task",
+    "progress": "Progress",
+    "status": "Status",
+    "last_activity": "Last Activity"
+  },
+  "task_builder": {
+    "title": "Task Builder",
+    "task_name": "Template Name",
+    "description": "Description",
+    "category": "Category",
+    "steps": "Execution Steps",
+    "add_step": "Add Step",
+    "step_type": "Step Type",
+    "preview": "Preview JSON",
+    "save": "Save Template"
+  },
+  "steps": {
+    "wait": "Wait",
+    "go": "Go - Navigate URL",
+    "click": "Click",
+    "type": "Type - Write text",
+    "scroll": "Scroll",
+    "goToXpath": "GoToXpath - Go to element",
+    "mouse": "Mouse - Random movement",
+    "back": "Back",
+    "close": "Close",
+    "do": "Do - Execute function",
+    "task": "Task - Execute task",
+    "taskrand": "TaskRand - Random step",
+    "substeps": "Substeps - Nested steps"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "start": "Start",
+    "stop": "Stop",
+    "duplicate": "Duplicate"
+  },
+  "messages": {
+    "success_save": "Saved successfully",
+    "success_delete": "Deleted successfully",
+    "error_save": "Error saving",
+    "error_delete": "Error deleting",
+    "confirm_delete": "Are you sure you want to delete this item?"
+  }
+}

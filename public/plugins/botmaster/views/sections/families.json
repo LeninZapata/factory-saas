@@ -1,0 +1,141 @@
+{
+  "id": "bot-families",
+  "title": "i18n:botmaster:families.title",
+  "description": "i18n:botmaster:families.description",
+  "content": [
+    {
+      "type": "html",
+      "content": "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;'><div><h2 style='margin:0;font-size:1.875rem;color:#1f2937;'>👨‍👩‍👧‍👦 Familias de Bots</h2><p style='margin:0.5rem 0 0 0;color:#6b7280;'>Gestiona grupos de bots con configuraciones compartidas</p></div><button onclick=\"modal.open('botmaster|forms/family-form')\" style='background:#8b5cf6;color:white;border:none;padding:0.75rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:0.5rem;' onmouseover='this.style.background=\"#7c3aed\"' onmouseout='this.style.background=\"#8b5cf6\"'><span>➕</span><span>Nueva Familia</span></button></div>"
+    },
+    {
+      "type": "component",
+      "component": "datatable",
+      "config": {
+        "source": "mock",
+        "mockData": [
+          {
+            "id": 1,
+            "name": "Familia_Facebook_USA",
+            "bots": 50,
+            "location": "🇺🇸 Estados Unidos",
+            "devices": {"iphone": 45, "android": 30, "windows": 15, "mac": 10},
+            "status": "active",
+            "tasks": 3
+          },
+          {
+            "id": 2,
+            "name": "Familia_Instagram_UK",
+            "bots": 35,
+            "location": "🇬🇧 Reino Unido",
+            "devices": {"iphone": 60, "android": 25, "windows": 10, "mac": 5},
+            "status": "active",
+            "tasks": 2
+          },
+          {
+            "id": 3,
+            "name": "Familia_Twitter_Canada",
+            "bots": 25,
+            "location": "🇨🇦 Canadá",
+            "devices": {"iphone": 40, "android": 40, "windows": 15, "mac": 5},
+            "status": "active",
+            "tasks": 4
+          },
+          {
+            "id": 4,
+            "name": "Familia_LinkedIn_Germany",
+            "bots": 20,
+            "location": "🇩🇪 Alemania",
+            "devices": {"iphone": 30, "android": 30, "windows": 30, "mac": 10},
+            "status": "inactive",
+            "tasks": 1
+          }
+        ],
+        "columns": [
+          {
+            "id": {
+              "name": "ID",
+              "width": "60px",
+              "align": "center"
+            }
+          },
+          {
+            "name": {
+              "name": "Nombre de la Familia",
+              "sortable": true,
+              "width": "250px"
+            }
+          },
+          {
+            "bots": {
+              "name": "Bots",
+              "sortable": true,
+              "width": "100px",
+              "align": "center",
+              "render": "function(value) { return '<span style=\"background:#dbeafe;color:#1e40af;padding:0.25rem 0.75rem;border-radius:12px;font-weight:600;\">' + value + ' bots</span>'; }"
+            }
+          },
+          {
+            "location": {
+              "name": "Ubicación",
+              "width": "180px"
+            }
+          },
+          {
+            "devices": {
+              "name": "Dispositivos",
+              "width": "280px",
+              "render": "function(value) { return '<div style=\"display:flex;gap:0.5rem;flex-wrap:wrap;\"><span style=\"background:#dbeafe;color:#1e40af;padding:0.25rem 0.5rem;border-radius:6px;font-size:0.75rem;\">📱 ' + value.iphone + '%</span><span style=\"background:#dcfce7;color:#065f46;padding:0.25rem 0.5rem;border-radius:6px;font-size:0.75rem;\">🤖 ' + value.android + '%</span><span style=\"background:#fef3c7;color:#92400e;padding:0.25rem 0.5rem;border-radius:6px;font-size:0.75rem;\">🪟 ' + value.windows + '%</span><span style=\"background:#e9d5ff;color:#6b21a8;padding:0.25rem 0.5rem;border-radius:6px;font-size:0.75rem;\">🍎 ' + value.mac + '%</span></div>'; }"
+            }
+          },
+          {
+            "tasks": {
+              "name": "Tareas",
+              "width": "100px",
+              "align": "center",
+              "render": "function(value) { return '<span style=\"background:#f3f4f6;padding:0.25rem 0.75rem;border-radius:6px;font-weight:600;\">' + value + ' tareas</span>'; }"
+            }
+          },
+          {
+            "status": {
+              "name": "Estado",
+              "width": "120px",
+              "align": "center",
+              "render": "function(value) { return value === 'active' ? '<span style=\"background:#d1fae5;color:#065f46;padding:0.25rem 0.75rem;border-radius:12px;font-size:0.875rem;font-weight:600;\">✅ Activa</span>' : '<span style=\"background:#f3f4f6;color:#4b5563;padding:0.25rem 0.75rem;border-radius:12px;font-size:0.875rem;font-weight:600;\">⏸️ Inactiva</span>'; }"
+            }
+          }
+        ],
+        "actions": {
+          "edit": {
+            "name": "✏️ Editar",
+            "onclick": "modal.open('botmaster|forms/family-form', {id: {id}})"
+          },
+          "view": {
+            "name": "👁️ Ver Bots",
+            "onclick": "botmaster.viewFamilyBots({id})"
+          },
+          "start": {
+            "name": "▶️ Iniciar",
+            "onclick": "botmaster.startFamily({id})"
+          },
+          "stop": {
+            "name": "⏸️ Detener",
+            "onclick": "botmaster.stopFamily({id})"
+          },
+          "delete": {
+            "name": "🗑️ Eliminar",
+            "onclick": "botmaster.deleteFamily({id})",
+            "confirm": "¿Estás seguro de eliminar esta familia y todos sus bots?"
+          }
+        },
+        "pagination": {
+          "enabled": true,
+          "perPage": 10
+        },
+        "search": {
+          "enabled": true,
+          "placeholder": "Buscar familias..."
+        }
+      }
+    }
+  ]
+}

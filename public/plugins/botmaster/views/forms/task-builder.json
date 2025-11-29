@@ -1,0 +1,471 @@
+{
+  "id": "task-builder",
+  "title": "📋 Constructor de Tareas",
+  "description": "Crea plantillas de acciones para tus bots",
+  "fields": [
+    {
+      "name": "task_name",
+      "label": "Nombre de la Plantilla",
+      "type": "text",
+      "required": true,
+      "placeholder": "Ej: Agregar amigos en Facebook"
+    },
+    {
+      "type": "group",
+      "columns": 2,
+      "gap": "normal",
+      "fields": [
+        {
+          "name": "description",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "¿Qué hace esta tarea?",
+          "rows": 3
+        },
+        {
+          "name": "category",
+          "label": "Categoría",
+          "type": "select",
+          "required": true,
+          "options": [
+            {"value": "social", "label": "📱 Redes Sociales"},
+            {"value": "email", "label": "📧 Email"},
+            {"value": "scraping", "label": "🕷️ Scraping"},
+            {"value": "testing", "label": "🧪 Testing"},
+            {"value": "custom", "label": "⚙️ Personalizado"}
+          ]
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<div style='background:#e0f2fe;padding:1rem;border-radius:8px;margin:1rem 0;border-left:4px solid #0284c7;'><strong>💡 Pasos de la Tarea</strong><br>Agrega los pasos que el bot ejecutará en orden secuencial</div>"
+    },
+    {
+      "name": "steps",
+      "label": "📝 Pasos de Ejecución",
+      "type": "repeatable",
+      "buttonPosition": "middle",
+      "addText": "➕ Agregar Paso",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "name": "step_type",
+          "label": "⭐ Tipo de Paso",
+          "type": "select",
+          "required": true,
+          "options": [
+            {"value": "wait", "label": "🕐 Wait - Esperar"},
+            {"value": "go", "label": "🌐 Go - Navegar URL"},
+            {"value": "click", "label": "🖱️ Click - Hacer clic"},
+            {"value": "type", "label": "⌨️ Type - Escribir texto"},
+            {"value": "scroll", "label": "📜 Scroll - Desplazar"},
+            {"value": "goToXpath", "label": "🎯 GoToXpath - Ir a elemento"},
+            {"value": "mouse", "label": "🐭 Mouse - Movimiento aleatorio"},
+            {"value": "back", "label": "◀️ Back - Retroceder"},
+            {"value": "close", "label": "❌ Close - Cerrar"},
+            {"value": "do", "label": "⚙️ Do - Ejecutar función"},
+            {"value": "task", "label": "📋 Task - Ejecutar tarea"},
+            {"value": "taskrand", "label": "🎲 TaskRand - Paso aleatorio"},
+            {"value": "substeps", "label": "🔁 Substeps - Pasos anidados"}
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>⏱️ WAIT:</strong> Pausa la ejecución por un tiempo determinado</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "wait"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "time",
+          "label": "Tiempo",
+          "type": "text",
+          "placeholder": "5000 | '1 to 3 seconds' | '2 minutes' | [2000,8000]",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "wait"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🌐 GO:</strong> Navega a una URL específica</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "go"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "url",
+          "label": "URL",
+          "type": "url",
+          "placeholder": "https://ejemplo.com",
+          "required": true,
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "go"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🖱️ CLICK:</strong> Hace clic en un elemento (vacío = posición actual del mouse)</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "click"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "xpath_click",
+          "label": "XPath del elemento (opcional)",
+          "type": "text",
+          "placeholder": "//*[@id='button']",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "click"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>⌨️ TYPE:</strong> Escribe texto en un campo de entrada</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "type"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "type"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "xpath_type",
+              "label": "XPath del campo",
+              "type": "text",
+              "placeholder": "//*[@id='username']"
+            },
+            {
+              "name": "words",
+              "label": "Texto a escribir",
+              "type": "text",
+              "placeholder": "Texto o keywords"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>📜 SCROLL:</strong> Desplaza la página hacia arriba o abajo</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "scroll"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "xpath_scroll",
+          "label": "XPath del elemento (opcional)",
+          "type": "text",
+          "placeholder": "//*[@id='content']",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "scroll"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🎯 GOTOXPATH:</strong> Desplaza suavemente hasta un elemento específico</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "goToXpath"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "goToXpath"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "xpath_goto",
+              "label": "XPath del elemento",
+              "type": "text",
+              "placeholder": "//*[@id='section']"
+            },
+            {
+              "name": "speed",
+              "label": "Velocidad",
+              "type": "select",
+              "options": [
+                {"value": "slow", "label": "🐢 Lento"},
+                {"value": "medium", "label": "🐇 Medio"},
+                {"value": "fast", "label": "⚡ Rápido"},
+                {"value": "random", "label": "🎲 Aleatorio"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🐭 MOUSE:</strong> Simula movimiento humano del mouse</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "mouse"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "mouse"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "mouse_type",
+              "label": "Tipo de movimiento",
+              "type": "select",
+              "options": [
+                {"value": "random", "label": "🎲 Aleatorio (defecto)"},
+                {"value": "interact", "label": "🤝 Interactuar"},
+                {"value": "concern", "label": "🔍 Concernido"}
+              ]
+            },
+            {
+              "name": "mouse_time",
+              "label": "Duración",
+              "type": "text",
+              "placeholder": "10000 | '10 to 50 seconds'",
+              "value": "10000"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>◀️ BACK:</strong> Retrocede a la página anterior</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "back"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#fef3c7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;border-left:3px solid #f59e0b;'><strong>ℹ️ Back:</strong> No requiere parámetros adicionales</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "back"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>❌ CLOSE:</strong> Cierra pestaña o navegador completo</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "close"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "close_type",
+          "label": "Cerrar",
+          "type": "select",
+          "options": [
+            {"value": "browser", "label": "🌐 Navegador (defecto)"},
+            {"value": "tab", "label": "📑 Pestaña actual"}
+          ],
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "close"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>⚙️ DO:</strong> Ejecuta una función JavaScript personalizada</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "do"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "do"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "file",
+              "label": "Archivo (sin extensión .js)",
+              "type": "text",
+              "placeholder": "my-file-name"
+            },
+            {
+              "name": "function_name",
+              "label": "Nombre de la función",
+              "type": "text",
+              "placeholder": "name_function"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>📋 TASK:</strong> Ejecuta otra plantilla de tarea completa</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "task"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "task_file",
+          "label": "Archivo de tarea",
+          "type": "text",
+          "placeholder": "file-task",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "task"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🎲 TASKRAND:</strong> Ejecuta UNO al azar de varios pasos posibles</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "taskrand"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "taskrand_steps",
+          "label": "Pasos aleatorios (el bot elegirá uno)",
+          "type": "repeatable",
+          "buttonPosition": "middle",
+          "addText": "➕ Agregar opción",
+          "removeText": "❌",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "taskrand"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "rand_step_type",
+              "label": "Tipo",
+              "type": "select",
+              "options": [
+                {"value": "go", "label": "🌐 Go"},
+                {"value": "click", "label": "🖱️ Click"},
+                {"value": "wait", "label": "🕐 Wait"}
+              ]
+            },
+            {
+              "name": "rand_url",
+              "label": "URL (si es 'go')",
+              "type": "url",
+              "placeholder": "https://...",
+              "condition": [
+                {"field": "rand_step_type", "operator": "==", "value": "go"}
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "rand_xpath",
+              "label": "XPath (si es 'click')",
+              "type": "text",
+              "placeholder": "//*[@id='element']",
+              "condition": [
+                {"field": "rand_step_type", "operator": "==", "value": "click"}
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "rand_time",
+              "label": "Tiempo (si es 'wait')",
+              "type": "text",
+              "placeholder": "5000",
+              "condition": [
+                {"field": "rand_step_type", "operator": "==", "value": "wait"}
+              ],
+              "conditionContext": "repeatable"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "content": "<div style='background:#dcfce7;padding:0.75rem;border-radius:6px;margin:0.5rem 0;font-size:0.9rem;'><strong>🔁 SUBSTEPS:</strong> Agrupa múltiples pasos como subproceso</div>",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "substeps"}
+          ],
+          "conditionContext": "repeatable"
+        },
+        {
+          "name": "substeps",
+          "label": "Pasos internos",
+          "type": "repeatable",
+          "buttonPosition": "middle",
+          "addText": "➕ Agregar subpaso",
+          "removeText": "❌",
+          "condition": [
+            {"field": "step_type", "operator": "==", "value": "substeps"}
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "sub_step_type",
+              "label": "Tipo",
+              "type": "select",
+              "options": [
+                {"value": "wait", "label": "🕐 Wait"},
+                {"value": "go", "label": "🌐 Go"},
+                {"value": "click", "label": "🖱️ Click"},
+                {"value": "back", "label": "◀️ Back"}
+              ]
+            },
+            {
+              "name": "sub_url",
+              "label": "URL (si es 'go')",
+              "type": "url",
+              "condition": [
+                {"field": "sub_step_type", "operator": "==", "value": "go"}
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "sub_xpath",
+              "label": "XPath (si es 'click')",
+              "type": "text",
+              "condition": [
+                {"field": "sub_step_type", "operator": "==", "value": "click"}
+              ],
+              "conditionContext": "repeatable"
+            },
+            {
+              "name": "sub_time",
+              "label": "Tiempo (si es 'wait')",
+              "type": "text",
+              "condition": [
+                {"field": "sub_step_type", "operator": "==", "value": "wait"}
+              ],
+              "conditionContext": "repeatable"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "preview",
+      "type": "button",
+      "label": "👁️ Previsualizar JSON",
+      "onclick": "event.preventDefault(); botmaster.previewTask(this.closest('form').id);"
+    },
+    {
+      "name": "save",
+      "type": "button",
+      "label": "💾 Guardar Plantilla",
+      "action": "submit",
+      "onclick": "event.preventDefault(); botmaster.saveTask(this.closest('form').id);"
+    }
+  ]
+}

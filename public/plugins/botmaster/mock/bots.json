@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1,
+    "fullname": "bot_instagram_001",
+    "personality": {
+      "Device": {
+        "deviceName": "iPhone 16 Pro",
+        "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Mobile/15E148 Safari/604.1",
+        "screenResolution": "402x874"
+      },
+      "Location": {
+        "proxyServer": "us-proxy-1.example.com:8080",
+        "proxyUsername": "user001",
+        "timezone": "America/New_York",
+        "country": "United States"
+      },
+      "Browser": {
+        "cookies": [],
+        "localStorage": {},
+        "sessions": {}
+      }
+    },
+    "lastUsed": "2025-01-15 10:30:45",
+    "status": "active",
+    "family": "Familia_Facebook_USA"
+  },
+  {
+    "id": 2,
+    "fullname": "bot_facebook_025",
+    "personality": {
+      "Device": {
+        "deviceName": "Samsung S24 Ultra",
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+        "screenResolution": "1440x3088"
+      },
+      "Location": {
+        "proxyServer": "uk-proxy-2.example.com:8080",
+        "proxyUsername": "user002",
+        "timezone": "Europe/London",
+        "country": "United Kingdom"
+      },
+      "Browser": {
+        "cookies": [],
+        "localStorage": {},
+        "sessions": {}
+      }
+    },
+    "lastUsed": "2025-01-15 09:45:20",
+    "status": "active",
+    "family": "Familia_Facebook_USA"
+  },
+  {
+    "id": 3,
+    "fullname": "bot_twitter_012",
+    "personality": {
+      "Device": {
+        "deviceName": "MacBook Pro M2",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "screenResolution": "2560x1600"
+      },
+      "Location": {
+        "proxyServer": "ca-proxy-3.example.com:8080",
+        "proxyUsername": "user003",
+        "timezone": "America/Toronto",
+        "country": "Canada"
+      },
+      "Browser": {
+        "cookies": [],
+        "localStorage": {},
+        "sessions": {}
+      }
+    },
+    "lastUsed": "2025-01-14 18:20:10",
+    "status": "inactive",
+    "family": "Familia_Twitter_Canada"
+  }
+]

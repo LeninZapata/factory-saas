@@ -1,0 +1,120 @@
+{
+  "id": "bot-dashboard",
+  "title": "i18n:botmaster:dashboard.title",
+  "content": [
+    {
+      "type": "html",
+      "content": "<div style='background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:2rem;border-radius:12px;margin-bottom:2rem;'><h2 style='margin:0 0 0.5rem 0;font-size:2rem;'>🤖 BotMaster Control Center</h2><p style='margin:0;opacity:0.9;'>Sistema de automatización avanzado con fingerprints y persistencia</p></div>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;'>"
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Bots Totales",
+        "value": "127",
+        "icon": "🤖",
+        "color": "#3b82f6",
+        "trend": "+12"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Bots Activos",
+        "value": "89",
+        "icon": "✅",
+        "color": "#10b981",
+        "trend": "+5"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Bots Inactivos",
+        "value": "38",
+        "icon": "⏸️",
+        "color": "#6b7280",
+        "trend": "-3"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Familias",
+        "value": "15",
+        "icon": "👨‍👩‍👧‍👦",
+        "color": "#8b5cf6",
+        "trend": "+2"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Plantillas",
+        "value": "24",
+        "icon": "📋",
+        "color": "#f59e0b",
+        "trend": "+4"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "config": {
+        "title": "Tareas Hoy",
+        "value": "342",
+        "icon": "✅",
+        "color": "#10b981",
+        "trend": "+28"
+      }
+    },
+    {
+      "type": "html",
+      "content": "</div>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='background:white;padding:1.5rem;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);margin-bottom:2rem;'><h3 style='margin:0 0 1rem 0;font-size:1.25rem;color:#1f2937;'>⚡ Acciones Rápidas</h3><div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;'>"
+    },
+    {
+      "type": "html",
+      "content": "<button onclick=\"modal.open('botmaster|forms/bot-form')\" style='background:#3b82f6;color:white;border:none;padding:1rem;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.2s;' onmouseover='this.style.background=\"#2563eb\"' onmouseout='this.style.background=\"#3b82f6\"'>🤖 Crear Bot</button>"
+    },
+    {
+      "type": "html",
+      "content": "<button onclick=\"modal.open('botmaster|forms/family-form')\" style='background:#8b5cf6;color:white;border:none;padding:1rem;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.2s;' onmouseover='this.style.background=\"#7c3aed\"' onmouseout='this.style.background=\"#8b5cf6\"'>👨‍👩‍👧‍👦 Crear Familia</button>"
+    },
+    {
+      "type": "html",
+      "content": "<button onclick=\"modal.open('botmaster|forms/task-builder')\" style='background:#f59e0b;color:white;border:none;padding:1rem;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.2s;' onmouseover='this.style.background=\"#d97706\"' onmouseout='this.style.background=\"#f59e0b\"'>📋 Nueva Plantilla</button>"
+    },
+    {
+      "type": "html",
+      "content": "</div></div>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;'>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='background:white;padding:1.5rem;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);'><h3 style='margin:0 0 1rem 0;font-size:1.25rem;color:#1f2937;'>📊 Actividad Reciente</h3><div style='space-y:0.75rem;'><div style='padding:0.75rem;background:#f3f4f6;border-radius:6px;margin-bottom:0.5rem;'><div style='display:flex;justify-content:space-between;align-items:center;'><span style='font-weight:600;'>Bot_Instagram_001</span><span style='font-size:0.875rem;color:#6b7280;'>Hace 2 min</span></div><div style='font-size:0.875rem;color:#6b7280;margin-top:0.25rem;'>✅ Completó: Agregar amigos</div></div><div style='padding:0.75rem;background:#f3f4f6;border-radius:6px;margin-bottom:0.5rem;'><div style='display:flex;justify-content:space-between;align-items:center;'><span style='font-weight:600;'>Bot_Facebook_025</span><span style='font-size:0.875rem;color:#6b7280;'>Hace 5 min</span></div><div style='font-size:0.875rem;color:#6b7280;margin-top:0.25rem;'>✅ Completó: Publicar contenido</div></div><div style='padding:0.75rem;background:#f3f4f6;border-radius:6px;'><div style='display:flex;justify-content:space-between;align-items:center;'><span style='font-weight:600;'>Bot_Twitter_012</span><span style='font-size:0.875rem;color:#6b7280;'>Hace 8 min</span></div><div style='font-size:0.875rem;color:#6b7280;margin-top:0.25rem;'>✅ Completó: Seguir usuarios</div></div></div></div>"
+    },
+    {
+      "type": "html",
+      "content": "<div style='background:white;padding:1.5rem;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);'><h3 style='margin:0 0 1rem 0;font-size:1.25rem;color:#1f2937;'>🌍 Distribución por Dispositivo</h3><div style='space-y:0.5rem;'><div style='margin-bottom:0.75rem;'><div style='display:flex;justify-content:space-between;margin-bottom:0.25rem;'><span style='font-size:0.875rem;'>📱 iPhone</span><span style='font-size:0.875rem;font-weight:600;'>45%</span></div><div style='background:#e5e7eb;height:8px;border-radius:4px;overflow:hidden;'><div style='background:#3b82f6;height:100%;width:45%;'></div></div></div><div style='margin-bottom:0.75rem;'><div style='display:flex;justify-content:space-between;margin-bottom:0.25rem;'><span style='font-size:0.875rem;'>🤖 Android</span><span style='font-size:0.875rem;font-weight:600;'>30%</span></div><div style='background:#e5e7eb;height:8px;border-radius:4px;overflow:hidden;'><div style='background:#10b981;height:100%;width:30%;'></div></div></div><div style='margin-bottom:0.75rem;'><div style='display:flex;justify-content:space-between;margin-bottom:0.25rem;'><span style='font-size:0.875rem;'>🪟 Windows</span><span style='font-size:0.875rem;font-weight:600;'>15%</span></div><div style='background:#e5e7eb;height:8px;border-radius:4px;overflow:hidden;'><div style='background:#f59e0b;height:100%;width:15%;'></div></div></div><div><div style='display:flex;justify-content:space-between;margin-bottom:0.25rem;'><span style='font-size:0.875rem;'>🍎 Mac</span><span style='font-size:0.875rem;font-weight:600;'>10%</span></div><div style='background:#e5e7eb;height:8px;border-radius:4px;overflow:hidden;'><div style='background:#8b5cf6;height:100%;width:10%;'></div></div></div></div></div>"
+    },
+    {
+      "type": "html",
+      "content": "</div>"
+    }
+  ]
+}
