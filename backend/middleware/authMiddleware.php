@@ -65,7 +65,7 @@ class authMiddleware {
 
   // ✅ Obtener sesión desde archivo (sin BD)
   private function getSessionFromToken($token) {
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
 
     if (!file_exists($sessionFile)) {
       log::warning('authMiddleware', "Token no encontrado: {$token}");
@@ -84,7 +84,7 @@ class authMiddleware {
 
   // Eliminar sesión expirada
   private function deleteSession($token) {
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     if (file_exists($sessionFile)) {
       unlink($sessionFile);
       log::info('authMiddleware', 'Token expirado eliminado');

@@ -18,7 +18,7 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
 }
 
 // ✅ PASO 1: Cargar rutas manuales si existen (login, profile, etc.)
-$manualRoutes = ROUTES_PATH . 'apis/' . $module . '.php';
+$manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
   require_once $manualRoutes;
   // log::debug('router', "Rutas manuales cargadas: {$module}.php");

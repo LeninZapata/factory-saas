@@ -68,7 +68,7 @@ class userHandlers {
     }
 
     // Eliminar sesión
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     if (file_exists($sessionFile)) {
       unlink($sessionFile);
       log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...']);
@@ -143,7 +143,7 @@ class userHandlers {
 
   // Guardar sesión con datos completos del usuario
   private static function saveSession($user, $token, $expiresAt) {
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
 
     if (!is_dir(dirname($sessionFile))) {
       mkdir(dirname($sessionFile), 0755, true);
@@ -162,7 +162,7 @@ class userHandlers {
 
   // Obtener sesión completa desde archivo
   private static function getSessionFromToken($token) {
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
 
     if (!file_exists($sessionFile)) {
       return null;
@@ -188,7 +188,7 @@ class userHandlers {
       $session['user'][$key] = $value;
     }
 
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     file_put_contents($sessionFile, json_encode($session, JSON_UNESCAPED_UNICODE));
 
     return true;
@@ -196,7 +196,7 @@ class userHandlers {
 
   // Eliminar sesión
   private static function deleteSession($token) {
-    $sessionFile = STORAGE_PATH . "sessions/{$token}.json";
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     if (file_exists($sessionFile)) {
       unlink($sessionFile);
     }

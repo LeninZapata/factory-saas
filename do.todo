@@ -1,6 +1,7 @@
 por donde me quede:
-☐ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin
+✔ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin @done(30-11-2025 12:42)
 por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'
+SOLUCION: ahora lo hace per solo con campos del form.js
 ☐ 
 pendientes:
 ✔ Implementar el login @done(20-11-2025 19:10)
@@ -34,7 +35,7 @@ mediante que debe los elementos tenede un data-attribute con el texto del key de
 ☐ Log de backend para ver errores a nivel de vistas
  _ que se pueda separar estos logs por usuario/años/mes/dia. entonces se podria ver todo lo que pasa
  _ que estos los se puede ver visualmente y clasificar estos logs son en archivos de texto .log
- _ que se pueda buscar en estos logs por palabras claves o errores comunes
+ _ que se pueda buscar en estos logs por palabras claves o errorse comunes
 ☐ Por ejemplo si el modal se le agrega boton como de guardar como se le agrega que tiene que guardar el formularo actual
 actualmente el modal y si adentro hay un form pues hace un lastst para ver el ultimo form y guardar de eso
 pero si se pone el boton en el modal como se haria para que reacione a ese formulario.

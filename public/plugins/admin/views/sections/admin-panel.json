@@ -7,6 +7,9 @@
     "plugins/admin/assets/js/admin-permissions.js",
     "plugins/admin/assets/js/admin.js"
   ],
+  "styles": [
+    "plugins/admin/assets/css/permissions.css"
+  ],
   "tabs": [
     {
       "id": "tab-users",

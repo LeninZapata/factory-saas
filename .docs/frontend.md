@@ -1,4 +1,144 @@
-# MiniFramework - Documentación
+# MiniFramework - Documentación (FRONTEND)
+
+## Estructura de Carpetas
+```
+public/
+├── css/
+│   ├── components/
+│   │   ├── dataTable.css
+│   │   ├── grouper.css
+│   │   ├── langSelector.css
+│   │   ├── modal.css
+│   │   ├── tabs.css
+│   │   ├── toast.css
+│   │   └── widget.css
+│   ├── core/
+│   │   ├── auth.css
+│   │   ├── button.css
+│   │   ├── form.css
+│   │   ├── layout.css
+│   │   ├── reset.css
+│   │   ├── sidebar.css
+│   │   ├── table.css
+│   │   ├── vars.css
+│   │   └── view.css
+│   └── main.css
+├── js/
+│   ├── components/
+│   │   ├── dataTable.js
+│   │   ├── grouper.js
+│   │   ├── langSelector.js
+│   │   ├── modal.js
+│   │   ├── tabs.js
+│   │   ├── toast.js
+│   │   └── widget.js
+│   ├── core/
+│   │   ├── api.js
+│   │   ├── auth.js
+│   │   ├── cache.js
+│   │   ├── conditions.js
+│   │   ├── dataLoader.js
+│   │   ├── event.js
+│   │   ├── form.js
+│   │   ├── hook.js
+│   │   ├── i18n.js
+│   │   ├── layout.js
+│   │   ├── loader.js
+│   │   ├── logger.js
+│   │   ├── sidebar.js
+│   │   ├── validator.js
+│   │   └── view.js
+│   ├── lang/
+│   │   ├── en.json
+│   │   └── es.json
+│   ├── views/
+│   │   ├── auth/
+│   │   │   ├── forms/
+│   │   │   │   └── login-form.json
+│   │   │   └── login.json
+│   │   ├── dashboard/
+│   │   │   └── dashboard.json
+│   │   └── user/
+│   │       ├── forms/
+│   │       │   └── user-form.json
+│   │       ├── mock/
+│   │       │   └── mock-users.json
+│   │       ├── sections/
+│   │       │   └── user-list.json
+│   │       └── mock-users.json
+│   └── main.js
+├── plugins/
+│   ├── admin/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── permissions.css
+│   │   │   └── js/
+│   │   │       ├── admin-permissions.js
+│   │   │       ├── admin.js
+│   │   │       └── permissions.js
+│   │   ├── lang/
+│   │   │   ├── en.json
+│   │   │   └── es.json
+│   │   ├── views/
+│   │   │   └── sections/
+│   │   │       └── admin-panel.json
+│   │   └── index.json
+│   ├── botmaster/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── botmaster.css
+│   │   │   └── js/
+│   │   │       └── botmaster.js
+│   │   ├── lang/
+│   │   │   ├── en.json
+│   │   │   └── es.json
+│   │   ├── mock/
+│   │   │   ├── bots.json
+│   │   │   ├── families.json
+│   │   │   └── tasks.json
+│   │   ├── views/
+│   │   │   ├── forms/
+│   │   │   │   ├── bot-form.json
+│   │   │   │   ├── family-form.json
+│   │   │   │   └── task-builder.json
+│   │   │   └── sections/
+│   │   │       ├── bots.json
+│   │   │       ├── dashboard.json
+│   │   │       ├── families.json
+│   │   │       ├── monitor.json
+│   │   │       └── tasks.json
+│   │   └── index.json
+│   ├── ejemplos/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── chart.css
+│   │   │   └── js/
+│   │   │       └── chart.js
+│   │   ├── views/
+│   │   │   ├── forms/
+│   │   │   │   ├── conditions-advanced.json
+│   │   │   │   ├── form-grouped-fields-test.json
+│   │   │   │   ├── form-repeatable-grouped-opt1.json
+│   │   │   │   └── repetibles-demo.json
+│   │   │   └── sections/
+│   │   │       ├── formularios.json
+│   │   │       ├── graficos.json
+│   │   │       └── widgets-demo.json
+│   │   └── index.json
+│   ├── inventario/
+│   │   ├── dev/
+│   │   │   └── db_inventario.json
+│   │   ├── views/
+│   │   │   ├── forms/
+│   │   │   │   └── producto.json
+│   │   │   └── sections/
+│   │   │       ├── listado.json
+│   │   │       └── stock.json
+│   │   ├── hooks.js
+│   │   └── index.json
+│   └── index.json
+└── index.html
+```
 
 ## index.html
 
@@ -414,8 +554,8 @@ Carga `plugins/{pluginName}/index.json`:
   "hasMenu": true,
   "hasHooks": true,
   "autoload": "assets/js/botmaster.js",
-  "scripts": ["assets/js/helper.js"],
-  "styles": ["assets/css/botmaster.css"],
+  "scripts": ["assets/js/helper.js"], // a este nivel el script se cargaran a nivel de la carga de la pagina ya que es el index.json del plugins, para bajo demanda el script seria cargado dentro del {vista/section/form}.json del archivo para mejor performance.
+  "styles": ["assets/css/botmaster.css"], //a este nivel el style se cargaran a nivel de la carga de la pagina
   "menu": {
     "title": "Botmaster",
     "icon": "🤖",

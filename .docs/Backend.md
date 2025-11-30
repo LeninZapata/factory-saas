@@ -95,7 +95,7 @@
 - `SESSION_TTL_MS` - En milisegundos para frontend
 - `DB_*` - Configuración de base de datos
 - `*_PATH` - Rutas del sistema (BASE, BACKEND, FRONTEND, STORAGE, LOG)
-- `API_BASE_URL` - /api/
+- `API_BASE_URL` - /api
 
 ---
 

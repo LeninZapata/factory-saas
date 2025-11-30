@@ -4,7 +4,7 @@ class sessionCleanup {
 
   // Limpiar sesiones expiradas
   static function clean() {
-    $sessionsDir = STORAGE_PATH . 'sessions/';
+    $sessionsDir = STORAGE_PATH . '/sessions/';
 
     if (!is_dir($sessionsDir)) {
       return ['cleaned' => 0, 'errors' => 0];
@@ -53,7 +53,7 @@ class sessionCleanup {
 
   // Obtener estadísticas de sesiones
   static function stats() {
-    $sessionsDir = STORAGE_PATH . 'sessions/';
+    $sessionsDir = STORAGE_PATH . '/sessions/';
 
     if (!is_dir($sessionsDir)) {
       return [
@@ -101,7 +101,7 @@ class sessionCleanup {
 
   // Limpiar TODAS las sesiones de un usuario específico
   static function cleanByUserId($userId) {
-    $sessionsDir = STORAGE_PATH . 'sessions/';
+    $sessionsDir = STORAGE_PATH . '/sessions/';
 
     if (!is_dir($sessionsDir)) {
       return 0;
