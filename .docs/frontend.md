@@ -1,5 +1,221 @@
 # MiniFramework - Documentación (FRONTEND)
 
+## 🚨 GUÍA RÁPIDA: Errores Comunes y Soluciones
+
+Esta sección documenta los errores más comunes al trabajar con el framework y cómo evitarlos.
+
+### 1. Vistas que no se muestran
+
+**Síntoma:** El menú aparece pero al hacer clic no muestra contenido o la vista está en blanco.
+
+**Causas comunes:**
+
+- ❌ Usar `"component": "dataTable"` en lugar de `"component": "datatable"` (minúsculas)
+- ❌ Falta la propiedad `pluginName` en la configuración del datatable
+- ❌ Columnas configuradas como objetos en lugar de array de strings
+- ❌ No envolver componentes dentro de la estructura `content`
+
+**Solución:**
+```json
+{
+  "id": "mi-vista",
+  "title": "Mi Vista",
+  "content": [
+    {
+      "type": "component",
+      "component": "datatable",
+      "order": 1,
+      "config": {
+        "pluginName": "miPlugin",
+        "columns": ["id", "nombre", "email"],
+        "dataSource": {
+          "type": "auto",
+          "api": {"endpoint": "/api/items"}
+        }
+      }
+    }
+  ]
+}
+```
+
+### 2. Widgets que no aparecen en Dashboard
+
+**Síntoma:** La vista dashboard se carga pero no muestra los widgets.
+
+**Causa:** Los widgets están configurados fuera del array `content` o sin la estructura correcta.
+
+**❌ INCORRECTO:**
+```json
+{
+  "id": "dashboard",
+  "widgets": [
+    {"title": "Widget 1", "html": "<div>...</div>"}
+  ]
+}
+```
+
+**✅ CORRECTO:**
+```json
+{
+  "id": "dashboard",
+  "content": [
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 1,
+      "config": {
+        "title": "Widget 1",
+        "html": "<div>...</div>"
+      }
+    }
+  ]
+}
+```
+
+### 3. Acciones de DataTable que no funcionan
+
+**Síntoma:** Los botones de acción aparecen pero no hacen nada al hacer clic.
+
+**Causa:** Las acciones no están configuradas con `onclick` y código JavaScript ejecutable.
+
+**❌ INCORRECTO:**
+```json
+"actions": {
+  "edit": {
+    "label": "Editar",
+    "form": "forms/edit-form"
+  }
+}
+```
+
+**✅ CORRECTO:**
+```json
+"actions": {
+  "edit": {
+    "name": "✏️ Editar",
+    "onclick": "modal.openWithData('plugin|forms/edit-form', {id: {id}, title: 'Editar'})",
+    "dataLoader": {
+      "type": "auto",
+      "api": {"endpoint": "/api/items/{id}"}
+    }
+  },
+  "delete": {
+    "name": "🗑️ Eliminar",
+    "onclick": "if(confirm('¿Eliminar?')) { api.delete('/api/items/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }); }"
+  }
+}
+```
+
+### 4. Plugin no aparece en el menú
+
+**Síntoma:** El plugin está creado pero no aparece en el sidebar.
+
+**Checklist de verificación:**
+
+1. ✅ El plugin está registrado en `/public/plugins/index.json`
+2. ✅ El archivo `/public/plugins/{plugin}/index.json` existe y tiene `"enabled": true`
+3. ✅ La estructura del menú es correcta (usa `title` no `label`)
+4. ✅ Las rutas de vistas son relativas (ej: `"sections/dashboard"` no `"plugin/sections/dashboard"`)
+
+**Ejemplo correcto de index.json del plugin:**
+```json
+{
+  "name": "miPlugin",
+  "version": "1.0.0",
+  "enabled": true,
+  "hasMenu": true,
+  "hasViews": true,
+  "menu": {
+    "title": "Mi Plugin",
+    "icon": "🔌",
+    "order": 10,
+    "items": [
+      {
+        "id": "section1",
+        "title": "Sección 1",
+        "view": "sections/section1",
+        "order": 1
+      }
+    ]
+  }
+}
+```
+
+### 5. Modal con formulario no carga datos
+
+**Síntoma:** El modal se abre pero el formulario está vacío al editar.
+
+**Causa:** No se está usando `modal.openWithData()` o falta la configuración `dataLoader`.
+
+**✅ CORRECTO:**
+```json
+"actions": {
+  "edit": {
+    "name": "Editar",
+    "onclick": "modal.openWithData('plugin|forms/edit', {id: {id}})",
+    "dataLoader": {
+      "type": "auto",
+      "api": {
+        "endpoint": "/api/items/{id}",
+        "method": "GET"
+      }
+    }
+  }
+}
+```
+
+### 6. Controlador backend no se encuentra
+
+**Síntoma:** Error 404 al hacer llamadas a la API del plugin.
+
+**Checklist:**
+
+1. ✅ El controlador existe en `/backend/resources/controllers/{nombre}Controller.php`
+2. ✅ El resource schema existe en `/backend/resources/{nombre}.json`
+3. ✅ El plugin backend está configurado en `/backend/plugins/{plugin}/plugin.json`
+4. ✅ El controlador extiende correctamente la clase base y llama `parent::__construct('nombre')`
+
+**Ejemplo correcto de controlador:**
+```php
+<?php
+require_once __DIR__ . '/../core/controller.php';
+
+class blogController extends controller {
+    public function __construct() {
+        parent::__construct('blog'); // Nombre del resource
+    }
+    
+    // Métodos custom aquí
+}
+```
+
+### 7. Formularios con campos repetibles no funcionan
+
+**Síntoma:** Los campos repetibles no se agregan o eliminan correctamente.
+
+**Causa:** Falta inicializar el sistema de repetibles o la estructura es incorrecta.
+
+**✅ Estructura correcta:**
+```json
+{
+  "name": "sources",
+  "label": "Fuentes",
+  "type": "repeatable",
+  "addButtonPosition": "bottom",
+  "addButtonText": "➕ Agregar Fuente",
+  "fields": [
+    {
+      "name": "url",
+      "label": "URL",
+      "type": "text",
+      "required": true
+    }
+  ]
+}
+```
+
+---
+
 ## Estructura de Carpetas
 ```
 public/
@@ -210,6 +426,347 @@ Array con orden de carga de módulos:
 ## view.js
 
 **Propósito:** Sistema de carga y renderizado de vistas desde core o plugins.
+
+### ⚠️ ESTRUCTURA CORRECTA DE VISTAS JSON
+
+Las vistas en este framework siguen una estructura específica. Es fundamental entender cómo configurarlas correctamente para evitar errores comunes.
+
+#### Anatomía de una vista
+
+```json
+{
+  "id": "unique-view-id",
+  "title": "Título de la Vista",
+  "subtitle": "Descripción opcional",
+  "layout": "default",
+  "scripts": ["assets/js/custom.js"],
+  "styles": ["assets/css/custom.css"],
+  "content": [
+    {
+      "type": "html|component|form",
+      "order": 1,
+      "content": "...",
+      "component": "...",
+      "config": {}
+    }
+  ],
+  "tabs": [...],
+  "statusbar": [...]
+}
+```
+
+**Propiedades principales:**
+
+- `id` (string, requerido) - Identificador único de la vista
+- `title` (string, opcional) - Título mostrado en el header
+- `subtitle` (string, opcional) - Subtítulo descriptivo
+- `layout` (string, opcional) - Clase CSS aplicada al body
+- `scripts` (array, opcional) - Scripts adicionales a cargar
+- `styles` (array, opcional) - Estilos adicionales a cargar
+- `content` (array, requerido) - Array de items de contenido
+- `tabs` (array, opcional) - Sistema de pestañas
+- `statusbar` (array, opcional) - Barra de estado inferior
+
+#### Array `content` - Tipos de contenido
+
+El array `content` puede contener diferentes tipos de elementos:
+
+**1. HTML directo:**
+```json
+{
+  "type": "html",
+  "order": 1,
+  "content": "<h3>Título</h3><p>Descripción</p>"
+}
+```
+
+**2. Componente (widget, datatable, etc):**
+```json
+{
+  "type": "component",
+  "component": "datatable",
+  "order": 2,
+  "config": {
+    "pluginName": "inventario",
+    "dataSource": {...},
+    "columns": [...],
+    "actions": {...}
+  }
+}
+```
+
+**3. Formulario:**
+```json
+{
+  "type": "form",
+  "order": 3,
+  "form_json": "forms/producto"
+}
+```
+
+#### ❌ Errores comunes al crear vistas
+
+**ERROR 1: Poner componentes directamente sin el wrapper correcto**
+```json
+// ❌ INCORRECTO
+{
+  "id": "dashboard",
+  "widgets": [
+    {
+      "title": "Widget 1",
+      "html": "<div>...</div>"
+    }
+  ]
+}
+
+// ✅ CORRECTO
+{
+  "id": "dashboard",
+  "content": [
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 1,
+      "config": {
+        "title": "Widget 1",
+        "html": "<div>...</div>"
+      }
+    }
+  ]
+}
+```
+
+**ERROR 2: Usar "dataTable" en lugar de "datatable"**
+```json
+// ❌ INCORRECTO
+{
+  "type": "component",
+  "component": "dataTable"
+}
+
+// ✅ CORRECTO
+{
+  "type": "component",
+  "component": "datatable"
+}
+```
+
+**ERROR 3: No incluir `pluginName` en datatable de plugins**
+```json
+// ❌ INCORRECTO
+{
+  "type": "component",
+  "component": "datatable",
+  "config": {
+    "dataSource": {...}
+  }
+}
+
+// ✅ CORRECTO
+{
+  "type": "component",
+  "component": "datatable",
+  "config": {
+    "pluginName": "miPlugin",
+    "dataSource": {...}
+  }
+}
+```
+
+**ERROR 4: Configurar columnas como objetos en lugar de strings simples**
+```json
+// ❌ INCORRECTO
+"columns": [
+  {"key": "id", "label": "ID"},
+  {"key": "nombre", "label": "Nombre"}
+]
+
+// ✅ CORRECTO
+"columns": ["id", "nombre", "categoria", "precio"]
+```
+
+**ERROR 5: No usar `onclick` en acciones de datatable**
+```json
+// ❌ INCORRECTO
+"actions": {
+  "edit": {
+    "label": "Editar",
+    "form": "forms/edit",
+    "endpoint": "/api/item/{id}"
+  }
+}
+
+// ✅ CORRECTO
+"actions": {
+  "edit": {
+    "name": "Editar",
+    "onclick": "modal.openWithData('plugin|forms/edit', {id: {id}})",
+    "dataLoader": {
+      "type": "auto",
+      "api": {"endpoint": "/api/item/{id}"}
+    }
+  }
+}
+```
+
+#### ✅ Ejemplos completos de vistas correctas
+
+**Vista con widgets (Dashboard):**
+```json
+{
+  "id": "dashboard",
+  "title": "Panel de Control",
+  "content": [
+    {
+      "type": "html",
+      "order": 1,
+      "content": "<h3>📊 Dashboard</h3>"
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 2,
+      "config": {
+        "title": "Total Usuarios",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/users/count",
+            "method": "GET"
+          }
+        },
+        "html": "<div class='widget-stat'><h2>{{total}}</h2><p>Usuarios</p></div>"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 3,
+      "config": {
+        "title": "Ventas del Mes",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/sales/monthly",
+            "method": "GET"
+          }
+        },
+        "html": "<div class='widget-stat'><h2>${{amount}}</h2><p>Ventas</p></div>"
+      }
+    }
+  ]
+}
+```
+
+**Vista con DataTable:**
+```json
+{
+  "id": "productos-listado",
+  "title": "Gestión de Productos",
+  "content": [
+    {
+      "type": "html",
+      "order": 1,
+      "content": "<h3>📦 Productos</h3><p>Administra tu inventario</p>"
+    },
+    {
+      "type": "html",
+      "order": 2,
+      "content": "<div class='view-toolbar'><button class='btn btn-primary' onclick=\"modal.open('inventario|forms/producto', {title: 'Nuevo Producto'})\">➕ Nuevo</button></div>"
+    },
+    {
+      "type": "component",
+      "component": "datatable",
+      "order": 3,
+      "config": {
+        "pluginName": "inventario",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/productos",
+            "method": "GET"
+          }
+        },
+        "columns": ["id", "nombre", "categoria", "precio", "cantidad"],
+        "actions": {
+          "edit": {
+            "name": "✏️ Editar",
+            "dataLoader": {
+              "type": "auto",
+              "api": {
+                "endpoint": "/api/productos/{id}",
+                "method": "GET"
+              }
+            },
+            "onclick": "modal.openWithData('inventario|forms/producto', {id: {id}, title: 'Editar Producto'})"
+          },
+          "delete": {
+            "name": "🗑️ Eliminar",
+            "onclick": "if(confirm('¿Eliminar {nombre}?')) { api.delete('/api/productos/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }); }"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+**Vista con Tabs:**
+```json
+{
+  "id": "configuracion",
+  "title": "Configuración",
+  "tabs": [
+    {
+      "id": "general",
+      "title": "General",
+      "content": [
+        {
+          "type": "form",
+          "form_json": "forms/config-general"
+        }
+      ]
+    },
+    {
+      "id": "avanzado",
+      "title": "Avanzado",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h4>Configuración Avanzada</h4>"
+        },
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "pluginName": "admin",
+            "columns": ["key", "value"],
+            "dataSource": {
+              "type": "auto",
+              "api": {"endpoint": "/api/settings"}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Vista simple con HTML:**
+```json
+{
+  "id": "graficos",
+  "title": "Gráficos",
+  "scripts": ["assets/js/chart.js"],
+  "content": [
+    {
+      "type": "html",
+      "content": "<div id='chart-container'><canvas id='myChart'></canvas></div>"
+    }
+  ]
+}
+```
 
 ### Propiedades estáticas
 
@@ -1466,6 +2023,120 @@ Renderiza tabla en contenedor:
 5. Genera HTML
 6. Bind eventos
 
+#### ⚠️ IMPORTANTE - Configuración correcta de DataTable
+
+**Errores comunes al configurar DataTables:**
+
+1. **Nombre del componente debe ser en minúsculas:**
+   - ❌ `"component": "dataTable"` (INCORRECTO)
+   - ✅ `"component": "datatable"` (CORRECTO)
+
+2. **Se requiere la propiedad `pluginName`:**
+   ```json
+   {
+     "pluginName": "blognetwork"
+   }
+   ```
+
+3. **Las columnas deben ser un array de strings simple:**
+   - ❌ INCORRECTO:
+   ```json
+   "columns": [
+     {"key": "id", "label": "ID", "sortable": true},
+     {"key": "name", "label": "Nombre"}
+   ]
+   ```
+   - ✅ CORRECTO:
+   ```json
+   "columns": ["id", "name", "domain", "status", "created_at"]
+   ```
+
+4. **Las acciones usan `onclick` con código JavaScript:**
+   - ❌ INCORRECTO (configuración como objetos con endpoint):
+   ```json
+   "actions": {
+     "edit": {
+       "label": "Editar",
+       "form": "forms/blog-form",
+       "endpoint": "/api/blog/{id}"
+     }
+   }
+   ```
+   - ✅ CORRECTO (onclick con código JavaScript):
+   ```json
+   "actions": {
+     "edit": {
+       "name": "✏️ Editar",
+       "onclick": "modal.openWithData('blognetwork|forms/blog-form', {id: {id}, title: '✏️ Editar: {name}'})",
+       "dataLoader": {
+         "type": "auto",
+         "api": {
+           "endpoint": "/api/blog/{id}",
+           "method": "GET"
+         }
+       }
+     },
+     "delete": {
+       "name": "🗑️ Eliminar",
+       "onclick": "if(confirm('¿Eliminar {name}?')) { api.delete('/api/blog/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }); }"
+     }
+   }
+   ```
+
+**Ejemplo completo CORRECTO de vista con DataTable:**
+
+```json
+{
+  "id": "blognetwork-blogs",
+  "title": "Gestión de Blogs",
+  "content": [
+    {
+      "type": "html",
+      "order": 1,
+      "content": "<h3>📰 Gestión de Blogs</h3>"
+    },
+    {
+      "type": "html",
+      "order": 2,
+      "content": "<div class='view-toolbar'><button class='btn btn-primary' onclick=\"modal.open('blognetwork|forms/blog-form', {title: '➕ Nuevo Blog'})\">➕ Nuevo Blog</button></div>"
+    },
+    {
+      "type": "component",
+      "component": "datatable",
+      "order": 3,
+      "config": {
+        "pluginName": "blognetwork",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/blog",
+            "method": "GET"
+          }
+        },
+        "columns": ["id", "name", "domain", "status", "created_at"],
+        "actions": {
+          "edit": {
+            "name": "✏️ Editar",
+            "dataLoader": {
+              "type": "auto",
+              "api": {
+                "endpoint": "/api/blog/{id}",
+                "method": "GET"
+              }
+            },
+            "onclick": "modal.openWithData('blognetwork|forms/blog-form', {id: {id}, title: '✏️ Editar: {name}'})"
+          },
+          "delete": {
+            "name": "🗑️ Eliminar",
+            "onclick": "if(confirm('¿Eliminar {name}?')) { api.delete('/api/blog/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }).catch(e => toast.error('Error')); }"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
 #### Configuración
 
 ```json
@@ -2235,7 +2906,67 @@ toast.info('Procesando...', { duration: 5000 });
 
 Renderiza grid de widgets:
 
-**Configuración:**
+**⚠️ IMPORTANTE - Configuración correcta de widgets en vistas:**
+
+Los widgets deben configurarse dentro del array `content` de la vista, NO como objetos independientes. Cada widget es un item de contenido con `type: "component"` y `component: "widget"`.
+
+**❌ INCORRECTO (No funciona):**
+```json
+{
+  "id": "dashboard",
+  "title": "Dashboard",
+  "widgets": [
+    {
+      "title": "Total Blogs",
+      "html": "<div data-source='/api/blog/count'>...</div>"
+    }
+  ]
+}
+```
+
+**✅ CORRECTO (Así debe ser):**
+```json
+{
+  "id": "dashboard",
+  "title": "Dashboard",
+  "content": [
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 1,
+      "config": {
+        "title": "Total Blogs",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/blog/count",
+            "method": "GET"
+          }
+        },
+        "html": "<div class='widget-stat'><h2>{{total}}</h2><p>Total de Blogs</p></div>"
+      }
+    },
+    {
+      "type": "component",
+      "component": "widget",
+      "order": 2,
+      "config": {
+        "title": "Contenido Scrapeado",
+        "dataSource": {
+          "type": "auto",
+          "api": {
+            "endpoint": "/api/blog_content/count",
+            "method": "GET"
+          }
+        },
+        "html": "<div class='widget-stat'><h2>{{total}}</h2><p>Artículos</p></div>"
+      }
+    }
+  ]
+}
+```
+
+**Configuración de widget individual:**
 ```javascript
 {
   columns: 2,  // Columnas del grid
@@ -2363,3 +3094,263 @@ const config = {
 
 await widget.render(container, config);
 ```
+
+---
+
+## 📋 TABLA DE REFERENCIA RÁPIDA
+
+### Componentes y su sintaxis correcta
+
+| Componente | Nombre correcto | Uso común | Propiedades requeridas |
+|------------|----------------|-----------|----------------------|
+| DataTable | `"datatable"` (minúsculas) | Tablas de datos | `pluginName`, `columns`, `dataSource` |
+| Widget | `"widget"` | Dashboards | `title`, `html` o `component` |
+| Grouper | `"grouper"` | Acordeones/Tabs | `mode`, `groups` |
+| Tabs | Sistema de tabs | Vistas con pestañas | `tabs` array |
+| Modal | `modal.open()` | Ventanas emergentes | `resource`, `options` |
+| Toast | `toast.success()` | Notificaciones | `message`, `type` (opcional) |
+| Form | `form.load()` | Formularios | `formName`, `container` |
+
+### Estructura básica de archivos de plugin
+
+```
+public/plugins/miPlugin/
+├── index.json              # Configuración principal
+├── assets/
+│   ├── css/
+│   │   └── miPlugin.css
+│   └── js/
+│       └── miPlugin.js
+├── lang/
+│   ├── es.json
+│   └── en.json
+└── views/
+    ├── sections/           # Vistas principales
+    │   ├── dashboard.json
+    │   └── listado.json
+    └── forms/             # Formularios
+        └── item-form.json
+
+backend/plugins/miPlugin/
+├── plugin.json            # Config backend
+├── database/
+│   └── schema.sql
+├── controllers/
+│   └── itemController.php
+└── resources/
+    └── item.json          # Schema del resource
+```
+
+### Rutas y convenciones
+
+| Tipo | Formato correcto | Ejemplo |
+|------|-----------------|---------|
+| Vista core | `"core:ruta/vista"` | `"core:dashboard/dashboard"` |
+| Vista plugin | `"plugin\|sections/vista"` | `"inventario\|sections/listado"` |
+| Form core | `"ruta/forms/form"` | `"user/forms/user-form"` |
+| Form plugin | `"plugin\|forms/form"` | `"botmaster\|forms/bot-form"` |
+| API endpoint | `/api/resource` | `/api/blog`, `/api/user/login` |
+| Mock data | `"mock/archivo.json"` | `"mock/bots.json"` |
+
+### Configuración de dataSource
+
+```json
+{
+  "type": "auto",
+  "api": {
+    "enabled": true,
+    "endpoint": "/api/items",
+    "method": "GET"
+  },
+  "mock": {
+    "file": "mock/items.json"
+  }
+}
+```
+
+**Tipos soportados:**
+- `auto` - Detecta automáticamente (API → Mock fallback)
+- `api` - Solo API
+- `mock` - Solo Mock
+
+### Acciones comunes en DataTable
+
+```json
+"actions": {
+  "view": {
+    "name": "👁️ Ver",
+    "onclick": "modal.open('plugin|sections/detalle', {id: {id}})"
+  },
+  "edit": {
+    "name": "✏️ Editar",
+    "onclick": "modal.openWithData('plugin|forms/edit', {id: {id}})",
+    "dataLoader": {
+      "type": "auto",
+      "api": {"endpoint": "/api/items/{id}"}
+    }
+  },
+  "delete": {
+    "name": "🗑️ Eliminar",
+    "onclick": "if(confirm('¿Eliminar?')) { api.delete('/api/items/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }); }"
+  },
+  "custom": {
+    "name": "⚡ Acción",
+    "onclick": "miAccion({id}, '{nombre}')"
+  }
+}
+```
+
+### Campos de formulario comunes
+
+| Tipo | Uso | Propiedades importantes |
+|------|-----|------------------------|
+| `text` | Texto simple | `name`, `label`, `required` |
+| `email` | Email | `name`, `label`, `validation: "email"` |
+| `number` | Números | `name`, `label`, `min`, `max` |
+| `select` | Selector | `name`, `label`, `options` o `dataSource` |
+| `textarea` | Texto largo | `name`, `label`, `rows` |
+| `checkbox` | Casilla | `name`, `label` |
+| `radio` | Opciones | `name`, `label`, `options` |
+| `date` | Fecha | `name`, `label` |
+| `file` | Archivo | `name`, `label`, `accept` |
+| `repeatable` | Lista dinámica | `name`, `fields`, `addButtonText` |
+| `grouper` | Agrupación | `mode`, `groups` |
+| `group` | Columnas | `columns`, `fields` |
+
+### Validaciones disponibles
+
+| Regla | Descripción | Ejemplo |
+|-------|-------------|---------|
+| `required` | Campo obligatorio | `"validation": "required"` |
+| `email` | Email válido | `"validation": "email"` |
+| `min:n` | Mínimo n caracteres | `"validation": "min:3"` |
+| `max:n` | Máximo n caracteres | `"validation": "max:50"` |
+| `numeric` | Solo números | `"validation": "numeric"` |
+| `alpha` | Solo letras | `"validation": "alpha"` |
+| `alphanumeric` | Letras y números | `"validation": "alphanumeric"` |
+| Múltiples | Combinar con `\|` | `"validation": "required\|email\|min:5"` |
+
+### Transforms disponibles
+
+| Transform | Efecto | Uso |
+|-----------|--------|-----|
+| `uppercase` | MAYÚSCULAS | `"transform": "uppercase"` |
+| `lowercase` | minúsculas | `"transform": "lowercase"` |
+| `capitalize` | Primera Mayúscula | `"transform": "capitalize"` |
+| `numeric` | Solo números | `"transform": "numeric"` |
+| `alpha` | Solo letras | `"transform": "alpha"` |
+| `alphanumeric` | Letras y números | `"transform": "alphanumeric"` |
+
+### Operadores de condiciones
+
+| Operador | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `==` | Igual | `{"field": "activo", "operator": "==", "value": true}` |
+| `!=` | Diferente | `{"field": "tipo", "operator": "!=", "value": "admin"}` |
+| `>` | Mayor que | `{"field": "edad", "operator": ">", "value": 18}` |
+| `<` | Menor que | `{"field": "stock", "operator": "<", "value": 10}` |
+| `>=` | Mayor o igual | `{"field": "precio", "operator": ">=", "value": 100}` |
+| `<=` | Menor o igual | `{"field": "descuento", "operator": "<=", "value": 50}` |
+| `any` | En lista | `{"field": "tipo", "operator": "any", "value": "admin,manager"}` |
+| `not-any` | No en lista | `{"field": "estado", "operator": "not-any", "value": "deleted,archived"}` |
+| `empty` | Vacío | `{"field": "opcional", "operator": "empty"}` |
+| `not-empty` | No vacío | `{"field": "requerido", "operator": "not-empty"}` |
+| `contains` | Contiene | `{"field": "texto", "operator": "contains", "value": "palabra"}` |
+| `not-contains` | No contiene | `{"field": "descripcion", "operator": "not-contains", "value": "prohibido"}` |
+
+### API Methods
+
+```javascript
+// GET
+const data = await api.get('/api/users');
+
+// POST
+const result = await api.post('/api/user', { name: 'Juan' });
+
+// PUT
+const updated = await api.put('/api/user/123', { name: 'Juan Updated' });
+
+// DELETE
+await api.delete('/api/user/123');
+```
+
+### Shortcuts útiles
+
+```javascript
+// Traducciones
+__('key')
+__('plugin:key')
+__('key', { param: 'value' })
+
+// Toasts
+toast.success('Mensaje')
+toast.error('Error')
+toast.warning('Advertencia')
+toast.info('Info')
+
+// Modal
+modal.open('plugin|forms/form')
+modal.openWithData('plugin|forms/form', { id: 123 })
+modal.close(modalId)
+
+// DataTable
+datatable.refresh(tableId)
+datatable.refreshFirst()
+
+// Form
+form.load('plugin|forms/form', container)
+form.getData(formId)
+form.fill(formId, data)
+form.validate(formId)
+
+// Cache
+cache.set('key', data, ttl)
+cache.get('key')
+cache.delete('key')
+cache.clear()
+
+// Events
+events.on('.selector', 'click', handler)
+events.off(eventId)
+```
+
+### Debugging
+
+```javascript
+// Cache stats
+debugCache.stats()
+debugCache.list('memory')
+debugCache.get('key')
+
+// Logger (solo en desarrollo)
+logger.debug('módulo', 'mensaje')
+logger.info('módulo', 'mensaje')
+logger.warn('módulo', 'mensaje')
+logger.error('módulo', 'mensaje')
+
+// View debug
+console.log(view.views)
+console.log(view.loadedPlugins)
+
+// Hook debug
+hook.debug()
+console.log(hook.pluginRegistry)
+
+// Events debug
+events.debug()
+```
+
+---
+
+## 🔗 Enlaces y recursos
+
+- **Repositorio:** [Factory SaaS Framework]
+- **Documentación Backend:** `.docs/backend.md`
+- **Ejemplos prácticos:** Plugin `ejemplos` en `/public/plugins/ejemplos`
+- **Plugin de referencia completo:** Plugin `inventario` en `/public/plugins/inventario`
+
+---
+
+**Última actualización:** Noviembre 2025  
+**Versión del framework:** 1.0  
+**Autor:** Factory Team

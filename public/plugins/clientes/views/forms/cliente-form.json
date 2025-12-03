@@ -1,0 +1,205 @@
+{
+  "id": "cliente-form",
+  "title": "Formulario de Cliente",
+  "apiEndpoint": "/api/clientes",
+  "fields": [
+    {
+      "name": "nombre",
+      "label": "i18n:clientes.field.name",
+      "type": "text",
+      "required": true,
+      "validation": "required|min:3",
+      "placeholder": "i18n:clientes.placeholder.name"
+    },
+    {
+      "type": "group",
+      "columns": 2,
+      "fields": [
+        {
+          "name": "telefono",
+          "label": "i18n:clientes.field.phone",
+          "type": "text",
+          "required": true,
+          "validation": "required",
+          "placeholder": "i18n:clientes.placeholder.phone"
+        },
+        {
+          "name": "email",
+          "label": "i18n:clientes.field.email",
+          "type": "email",
+          "validation": "email",
+          "placeholder": "i18n:clientes.placeholder.email"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "columns": 2,
+      "fields": [
+        {
+          "name": "estado",
+          "label": "i18n:clientes.field.status",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "lead",
+              "label": "i18n:clientes.status.lead"
+            },
+            {
+              "value": "activo",
+              "label": "i18n:clientes.status.activo"
+            },
+            {
+              "value": "inactivo",
+              "label": "i18n:clientes.status.inactivo"
+            }
+          ]
+        },
+        {
+          "name": "origen",
+          "label": "i18n:clientes.field.source",
+          "type": "select",
+          "options": [
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "referido",
+              "label": "i18n:clientes.source.referido"
+            },
+            {
+              "value": "redes",
+              "label": "i18n:clientes.source.redes"
+            },
+            {
+              "value": "web",
+              "label": "i18n:clientes.source.web"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "notas",
+      "label": "i18n:clientes.field.notes",
+      "type": "textarea",
+      "rows": 3,
+      "placeholder": "i18n:clientes.placeholder.notes"
+    },
+    {
+      "type": "grouper",
+      "mode": "linear",
+      "collapsible": true,
+      "openFirst": false,
+      "groups": [
+        {
+          "title": "📋 Información Adicional",
+          "fields": [
+            {
+              "type": "group",
+              "columns": 2,
+              "fields": [
+                {
+                  "name": "empresa",
+                  "label": "i18n:clientes.field.company",
+                  "type": "text",
+                  "placeholder": "i18n:clientes.placeholder.company"
+                },
+                {
+                  "name": "cargo",
+                  "label": "i18n:clientes.field.position",
+                  "type": "text",
+                  "placeholder": "i18n:clientes.placeholder.position"
+                }
+              ]
+            },
+            {
+              "name": "ciudad",
+              "label": "i18n:clientes.field.city",
+              "type": "text",
+              "placeholder": "i18n:clientes.placeholder.city"
+            },
+            {
+              "name": "fecha_nacimiento",
+              "label": "i18n:clientes.field.birthdate",
+              "type": "date"
+            }
+          ]
+        },
+        {
+          "title": "💰 Información Comercial",
+          "fields": [
+            {
+              "type": "group",
+              "columns": 2,
+              "fields": [
+                {
+                  "name": "tipo_cliente",
+                  "label": "i18n:clientes.field.client_type",
+                  "type": "select",
+                  "options": [
+                    {
+                      "value": "particular",
+                      "label": "i18n:clientes.type.particular"
+                    },
+                    {
+                      "value": "empresa",
+                      "label": "i18n:clientes.type.empresa"
+                    }
+                  ]
+                },
+                {
+                  "name": "nivel_interes",
+                  "label": "i18n:clientes.field.interest_level",
+                  "type": "select",
+                  "options": [
+                    {
+                      "value": "bajo",
+                      "label": "i18n:clientes.level.bajo"
+                    },
+                    {
+                      "value": "medio",
+                      "label": "i18n:clientes.level.medio"
+                    },
+                    {
+                      "value": "alto",
+                      "label": "i18n:clientes.level.alto"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "productos_interes",
+              "label": "i18n:clientes.field.products_interest",
+              "type": "textarea",
+              "rows": 2,
+              "placeholder": "i18n:clientes.placeholder.products_interest"
+            },
+            {
+              "name": "presupuesto_estimado",
+              "label": "i18n:clientes.field.estimated_budget",
+              "type": "number",
+              "placeholder": "0.00"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "toolbar": [
+    {
+      "type": "submit",
+      "label": "i18n:clientes.button.save",
+      "class": "btn btn-primary"
+    },
+    {
+      "type": "button",
+      "label": "i18n:clientes.button.cancel",
+      "class": "btn btn-secondary",
+      "onclick": "modal.closeAll()"
+    }
+  ]
+}

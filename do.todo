@@ -1,8 +1,11 @@
 por donde me quede:
+  ☐ Errores al generar plugin:
 ✔ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin @done(30-11-2025 12:42)
 por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'
 SOLUCION: ahora lo hace per solo con campos del form.js
-☐ 
+☐ agrega las reglas de copiloto para la AI en el proyecto
+✔ revisa los errores del asisten al momento de crear un plugin y agregarlos a la documentacion @done(30-11-2025 15:40)
+☐ revisa porque no se muestran los usuairo, creo que porque se cambio un poco las rutas, hay que revisar
 pendientes:
 ✔ Implementar el login @done(20-11-2025 19:10)
 ✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
@@ -53,3 +56,5 @@ o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuar
 ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
 ☐ En el condicionaal aunq funciona bien pero en consola log envia un error cada vez hace condiciones es como que buscar unos campos
 y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.
+☐ los hooks estan que filtran html pero no los demas tipos de campos como los inputs, selects, textareas, vistas o no se parece
+que solo esta que filtrar html.
