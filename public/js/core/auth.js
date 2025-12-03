@@ -8,7 +8,7 @@ class auth {
   // ============================================
   // INICIALIZACIÓN
   // ============================================
-  
+
   static async init(config) {
     this.config = {
       enabled: true,
@@ -159,9 +159,9 @@ class auth {
     this.clearAppCaches();
     this.clearSession();
     this.user = null;
-    
+
     logger.debug('cor:auth', 'Sesión cerrada');
-    
+
     window.location.reload();
   }
 
@@ -263,14 +263,14 @@ class auth {
 
     const intervalSeconds = Math.round(this.config.sessionCheckInterval / 1000);
     const endpoint = this.config.api.me;
-    
+
     logger.info('cor:auth', `⏱️ Iniciando monitoreo de sesión cada ${intervalSeconds} segundos`);
     logger.info('cor:auth', `📡 Endpoint de verificación: ${endpoint}`);
 
     this.sessionCheckInterval = setInterval(async () => {
       logger.debug('cor:auth', '🔍 Verificando sesión en servidor...');
       const result = await this.checkSessionWithServer();
-      
+
       if (!result.valid) {
         logger.warn('cor:auth', 'Sesión inválida detectada');
         this.handleExpiredSession();
@@ -281,12 +281,12 @@ class auth {
 
       if (result.updated) {
         logger.info('cor:auth', '🔄 Cambios detectados en la sesión, recargando permisos...');
-        
+
         this.user = result.user;
         this.clearAppCaches();
         this.loadUserPermissions();
         await this.reloadAppAfterPermissionChange();
-        
+
         // ✅ Firma correcta: toast.show(message, options)
         toast.show('✅ Tus permisos han sido actualizados', {
           type: 'success',
@@ -308,7 +308,7 @@ class auth {
     try {
       const endpoint = this.config.api.me;
       const response = await api.get(endpoint);
-      
+
       if (response.success && response.data) {
         return {
           valid: true,
@@ -317,7 +317,7 @@ class auth {
           expiresIn: null
         };
       }
-      
+
       logger.warn('cor:auth', 'Respuesta inesperada del servidor:', response);
       return { valid: false };
     } catch (error) {
@@ -325,28 +325,28 @@ class auth {
         logger.warn('cor:auth', '❌ Sesión inválida (401 Unauthorized)');
         return { valid: false };
       }
-      
+
       logger.error('cor:auth', 'Error verificando sesión:', {
         message: error.message,
         status: error.status
       });
-      
+
       return { valid: true };
     }
   }
 
   static handleExpiredSession() {
     this.stopSessionMonitoring();
-    
+
     if (window.toast) {
       const message = 'Tu sesión ha expirado o fue invalidada. Por favor, inicia sesión nuevamente.';
-      
+
       // ✅ Firma correcta: toast.show(message, options)
       toast.show(message, {
         type: 'warning',
         duration: 5000
       });
-      
+
       logger.warn('cor:auth', message);
     }
 
@@ -474,10 +474,10 @@ class auth {
 
     for (const pluginName in this.userPermissions.plugins) {
       const plugin = this.userPermissions.plugins[pluginName];
-      
+
       if (plugin.menus && plugin.menus[menuId]) {
         const menuPerm = plugin.menus[menuId];
-        
+
         if (menuPerm === true) return '*';
         if (typeof menuPerm === 'object' && menuPerm.tabs) {
           return menuPerm.tabs;
@@ -520,7 +520,7 @@ class auth {
 
   static async showApp() {
     const layoutExists = document.querySelector('.layout .header');
-    
+
     if (!layoutExists && window.layout) {
       layout.init('app');
     }
@@ -531,20 +531,20 @@ class auth {
     if (window.hook?.loadPluginHooks) {
       logger.info('cor:auth', 'Cargando plugins...');
       await hook.loadPluginHooks();
-      
+
       // Registrar plugins cargados en view
       if (window.view && hook.getEnabledPlugins) {
         const enabledPlugins = hook.getEnabledPlugins();
         view.loadedPlugins = {};
-        
+
         for (const plugin of enabledPlugins) {
           view.loadedPlugins[plugin.name] = true;
         }
       }
-      
+
       // Filtrar por permisos
       this.filterPluginsByPermissions();
-      
+
       logger.success('cor:auth', 'Plugins cargados y filtrados');
     }
 
@@ -588,26 +588,26 @@ class auth {
 
   static async reloadAppAfterPermissionChange() {
     logger.info('cor:auth', 'Recargando aplicación con nuevos permisos...');
-    
+
     if (window.hook?.loadPluginHooks) {
       await hook.loadPluginHooks();
-      
+
       if (window.view && hook.getEnabledPlugins) {
         const enabledPlugins = hook.getEnabledPlugins();
         view.loadedPlugins = {};
-        
+
         for (const plugin of enabledPlugins) {
           view.loadedPlugins[plugin.name] = true;
         }
       }
     }
-    
+
     this.filterPluginsByPermissions();
-    
+
     if (window.sidebar) {
       await sidebar.init();
     }
-    
+
     logger.success('cor:auth', 'Aplicación recargada con nuevos permisos');
   }
 }

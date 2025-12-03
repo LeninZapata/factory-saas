@@ -3,19 +3,41 @@ class datatable {
   static counter = 0;
 
   static async render(config, container) {
+    // IMPORTANTE: view.js pasa (elemento, config) pero tabs.js pasa (config, elemento)
+    // Detectar cuál es cuál y corregir automáticamente
+    let actualConfig = config;
+    let actualContainer = container;
+
+    // Si el primer parámetro es un elemento DOM, están invertidos
+    if (config && typeof config.appendChild === 'function') {
+      actualContainer = config;
+      actualConfig = container || {};
+      logger.debug('com:datatable', 'Parámetros invertidos detectados - corrigiendo');
+    }
+
+    if (!actualContainer || typeof actualContainer.appendChild !== 'function') {
+      logger.error('com:datatable', 'Container inválido - debe ser un elemento DOM', actualContainer);
+      return;
+    }
+
     const tableId = `datatable-${++this.counter}`;
-    const pluginName = config.pluginName || this.detectPluginName(container);
-    const data = await this.loadData(config, pluginName);
+    const pluginName = actualConfig.pluginName || this.detectPluginName(actualContainer);
+    const data = await this.loadData(actualConfig, pluginName);
 
-    this.tables.set(tableId, { config, data, pluginName, container });
+    this.tables.set(tableId, { config: actualConfig, data, pluginName, container: actualContainer });
 
-    const html = this.generateHtml(tableId, config, data);
-    container.innerHTML = html;
+    const html = this.generateHtml(tableId, actualConfig, data);
+    actualContainer.innerHTML = html;
 
     this.bindEvents(tableId);
   }
 
   static detectPluginName(container) {
+    if (!container || typeof container.closest !== 'function') {
+      logger.warn('com:datatable', 'Container inválido en detectPluginName');
+      return null;
+    }
+
     const viewContainer = container.closest('[data-plugin]');
     if (viewContainer?.dataset.plugin) return viewContainer.dataset.plugin;
 
@@ -39,31 +61,46 @@ class datatable {
 
   static async loadData(config, pluginName) {
     try {
-      if (config.dataSource) {
-        return await dataLoader.loadList(config.dataSource, pluginName);
-      }
-
       if (config.source) {
         const isApiEndpoint = config.source.startsWith('api/') || config.source.startsWith('/api/');
-        
+
         if (isApiEndpoint) {
           const endpoint = config.source.startsWith('/') ? config.source : `/${config.source}`;
           const response = await api.get(endpoint);
-          
+
           if (response.success && response.data) return response.data;
           return response;
         } else {
-          const url = config.source.endsWith('.json')
-            ? window.BASE_URL + config.source
-            : config.source;
+          // Si termina en .json, es una ruta COMPLETA (no agregar prefijo de plugin)
+          let url;
+          if (config.source.endsWith('.json')) {
+            url = config.source.startsWith('http') 
+              ? config.source 
+              : window.BASE_URL + config.source;
+          } else {
+            // Si NO termina en .json y hay plugin, agregar prefijo del plugin
+            if (pluginName && !config.source.startsWith('plugins/')) {
+              url = `${window.BASE_URL}plugins/${pluginName}/${config.source}`;
+            } else {
+              url = window.BASE_URL + config.source;
+            }
+          }
 
-          const response = await fetch(url);
-          if (!response.ok) throw new Error('Error loading data');
+          // Agregar cache buster
+          const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
+          
+          logger.debug('com:datatable', `Cargando datos de: ${url}`);
+          
+          const response = await fetch(url + cacheBuster);
+          if (!response.ok) {
+            logger.error('com:datatable', `Error ${response.status} al cargar: ${url}`);
+            throw new Error(`Error ${response.status} loading data`);
+          }
           return await response.json();
         }
       }
 
-      logger.error('com:datatable', 'No se especificó dataSource ni source');
+      logger.error('com:datatable', 'No se especificó source');
       return [];
 
     } catch (error) {
@@ -73,6 +110,14 @@ class datatable {
   }
 
   static generateHtml(tableId, config, data) {
+    if (!Array.isArray(data) || data.length === 0) {
+      return `
+        <div class="datatable-container" id="${tableId}">
+          <div class="datatable-empty">No hay datos para mostrar</div>
+        </div>
+      `;
+    }
+
     const columns = this.processColumns(config.columns || Object.keys(data[0] || {}));
     const hasActions = config.actions && Object.keys(config.actions).length > 0;
 
@@ -108,7 +153,7 @@ class datatable {
         } else if (typeof col === 'object') {
           const field = Object.keys(col)[0];
           const params = col[field];
-          
+
           return {
             field: field,
             headerLabel: this.translateLabel(params.name || field),
@@ -159,38 +204,13 @@ class datatable {
 
     const key = label.replace('i18n:', '');
 
-    if (key.includes(':')) {
-      const [pluginName, pluginKey] = key.split(':', 2);
-      return this.translateFromPlugin(pluginName, pluginKey);
-    }
-
-    return this.translateFromCore(key);
-  }
-
-  static translateFromCore(key) {
+    // Si usa el nuevo formato i18n:plugin.key
     if (window.i18n && typeof i18n.t === 'function') {
       const translation = i18n.t(key);
       if (translation !== key) return translation;
     }
 
     logger.warn('com:datatable', `Traducción no encontrada: ${key}`);
-    return this.formatHeader(key.split('.').pop());
-  }
-
-  static translateFromPlugin(pluginName, key) {
-    if (window.i18n && window.i18n.pluginTranslations) {
-      const pluginLangs = i18n.pluginTranslations.get(pluginName);
-      if (pluginLangs) {
-        const currentLang = i18n.getLang();
-        const translations = pluginLangs.get(currentLang);
-        
-        if (translations && translations[key]) {
-          return translations[key];
-        }
-      }
-    }
-
-    logger.warn('com:datatable', `Traducción de plugin no encontrada: ${pluginName}:${key}`);
     return this.formatHeader(key.split('.').pop());
   }
 
@@ -231,25 +251,25 @@ class datatable {
     switch (format) {
       case 'date':
         return this.formatDate(value);
-      
+
       case 'datetime':
         return this.formatDateTime(value);
-      
+
       case 'money':
         return this.formatMoney(value);
-      
+
       case 'boolean':
         return value ? 'Sí' : 'No';
-      
+
       case 'uppercase':
         return String(value).toUpperCase();
-      
+
       case 'lowercase':
         return String(value).toLowerCase();
-      
+
       case 'capitalize':
         return String(value).charAt(0).toUpperCase() + String(value).slice(1);
-      
+
       default:
         return value;
     }
@@ -324,7 +344,6 @@ class datatable {
     // Eventos futuros
   }
 
-  // Método mejorado para refrescar tabla
   static async refresh(tableId) {
     const table = this.tables.get(tableId);
     if (!table) {
@@ -334,7 +353,7 @@ class datatable {
 
     const { config, pluginName, container } = table;
     const data = await this.loadData(config, pluginName);
-    
+
     this.tables.set(tableId, { config, data, pluginName, container });
 
     const html = this.generateHtml(tableId, config, data);
@@ -343,7 +362,6 @@ class datatable {
     this.bindEvents(tableId);
   }
 
-  // Método helper para refrescar la primera tabla visible
   static async refreshFirst() {
     const firstTable = document.querySelector('[data-datatable]');
     if (!firstTable) {

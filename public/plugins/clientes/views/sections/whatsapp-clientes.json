@@ -12,7 +12,7 @@
       "component": "datatable",
       "order": 2,
       "config": {
-        "source": "mock/clientes",
+        "source": "plugins/clientes/views/mock/clientes.json",
         "columns": [
           {
             "id": {

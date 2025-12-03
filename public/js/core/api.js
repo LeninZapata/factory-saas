@@ -23,6 +23,7 @@ class api {
     const headers = { ...this.headers };
     const token = auth?.getToken?.();
     
+    console.log(`token:`, token);
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
       logger.debug('cor:api', `🔑 Token incluido: ${token.substring(0, 20)}...`);

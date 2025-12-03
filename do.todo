@@ -1,4 +1,14 @@
 por donde me quede:
+  ☐ el datatable no carga a nivel de a/api algo pasa
+  ☐ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores
+  seria bueno poner el ejemplo de crear un plugin de cliente desde 0 en la documentacion
+  pero con todo simplificado para evitar que el documento explote.
+  ☐ pide a la ai que reOrganice el plugin de EJEMPLOS para que sea mas facil de entender
+  y que tenga ejemplos de formularios, tablas, vistas, modales, etc...
+  ☐ en el manual no esta como manejar lo logger
+  ☐ ### Vista con Widgets (Dashboard): en esta parte del documento hay que sacarlo porque debe trabajar igual que la tabla osea 
+  con 'source' hay que ver si se refactoriza el componente de widgets para que funcione igual que la tabla en caso se pida 
+  datos de endpoint
   ☐ Errores al generar plugin:
 ✔ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin @done(30-11-2025 12:42)
 por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'

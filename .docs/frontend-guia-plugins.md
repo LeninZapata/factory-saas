@@ -108,7 +108,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 {
   "name": "miPlugin",
   "version": "1.0.0",
-
+  
   "hasMenu": true,
   "hasViews": true,
   "menu": {
@@ -123,8 +123,12 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 **⚠️ Reglas Críticas:**
 1. NO existe `enabled` en index.json del plugin (se habilita en `plugins/index.json`)
 2. IDs de menú DEBEN empezar con: `"{nombre-plugin}-{id}"` (ej: `"clientes-dashboard"`)
-3. Keys de traducción en inglés: `field.name` no `field.nombre`
-4. En grouper usar `"fields":[]` NO `"content":[]`
+3. Rutas de vistas relativas a `views/` (sin `sections/`)
+4. Keys de traducción en inglés: `field.name` no `field.nombre`
+5. En grouper usar `"fields":[]` NO `"content":[]`
+6. **Keys de idioma:** usar punto `.` no dos puntos `:` → `"i18n:clientes.field.name"` ✅ no `"i18n:clientes:field.name"` ❌
+7. **Keys en lang/*.json:** con prefijo del plugin → `"clientes.field.name"` ✅
+8. **DataTable:** usar `"source": "ruta"` simple, NO objeto `dataSource` complejo
 
 
 ### Ejemplo con submenús:
@@ -133,7 +137,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 {
   "name": "inventario",
   "version": "1.0.0",
-
+  
   "hasMenu": true,
   "hasViews": true,
   "menu": {
@@ -158,18 +162,18 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 }
 ```
 
-### Ejemplo con scripts y estilos cargados al abrir el plugin:
+### Ejemplo con scripts y estilos cargados al abrir al cargar la pagina (sin importar la vista, y solo es necesario cuando un script se necesita carga a nivel global [muy poco casos]):
 
 ```json
 {
   "name": "botmaster",
   "version": "1.0.0",
-
+  
   "hasMenu": true,
   "hasViews": true,
-  "autoload": "assets/js/botmaster.js",
-  "scripts": ["assets/js/helper.js"],
-  "styles": ["assets/css/botmaster.css"],
+  "autoload": "plugins/{plugin_name}/assets/js/botmaster.js",
+  "scripts": ["plugins/{plugin_name}/assets/js/helper.js"],
+  "styles": ["plugins/{plugin_name}/assets/css/botmaster.css"],
   "menu": {
     "title": "Botmaster",
     "icon": "🤖",
@@ -200,8 +204,8 @@ Si quieres cargar scripts/estilos solo cuando se abre una vista específica (mej
 {
   "id": "graficos",
   "title": "Gráficos",
-  "scripts": ["assets/js/chart.js"],
-  "styles": ["assets/css/chart.css"],
+  "scripts": ["plugins/{plugin_name}/assets/js/chart.js"],
+  "styles": ["plugins/{plugin_name}/assets/css/chart.css"],
   "content": [...]
 }
 ```
@@ -1069,7 +1073,7 @@ toast.info('Información adicional');
 toast.success('Guardado', { duration: 5000 });
 
 // Con posición personalizada
-toast.info('Mensaje', {
+toast.info('Mensaje', { 
   position: 'top-right'  // top-right|top-left|bottom-right|bottom-left
 });
 ```
@@ -1278,7 +1282,7 @@ public/plugins/taskmanager/
 {
   "name": "taskmanager",
   "version": "1.0.0",
-
+  
   "hasMenu": true,
   "hasViews": true,
   "styles": ["assets/css/taskmanager.css"],
@@ -1571,7 +1575,78 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 - `"max:n"` - Máximo n caracteres
 - `"numeric"` - Solo números
 
+
 ---
 
-**Última actualización:** Noviembre 2025
-**Framework Version:** 1.0
+## 📊 DataTable - Configuración de Source
+
+### Reglas para `source`:
+
+1. **API Endpoints** (sin `.json`)
+   ```json
+   {
+     "source": "api/productos"
+   }
+   ```
+   → Llama a: `/api/productos`
+
+2. **Archivos JSON** (con `.json` = ruta completa)
+   ```json
+   {
+     "source": "plugins/inventario/views/mock/productos.json"
+   }
+   ```
+   → Carga desde ruta exacta (no agrega prefijo)
+
+3. **Archivos JSON de otro plugin**
+   ```json
+   {
+     "source": "plugins/otro-plugin/data/clientes.json"
+   }
+   ```
+   → Permite cargar datos de cualquier plugin
+
+### Ejemplos Completos:
+
+**Cargar desde API:**
+```json
+{
+  "type": "component",
+  "component": "datatable",
+  "config": {
+    "source": "api/usuarios",
+    "columns": [
+      {
+        "id": { "name": "ID", "width": "80px" }
+      },
+      {
+        "nombre": { "name": "Nombre" }
+      }
+    ]
+  }
+}
+```
+
+**Cargar desde mock JSON:**
+```json
+{
+  "type": "component",
+  "component": "datatable",
+  "config": {
+    "source": "plugins/clientes/views/mock/clientes.json",
+    "columns": [
+      {
+        "id": { "name": "i18n:clientes.column.id", "width": "80px" }
+      },
+      {
+        "nombre": { "name": "i18n:clientes.column.name" }
+      }
+    ]
+  }
+}
+```
+
+**⚠️ IMPORTANTE:**
+- Si termina en `.json` → usa la ruta completa tal cual
+- Si NO termina en `.json` → es un endpoint API
+- NO usar `dataSource` complejo, solo `source` simple
