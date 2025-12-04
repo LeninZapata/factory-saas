@@ -1,6 +1,6 @@
 {
   "id": "clientes-listado",
-  "title": "Gestión de Clientes",
+  "title": "i18n:clientes.title.listado",
   "content": [
     {
       "type": "html",
@@ -12,35 +12,50 @@
       "component": "datatable",
       "order": 2,
       "config": {
+        "pluginName": "clientes",
         "source": "plugins/clientes/views/mock/clientes.json",
         "columns": [
           {
-            "id": { "name": "i18n:clientes.column.id", "width": "80px" }
+            "id": {
+              "name": "i18n:clientes.column.id",
+              "width": "80px"
+            }
           },
           {
-            "nombre": { "name": "i18n:clientes.column.name" }
+            "nombre": {
+              "name": "i18n:clientes.column.nombre"
+            }
           },
           {
-            "email": { "name": "i18n:clientes.column.email" }
+            "email": {
+              "name": "i18n:clientes.column.email"
+            }
           },
           {
-            "telefono": { "name": "i18n:clientes.column.phone" }
+            "telefono": {
+              "name": "i18n:clientes.column.telefono"
+            }
           },
           {
-            "empresa": { "name": "i18n:clientes.column.company" }
+            "empresa": {
+              "name": "i18n:clientes.column.empresa"
+            }
           },
           {
-            "estado": { "name": "i18n:clientes.column.status" }
+            "estado": {
+              "name": "i18n:clientes.column.estado",
+              "width": "120px"
+            }
           }
         ],
         "actions": {
           "edit": {
-            "name": "i18n:clientes.action.edit",
-            "onclick": "modal.open('clientes|forms/cliente-form', {title: 'Editar Cliente'})"
+            "name": "✏️ Editar",
+            "onclick": "toast.info('Función editar cliente ID: {id}');"
           },
           "delete": {
-            "name": "i18n:clientes.action.delete",
-            "onclick": "if(confirm('¿Eliminar este cliente?')) { toast.success('Cliente eliminado'); datatable.refreshFirst(); }"
+            "name": "🗑️ Eliminar",
+            "onclick": "toast.warning('Función eliminar cliente: {nombre}');"
           }
         }
       }

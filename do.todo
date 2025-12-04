@@ -1,4 +1,6 @@
 por donde me quede:
+  ☐ Se daño el demo de formulario de item repetibles anidados, no funciona
+  ☐ Se daño el demo de formulario de anidados repetible dentro de un modal
   ✔ el datatable no carga a nivel de a/api algo pasa @done(03-12-2025 19:43)
   ☐ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores
   seria bueno poner el ejemplo de crear un plugin de cliente desde 0 en la documentacion

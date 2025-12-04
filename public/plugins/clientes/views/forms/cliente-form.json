@@ -1,14 +1,14 @@
 {
   "id": "cliente-form",
-  "title": "Formulario de Cliente",
+  "title": "i18n:clientes.form.title",
   "fields": [
     {
       "name": "nombre",
-      "label": "i18n:clientes.field.name",
+      "label": "i18n:clientes.field.nombre",
       "type": "text",
       "required": true,
       "validation": "required|min:3",
-      "placeholder": "i18n:clientes.placeholder.name"
+      "placeholder": "i18n:clientes.placeholder.nombre"
     },
     {
       "type": "group",
@@ -25,29 +25,40 @@
         },
         {
           "name": "telefono",
-          "label": "i18n:clientes.field.phone",
+          "label": "i18n:clientes.field.telefono",
           "type": "text",
           "required": true,
-          "validation": "required|min:7",
-          "placeholder": "i18n:clientes.placeholder.phone"
+          "placeholder": "i18n:clientes.placeholder.telefono"
         }
       ]
     },
     {
-      "name": "empresa",
-      "label": "i18n:clientes.field.company",
-      "type": "text",
-      "placeholder": "i18n:clientes.placeholder.company"
-    },
-    {
-      "name": "estado",
-      "label": "i18n:clientes.field.status",
-      "type": "select",
-      "required": true,
-      "options": [
-        {"value": "activo", "label": "i18n:clientes.status.active"},
-        {"value": "inactivo", "label": "i18n:clientes.status.inactive"},
-        {"value": "pendiente", "label": "i18n:clientes.status.pending"}
+      "type": "group",
+      "columns": 2,
+      "gap": "normal",
+      "fields": [
+        {
+          "name": "empresa",
+          "label": "i18n:clientes.field.empresa",
+          "type": "text",
+          "placeholder": "i18n:clientes.placeholder.empresa"
+        },
+        {
+          "name": "estado",
+          "label": "i18n:clientes.field.estado",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "Activo",
+              "label": "i18n:clientes.option.activo"
+            },
+            {
+              "value": "Inactivo",
+              "label": "i18n:clientes.option.inactivo"
+            }
+          ]
+        }
       ]
     },
     {
@@ -57,8 +68,33 @@
       "openFirst": false,
       "groups": [
         {
-          "title": "i18n:clientes.group.additional_info",
+          "title": "📋 Datos Adicionales",
           "fields": [
+            {
+              "name": "direccion",
+              "label": "i18n:clientes.field.direccion",
+              "type": "text",
+              "placeholder": "i18n:clientes.placeholder.direccion"
+            },
+            {
+              "type": "group",
+              "columns": 2,
+              "gap": "normal",
+              "fields": [
+                {
+                  "name": "ciudad",
+                  "label": "i18n:clientes.field.ciudad",
+                  "type": "text",
+                  "placeholder": "i18n:clientes.placeholder.ciudad"
+                },
+                {
+                  "name": "codigo_postal",
+                  "label": "i18n:clientes.field.codigo_postal",
+                  "type": "text",
+                  "placeholder": "i18n:clientes.placeholder.codigo_postal"
+                }
+              ]
+            },
             {
               "type": "group",
               "columns": 2,
@@ -66,77 +102,28 @@
               "fields": [
                 {
                   "name": "pais",
-                  "label": "i18n:clientes.field.country",
+                  "label": "i18n:clientes.field.pais",
                   "type": "text",
-                  "placeholder": "i18n:clientes.placeholder.country"
+                  "placeholder": "i18n:clientes.placeholder.pais"
                 },
                 {
-                  "name": "ciudad",
-                  "label": "i18n:clientes.field.city",
+                  "name": "nif_cif",
+                  "label": "i18n:clientes.field.nif_cif",
                   "type": "text",
-                  "placeholder": "i18n:clientes.placeholder.city"
-                }
-              ]
-            },
-            {
-              "name": "direccion",
-              "label": "i18n:clientes.field.address",
-              "type": "textarea",
-              "rows": 3,
-              "placeholder": "i18n:clientes.placeholder.address"
-            },
-            {
-              "name": "codigo_postal",
-              "label": "i18n:clientes.field.postal_code",
-              "type": "text",
-              "placeholder": "i18n:clientes.placeholder.postal_code"
-            }
-          ]
-        },
-        {
-          "title": "i18n:clientes.group.commercial_info",
-          "fields": [
-            {
-              "name": "tipo_cliente",
-              "label": "i18n:clientes.field.client_type",
-              "type": "select",
-              "options": [
-                {"value": "minorista", "label": "i18n:clientes.client_type.retail"},
-                {"value": "mayorista", "label": "i18n:clientes.client_type.wholesale"},
-                {"value": "corporativo", "label": "i18n:clientes.client_type.corporate"}
-              ]
-            },
-            {
-              "type": "group",
-              "columns": 2,
-              "gap": "normal",
-              "fields": [
-                {
-                  "name": "descuento",
-                  "label": "i18n:clientes.field.discount",
-                  "type": "number",
-                  "placeholder": "0-100",
-                  "validation": "number|minValue:0|maxValue:100"
-                },
-                {
-                  "name": "limite_credito",
-                  "label": "i18n:clientes.field.credit_limit",
-                  "type": "number",
-                  "placeholder": "i18n:clientes.placeholder.credit_limit"
+                  "placeholder": "i18n:clientes.placeholder.nif_cif"
                 }
               ]
             },
             {
               "name": "notas",
-              "label": "i18n:clientes.field.notes",
+              "label": "i18n:clientes.field.notas",
               "type": "textarea",
               "rows": 4,
-              "placeholder": "i18n:clientes.placeholder.notes"
+              "placeholder": "i18n:clientes.placeholder.notas"
             }
           ]
         }
       ]
     }
-  ],
-  "onSubmit": "toast.success(__('clientes.message.saved')); modal.closeAll();"
+  ]
 }

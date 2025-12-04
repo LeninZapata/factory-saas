@@ -2,10 +2,10 @@
   "name": "clientes",
   "version": "1.0.0",
   "enabled": true,
-  "hasViews": true,
   "hasMenu": true,
+  "hasViews": true,
   "hasHooks": false,
-  "description": "Módulo de gestión de clientes",
+  "description": "Gestión de clientes",
   
   "menu": {
     "title": "Clientes",
