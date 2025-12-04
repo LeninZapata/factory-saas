@@ -7,7 +7,7 @@
   "routes": {
     "list": {
       "method": "GET",
-      "path": "/api/user",
+      "path": "/api/user/",
       "middleware": ["auth"]
     },
     "show": {
