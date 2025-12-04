@@ -307,6 +307,9 @@ class datatable {
   static renderActions(row, actions) {
     return Object.entries(actions).map(([key, action]) => {
       const onclick = this.replaceVars(action.onclick, row);
+      
+      // ⚠️ IMPORTANTE: Traducir el nombre de la acción igual que las columnas
+      const actionLabel = this.translateLabel(action.name);
 
       let dataAttrs = '';
       if (action.dataLoader) {
@@ -314,7 +317,7 @@ class datatable {
         dataAttrs = ` data-loader-config="${loaderConfig}" data-row-id="${row.id || row.ID || ''}"`;
       }
 
-      return `<button class="btn btn-sm btn-secondary" onclick="${onclick}"${dataAttrs}>${action.name}</button>`;
+      return `<button class="btn btn-sm btn-secondary" onclick="${onclick}"${dataAttrs}>${actionLabel}</button>`;
     }).join(' ');
   }
 

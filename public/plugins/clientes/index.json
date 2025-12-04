@@ -2,47 +2,20 @@
   "name": "clientes",
   "version": "1.0.0",
   "enabled": true,
-  "hasMenu": true,
   "hasViews": true,
-  "description": "Gestión de clientes y leads de WhatsApp",
-  "backend": {
-    "enabled": true,
-    "endpoints": {
-      "list": {
-        "path": "/api/clientes",
-        "method": "GET"
-      },
-      "show": {
-        "path": "/api/clientes/{id}",
-        "method": "GET"
-      },
-      "create": {
-        "path": "/api/clientes",
-        "method": "POST"
-      },
-      "update": {
-        "path": "/api/clientes/{id}",
-        "method": "PUT"
-      },
-      "delete": {
-        "path": "/api/clientes/{id}",
-        "method": "DELETE"
-      }
-    }
-  },
-  "mockData": {
-    "file": "views/mock/clientes.json",
-    "filterBy": "id"
-  },
+  "hasMenu": true,
+  "hasHooks": false,
+  "description": "Módulo de gestión de clientes",
+  
   "menu": {
     "title": "Clientes",
     "icon": "👥",
     "order": 20,
     "items": [
       {
-        "id": "clientes-de-whatsapp",
-        "title": "De WhatsApp",
-        "view": "sections/whatsapp-clientes",
+        "id": "clientes-listado",
+        "title": "Listado",
+        "view": "sections/listado",
         "order": 1
       }
     ]

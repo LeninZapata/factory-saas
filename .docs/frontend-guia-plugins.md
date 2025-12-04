@@ -106,24 +106,27 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 
 ```json
 {
-  "name": "miPlugin",
-  "version": "1.0.0",
+  "name": "miPlugin",              // Nombre único del plugin (minúsculas, sin espacios)
+  "version": "1.0.0",              // Versión semántica
+  "enabled": true,                 // ⚠️ REQUERIDO: true para activar el plugin
+  "hasMenu": true,                 // Si tiene menú en sidebar
+  "hasViews": true,                // Si tiene vistas (archivos JSON en views/)
+  "hasHooks": false,               // Si tiene hooks/eventos personalizados
+  "description": "Descripción",    // Descripción corta del plugin
   
-  "hasMenu": true,
-  "hasViews": true,
   "menu": {
-    "title": "Mi Plugin",
-    "icon": "🔌",
-    "order": 10,
-    "view": "dashboard"
+    "title": "Mi Plugin",          // Título visible en el menú
+    "icon": "🔌",                  // Emoji o icono del menú
+    "order": 10,                   // Orden de aparición (menor = más arriba)
+    "view": "sections/dashboard"   // ⚠️ Ruta DEBE incluir "sections/" si es una vista principal
   }
 }
 ```
 
 **⚠️ Reglas Críticas:**
-1. NO existe `enabled` en index.json del plugin (se habilita en `plugins/index.json`)
+1. ✅ **`enabled: true` ES REQUERIDO** en index.json del plugin para activarlo
 2. IDs de menú DEBEN empezar con: `"{nombre-plugin}-{id}"` (ej: `"clientes-dashboard"`)
-3. Rutas de vistas relativas a `views/` (sin `sections/`)
+3. ⚠️ **Rutas de vistas DEBEN incluir carpeta:** `"sections/listado"` o `"forms/item"` (NO solo `"listado"`)
 4. Keys de traducción en inglés: `field.name` no `field.nombre`
 5. En grouper usar `"fields":[]` NO `"content":[]`
 6. **Keys de idioma:** usar punto `.` no dos puntos `:` → `"i18n:clientes.field.name"` ✅ no `"i18n:clientes:field.name"` ❌
@@ -135,26 +138,29 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 
 ```json
 {
-  "name": "inventario",
-  "version": "1.0.0",
+  "name": "inventario",              // Nombre del plugin
+  "version": "1.0.0",                // Versión
+  "enabled": true,                   // ⚠️ REQUERIDO para activar
+  "hasMenu": true,                   // Tiene menú
+  "hasViews": true,                  // Tiene vistas
+  "hasHooks": true,                  // Tiene hooks personalizados
+  "description": "Gestión inventario", // Descripción
   
-  "hasMenu": true,
-  "hasViews": true,
   "menu": {
-    "title": "Inventario",
-    "icon": "📦",
-    "order": 10,
-    "items": [
+    "title": "Inventario",           // Título del menú principal
+    "icon": "📦",                    // Icono
+    "order": 10,                     // Orden en sidebar
+    "items": [                       // ⚠️ Array de submenús (NO "view" en raíz si hay "items")
       {
-        "id": "inventario-listado",
-        "title": "Productos",
-        "view": "listado",
-        "order": 1
+        "id": "inventario-listado",  // ⚠️ ID único con prefijo del plugin
+        "title": "Productos",        // Título visible del submenú
+        "view": "sections/listado",  // ⚠️ Ruta completa con "sections/"
+        "order": 1                   // Orden dentro del submenú
       },
       {
-        "id": "inventario-stock",
+        "id": "inventario-stock",    // ⚠️ Prefijo consistente
         "title": "Stock",
-        "view": "stock",
+        "view": "sections/stock",    // ⚠️ Siempre incluir carpeta
         "order": 2
       }
     ]
@@ -166,29 +172,32 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 
 ```json
 {
-  "name": "botmaster",
-  "version": "1.0.0",
+  "name": "botmaster",                                            // Nombre del plugin
+  "version": "1.0.0",                                             // Versión
+  "enabled": true,                                                // ⚠️ REQUERIDO para activar
+  "hasMenu": true,                                                // Tiene menú
+  "hasViews": true,                                               // Tiene vistas
+  "hasHooks": false,                                              // Hooks personalizados
+  "description": "Sistema de automatización de bots",             // Descripción
+  "autoload": "plugins/{plugin_name}/assets/js/botmaster.js",     // Script principal (carga automática)
+  "scripts": ["plugins/{plugin_name}/assets/js/helper.js"],       // Scripts adicionales globales
+  "styles": ["plugins/{plugin_name}/assets/css/botmaster.css"],   // Estilos globales
   
-  "hasMenu": true,
-  "hasViews": true,
-  "autoload": "plugins/{plugin_name}/assets/js/botmaster.js",
-  "scripts": ["plugins/{plugin_name}/assets/js/helper.js"],
-  "styles": ["plugins/{plugin_name}/assets/css/botmaster.css"],
   "menu": {
-    "title": "Botmaster",
-    "icon": "🤖",
-    "order": 10,
-    "items": [
+    "title": "Botmaster",                                         // Título del menú
+    "icon": "🤖",                                                 // Icono
+    "order": 10,                                                  // Orden
+    "items": [                                                    // Submenús
       {
-        "id": "botmaster-dashboard",
+        "id": "botmaster-dashboard",                              // ⚠️ ID con prefijo
         "title": "Dashboard",
-        "view": "dashboard",
+        "view": "sections/dashboard",                             // ⚠️ Incluir "sections/"
         "order": 1
       },
       {
-        "id": "botmaster-bots",
+        "id": "botmaster-bots",                                   // ⚠️ ID con prefijo
         "title": "Bots",
-        "view": "bots",
+        "view": "sections/bots",                                  // ⚠️ Incluir "sections/"
         "order": 2
       }
     ]
@@ -1650,3 +1659,38 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 - Si termina en `.json` → usa la ruta completa tal cual
 - Si NO termina en `.json` → es un endpoint API
 - NO usar `dataSource` complejo, solo `source` simple
+
+## Logger
+
+**Propósito:** Sistema de logging con prefijos por módulo y colores.
+
+### Niveles
+
+- `debug()` - Solo en desarrollo (requiere `isDevelopment: true`)
+- `info()` - Información general
+- `warn()` - Advertencias
+- `success()` - Operaciones exitosas
+- `error()` - Errores
+- `log()` - Logs genéricos
+
+### Formato
+
+Todos los métodos reciben: `(module, ...args)`
+
+**Convención de prefijos:**
+- `cor:xxx` - Core (ej: `cor:auth`, `cor:view`, `cor:api`)
+- `com:xxx` - Componentes (ej: `com:modal`, `com:datatable`)
+- `p:xxx` - Plugins (ej: `p:permissions`, `p:botmaster`)
+- `m:xxx` - main.js solamente
+
+**Ejemplos:**
+```javascript
+logger.debug('cor:auth', 'Token válido');
+logger.info('cor:view', 'Vista cargada:', viewName);
+logger.warn('com:modal', 'Modal no encontrado');
+logger.success('p:botmaster', 'Bots cargados');
+logger.error('cor:api', 'Error en petición:', error);
+```
+**⚠️ IMPORTANTE:**
+- Solo usarlo en lugares como errores tipo try/catch
+- Si existe fallas entonces se puede agregarlo dentro de metodos involucrados para el debug

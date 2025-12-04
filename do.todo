@@ -1,11 +1,11 @@
 por donde me quede:
-  ☐ el datatable no carga a nivel de a/api algo pasa
+  ✔ el datatable no carga a nivel de a/api algo pasa @done(03-12-2025 19:43)
   ☐ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores
   seria bueno poner el ejemplo de crear un plugin de cliente desde 0 en la documentacion
   pero con todo simplificado para evitar que el documento explote.
   ☐ pide a la ai que reOrganice el plugin de EJEMPLOS para que sea mas facil de entender
   y que tenga ejemplos de formularios, tablas, vistas, modales, etc...
-  ☐ en el manual no esta como manejar lo logger
+  ✔ en el manual no esta como manejar lo logger @done(03-12-2025 19:46)
   ☐ ### Vista con Widgets (Dashboard): en esta parte del documento hay que sacarlo porque debe trabajar igual que la tabla osea 
   con 'source' hay que ver si se refactoriza el componente de widgets para que funcione igual que la tabla en caso se pida 
   datos de endpoint
