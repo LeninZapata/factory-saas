@@ -440,7 +440,8 @@ class form {
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('repeatable-add')) {
         const path = e.target.dataset.path;
-        this.addRepeatableItem(path);
+        // ✅ Pasar el botón clickeado como contexto
+        this.addRepeatableItem(path, e.target);
       }
 
       if (e.target.classList.contains('repeatable-remove')) {
@@ -454,62 +455,165 @@ class form {
     this.registeredEvents.add('form-events');
   }
 
+  // ============================================================================
+  // FASE 2: REPETIBLES CON ANIDACIÓN
+  // ============================================================================
+
   static initRepeatables(formId) {
     const formEl = document.getElementById(formId);
-    if (!formEl) return;
+    if (!formEl) {
+      logger.error('cor:form', `Formulario no encontrado: ${formId}`);
+      return;
+    }
 
     const schema = this.schemas.get(formId);
-    if (!schema) return;
+    if (!schema) {
+      logger.error('cor:form', `Schema no encontrado para: ${formId}`);
+      return;
+    }
 
-    const findRepeatableFields = (fields, basePath = '') => {
+    // Buscar repetibles de forma recursiva
+    const findRepeatables = (fields, basePath = '', level = 0) => {
       const repeatables = [];
+
       fields?.forEach(field => {
+        // CASO 1: Campo repeatable
         if (field.type === 'repeatable') {
           const fieldPath = basePath ? `${basePath}.${field.name}` : field.name;
-          repeatables.push({ field, path: fieldPath });
-        } else if (field.type === 'group' && field.fields) {
-          repeatables.push(...findRepeatableFields(field.fields, basePath));
-        } else if (field.type === 'grouper' && field.groups) {
+          repeatables.push({ field, path: fieldPath, level });
+          
+          // RECURSIÓN: Buscar repetibles dentro de este repeatable
+          if (field.fields && field.fields.length > 0) {
+            const nested = findRepeatables(field.fields, fieldPath, level + 1);
+            repeatables.push(...nested);
+          }
+        }
+        
+        // CASO 2: Group con fields
+        else if (field.type === 'group' && field.fields) {
+          repeatables.push(...findRepeatables(field.fields, basePath, level));
+        }
+        
+        // CASO 3: Grouper con groups
+        else if (field.type === 'grouper' && field.groups) {
           field.groups.forEach(group => {
             if (group.fields) {
-              repeatables.push(...findRepeatableFields(group.fields, basePath));
+              repeatables.push(...findRepeatables(group.fields, basePath, level));
             }
           });
         }
       });
+
       return repeatables;
     };
 
-    const repeatables = findRepeatableFields(schema.fields);
+    const repeatables = findRepeatables(schema.fields);
 
-    repeatables.forEach(({ field, path }) => {
+    // Inicializar solo los repetibles de nivel 0 (los demás se inicializan dinámicamente)
+    const topLevelRepeatables = repeatables.filter(r => r.level === 0);
+
+    topLevelRepeatables.forEach(({ field, path }) => {
       const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
+      
       if (container) {
-        container.dataset.fieldSchema = JSON.stringify(field.fields);
-        container.dataset.itemCount = '0';
+        this.initRepeatableContainer(container, field, path);
+      } else {
+        logger.error('cor:form', `Container no encontrado para repeatable: "${path}"`);
       }
     });
   }
 
-  static addRepeatableItem(path) {
-    const container = document.querySelector(`.repeatable-items[data-path="${path}"]`);
-    if (!container) return;
+  // ============================================================================
+  // INICIALIZAR UN CONTAINER DE REPEATABLE (Reutilizable)
+  // ============================================================================
 
+  static initRepeatableContainer(container, field, path) {
+    // Guardar schema completo
+    container.dataset.fieldSchema = JSON.stringify(field.fields);
+    container.dataset.itemCount = '0';
+    
+    // Guardar columns y gap si existen
+    if (field.columns) {
+      container.dataset.columns = field.columns;
+    }
+    if (field.gap) {
+      container.dataset.gap = field.gap;
+    }
+  }
+
+  static addRepeatableItem(path, buttonElement = null) {
+    // 1. Buscar el container DENTRO del formulario correcto
+    let container;
+    
+    if (buttonElement) {
+      // Buscar dentro del formulario que contiene el botón clickeado
+      const form = buttonElement.closest('form');
+      if (form) {
+        container = form.querySelector(`.repeatable-items[data-path="${path}"]`);
+      } else {
+        // Si no hay form, buscar en el contenedor padre más cercano
+        const parentContainer = buttonElement.closest('.repeatable-items');
+        if (parentContainer) {
+          container = parentContainer.querySelector(`.repeatable-items[data-path="${path}"]`);
+        }
+      }
+    }
+    
+    // Fallback: búsqueda global (para compatibilidad con código legacy)
+    if (!container) {
+      container = document.querySelector(`.repeatable-items[data-path="${path}"]`);
+    }
+    
+    if (!container) {
+      logger.error('cor:form', `Container no encontrado para: "${path}"`);
+      return;
+    }
+
+    // 2. Obtener el schema y configuración
     const fieldSchema = JSON.parse(container.dataset.fieldSchema || '[]');
     const itemCount = parseInt(container.dataset.itemCount || '0');
     const newIndex = itemCount;
+    
+    // Obtener columns y gap si existen
+    const columns = container.dataset.columns ? parseInt(container.dataset.columns) : null;
+    const gap = container.dataset.gap || 'normal';
 
+    // 3. Construir el path del item
     const itemPath = `${path}[${newIndex}]`;
 
+    // 4. Renderizar cada field del schema (incluyendo repetibles anidados)
     const itemFields = fieldSchema.map(field => {
       const fieldPath = `${itemPath}.${field.name}`;
+
+      if (field.type === 'repeatable') {
+        return this.renderRepeatable(field, fieldPath);
+      }
+
+      if (field.type === 'group') {
+        return this.renderGroup(field, itemPath);
+      }
+
+      if (field.type === 'grouper') {
+        return this.renderGrouper(field, itemPath);
+      }
+
       return this.renderField(field, fieldPath);
     }).join('');
 
+    // 5. Si el repeatable tiene columns, envolver los fields en un div con clases de grupo
+    let contentHtml;
+    if (columns) {
+      const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+      contentHtml = `<div class="${groupClass}">${itemFields}</div>`;
+    } else {
+      contentHtml = itemFields;
+    }
+
+    // 6. Crear el HTML del item
     const itemHtml = `
       <div class="repeatable-item" data-index="${newIndex}">
         <div class="repeatable-content">
-          ${itemFields}
+          ${contentHtml}
         </div>
         <div class="repeatable-remove">
           <button type="button" class="btn btn-sm btn-danger repeatable-remove">Eliminar</button>
@@ -517,16 +621,64 @@ class form {
       </div>
     `;
 
+    // 7. Insertar en el DOM
     container.insertAdjacentHTML('beforeend', itemHtml);
     container.dataset.itemCount = (newIndex + 1).toString();
 
+    // 8. INICIALIZAR REPETIBLES ANIDADOS dentro del item recién agregado
     const formId = container.closest('form')?.id;
     if (formId) {
-      this.bindTransforms(formId);
-      if (window.conditions) {
-        conditions.init(formId);
-      }
+      setTimeout(() => {
+        const addedItem = container.lastElementChild;
+        
+        if (addedItem && addedItem.classList.contains('repeatable-item')) {
+          const nestedRepeatables = this.findNestedRepeatables(fieldSchema, itemPath);
+          
+          if (nestedRepeatables.length > 0) {
+            nestedRepeatables.forEach(({ field, path: nestedPath }) => {
+              const nestedContainer = addedItem.querySelector(`.repeatable-items[data-path="${nestedPath}"]`);
+              
+              if (nestedContainer) {
+                this.initRepeatableContainer(nestedContainer, field, nestedPath);
+              }
+              // No reportar error si no se encuentra - es normal para repetibles de niveles más profundos
+            });
+          }
+        } else {
+          logger.error('cor:form', `No se pudo obtener el item recién agregado en: "${path}"`);
+        }
+        
+        // Re-inicializar transforms y conditions
+        this.bindTransforms(formId);
+        
+        if (window.conditions) {
+          conditions.init(formId);
+        }
+      }, 50);
     }
+  }
+
+  // ============================================================================
+  // BUSCAR REPETIBLES ANIDADOS EN UN SCHEMA (Solo Nivel Directo)
+  // ============================================================================
+
+  static findNestedRepeatables(fields, basePath = '') {
+    const repeatables = [];
+
+    fields?.forEach(field => {
+      if (field.type === 'repeatable') {
+        const fieldPath = `${basePath}.${field.name}`;
+        repeatables.push({ field, path: fieldPath });
+        
+        // NO buscar más profundo - los niveles más profundos se inicializan cuando se crean
+        // Esto evita errores de "container no encontrado" para repetibles que aún no existen
+      }
+      else if (field.type === 'group' && field.fields) {
+        repeatables.push(...this.findNestedRepeatables(field.fields, basePath));
+      }
+    });
+
+    return repeatables;
   }
 
   static getData(formId) {
