@@ -1,11 +1,17 @@
 por donde me quede:
-  ☐ Debes organizar bien todos los ejemplos porque la plena que estan desordenados y no se entiende bien
+  ☐ crea ejemplo de hooks donde ingrese contenido filtrando de otro lado
+  ☐ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta
+  ☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
+  es donde se vera que tipo de layout sera entonces primero los elementos deben ser responsive
+  y luego el layout debe acomodarse a eso.
+  ✔ Debes organizar bien todos los ejemplos porque la plena que estan desordenados y no se entiende bien @done(05-12-2025 22:00)
   es decir en ejemplos debe estar todo lo que el sistema hace en si
-  ☐ las variables globales creo que debe ponerlo con un prefijo para evitar conflictos con otros plugins
+  ✘ las variables globales creo que debe ponerlo con un prefijo para evitar conflictos con otros plugins @cancelled(05-12-2025 22:00)
   porque por ejemplo si un plugin define una variable global llamada 'data' y otro plugin tambien define
   una variable global llamada 'data' entonces habra un conflicto.
   Y si vas usar el mismo framework para wordpress entonces se va confundir con las variables globales de wordpress
   en el frontend, es muy probable que pase esto.
+  SOLUCION: se ha decidido hacer apartados diferentes para cada tema es decir para saas y wordpress
   ✔ Se daño el demo de formulario de item repetibles anidados, no funciona @done(04-12-2025 23:52)
   ✔ Se daño el demo de formulario de anidados repetible dentro de un modal @done(04-12-2025 23:52)
   ✔ el datatable no carga a nivel de a/api algo pasa @done(03-12-2025 19:43)

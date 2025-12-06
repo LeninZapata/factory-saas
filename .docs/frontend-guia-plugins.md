@@ -219,6 +219,24 @@ Si quieres cargar scripts/estilos solo cuando se abre una vista específica (mej
 }
 ```
 
+**Cómo funciona:**
+1. Vista renderiza HTML → containers existen en DOM
+2. Script se descarga y ejecuta → crea el objeto/clase
+3. `view.js` busca automáticamente el método `init()` y lo ejecuta
+4. Script renderiza contenido dentro de los containers
+
+**Requisitos del script:**
+```javascript
+class ejemploChart {
+  static init() {  // ← view.js ejecuta esto automáticamente
+    const container = document.getElementById('chart1');
+    // Crear contenido aquí
+  }
+}
+window.ejemploChart = ejemploChart;  // ← Exportar a window (obligatorio)
+```
+El nombre del objeto debe coincidir con el archivo: `chart.js` → `ejemploChart` o `chart`.
+
 ---
 
 ## 2️⃣ Vistas - Estructura y Tipos

@@ -110,16 +110,12 @@ class datatable {
   }
 
   static generateHtml(tableId, config, data) {
-    if (!Array.isArray(data) || data.length === 0) {
-      return `
-        <div class="datatable-container" id="${tableId}">
-          <div class="datatable-empty">No hay datos para mostrar</div>
-        </div>
-      `;
-    }
-
-    const columns = this.processColumns(config.columns || Object.keys(data[0] || {}));
+    const columns = this.processColumns(config.columns || []);
     const hasActions = config.actions && Object.keys(config.actions).length > 0;
+    const isEmpty = !Array.isArray(data) || data.length === 0;
+
+    // Calcular colspan total (columnas + acciones si existen)
+    const totalColumns = columns.length + (hasActions ? 1 : 0);
 
     return `
       <div class="datatable-container" id="${tableId}" data-datatable="${tableId}">
@@ -131,7 +127,10 @@ class datatable {
             </tr>
           </thead>
           <tbody>
-            ${data.map(row => this.renderRow(row, columns, config.actions)).join('')}
+            ${isEmpty 
+              ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">📭 No hay datos para mostrar</td></tr>`
+              : data.map(row => this.renderRow(row, columns, config.actions)).join('')
+            }
           </tbody>
         </table>
       </div>
