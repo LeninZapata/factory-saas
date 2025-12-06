@@ -4,104 +4,215 @@
   "type": "tabs",
   "tabs": [
     {
-      "id": "inputs-normales",
-      "title": "📝 Inputs Normales",
+      "id": "inputs-basicos",
+      "title": "📝 Inputs Básicos",
       "content": [
         {
-          "type": "html",
-          "content": "<h3>Tipos de Inputs Disponibles</h3>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-inputs-normales"
+          "type": "component",
+          "component": "tabs",
+          "config": {
+            "id": "tabs-inputs",
+            "tabs": [
+              {
+                "id": "inputs-normales",
+                "title": "Inputs Normales",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>Tipos de Inputs Disponibles</h3>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-inputs-normales"
+                  }
+                ]
+              },
+              {
+                "id": "campos-agrupados",
+                "title": "Agrupados",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>Agrupación de Campos en Columnas</h3><p>Organiza campos en grupos de 2, 3 o 4 columnas con diseño responsive.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-grouped-fields"
+                  }
+                ]
+              },
+              {
+                "id": "overflow",
+                "title": "Overflow",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>🔽 Prueba de Overflow en Columnas</h3><p>Comportamiento cuando hay más campos que columnas.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-grouped-fields-column-overflow"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
     {
-      "id": "campos-agrupados",
-      "title": "📊 Campos Agrupados",
+      "id": "repetibles",
+      "title": "🔁 Repetibles",
       "content": [
         {
-          "type": "html",
-          "content": "<h3>Agrupación de Campos en Columnas</h3><p>Organiza campos en grupos de 2, 3 o 4 columnas con diseño responsive:</p><ul style='margin: 1rem 0; padding-left: 2rem;'><li><strong>2 columnas:</strong> Nombre y Apellido</li><li><strong>3 columnas:</strong> Email, Teléfono y Fecha de Nacimiento</li><li><strong>4 columnas:</strong> Datos de tarjeta (Número, Mes, Año, CVV)</li><li><strong>Responsive:</strong> Se adapta a móvil (1 columna), tablet (2 columnas) y desktop (todas las columnas)</li></ul>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-grouped-fields"
+          "type": "component",
+          "component": "tabs",
+          "config": {
+            "id": "tabs-repetibles",
+            "tabs": [
+              {
+                "id": "repetibles-basicos",
+                "title": "Básicos",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>Campos Repetibles</h3><p>Agrega y elimina grupos de campos dinámicamente.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-repetibles-demo"
+                  }
+                ]
+              },
+              {
+                "id": "repetibles-agrupados",
+                "title": "Agrupados",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>Repetibles con Columnas</h3><h4>Opción 1: Columnas en repeatable</h4>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-repeatable-grouped-opt1"
+                  },
+                  {
+                    "type": "html",
+                    "content": "<hr style='margin: 2rem 0;'><h4>Opción 2: Groups dentro del repeatable</h4>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-repeatable-grouped-opt2"
+                  }
+                ]
+              },
+              {
+                "id": "repetibles-anidados",
+                "title": "Anidados",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>Repetibles Anidados</h3><p>Hasta 3 niveles: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-repetibles-anidados\", { title: \"🪟 Modal\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Abrir en Modal</button>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/form-repetibles-anidados"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
     {
-      "id": "columnas-overflow",
-      "title": "🔽 Overflow de Columnas",
+      "id": "condiciones",
+      "title": "🎯 Condiciones",
       "content": [
         {
-          "type": "html",
-          "content": "<h3>🔽 Prueba de Overflow en Columnas</h3><p>Este ejemplo demuestra cómo se comporta el sistema cuando hay <strong>más campos que columnas</strong>:</p><div style='background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6; margin: 1rem 0;'><h4 style='margin: 0 0 0.5rem; color: #1e40af;'>🎯 Casos de Prueba:</h4><ul style='margin: 0; padding-left: 1.5rem; color: #1e3a8a;'><li><strong>2 columnas + 3 campos:</strong> El 3er campo baja a la 2da fila</li><li><strong>3 columnas + 4 campos:</strong> El 4to campo baja a la 2da fila</li><li><strong>3 columnas + 5 campos:</strong> Los campos 4 y 5 bajan a la 2da fila</li><li><strong>4 columnas + 6 campos:</strong> Los campos 5 y 6 bajan a la 2da fila</li></ul></div><p>Los campos marcados con 🔽 deberían aparecer en una nueva fila.</p>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-grouped-fields-column-overflow"
+          "type": "component",
+          "component": "tabs",
+          "config": {
+            "id": "tabs-condiciones",
+            "tabs": [
+              {
+                "id": "cond-intro",
+                "title": "📖 Intro",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<div style='background:white;padding:2rem;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);'><h2 style='margin:0 0 1rem;color:#2c3e50;'>🎯 Condiciones Dinámicas</h2><p style='font-size:1.1rem;color:#555;line-height:1.6;'>Motor de condiciones para mostrar/ocultar campos basado en otros campos.</p><h3 style='margin:2rem 0 1rem;color:#3b82f6;'>✨ Características</h3><ul style='line-height:1.8;color:#555;'><li><strong>Operadores:</strong> ==, !=, >, <, >=, <=, any, not-any, empty, not-empty, contains</li><li><strong>Lógica:</strong> AND/OR</li><li><strong>Contextos:</strong> form, view, repeatable, group</li><li><strong>Tiempo real:</strong> Evaluación instantánea</li></ul><h3 style='margin:2rem 0 1rem;color:#f59e0b;'>📋 Ejemplo JSON</h3><pre style='background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:6px;overflow-x:auto;'><code>{\n  \"name\": \"direccion_envio\",\n  \"type\": \"textarea\",\n  \"condition\": [\n    { \"field\": \"requiere_envio\", \"operator\": \"==\", \"value\": true },\n    { \"field\": \"pais\", \"operator\": \"!=\", \"value\": \"\" }\n  ],\n  \"conditionLogic\": \"AND\",\n  \"conditionContext\": \"form\"\n}</code></pre></div>"
+                  }
+                ]
+              },
+              {
+                "id": "cond-simple",
+                "title": "Simple",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>🎯 Condiciones Simples</h3><p>Mostrar/ocultar campos basados en un valor.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/conditions-simple"
+                  }
+                ]
+              },
+              {
+                "id": "cond-multiple",
+                "title": "Múltiples",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>🔗 Condiciones Múltiples (AND)</h3><p>El campo aparece solo si TODAS las condiciones se cumplen.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/conditions-multiple"
+                  }
+                ]
+              },
+              {
+                "id": "cond-advanced",
+                "title": "Avanzado",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>⚡ Operadores Avanzados</h3><p>Ejemplos: <code>any</code>, <code>></code>, <code><</code>, <code>contains</code>, etc.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/conditions-advanced"
+                  }
+                ]
+              },
+              {
+                "id": "cond-repeatable",
+                "title": "Repetibles",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>🔄 Condiciones en Repetibles</h3><p>Condiciones dentro de cada instancia del repeatable usando <code>conditionContext: 'repeatable'</code>.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos/formularios/conditions-repeatable"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
     {
-      "id": "repetibles-agrupados",
-      "title": "📝📊 Repetibles Agrupados",
+      "id": "modales",
+      "title": "🪟 Modales",
       "content": [
         {
           "type": "html",
-          "content": "<h3>Campos Repetibles con Columnas</h3><p>Combina repetibles con agrupación de campos. Hay 2 formas de hacerlo:</p><h4>Opción 1: Columnas directamente en el repeatable (más simple)</h4><p>Agrega <code>columns</code> al repeatable para agrupar TODOS sus campos:</p><pre style='background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"type\": \"repeatable\",\n  \"columns\": 3,\n  \"fields\": [...]\n}</pre>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-repeatable-grouped-opt1"
-        },
-        {
-          "type": "html",
-          "content": "<hr style='margin: 2rem 0;'><h4>Opción 2: Groups dentro del repeatable (más flexible)</h4><p>Usa <code>type: \"group\"</code> dentro del repeatable para mezclar campos normales y agrupados:</p><pre style='background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"type\": \"repeatable\",\n  \"fields\": [\n    { \"type\": \"text\", ... },  // Full width\n    { \"type\": \"group\", \"columns\": 3, ... },  // 3 cols\n    { \"type\": \"group\", \"columns\": 2, ... }   // 2 cols\n  ]\n}</pre>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-repeatable-grouped-opt2"
-        }
-      ]
-    },
-    {
-      "id": "formularios-modal",
-      "title": "🪟 Formularios en Modal",
-      "content": [
-        {
-          "type": "html",
-          "content": "<div style='display: flex; gap: 1rem; margin: 1rem 0;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-login\", { title: \"Login\" })'>🔐 Login</button><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-register\", { title: \"Registro\" })'>📝 Registro</button></div>"
-        }
-      ]
-    },
-    {
-      "id": "campos-repetibles",
-      "title": "📝 Campos Repetibles",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>Campos que se Repiten</h3><p>Agrega y elimina grupos de campos dinámicamente:</p>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-repetibles-demo"
-        }
-      ]
-    },
-    {
-      "id": "repetibles-anidados",
-      "title": "📝📝 Repetibles Anidados",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>Repetibles dentro de Repetibles</h3><p>Ejemplo de hasta 3 niveles de anidación: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-repetibles-anidados\", { title: \"🪟 Modal con Formulario Repetible\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Modal con Formulario Repeater</button>"
-        },
-        {
-          "type": "form",
-          "form_json": "ejemplos/formularios/form-repetibles-anidados"
+          "content": "<h3>Formularios en Modal</h3><p>Abre formularios en ventanas emergentes:</p><div style='display: flex; gap: 1rem; margin: 1rem 0;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-login\", { title: \"Login\" })'>🔐 Login</button><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-register\", { title: \"Registro\" })'>📝 Registro</button></div><h4 style='margin-top: 2rem;'>Código de ejemplo:</h4><pre style='background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>modal.open(\"ejemplos|forms/formularios/form-modal-login\", {\n  title: \"Login\",\n  width: \"500px\"\n});</pre>"
         }
       ]
     }

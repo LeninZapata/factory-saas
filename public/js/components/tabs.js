@@ -29,7 +29,6 @@ class tabs {
 
     // Precargar todas las tabs si está habilitado
     if (tabsData.preloadAllTabs === true) {
-      logger.info('com:tabs', `Precargando todas las tabs (${tabsData.tabs.length} tabs)`);
       await this.preloadAllTabs(tabsData, container);
     }
   }
@@ -39,15 +38,11 @@ class tabs {
     
     for (const tab of tabsToPreload) {
       try {
-        logger.debug('com:tabs', `Precargando tab: ${tab.id}`);
         await this.loadTabContentSilent(tabsData, tab.id, container);
-        logger.success('com:tabs', `Tab ${tab.id} precargada`);
       } catch (error) {
         logger.error('com:tabs', `Error precargando tab ${tab.id}:`, error);
       }
     }
-    
-    logger.success('com:tabs', `Precarga completa: ${tabsToPreload.length} tabs adicionales cargadas`);
   }
 
   static async loadTabContentSilent(tabsData, tabId, container) {
@@ -57,7 +52,6 @@ class tabs {
     const cacheKey = `${tabsData.id}-${tabId}`;
     
     if (this.tabCache.has(cacheKey)) {
-      logger.debug('com:tabs', `Tab ${tabId} ya está en caché`);
       return;
     }
 
@@ -107,7 +101,6 @@ class tabs {
       const cachedNode = this.tabCache.get(cacheKey);
       tabContent.innerHTML = '';
       tabContent.appendChild(cachedNode);
-      logger.debug('com:tabs', `Mostrando tab "${tabId}" desde caché (precargada)`);
       return;
     }
 

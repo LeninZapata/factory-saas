@@ -10,8 +10,6 @@ class grouper {
     const grouperId = `grouper-${++this.counter}`;
     const mode = config.mode || 'linear';
 
-    logger.debug('com:grouper', `Iniciando render - modo: ${mode}, grupos: ${config.groups?.length}`);
-
     if (!['linear', 'tabs'].includes(mode)) {
       logger.error('com:grouper', `Modo "${mode}" no válido`);
       return;
@@ -29,10 +27,8 @@ class grouper {
     setTimeout(() => {
       const grouperElement = document.getElementById(grouperId);
       if (grouperElement) {
-        logger.debug('com:grouper', `Elemento encontrado, bindeando eventos para ${grouperId}`);
         this.bindEvents(grouperId);
         this.loadDynamicForms(grouperElement);
-        logger.success('com:grouper', `Renderizado en modo "${mode}" con ${config.groups?.length || 0} grupos`);
       } else {
         logger.error('com:grouper', `Elemento ${grouperId} no encontrado en el DOM`);
       }
@@ -45,18 +41,13 @@ class grouper {
     const formContainers = container.querySelectorAll('.dynamic-form[data-form-json]');
     
     if (formContainers.length === 0) {
-      logger.debug('com:grouper', 'No hay formularios dinámicos para cargar');
       return;
     }
-
-    logger.debug('com:grouper', `Encontrados ${formContainers.length} formularios dinámicos`);
 
     for (const formContainer of formContainers) {
       const formJson = formContainer.dataset.formJson;
       try {
-        logger.debug('com:grouper', `Cargando formulario: ${formJson}`);
         await form.load(formJson, formContainer);
-        logger.success('com:grouper', `Formulario ${formJson} cargado`);
       } catch (error) {
         logger.error('com:grouper', `Error cargando formulario ${formJson}:`, error);
         formContainer.innerHTML = `<div class="error" style="padding: 1rem; background: #fee; border: 1px solid #fcc; border-radius: 0.5rem;">Error cargando formulario: ${formJson}</div>`;
@@ -121,8 +112,6 @@ class grouper {
       return;
     }
 
-    logger.debug('com:grouper', `Bindeando eventos para modo: ${instance.mode}`);
-
     if (instance.mode === 'linear') {
       this.bindLinearEvents(grouperId, container);
     } else {
@@ -132,11 +121,9 @@ class grouper {
 
   static bindLinearEvents(grouperId, container) {
     const headers = container.querySelectorAll('.grouper-header.collapsible');
-    logger.debug('com:grouper', `Encontrados ${headers.length} headers colapsables`);
 
     headers.forEach((header, index) => {
       header.addEventListener('click', () => {
-        logger.debug('com:grouper', `Click en header ${index}`);
         const content = document.getElementById(header.dataset.toggle);
         const section = header.closest('.grouper-section');
         
@@ -148,7 +135,6 @@ class grouper {
         const isOpen = section.classList.contains('open');
         section.classList.toggle('open', !isOpen);
         content.style.display = isOpen ? 'none' : 'block';
-        logger.debug('com:grouper', `Sección ${index} ${isOpen ? 'cerrada' : 'abierta'}`);
 
         // Cargar formularios dinámicos al abrir la sección
         if (!isOpen) {
@@ -162,12 +148,9 @@ class grouper {
     const tabButtons = container.querySelectorAll('.grouper-tab-btn');
     const tabPanels = container.querySelectorAll('.grouper-tab-panel');
 
-    logger.debug('com:grouper', `Encontrados ${tabButtons.length} botones y ${tabPanels.length} paneles`);
-
     tabButtons.forEach((button, index) => {
       button.addEventListener('click', () => {
         const tabIndex = parseInt(button.dataset.tabIndex);
-        logger.debug('com:grouper', `Click en tab ${tabIndex}`);
 
         tabButtons.forEach(btn => btn.classList.remove('active'));
         tabPanels.forEach(panel => panel.classList.remove('active'));
@@ -177,7 +160,6 @@ class grouper {
         const targetPanel = container.querySelector(`[data-panel-index="${tabIndex}"]`);
         if (targetPanel) {
           targetPanel.classList.add('active');
-          logger.debug('com:grouper', `Tab ${tabIndex} activado correctamente`);
           
           // Cargar formularios dinámicos al cambiar de tab
           this.loadDynamicForms(targetPanel);
@@ -216,14 +198,12 @@ class grouper {
     document.getElementById(grouperId)?.querySelectorAll('.grouper-section').forEach((_, index) => {
       this.toggleSection(grouperId, index, true);
     });
-    logger.debug('com:grouper', `Todas las secciones abiertas en ${grouperId}`);
   }
 
   static closeAll(grouperId) {
     document.getElementById(grouperId)?.querySelectorAll('.grouper-section').forEach((_, index) => {
       this.toggleSection(grouperId, index, false);
     });
-    logger.debug('com:grouper', `Todas las secciones cerradas en ${grouperId}`);
   }
 }
 

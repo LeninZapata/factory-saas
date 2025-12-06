@@ -1091,6 +1091,25 @@ toast.info('Mensaje', {
 
 Ya explicado en la sección de formularios. Permite agrupar campos en tabs o acordeón.
 
+**Carga dinámica en grouper:**
+```json
+{
+  "type": "grouper",
+  "mode": "linear",
+  "groups": [
+    {
+      "title": "📝 Formulario",
+      "content": "<div class='dynamic-form' data-form-json='plugin/forms/form1'></div>"
+    },
+    {
+      "title": "📊 HTML",
+      "content": "<div>Contenido HTML estático</div>"
+    }
+  ]
+}
+```
+Los formularios se cargan al expandir/abrir el grupo (lazy loading).
+
 ### Tabs - Sistema de Pestañas (en vistas)
 
 Las vistas pueden tener tabs para organizar contenido:
@@ -1141,6 +1160,47 @@ Las vistas pueden tener tabs para organizar contenido:
   ]
 }
 ```
+
+**Tabs anidados:**
+```json
+{
+  "type": "component",
+  "component": "tabs",
+  "config": {
+    "id": "tabs-nivel-1",
+    "tabs": [
+      {
+        "id": "tab1",
+        "title": "Productos",
+        "content": [
+          {
+            "type": "component",
+            "component": "tabs",
+            "config": {
+              "id": "tabs-nivel-2",
+              "tabs": [
+                {"id": "cat1", "title": "Electrónica", "content": [...]},
+                {"id": "cat2", "title": "Ropa", "content": [...]}
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Precarga total (opcional):**
+```json
+{
+  "id": "mi-vista",
+  "type": "tabs",
+  "preloadAllTabs": true,
+  "tabs": [...]
+}
+```
+Con `preloadAllTabs: true` todas las tabs se cargan al inicio (cambio instantáneo). Sin ella, carga bajo demanda (default).
 
 ---
 
