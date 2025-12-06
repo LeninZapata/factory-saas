@@ -13,7 +13,7 @@
       {
         "id": "ejemplos-forms",
         "title": "Formularios",
-        "view": "sections/formularios",
+        "view": "sections/formularios/main",
         "order": 1
       },
       {
@@ -54,6 +54,12 @@
         "title": "📦 Grouper",
         "view": "sections/grouper-demo",
         "order": 7
+      },
+      {
+        "id": "ejemplos-tabs",
+        "title": "📑 Tabs",
+        "view": "sections/tabs-demo",
+        "order": 8
       }
     ]
   },

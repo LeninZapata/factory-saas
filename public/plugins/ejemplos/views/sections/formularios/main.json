@@ -13,7 +13,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/inputs-demo"
+          "form_json": "ejemplos/formularios/form-inputs-normales"
         }
       ]
     },
@@ -27,7 +27,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/form-grouped-fields"
+          "form_json": "ejemplos/formularios/form-grouped-fields"
         }
       ]
     },
@@ -41,7 +41,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/form-grouped-fields-test"
+          "form_json": "ejemplos/formularios/form-grouped-fields-column-overflow"
         }
       ]
     },
@@ -55,7 +55,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/form-repeatable-grouped-opt1"
+          "form_json": "ejemplos/formularios/form-repeatable-grouped-opt1"
         },
         {
           "type": "html",
@@ -63,7 +63,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/form-repeatable-grouped-opt2"
+          "form_json": "ejemplos/formularios/form-repeatable-grouped-opt2"
         }
       ]
     },
@@ -73,7 +73,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<div style='display: flex; gap: 1rem; margin: 1rem 0;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/login\", { title: \"Login\" })'>🔐 Login</button><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/register\", { title: \"Registro\" })'>📝 Registro</button></div>"
+          "content": "<div style='display: flex; gap: 1rem; margin: 1rem 0;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-login\", { title: \"Login\" })'>🔐 Login</button><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-modal-register\", { title: \"Registro\" })'>📝 Registro</button></div>"
         }
       ]
     },
@@ -87,7 +87,7 @@
         },
         {
           "type": "form",
-          "form_json": "ejemplos/repetibles-demo"
+          "form_json": "ejemplos/formularios/form-repetibles-demo"
         }
       ]
     },
@@ -97,11 +97,11 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>Repetibles dentro de Repetibles</h3><p>Ejemplo de hasta 3 niveles de anidación: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/repetibles-anidados\", { title: \"🪟 Modal con Formulario Repetible\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Modal con Formulario Repeater</button>"
+          "content": "<h3>Repetibles dentro de Repetibles</h3><p>Ejemplo de hasta 3 niveles de anidación: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-repetibles-anidados\", { title: \"🪟 Modal con Formulario Repetible\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Modal con Formulario Repeater</button>"
         },
         {
           "type": "form",
-          "form_json": "ejemplos/repetibles-anidados"
+          "form_json": "ejemplos/formularios/form-repetibles-anidados"
         }
       ]
     }

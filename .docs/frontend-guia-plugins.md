@@ -113,7 +113,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
   "hasViews": true,                // Si tiene vistas (archivos JSON en views/)
   "hasHooks": false,               // Si tiene hooks/eventos personalizados
   "description": "Descripción",    // Descripción corta del plugin
-  
+
   "menu": {
     "title": "Mi Plugin",          // Título visible en el menú
     "icon": "🔌",                  // Emoji o icono del menú
@@ -145,7 +145,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
   "hasViews": true,                  // Tiene vistas
   "hasHooks": true,                  // Tiene hooks personalizados
   "description": "Gestión inventario", // Descripción
-  
+
   "menu": {
     "title": "Inventario",           // Título del menú principal
     "icon": "📦",                    // Icono
@@ -182,7 +182,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
   "autoload": "plugins/{plugin_name}/assets/js/botmaster.js",     // Script principal (carga automática)
   "scripts": ["plugins/{plugin_name}/assets/js/helper.js"],       // Scripts adicionales globales
   "styles": ["plugins/{plugin_name}/assets/css/botmaster.css"],   // Estilos globales
-  
+
   "menu": {
     "title": "Botmaster",                                         // Título del menú
     "icon": "🤖",                                                 // Icono
@@ -1082,7 +1082,7 @@ toast.info('Información adicional');
 toast.success('Guardado', { duration: 5000 });
 
 // Con posición personalizada
-toast.info('Mensaje', { 
+toast.info('Mensaje', {
   position: 'top-right'  // top-right|top-left|bottom-right|bottom-left
 });
 ```
@@ -1291,7 +1291,7 @@ public/plugins/taskmanager/
 {
   "name": "taskmanager",
   "version": "1.0.0",
-  
+
   "hasMenu": true,
   "hasViews": true,
   "styles": ["assets/css/taskmanager.css"],

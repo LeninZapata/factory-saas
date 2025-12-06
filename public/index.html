@@ -9,9 +9,7 @@
 <body>
 <div id="app"></div>
 <script>
-  var VERSION = '1.0.0';
-
-  // ✅ Detectar automáticamente la ruta base del proyecto
+  // Detectar automáticamente la ruta base del proyecto
   var BASE_URL = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 
   var IS_DEV =  window.location.hostname === 'localhost' ||
@@ -24,15 +22,11 @@
                 window.location.port === '5173' ||
                 window.location.port === '8080';
 
-  let appVersion = sessionStorage.getItem('appVersion');
-  if (!appVersion || IS_DEV) {
-      appVersion = IS_DEV ? `dev-${Date.now()}` : VERSION;
-      sessionStorage.setItem('appVersion', appVersion);
-  }
+  var VERSION = IS_DEV ? `dev-${Date.now()}` : '1.0.0';
 
   const script = document.createElement('script');
   script.type = 'module';
-  script.src = `${BASE_URL}js/main.js?v=${appVersion}`;
+  script.src = `${BASE_URL}js/main.js?v=${VERSION}`;
   document.head.appendChild(script);
 
   // console.log('🔧 BASE_URL:', BASE_URL); // ← Para debug

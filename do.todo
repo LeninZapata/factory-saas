@@ -1,17 +1,25 @@
 por donde me quede:
-  ☐ Se daño el demo de formulario de item repetibles anidados, no funciona
-  ☐ Se daño el demo de formulario de anidados repetible dentro de un modal
+  ☐ Debes organizar bien todos los ejemplos porque la plena que estan desordenados y no se entiende bien
+  es decir en ejemplos debe estar todo lo que el sistema hace en si
+  ☐ las variables globales creo que debe ponerlo con un prefijo para evitar conflictos con otros plugins
+  porque por ejemplo si un plugin define una variable global llamada 'data' y otro plugin tambien define
+  una variable global llamada 'data' entonces habra un conflicto.
+  Y si vas usar el mismo framework para wordpress entonces se va confundir con las variables globales de wordpress
+  en el frontend, es muy probable que pase esto.
+  ✔ Se daño el demo de formulario de item repetibles anidados, no funciona @done(04-12-2025 23:52)
+  ✔ Se daño el demo de formulario de anidados repetible dentro de un modal @done(04-12-2025 23:52)
   ✔ el datatable no carga a nivel de a/api algo pasa @done(03-12-2025 19:43)
-  ☐ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores
+  ✘ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores @cancelled(04-12-2025 23:52)
   seria bueno poner el ejemplo de crear un plugin de cliente desde 0 en la documentacion
   pero con todo simplificado para evitar que el documento explote.
-  ☐ pide a la ai que reOrganice el plugin de EJEMPLOS para que sea mas facil de entender
+  ✘ pide a la ai que reOrganice el plugin de EJEMPLOS para que sea mas facil de entender @cancelled(04-12-2025 23:58)
   y que tenga ejemplos de formularios, tablas, vistas, modales, etc...
+  SOLUCION:parece quesi estan ordenados bien
   ✔ en el manual no esta como manejar lo logger @done(03-12-2025 19:46)
   ☐ ### Vista con Widgets (Dashboard): en esta parte del documento hay que sacarlo porque debe trabajar igual que la tabla osea 
   con 'source' hay que ver si se refactoriza el componente de widgets para que funcione igual que la tabla en caso se pida 
   datos de endpoint
-  ☐ Errores al generar plugin:
+  ✔ Errores al generar plugin: @done(04-12-2025 23:53)
 ✔ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin @done(30-11-2025 12:42)
 por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'
 SOLUCION: ahora lo hace per solo con campos del form.js
@@ -39,7 +47,7 @@ y no solo la tab activa.
 mediante que debe los elementos tenede un data-attribute con el texto del key del idioma
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
-☐ permission.css aun esta en un lugar que debe, llevalo a la carpeta de plugin
+✔ permission.css aun esta en un lugar que debe, llevalo a la carpeta de plugin @done(04-12-2025 23:54)
 ✔ console.log inteligentes: @done(25-11-2025 20:45)
  _ pide a la AI que te muestre como hacer console.log que muestren en modulo primero que se esta ejecutando por archivo
  _ que muestren por ejemplo en el main si quieres solo mostrar los console log de un modulo o archivo
@@ -56,8 +64,8 @@ actualmente el modal y si adentro hay un form pues hace un lastst para ver el ul
 pero si se pone el boton en el modal como se haria para que reacione a ese formulario.
 ☐ Sistema de idioma en el backend como frontend en los mensajes de errores e integracion con plugins que manejen sus propios idiomas
  _ que se pueda editar los textos de los idiomas del backend
-☐ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla
-☐ mE FALTO en form transformation, MAX, MIN ya que como se pude manejar atributos toca asi, mirar user-form.json
+✔ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla @done(04-12-2025 23:54)
+✔ mE FALTO en form transformation, MAX, MIN ya que como se pude manejar atributos toca asi, mirar user-form.json @done(04-12-2025 23:57)
 ___
 Despues:
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
