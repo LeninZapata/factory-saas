@@ -2,6 +2,9 @@ por donde me quede:
   ☐ crea ejemplo de hooks donde ingrese contenido filtrando de otro lado
   ☐ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta
   ☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
+  ☐ crear un endpoint de systema donde devuelve todos los endpoints disponibles en el sistema
+  luego puedes crear un vista de sistema que llame a esto para llenar una tabla de endpoints
+  y este a su vez es llamado por el plugin admin para mostrar los endpoints disponibles
   es donde se vera que tipo de layout sera entonces primero los elementos deben ser responsive
   y luego el layout debe acomodarse a eso.
   ✔ Debes organizar bien todos los ejemplos porque la plena que estan desordenados y no se entiende bien @done(05-12-2025 22:00)

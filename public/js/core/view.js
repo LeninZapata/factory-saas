@@ -465,7 +465,7 @@ class view {
 
       if (componentName && window[componentName]) {
         if (typeof window[componentName].render === 'function') {
-          window[componentName].render(el, config);
+          window[componentName].render(config, el);
         } else if (typeof window[componentName].init === 'function') {
           window[componentName].init(el, config);
         }

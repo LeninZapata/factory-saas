@@ -1,46 +1,82 @@
 {
-  "id": "ejemplos-widgets",
-  "title": "🎨 Dashboard Widgets",
+  "id": "widgets-demo",
+  "title": "Widgets - Demo con Tabs",
   "content": [
     {
       "type": "html",
-      "order": 1,
-      "content": "<h3>🎨 Sistema de Widgets</h3><p>Widgets con drag & drop para reorganizar</p>"
+      "content": "<h2>Sistema de Widgets con Tabs</h2><p>Demostración del componente Widget dentro de Tabs.</p>"
     },
     {
       "type": "component",
-      "component": "widget",
-      "order": 5,
+      "component": "tabs",
       "config": {
-        "columns": 2,
-        "widgets": [
+        "tabs": [
           {
+            "id": "estadisticas",
             "title": "📊 Estadísticas",
-            "order": 1,
-            "html": "<div style='text-align:center;padding:2rem;'><h2 style='color:#667eea;margin:0;'>1,234</h2><p style='margin:0.5rem 0 0;color:#666;'>Usuarios Activos</p></div>"
+            "content": [
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 1,
+                  "widgets": [
+                    {
+                      "title": "📊 Estadísticas del Sistema",
+                      "order": 1,
+                      "html": "<div style='padding:2rem;'><div style='display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;text-align:center;'><div style='padding:1.5rem;background:#e0f2fe;border-radius:8px;'><h2 style='margin:0;color:#0284c7;font-size:2.5rem;'>1,234</h2><p style='margin:0.5rem 0 0;color:#0c4a6e;font-weight:500;'>Usuarios Activos</p></div><div style='padding:1.5rem;background:#dcfce7;border-radius:8px;'><h2 style='margin:0;color:#16a34a;font-size:2.5rem;'>$45,678</h2><p style='margin:0.5rem 0 0;color:#14532d;font-weight:500;'>Ventas del Mes</p></div><div style='padding:1.5rem;background:#fef3c7;border-radius:8px;'><h2 style='margin:0;color:#d97706;font-size:2.5rem;'>89%</h2><p style='margin:0.5rem 0 0;color:#78350f;font-weight:500;'>Satisfacción</p></div><div style='padding:1.5rem;background:#fecaca;border-radius:8px;'><h2 style='margin:0;color:#dc2626;font-size:2.5rem;'>12</h2><p style='margin:0.5rem 0 0;color:#7f1d1d;font-weight:500;'>Alertas Activas</p></div></div></div>"
+                    }
+                  ]
+                }
+              }
+            ]
           },
           {
-            "title": "📈 Ventas",
-            "order": 2,
-            "html": "<div style='text-align:center;padding:2rem;'><h2 style='color:#10b981;margin:0;'>$45,678</h2><p style='margin:0.5rem 0 0;color:#666;'>Total del Mes</p></div>"
+            "id": "metricas",
+            "title": "📈 Métricas",
+            "content": [
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 1,
+                  "widgets": [
+                    {
+                      "title": "📈 Métricas de Rendimiento",
+                      "order": 1,
+                      "html": "<div style='padding:2rem;'><div style='display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;text-align:center;'><div style='padding:1.5rem;background:#ddd6fe;border-radius:8px;'><h2 style='margin:0;color:#7c3aed;font-size:2.5rem;'>95%</h2><p style='margin:0.5rem 0 0;color:#4c1d95;font-weight:500;'>Uptime</p></div><div style='padding:1.5rem;background:#fce7f3;border-radius:8px;'><h2 style='margin:0;color:#db2777;font-size:2.5rem;'>2.3s</h2><p style='margin:0.5rem 0 0;color:#831843;font-weight:500;'>Tiempo de Carga</p></div><div style='padding:1.5rem;background:#cffafe;border-radius:8px;'><h2 style='margin:0;color:#0891b2;font-size:2.5rem;'>450</h2><p style='margin:0.5rem 0 0;color:#164e63;font-weight:500;'>Peticiones/min</p></div><div style='padding:1.5rem;background:#e0e7ff;border-radius:8px;'><h2 style='margin:0;color:#4f46e5;font-size:2.5rem;'>128</h2><p style='margin:0.5rem 0 0;color:#312e81;font-weight:500;'>Usuarios Online</p></div></div></div>"
+                    }
+                  ]
+                }
+              }
+            ]
           },
           {
-            "title": "👥 Usuarios Recientes",
-            "order": 3,
-            "html": "<ul style='list-style:none;padding:0;margin:0;'><li style='padding:0.5rem;border-bottom:1px solid #eee;'>Juan Pérez - hace 2h</li><li style='padding:0.5rem;border-bottom:1px solid #eee;'>María García - hace 5h</li><li style='padding:0.5rem;'>Carlos López - ayer</li></ul>"
-          },
-          {
-            "title": "🔔 Notificaciones",
-            "order": 4,
-            "html": "<div style='padding:1rem;'><div style='background:#e0f2fe;padding:0.75rem;border-radius:4px;margin-bottom:0.5rem;'>✓ Sistema actualizado</div><div style='background:#fef3c7;padding:0.75rem;border-radius:4px;'>⚠ Mantenimiento programado</div></div>"
+            "id": "actividad",
+            "title": "🔔 Actividad",
+            "content": [
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 1,
+                  "widgets": [
+                    {
+                      "title": "🔔 Actividad Reciente",
+                      "order": 1,
+                      "html": "<div style='padding:1.5rem;'><div style='padding:1rem;margin-bottom:1rem;background:#f0f9ff;border-left:4px solid #0284c7;border-radius:4px;'><strong style='color:#0369a1;'>✓ Usuario registrado</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Juan Pérez se registró hace 5 minutos</p></div><div style='padding:1rem;margin-bottom:1rem;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;'><strong style='color:#15803d;'>✓ Venta completada</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Pedido #1234 completado hace 15 minutos</p></div><div style='padding:1rem;margin-bottom:1rem;background:#fefce8;border-left:4px solid #d97706;border-radius:4px;'><strong style='color:#b45309;'>⚠ Advertencia</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Espacio en disco bajo hace 1 hora</p></div><div style='padding:1rem;background:#fef2f2;border-left:4px solid:#dc2626;border-radius:4px;'><strong style='color:#b91c1c;'>✗ Error detectado</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Fallo en conexión a base de datos hace 2 horas</p></div></div>"
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ]
       }
     },
     {
       "type": "html",
-      "order": 10,
-      "content": "<div style='margin-top:2rem;padding:1rem;background:#f0f9ff;border-radius:8px;'><h4 style='margin:0 0 0.5rem;'>💡 Características:</h4><ul style='margin:0;'><li>Drag & Drop para reorganizar</li><li>Grid responsive (1-4 columnas)</li><li>Soporta HTML, componentes, vistas, formularios</li><li>Estilos minimalistas</li></ul></div>"
+      "content": "<div style='margin-top:2rem;padding:1.5rem;background:#f8f9fa;border-left:4px solid #667eea;border-radius:4px;'><h3 style='margin:0 0 0.5rem 0;color:#667eea;'>✅ Widgets en Tabs Funcionando</h3><p style='margin:0;color:#666;'>Los widgets ahora funcionan correctamente dentro de tabs gracias al fix de parámetros invertidos. Prueba cambiar entre las diferentes pestañas.</p></div>"
     }
   ]
 }
