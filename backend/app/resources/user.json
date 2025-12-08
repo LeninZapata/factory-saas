@@ -29,9 +29,7 @@
       "method": "DELETE",
       "path": "/api/user/{id}",
       "middleware": ["auth"]
-    },
-
-    "custom": []
+    }
   },
 
   "fields": [

@@ -10,31 +10,7 @@
     "show": { "method": "GET", "path": "/api/client/{id}", "middleware": [] },
     "create": { "method": "POST", "path": "/api/client", "middleware": ["json"] },
     "update": { "method": "PUT", "path": "/api/client/{id}", "middleware": ["json"] },
-    "delete": { "method": "DELETE", "path": "/api/client/{id}", "middleware": [] },
-
-    "custom": [
-      {
-        "name": "deleteAllData",
-        "method": "DELETE",
-        "path": "/api/client/{id}/all-data",
-        "handler": "deleteAllData",
-        "middleware": []
-      },
-      {
-        "name": "getByNumber",
-        "method": "GET",
-        "path": "/api/client/number/{number}",
-        "handler": "getByNumber",
-        "middleware": []
-      },
-      {
-        "name": "topClients",
-        "method": "GET",
-        "path": "/api/client/top",
-        "handler": "topClients",
-        "middleware": []
-      }
-    ]
+    "delete": { "method": "DELETE", "path": "/api/client/{id}", "middleware": [] }
   },
 
   "fields": [

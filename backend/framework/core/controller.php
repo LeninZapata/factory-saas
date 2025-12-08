@@ -98,36 +98,6 @@ class controller {
     response::success(['affected' => $affected], "{$this->resource} deleted");
   }
 
-  // CUSTOM ACTION - Ejecutar acción personalizada
-  function handleCustomAction($actionName, $params = []) {
-    $customRoutes = $this->config['routes']['custom'] ?? [];
-
-    $action = array_filter($customRoutes, fn($r) => $r['name'] === $actionName);
-
-    if (empty($action)) {
-      response::error('Action not found', 404);
-    }
-
-    $action = array_values($action)[0];
-    $handlerName = $action['handler'];
-    $handlerClass = $this->resource . 'Handlers';
-
-    // Ejecutar handler
-    if (class_exists($handlerClass) && method_exists($handlerClass, $handlerName)) {
-      $result = call_user_func([$handlerClass, $handlerName], $params);
-
-      // Si el resultado ya tiene structure de response, enviarlo directo
-      if (isset($result['success'])) {
-        response::json($result);
-      }
-
-      // Si no, wrapearlo
-      response::success($result);
-    }
-
-    response::error("Handler '$handlerName' not found", 500);
-  }
-
   // Obtener campos requeridos del schema
   private function getRequiredFields() {
     $required = [];

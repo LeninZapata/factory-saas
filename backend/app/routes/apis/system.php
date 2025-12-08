@@ -33,6 +33,37 @@ $router->group('/api/system', function($router) {
     ]);
   });
 
+  // ✅ Listar todos los endpoints - GET /api/system/routes
+  $router->get('/routes', function() {
+    $routes = routeDiscovery::getAllRoutes();
+    $stats = routeDiscovery::getStats($routes);
+
+    // Filtrar por método
+    $method = request::query('method');
+    if ($method) {
+      $routes = array_filter($routes, fn($r) => strtoupper($r['method']) === strtoupper($method));
+      $routes = array_values($routes);
+    }
+
+    // Filtrar por source
+    $source = request::query('source');
+    if ($source) {
+      $routes = array_filter($routes, fn($r) => str_contains($r['source'], $source));
+      $routes = array_values($routes);
+    }
+
+    // Agrupar por recurso
+    $grouped = request::query('grouped');
+    if ($grouped === 'true') {
+      $routes = routeDiscovery::groupByResource($routes);
+    }
+
+    response::success([
+      'routes' => $routes,
+      'stats' => $stats
+    ]);
+  });
+
   // Test zona horaria (deshabilitado en producción)
   /*$router->get('/timezone-test', function() {
     response::success([

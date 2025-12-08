@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 ob_start();
 
-require_once __DIR__ . '/config/consts.php';
+$path = __DIR__;
+require_once $path . '/app/config/consts.php';
 
 if (IS_DEV) {
   error_reporting(E_ALL);
@@ -24,11 +25,11 @@ if (IS_DEV) {
   ini_set('log_errors', '0');
 }
 
-require_once __DIR__ . '/core/autoload.php';
-require_once __DIR__ . '/core/router.php';
+require_once $path . '/framework/core/autoload.php';
+require_once $path . '/framework/core/router.php';
 
 $router = new router();
-require_once __DIR__ . '/routes/api.php';
+require_once $path . '/app/routes/api.php';
 
 $captured = ob_get_clean();
 if (!empty($captured) && IS_DEV) {

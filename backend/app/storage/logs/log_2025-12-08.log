@@ -1,0 +1,5 @@
+[2025-12-08 01:22:47] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
+[2025-12-08 14:18:20] INFO: Logout exitoso | {"token":"49f92864c8..."}
+[2025-12-08 14:18:26] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-12-08 16:22:33] ERROR: Response Error | {"code":400,"data":{"success":false,"error":"Content-Type debe ser application\/json"}}
+[2025-12-08 16:22:52] ERROR: Response Error | {"code":400,"data":{"success":false,"error":"Content-Type debe ser application\/json"}}

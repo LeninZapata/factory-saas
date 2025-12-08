@@ -17,9 +17,9 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
   $module = $matches[1];
 }
 
-// ✅ PASO 1: Auto-registrar rutas CRUD desde JSON primero
+// ✅ PASO 1: Auto-registrar rutas CRUD desde JSON
 if ($module) {
-  $resourceFile = BACKEND_PATH . "/resources/{$module}.json";
+  $resourceFile = APP_PATH . "/resources/{$module}.json";
 
   if (file_exists($resourceFile)) {
     
@@ -33,7 +33,7 @@ if ($module) {
 
     $globalMw = $config['middleware'] ?? [];
 
-    // ✅ Rutas CRUD estándar
+    // Rutas CRUD estándar
     $crudRoutes = [
       'list'   => ['get',    "/api/{$module}",      'list'],
       'show'   => ['get',    "/api/{$module}/{id}", 'show'],
@@ -62,35 +62,10 @@ if ($module) {
         $route->middleware($routeMw);
       }
     }
-
-    // ✅ Rutas custom desde JSON (si existen)
-    if (isset($config['routes']['custom'])) {
-      foreach ($config['routes']['custom'] as $custom) {
-        $method = strtolower($custom['method']);
-        $customPath = $custom['path'];
-        $actionName = $custom['name'];
-        $customMw = array_merge($globalMw, $custom['middleware'] ?? []);
-
-        preg_match_all('/\{(\w+)\}/', $customPath, $matches);
-        $paramNames = $matches[1];
-
-        $route = $router->$method($customPath, function(...$params) use ($ctrl, $actionName, $paramNames) {
-          $namedParams = [];
-          foreach ($paramNames as $index => $name) {
-            $namedParams[$name] = $params[$index] ?? null;
-          }
-          $ctrl->handleCustomAction($actionName, $namedParams);
-        });
-
-        if (!empty($customMw)) {
-          $route->middleware($customMw);
-        }
-      }
-    }
   }
 }
 
-// ✅ PASO 2: Cargar rutas manuales después (para que puedan sobrescribir si es necesario)
+// ✅ PASO 2: Cargar rutas manuales (custom routes)
 $manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
   require_once $manualRoutes;

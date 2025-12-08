@@ -34,7 +34,7 @@ por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este ca
 SOLUCION: ahora lo hace per solo con campos del form.js
 ☐ agrega las reglas de copiloto para la AI en el proyecto
 ✔ revisa los errores del asisten al momento de crear un plugin y agregarlos a la documentacion @done(30-11-2025 15:40)
-☐ revisa porque no se muestran los usuairo, creo que porque se cambio un poco las rutas, hay que revisar
+✔ revisa porque no se muestran los usuairo, creo que porque se cambio un poco las rutas, hay que revisar @done(08-12-2025 16:09)
 pendientes:
 ✔ Implementar el login @done(20-11-2025 19:10)
 ✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
@@ -78,8 +78,8 @@ pero si se pone el boton en el modal como se haria para que reacione a ese formu
 ___
 Despues:
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
-☐ Acciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo entonces 
-debe valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
+☐ Acces 
+debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no
 ☐ El componente de permission tiene una falla y es que tiene una falla que si editas puese ese componente las vistas de primer nivel seleccionada opr
 ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
