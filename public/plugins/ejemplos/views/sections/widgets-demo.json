@@ -1,20 +1,29 @@
 {
   "id": "widgets-demo",
-  "title": "Widgets - Demo con Tabs",
+  "title": "Widgets - Demo Completo",
   "content": [
     {
       "type": "html",
-      "content": "<h2>Sistema de Widgets con Tabs</h2><p>Demostración del componente Widget dentro de Tabs.</p>"
+      "content": "<h2>Sistema de Widgets - Ejemplos Completos</h2><p>Diferentes configuraciones y usos del componente Widget.</p>"
     },
     {
       "type": "component",
       "component": "tabs",
       "config": {
+        "id": "widgets-examples",
         "tabs": [
           {
-            "id": "estadisticas",
-            "title": "📊 Estadísticas",
+            "id": "widgets-columns",
+            "title": "📊 Columnas",
             "content": [
+              {
+                "type": "html",
+                "content": "<h3>Widgets en Diferentes Columnas</h3><p>Ejemplos de 1, 2, 3 y 4 columnas con desbordamiento automático.</p>"
+              },
+              {
+                "type": "html",
+                "content": "<h4 style='margin-top:2rem;'>1 Columna (Ancho Completo)</h4>"
+              },
               {
                 "type": "component",
                 "component": "widget",
@@ -22,9 +31,98 @@
                   "columns": 1,
                   "widgets": [
                     {
-                      "title": "📊 Estadísticas del Sistema",
+                      "title": "📊 Widget Ancho Completo",
                       "order": 1,
-                      "html": "<div style='padding:2rem;'><div style='display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;text-align:center;'><div style='padding:1.5rem;background:#e0f2fe;border-radius:8px;'><h2 style='margin:0;color:#0284c7;font-size:2.5rem;'>1,234</h2><p style='margin:0.5rem 0 0;color:#0c4a6e;font-weight:500;'>Usuarios Activos</p></div><div style='padding:1.5rem;background:#dcfce7;border-radius:8px;'><h2 style='margin:0;color:#16a34a;font-size:2.5rem;'>$45,678</h2><p style='margin:0.5rem 0 0;color:#14532d;font-weight:500;'>Ventas del Mes</p></div><div style='padding:1.5rem;background:#fef3c7;border-radius:8px;'><h2 style='margin:0;color:#d97706;font-size:2.5rem;'>89%</h2><p style='margin:0.5rem 0 0;color:#78350f;font-weight:500;'>Satisfacción</p></div><div style='padding:1.5rem;background:#fecaca;border-radius:8px;'><h2 style='margin:0;color:#dc2626;font-size:2.5rem;'>12</h2><p style='margin:0.5rem 0 0;color:#7f1d1d;font-weight:500;'>Alertas Activas</p></div></div></div>"
+                      "html": "<div style='padding:2rem;text-align:center;background:#e0f2fe;border-radius:6px;'><h2 style='margin:0;color:#0284c7;'>Ocupa Todo el Ancho</h2><p style='margin:1rem 0 0;'>Este widget usa 1 columna, ideal para gráficos grandes o contenido destacado.</p></div>"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "html",
+                "content": "<h4 style='margin-top:2rem;'>2 Columnas (Default)</h4>"
+              },
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 2,
+                  "widgets": [
+                    {
+                      "title": "Widget 1",
+                      "order": 1,
+                      "html": "<div style='padding:1.5rem;text-align:center;background:#ddd6fe;'><h3 style='color:#7c3aed;'>Columna 1</h3></div>"
+                    },
+                    {
+                      "title": "Widget 2",
+                      "order": 2,
+                      "html": "<div style='padding:1.5rem;text-align:center;background:#fce7f3;'><h3 style='color:#db2777;'>Columna 2</h3></div>"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "html",
+                "content": "<h4 style='margin-top:2rem;'>3 Columnas</h4>"
+              },
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 3,
+                  "widgets": [
+                    {
+                      "title": "Widget 1",
+                      "order": 1,
+                      "html": "<div style='padding:1rem;text-align:center;background:#dcfce7;'><p style='color:#16a34a;'>Col 1</p></div>"
+                    },
+                    {
+                      "title": "Widget 2",
+                      "order": 2,
+                      "html": "<div style='padding:1rem;text-align:center;background:#fef3c7;'><p style='color:#d97706;'>Col 2</p></div>"
+                    },
+                    {
+                      "title": "Widget 3",
+                      "order": 3,
+                      "html": "<div style='padding:1rem;text-align:center;background:#fecaca;'><p style='color:#dc2626;'>Col 3</p></div>"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "html",
+                "content": "<h4 style='margin-top:2rem;'>4 Columnas con Desbordamiento</h4><p>5 widgets en grid de 4 columnas: el 5to se desborda a una nueva fila automáticamente.</p>"
+              },
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 4,
+                  "widgets": [
+                    {
+                      "title": "W1",
+                      "order": 1,
+                      "html": "<div style='padding:1rem;text-align:center;background:#e0f2fe;'><p>1</p></div>"
+                    },
+                    {
+                      "title": "W2",
+                      "order": 2,
+                      "html": "<div style='padding:1rem;text-align:center;background:#dcfce7;'><p>2</p></div>"
+                    },
+                    {
+                      "title": "W3",
+                      "order": 3,
+                      "html": "<div style='padding:1rem;text-align:center;background:#fef3c7;'><p>3</p></div>"
+                    },
+                    {
+                      "title": "W4",
+                      "order": 4,
+                      "html": "<div style='padding:1rem;text-align:center;background:#fecaca;'><p>4</p></div>"
+                    },
+                    {
+                      "title": "W5 (Desborda)",
+                      "order": 5,
+                      "html": "<div style='padding:1rem;text-align:center;background:#ddd6fe;'><p style='color:#7c3aed;font-weight:bold;'>5 - Se desborda a nueva fila</p></div>"
                     }
                   ]
                 }
@@ -32,19 +130,38 @@
             ]
           },
           {
-            "id": "metricas",
-            "title": "📈 Métricas",
+            "id": "widgets-modal",
+            "title": "🪟 Con Modal",
             "content": [
+              {
+                "type": "html",
+                "content": "<h3>Widget con Botón que Abre Modal</h3><p>Ejemplo de interacción: botón dentro del widget abre un modal.</p><script>document.addEventListener('click', function(e) { if (e.target.classList.contains('widget-modal-btn')) { const title = e.target.dataset.modalTitle; const htmlContent = e.target.dataset.modalContent; const decodedContent = htmlContent.replace(/QUOTE/g, '\"').replace(/APOS/g, \"'\"); modal.open(title, {title: title, html: decodedContent}); } });</script>"
+              },
               {
                 "type": "component",
                 "component": "widget",
                 "config": {
-                  "columns": 1,
+                  "columns": 2,
                   "widgets": [
                     {
-                      "title": "📈 Métricas de Rendimiento",
+                      "title": "🔔 Notificaciones",
                       "order": 1,
-                      "html": "<div style='padding:2rem;'><div style='display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;text-align:center;'><div style='padding:1.5rem;background:#ddd6fe;border-radius:8px;'><h2 style='margin:0;color:#7c3aed;font-size:2.5rem;'>95%</h2><p style='margin:0.5rem 0 0;color:#4c1d95;font-weight:500;'>Uptime</p></div><div style='padding:1.5rem;background:#fce7f3;border-radius:8px;'><h2 style='margin:0;color:#db2777;font-size:2.5rem;'>2.3s</h2><p style='margin:0.5rem 0 0;color:#831843;font-weight:500;'>Tiempo de Carga</p></div><div style='padding:1.5rem;background:#cffafe;border-radius:8px;'><h2 style='margin:0;color:#0891b2;font-size:2.5rem;'>450</h2><p style='margin:0.5rem 0 0;color:#164e63;font-weight:500;'>Peticiones/min</p></div><div style='padding:1.5rem;background:#e0e7ff;border-radius:8px;'><h2 style='margin:0;color:#4f46e5;font-size:2.5rem;'>128</h2><p style='margin:0.5rem 0 0;color:#312e81;font-weight:500;'>Usuarios Online</p></div></div></div>"
+                      "html": "<div style='padding:1.5rem;'><p style='margin:0 0 1rem;color:#666;'>Tienes 5 notificaciones pendientes.</p><button class='btn btn-primary widget-modal-btn' data-modal-title='Notificaciones Recientes' data-modal-content='<div style=QUOTEpadding:1.5remQUOTE><h4>Nueva Notificacion</h4><p>Usuario Juan Perez comento en tu publicacion</p><hr><h4>Tarea Completada</h4><p>El reporte mensual ha sido generado</p><hr><h4>Advertencia</h4><p>El espacio en disco esta llegando al limite</p></div>'>Ver Notificaciones</button></div>"
+                    },
+                    {
+                      "title": "📝 Crear Tarea",
+                      "order": 2,
+                      "html": "<div style='padding:1.5rem;'><p style='margin:0 0 1rem;color:#666;'>Gestiona tus tareas pendientes.</p><button class='btn btn-success widget-modal-btn' data-modal-title='Nueva Tarea' data-modal-content='<div style=QUOTEpadding:1.5remQUOTE><div style=QUOTEmargin-bottom:1remQUOTE><label>Titulo de la Tarea</label><input type=QUOTEtextQUOTE placeholder=QUOTEEj: Revisar reportesQUOTE style=QUOTEwidth:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4pxQUOTE></div><div style=QUOTEmargin-bottom:1remQUOTE><label>Descripcion</label><textarea style=QUOTEwidth:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4px;min-height:80pxQUOTE></textarea></div><button class=QUOTEbtn btn-primaryQUOTE onclick=QUOTEtoast.success(APOSGuardadoAPOS); modal.closeAll();QUOTE>Guardar</button></div>'>Nueva Tarea</button></div>"
+                    },
+                    {
+                      "title": "👤 Perfil de Usuario",
+                      "order": 3,
+                      "html": "<div style='padding:1.5rem;text-align:center;'><div style='width:80px;height:80px;margin:0 auto 1rem;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:2rem;'>👤</div><h4 style='margin:0 0 0.5rem;'>Juan Perez</h4><p style='margin:0 0 1rem;color:#666;font-size:0.9rem;'>admin@empresa.com</p><button class='btn btn-secondary widget-modal-btn' data-modal-title='Perfil de Usuario' data-modal-content='<div style=QUOTEpadding:2rem;text-align:centerQUOTE><div style=QUOTEwidth:120px;height:120px;margin:0 auto 1rem;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:3remQUOTE>👤</div><h3>Juan Perez</h3><p>Administrador del Sistema</p><div style=QUOTEbackground:#f8f9fa;padding:1rem;border-radius:6px;margin:1rem 0QUOTE><strong>Email:</strong> admin@empresa.com</div><div style=QUOTEbackground:#f8f9fa;padding:1rem;border-radius:6px;margin:1rem 0QUOTE><strong>Telefono:</strong> +593 99 123 4567</div></div>'>Ver Perfil Completo</button></div>"
+                    },
+                    {
+                      "title": "📊 Generar Reporte",
+                      "order": 4,
+                      "html": "<div style='padding:1.5rem;'><p style='margin:0 0 1rem;color:#666;'>Genera reportes personalizados.</p><button class='btn btn-primary widget-modal-btn' data-modal-title='Generar Reporte Mensual' data-modal-content='<div style=QUOTEpadding:1.5remQUOTE><p style=QUOTEmargin-bottom:1.5rem;color:#666QUOTE>Selecciona el periodo y tipo:</p><div style=QUOTEmargin-bottom:1remQUOTE><label>Mes</label><select style=QUOTEwidth:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4pxQUOTE><option>Enero 2025</option><option>Febrero 2025</option><option>Marzo 2025</option></select></div><div style=QUOTEmargin-bottom:1remQUOTE><label>Tipo de Reporte</label><select style=QUOTEwidth:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4pxQUOTE><option>Ventas</option><option>Inventario</option><option>Clientes</option></select></div><button class=QUOTEbtn btn-successQUOTE onclick=QUOTEtoast.success(APOSReporte generadoAPOS); modal.closeAll();QUOTE>Generar</button></div>'>Generar Reporte</button></div>"
                     }
                   ]
                 }
@@ -52,19 +169,71 @@
             ]
           },
           {
-            "id": "actividad",
-            "title": "🔔 Actividad",
+            "id": "widgets-views",
+            "title": "📄 Con Vistas",
             "content": [
+              {
+                "type": "html",
+                "content": "<h3>Widgets con Vistas y Formularios</h3><p>Ejemplos de cómo cargar vistas y formularios dentro de widgets.</p>"
+              },
               {
                 "type": "component",
                 "component": "widget",
                 "config": {
-                  "columns": 1,
+                  "columns": 2,
                   "widgets": [
                     {
-                      "title": "🔔 Actividad Reciente",
+                      "title": "📝 Formulario de Login",
                       "order": 1,
-                      "html": "<div style='padding:1.5rem;'><div style='padding:1rem;margin-bottom:1rem;background:#f0f9ff;border-left:4px solid #0284c7;border-radius:4px;'><strong style='color:#0369a1;'>✓ Usuario registrado</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Juan Pérez se registró hace 5 minutos</p></div><div style='padding:1rem;margin-bottom:1rem;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;'><strong style='color:#15803d;'>✓ Venta completada</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Pedido #1234 completado hace 15 minutos</p></div><div style='padding:1rem;margin-bottom:1rem;background:#fefce8;border-left:4px solid #d97706;border-radius:4px;'><strong style='color:#b45309;'>⚠ Advertencia</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Espacio en disco bajo hace 1 hora</p></div><div style='padding:1rem;background:#fef2f2;border-left:4px solid:#dc2626;border-radius:4px;'><strong style='color:#b91c1c;'>✗ Error detectado</strong><p style='margin:0.5rem 0 0;color:#666;font-size:0.9rem;'>Fallo en conexión a base de datos hace 2 horas</p></div></div>"
+                      "form": "ejemplos/formularios/form-modal-login"
+                    },
+                    {
+                      "title": "📋 Formulario de Registro",
+                      "order": 2,
+                      "form": "ejemplos/formularios/form-modal-register"
+                    },
+                    {
+                      "title": "📊 Tabla de Usuarios",
+                      "order": 3,
+                      "view": "ejemplos/sections/users-datatable"
+                    },
+                    {
+                      "title": "💡 Formulario con Inputs Normales",
+                      "order": 4,
+                      "form": "ejemplos/formularios/form-inputs-normales"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "html",
+                "content": "<h4 style='margin-top:2rem;'>Ejemplos de Configuración</h4>"
+              },
+              {
+                "type": "component",
+                "component": "widget",
+                "config": {
+                  "columns": 2,
+                  "widgets": [
+                    {
+                      "title": "📖 Cargar Formulario",
+                      "order": 1,
+                      "html": "<div style='padding:1.5rem;'><p style='color:#666;margin-bottom:1rem;'>Para cargar un formulario:</p><pre style='background:#f5f5f5;padding:1rem;border-radius:4px;font-size:0.85rem;'>{<br>  \"title\": \"Mi Formulario\",<br>  \"form\": \"plugin/formularios/mi-form\"<br>}</pre><p style='margin-top:1rem;color:#666;font-size:0.9rem;'>El sistema agrega /forms/ automáticamente.</p></div>"
+                    },
+                    {
+                      "title": "📖 Cargar Vista",
+                      "order": 2,
+                      "html": "<div style='padding:1.5rem;'><p style='color:#666;margin-bottom:1rem;'>Para cargar una vista:</p><pre style='background:#f5f5f5;padding:1rem;border-radius:4px;font-size:0.85rem;'>{<br>  \"title\": \"Mi Vista\",<br>  \"view\": \"plugin/sections/mi-vista\"<br>}</pre><p style='margin-top:1rem;color:#666;font-size:0.9rem;'>La vista se carga directamente.</p></div>"
+                    },
+                    {
+                      "title": "📖 Componente Anidado",
+                      "order": 3,
+                      "html": "<div style='padding:1.5rem;'><p style='color:#666;margin-bottom:1rem;'>Para anidar componente:</p><pre style='background:#f5f5f5;padding:1rem;border-radius:4px;font-size:0.85rem;'>{<br>  \"title\": \"DataTable\",<br>  \"component\": \"datatable\",<br>  \"config\": {...}<br>}</pre><p style='margin-top:1rem;color:#666;font-size:0.9rem;'>Puedes anidar cualquier componente.</p></div>"
+                    },
+                    {
+                      "title": "💡 Mini Dashboard",
+                      "order": 4,
+                      "html": "<div style='padding:1.5rem;'><div style='display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;'><div style='background:#e0f2fe;padding:1rem;border-radius:6px;text-align:center;'><div style='font-size:2rem;'>🎯</div><strong style='color:#0284c7;'>95%</strong></div><div style='background:#dcfce7;padding:1rem;border-radius:6px;text-align:center;'><div style='font-size:2rem;'>📈</div><strong style='color:#16a34a;'>+23%</strong></div></div></div>"
                     }
                   ]
                 }
@@ -76,7 +245,7 @@
     },
     {
       "type": "html",
-      "content": "<div style='margin-top:2rem;padding:1.5rem;background:#f8f9fa;border-left:4px solid #667eea;border-radius:4px;'><h3 style='margin:0 0 0.5rem 0;color:#667eea;'>✅ Widgets en Tabs Funcionando</h3><p style='margin:0;color:#666;'>Los widgets ahora funcionan correctamente dentro de tabs gracias al fix de parámetros invertidos. Prueba cambiar entre las diferentes pestañas.</p></div>"
+      "content": "<div style='margin-top:2rem;padding:1.5rem;background:#f0f9ff;border-left:4px solid #0284c7;border-radius:4px;'><h3 style='margin:0 0 0.5rem 0;color:#0284c7;'>✅ Sistema de Widgets Funcionando</h3><p style='margin:0;color:#666;'>Los widgets se renderizan correctamente en tabs, vistas directas y con diferentes configuraciones. Drag and drop con ⋮⋮.</p></div>"
     }
   ]
 }
