@@ -196,11 +196,11 @@ class view {
     if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
       const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
       logger.info('cor:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
-      
+
       if (filteredTabs.length === 0) {
         logger.warn('cor:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
       }
-      
+
       return filteredTabs;
     }
 
@@ -239,7 +239,7 @@ class view {
     }
 
     await this.loadViewResources(viewData);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 1));
     await this.initViewComponents(viewData);
   }
 
@@ -335,22 +335,58 @@ class view {
 
     if (viewData.id && window.hook) {
       const hookName = `hook_${viewData.id}`;
-      const existingContent = Array.isArray(viewData.content) ?
-        viewData.content.map(item => ({
+
+      logger.debug('cor:view', `Buscando hooks para vista: ${viewData.id}`);
+
+      // CASO 1: Vista con "content" directo
+      if (Array.isArray(viewData.content)) {
+        const existingContent = viewData.content.map(item => ({
           order: item.order || 999,
           ...item
-        })) : [];
+        }));
 
-      const hookResults = hook.execute(hookName, existingContent);
+        const hookResults = hook.execute(hookName, existingContent);
 
-      if (hookResults.length > existingContent.length) {
-        viewData.content = hookResults;
-        const contentContainer = viewContainer.querySelector('.view-content');
-        if (contentContainer) {
-          contentContainer.innerHTML = this.renderContent(hookResults);
+        if (hookResults.length > existingContent.length) {
+          viewData.content = hookResults;
+          logger.debug('cor:view', `Hooks mezclados: ${hookResults.length} items totales`);
+        }
+      }
+      // CASO 2: Vista con "tabs" - Mezclar hooks SOLO en el primer tab
+      else if (Array.isArray(viewData.tabs) && viewData.tabs.length > 0) {
+        const hookResults = hook.execute(hookName, []);
+
+        if (hookResults.length > 0) {
+          logger.debug('cor:view', `Hooks agregaron ${hookResults.length} items`);
+
+          // Obtener el primer tab
+          const firstTab = viewData.tabs[0];
+
+          if (Array.isArray(firstTab.content)) {
+            // Preparar contenido existente con order
+            const existingTabContent = firstTab.content.map(item => ({
+              order: item.order || 999,
+              ...item
+            }));
+
+            // Mezclar hooks con contenido del primer tab
+            const mixedContent = [...hookResults, ...existingTabContent];
+
+            // Ordenar por order
+            mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
+
+            // Actualizar solo el primer tab
+            viewData.tabs[0] = {
+              ...firstTab,
+              content: mixedContent
+            };
+
+            logger.debug('cor:view', `Hooks mezclados en primer tab (${firstTab.id}): ${mixedContent.length} items totales`);
+          }
         }
       }
     }
+
 
     if (viewData.tabs) {
       const tabsContainer = viewContainer.querySelector('.view-tabs-container');
@@ -362,6 +398,83 @@ class view {
     }
 
     setTimeout(() => this.initFormValidation(), 0);
+  }
+
+  static async renderHookItem(hookItem, container) {
+    if (!hookItem || !container) return;
+
+    try {
+      if (hookItem.type === 'html') {
+        // Renderizar HTML
+        const div = document.createElement('div');
+        div.id = hookItem.id;
+        div.className = 'hook-item hook-html';
+        div.innerHTML = hookItem.content;
+        container.appendChild(div);
+      }
+      else if (hookItem.type === 'component') {
+        // Renderizar componente
+        const div = document.createElement('div');
+        div.id = hookItem.id;
+        div.className = 'hook-item hook-component';
+        container.appendChild(div);
+
+        const componentName = hookItem.component;
+
+        if (window[componentName] && typeof window[componentName].render === 'function') {
+          try {
+            await window[componentName].render(hookItem.config || {}, div);
+            logger.debug('cor:view', `Componente hook ${componentName} renderizado`);
+          } catch (error) {
+            logger.error('cor:view', `Error renderizando componente hook ${componentName}:`, error);
+            div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
+          }
+        } else {
+          logger.error('cor:view', `Componente ${componentName} no encontrado`);
+          div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
+        }
+      }
+      else if (hookItem.type === 'form') {
+        // Renderizar formulario
+        const div = document.createElement('div');
+        div.id = hookItem.id;
+        div.className = 'hook-item hook-form';
+        container.appendChild(div);
+
+        if (window.form && hookItem.formPath) {
+          setTimeout(async () => {
+            try {
+              await form.load(hookItem.formPath, div);
+              logger.debug('cor:view', `Formulario hook ${hookItem.formPath} renderizado`);
+            } catch (error) {
+              logger.error('cor:view', `Error cargando formulario hook:`, error);
+              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando formulario</div>`;
+            }
+          }, 0);
+        }
+      }
+      else if (hookItem.type === 'view') {
+        // Renderizar vista anidada
+        const div = document.createElement('div');
+        div.id = hookItem.id;
+        div.className = 'hook-item hook-view';
+        container.appendChild(div);
+
+        if (window.view && hookItem.viewPath) {
+          setTimeout(async () => {
+            try {
+              await view.loadView(hookItem.viewPath, div);
+              logger.debug('cor:view', `Vista hook ${hookItem.viewPath} renderizada`);
+            } catch (error) {
+              logger.error('cor:view', `Error cargando vista hook:`, error);
+              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando vista</div>`;
+            }
+          }, 0);
+        }
+      }
+    } catch (error) {
+      logger.error('cor:view', `Error renderizando hook item:`, error);
+    }
   }
 
   static async initViewComponents(viewData) {
@@ -501,6 +614,24 @@ class view {
         content.innerHTML = errorHTML;
       }
     }
+  }
+
+  static findSafeInsertionPoint(container) {
+    const selectors = [
+      '.view-tabs-container',
+      '.tabs-component',
+      '.view-header',
+      '.widget-grid'
+    ];
+
+    for (const selector of selectors) {
+      const element = container.querySelector(selector);
+      if (element && element.parentNode === container) {
+        return element;
+      }
+    }
+
+    return container.firstElementChild;
   }
 }
 

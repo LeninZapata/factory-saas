@@ -16,12 +16,12 @@ class widget {
     const gridId = `widget-grid-${Date.now()}`;
     this.grids.set(gridId, config);
     const cols = config.columns || 2;
-    
+
     const grid = document.createElement('div');
     grid.className = 'widget-grid';
     grid.id = gridId;
     grid.dataset.cols = cols;
-    
+
     container.innerHTML = '';
     container.appendChild(grid);
 
@@ -36,7 +36,7 @@ class widget {
     if (!grid) return;
 
     const widgetId = `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const widget = document.createElement('div');
     widget.className = 'widget-item';
     widget.id = widgetId;
@@ -57,9 +57,9 @@ class widget {
 
     widget.appendChild(widgetHeader);
     widget.appendChild(widgetBody);
-    
+
     grid.appendChild(widget);
-    
+
     await this.loadWidgetContent(widgetBody, config);
   }
 
@@ -111,7 +111,7 @@ class widget {
 
   static bindDragEvents(grid) {
     if (!grid) return;
-    
+
     const widgets = grid.querySelectorAll('.widget-item');
     if (!widgets || widgets.length === 0) return;
 

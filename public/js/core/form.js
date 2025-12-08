@@ -312,7 +312,8 @@ class form {
     if (!container) return;
 
     if (mode === 'linear') {
-      container.querySelectorAll('.grouper-header.collapsible').forEach(header => {
+      // Para linear: seleccionar solo headers directos del grouper
+      container.querySelectorAll(':scope > .grouper-section > .grouper-header.collapsible').forEach(header => {
         header.addEventListener('click', (e) => {
           const targetId = header.dataset.toggle;
           const content = document.getElementById(targetId);
@@ -332,20 +333,24 @@ class form {
         });
       });
     } else if (mode === 'tabs') {
-      const tabButtons = container.querySelectorAll('.grouper-tab-btn');
-      const tabPanels = container.querySelectorAll('.grouper-tab-panel');
+      // ✅ FIX: Seleccionar solo botones y panels DIRECTOS de este grouper
+      // No los de groupers anidados
+      const tabButtons = container.querySelectorAll(':scope > .grouper-tabs-header > .grouper-tab-btn');
+      const tabPanels = container.querySelectorAll(':scope > .grouper-tabs-content > .grouper-tab-panel');
 
       tabButtons.forEach(button => {
         button.addEventListener('click', () => {
           const index = parseInt(button.dataset.tabIndex);
 
+          // Remover active de todos los botones de ESTE grouper
           tabButtons.forEach(btn => btn.classList.remove('active'));
           tabPanels.forEach(panel => panel.classList.remove('active'));
 
           button.classList.add('active');
-          const targetPanel = container.querySelector(`[data-panel-index="${index}"]`);
-          if (targetPanel) {
-            targetPanel.classList.add('active');
+          
+          // Activar el panel correspondiente de ESTE grouper
+          if (tabPanels[index]) {
+            tabPanels[index].classList.add('active');
           }
         });
       });

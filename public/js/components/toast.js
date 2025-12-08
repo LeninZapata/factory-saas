@@ -1,5 +1,5 @@
 class toast {
-  static container = null;
+  static containers = {}; // Mapa de contenedores por posición
   static queue = [];
   static active = [];
   static maxVisible = 5;
@@ -36,8 +36,8 @@ class toast {
   }
 
   static display(message, config) {
-    this.ensureContainer(config.position);
-    
+    const container = this.ensureContainer(config.position);
+
     const toastEl = document.createElement('div');
     toastEl.className = `toast toast-${config.type}`;
     toastEl.innerHTML = `
@@ -46,7 +46,7 @@ class toast {
       <button class="toast-close" onclick="toast.remove(this.parentElement)">×</button>
     `;
 
-    this.container.appendChild(toastEl);
+    container.appendChild(toastEl);
     this.active.push(toastEl);
 
     setTimeout(() => toastEl.classList.add('toast-show'), 10);
@@ -56,13 +56,13 @@ class toast {
 
   static remove(toastEl) {
     if (!toastEl || !toastEl.classList.contains('toast-show')) return;
-    
+
     toastEl.classList.remove('toast-show');
-    
+
     setTimeout(() => {
       toastEl.remove();
       this.active = this.active.filter(t => t !== toastEl);
-      
+
       if (this.queue.length > 0) {
         const { message, config } = this.queue.shift();
         this.display(message, config);
@@ -71,14 +71,21 @@ class toast {
   }
 
   static ensureContainer(position) {
-    if (this.container?.dataset.position === position) return;
-    
-    this.container?.remove();
-    this.active = [];
-    this.container = document.createElement('div');
-    this.container.className = `toast-container toast-${position}`;
-    this.container.dataset.position = position;
-    document.body.appendChild(this.container);
+    // Si ya existe el contenedor para esta posición, retornarlo
+    if (this.containers[position]) {
+      return this.containers[position];
+    }
+
+    // Crear nuevo contenedor para esta posición
+    const container = document.createElement('div');
+    container.className = `toast-container toast-${position}`;
+    container.dataset.position = position;
+    document.body.appendChild(container);
+
+    // Guardar referencia
+    this.containers[position] = container;
+
+    return container;
   }
 
   static getIcon(type) {

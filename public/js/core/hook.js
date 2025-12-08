@@ -22,7 +22,7 @@ class hook {
 
         if (pluginConfig?.enabled) {
           this.pluginRegistry.set(pluginInfo.name, pluginConfig);
-          
+
           // ✅ Guardar copia original (sin filtrar)
           this.pluginRegistryOriginal.set(pluginInfo.name, JSON.parse(JSON.stringify(pluginConfig)));
 
@@ -99,11 +99,11 @@ class hook {
   static async tryLoadPluginLang(pluginName, lang) {
     const langPath = `${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json`;
     const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-    
+
     // Usar loader.loadJson con opción optional y silent
-    const translations = await loader.loadJson(langPath + cacheBuster, { 
-      optional: true, 
-      silent: true 
+    const translations = await loader.loadJson(langPath + cacheBuster, {
+      optional: true,
+      silent: true
     });
 
     if (!translations) return false;
@@ -114,7 +114,7 @@ class hook {
     }
     i18n.pluginTranslations.get(pluginName).set(lang, translations);
     cache.set(`i18n_plugin_${pluginName}_${lang}`, translations, 60 * 60 * 1000);
-    
+
     return true;
   }
 
@@ -193,7 +193,7 @@ class hook {
   // Filtrar menús solo por plugins enabled=true
   static getMenuItems() {
     const menuItems = [];
-    
+
     // Reconstruir menuItems desde pluginRegistry (que ya está filtrado por auth.js)
     for (const [pluginName, pluginConfig] of this.pluginRegistry) {
       // Solo incluir plugins habilitados
@@ -201,7 +201,7 @@ class hook {
         logger.debug('cor:hook', `Plugin "${pluginName}" oculto (enabled=${pluginConfig.enabled})`);
         continue;
       }
-      
+
       // Si el plugin tiene menú, agregarlo
       if (pluginConfig.hasMenu && pluginConfig.menu) {
         const menuItem = {
@@ -210,7 +210,7 @@ class hook {
           icon: pluginConfig.menu.icon,
           order: pluginConfig.menu.order || 100
         };
-        
+
         // Usar los items YA FILTRADOS del pluginConfig.menu
         if (pluginConfig.menu.items?.length > 0) {
           menuItem.items = pluginConfig.menu.items;
@@ -219,30 +219,30 @@ class hook {
           if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
           if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
         }
-        
+
         menuItems.push(menuItem);
       }
     }
-    
+
     // Ordenar por order
     menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
+
     logger.debug('cor:hook', `getMenuItems: ${menuItems.length} plugins visibles`);
-    
+
     // Log detallado de items por plugin
     menuItems.forEach(item => {
       if (item.items) {
         logger.debug('cor:hook', `  - ${item.id}: ${item.items.length} submenú${item.items.length !== 1 ? 's' : ''}`);
       }
     });
-    
+
     return menuItems;
   }
 
   // ✅ NUEVO: Obtener TODOS los plugins (sin filtrar por permisos)
   static getAllPluginsForPermissions() {
     const plugins = [];
-    
+
     // Usar la copia original (sin filtrar)
     for (const [name, config] of this.pluginRegistryOriginal) {
       plugins.push({
@@ -312,25 +312,119 @@ class hook {
   }
 
   static execute(hookName, defaultData = []) {
+    // Extraer el nombre base (sin el prefijo "hook_")
+    let baseName = hookName;
+    let hasPrefix = false;
+
+    if (hookName.startsWith('hook_')) {
+      baseName = hookName.replace('hook_', '');
+      hasPrefix = true;
+    }
+
+    // Normalizar el nombre si contiene guiones
+    // "admin-panel" → "adminPanel"
+    const normalizedName = this.normalizeHookName(baseName);
+
+    // Reconstruir el nombre completo del hook
+    const finalHookName = hasPrefix ? `hook_${normalizedName}` : normalizedName;
+
+    // Log solo si hubo normalización
+    if (baseName !== normalizedName) {
+      logger.debug('cor:hook', `Nombre normalizado: "${hookName}" → "${finalHookName}"`);
+    }
+
     let results = [...defaultData];
+
+    // Iterar sobre todos los plugins cargados
     for (const pluginName of this.loadedHooks) {
       if (!this.isPluginEnabled(pluginName)) continue;
+
       const hookClass = window[`${pluginName}Hooks`];
-      if (hookClass && typeof hookClass[hookName] === 'function') {
+
+      if (hookClass && typeof hookClass[finalHookName] === 'function') {
         try {
-          const hookResult = hookClass[hookName]();
+          logger.debug('cor:hook', `Ejecutando ${pluginName}Hooks.${finalHookName}()`);
+
+          const hookResult = hookClass[finalHookName]();
+
           if (Array.isArray(hookResult)) {
             const itemsWithOrder = hookResult.map(item => ({
               order: item.order || 999,
               ...item
             }));
             results = [...results, ...itemsWithOrder];
+          } else {
+            logger.warn('cor:hook', `${pluginName}.${finalHookName}() no retornó un array`);
           }
-        } catch (error) {}
+        } catch (error) {
+          logger.error('cor:hook', `Error ejecutando ${pluginName}.${finalHookName}():`, error);
+        }
       }
     }
-    results.sort((a, b) => a.order - b.order);
+
+    // Ordenar por campo "order"
+    results.sort((a, b) => (a.order || 999) - (b.order || 999));
+
+    if (results.length > defaultData.length) {
+      logger.debug('cor:hook', `Hook "${finalHookName}" agregó ${results.length - defaultData.length} items`);
+    }
+
     return results;
+  }
+
+  static async renderHookResult(hookResult, container) {
+    if (!hookResult || !container) return;
+
+    if (hookResult.type === 'html') {
+      // Renderizar HTML directo
+      const wrapper = document.createElement('div');
+      wrapper.id = hookResult.id;
+      wrapper.innerHTML = hookResult.content;
+      container.appendChild(wrapper);
+    }
+    else if (hookResult.type === 'component') {
+      // Renderizar componente
+      const wrapper = document.createElement('div');
+      wrapper.id = hookResult.id;
+      container.appendChild(wrapper);
+
+      const componentName = hookResult.component;
+
+      // Verificar que el componente existe
+      if (window[componentName] && typeof window[componentName].render === 'function') {
+        try {
+          await window[componentName].render(hookResult.config, wrapper);
+          logger.debug('cor:hook', `Componente "${componentName}" renderizado para hook "${hookResult.id}"`);
+        } catch (error) {
+          logger.error('cor:hook', `Error renderizando componente "${componentName}":`, error);
+          wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando componente ${componentName}</div>`;
+        }
+      } else {
+        logger.error('cor:hook', `Componente "${componentName}" no encontrado`);
+        wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
+      }
+    }
+  }
+
+  // Método helper para renderizar múltiples hooks en un contenedor
+  static async renderHooks(hookName, containerId, defaultData = []) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+      logger.error('cor:hook', `Container "${containerId}" no encontrado`);
+      return;
+    }
+
+    const results = this.execute(hookName, defaultData);
+
+    for (const result of results) {
+      await this.renderHookResult(result, container);
+    }
+
+    logger.debug('cor:hook', `Renderizados ${results.length} hooks en "${containerId}"`);
+  }
+
+  static normalizeHookName(viewId) {
+    return viewId.replace(/-([a-z0-9])/g, (match, char) => char.toUpperCase());
   }
 }
 

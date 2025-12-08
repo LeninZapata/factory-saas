@@ -45,13 +45,13 @@
       },
       {
         "id": "ejemplos-grouper",
-        "title": "📦 Grouper",
+        "title": "Grouper",
         "view": "sections/grouper-demo",
         "order": 6
       },
       {
         "id": "ejemplos-tabs",
-        "title": "📑 Tabs",
+        "title": "Tabs",
         "view": "sections/tabs-demo",
         "order": 7
       }

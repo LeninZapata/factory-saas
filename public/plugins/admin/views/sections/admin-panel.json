@@ -1,5 +1,5 @@
 {
-  "id": "admin-panel",
+  "id": "adminPanel",
   "title": "⚙️ Panel de Administración",
   "type": "tabs",
   "scripts": [
@@ -17,7 +17,8 @@
       "content": [
         {
           "type": "html",
-          "content": "<div class='view-header'><h2>👥 Gestión de Usuarios</h2><p>Administra usuarios del sistema y sus permisos</p></div>"
+          "content": "<div class='view-header'><h2>👥 Gestión de Usuarios</h2><p>Administra usuarios del sistema y sus permisos</p></div>",
+          "order": 0
         },
         {
           "type": "html",

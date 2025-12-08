@@ -4,6 +4,7 @@
   "enabled": true,
   "hasViews": true,
   "hasMenu": true,
+  "hasHooks": true,
   "description": "Administración del sistema",
   "menu": {
     "title": "Administración",

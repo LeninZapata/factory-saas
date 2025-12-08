@@ -5,20 +5,8 @@
       "description": "Ejemplos de uso del sistema"
     },
     {
-      "name": "inventario",
-      "description": "Módulo de gestión de inventario y productos"
-    },
-    {
       "name": "admin",
       "description": "Administración del sistema"
-    },
-    {
-      "name": "botmaster",
-      "description": "Sistema de automatización de bots"
-    },
-    {
-      "name": "clientes",
-      "description": "Modulo de clientes"
     }
   ]
 }
