@@ -1,0 +1,1 @@
+[2025-12-09 13:13:04]	ERROR	app	router.php:170	Response Error	{"code":404,"data":{"success":false,"error":"Route not found","path":"/api/users"}}

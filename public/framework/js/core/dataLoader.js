@@ -1,10 +1,10 @@
 class dataLoader {
-  static async load(config, pluginName = null) {
+  static async load(config, extensionName = null) {
     const type = config.type || 'auto';
 
     // Modo AUTO: Detecta automáticamente si usar API o Mock
     if (type === 'auto') {
-      return await this.loadAuto(config, pluginName);
+      return await this.loadAuto(config, extensionName);
     }
 
     // Modo API explícito
@@ -14,16 +14,16 @@ class dataLoader {
 
     // Modo MOCK explícito
     if (type === 'mock') {
-      return await this.loadFromMock(config, pluginName);
+      return await this.loadFromMock(config, extensionName);
     }
 
     logger.error('cor:dataLoader', `Tipo de dataSource no válido: ${type}`);
     return null;
   }
 
-  static async loadAuto(config, pluginName) {
-    // 1. Verificar si el plugin tiene backend habilitado
-    const pluginConfig = pluginName ? window.hook?.getPluginConfig(pluginName) : null;
+  static async loadAuto(config, extensionName) {
+    // 1. Verificar si el extension tiene backend habilitado
+    const pluginConfig = extensionName ? window.hook?.getPluginConfig(extensionName) : null;
     const backendEnabled = pluginConfig?.backend?.enabled || false;
 
     // 2. Verificar si el config tiene API habilitada
@@ -35,12 +35,12 @@ class dataLoader {
         return await this.loadFromApi(config.api);
       } catch (error) {
         logger.warn('cor:dataLoader', `API falló, fallback a mock: ${error.message}`);
-        return await this.loadFromMock(config.mock, pluginName);
+        return await this.loadFromMock(config.mock, extensionName);
       }
     }
 
     // Fallback a mock
-    return await this.loadFromMock(config.mock, pluginName);
+    return await this.loadFromMock(config.mock, extensionName);
   }
 
   static async loadFromApi(apiConfig) {
@@ -75,7 +75,7 @@ class dataLoader {
     }
   }
 
-  static async loadFromMock(mockConfig, pluginName) {
+  static async loadFromMock(mockConfig, extensionName) {
     if (!mockConfig || !mockConfig.file) {
       logger.error('cor:dataLoader', 'No se especificó archivo mock');
       return null;
@@ -85,9 +85,9 @@ class dataLoader {
       // Construir ruta del archivo mock
       let mockPath;
 
-      if (pluginName) {
-        // Mock de plugin
-        mockPath = `${window.BASE_URL}plugins/${pluginName}/${mockConfig.file}`;
+      if (extensionName) {
+        // Mock de extension
+        mockPath = `${window.BASE_URL}extensions/${extensionName}/${mockConfig.file}`;
       } else {
         // Mock global
         mockPath = `${window.BASE_URL}${mockConfig.file}`;
@@ -121,11 +121,11 @@ class dataLoader {
     }
   }
 
-  static async loadList(dataSourceConfig, pluginName) {
-    return await this.load(dataSourceConfig, pluginName);
+  static async loadList(dataSourceConfig, extensionName) {
+    return await this.load(dataSourceConfig, extensionName);
   }
 
-  static async loadDetail(dataLoaderConfig, id, pluginName) {
+  static async loadDetail(dataLoaderConfig, id, extensionName) {
     // Configurar filtro para mock
     if (dataLoaderConfig.mock) {
       dataLoaderConfig.mock.filterValue = id;
@@ -140,7 +140,7 @@ class dataLoader {
       dataLoaderConfig.api.endpoint = dataLoaderConfig.api.endpoint.replace('{id}', id);
     }
 
-    return await this.load(dataLoaderConfig, pluginName);
+    return await this.load(dataLoaderConfig, extensionName);
   }
 }
 

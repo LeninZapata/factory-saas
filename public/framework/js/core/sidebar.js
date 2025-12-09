@@ -155,17 +155,17 @@ class sidebar {
         } else if (menuData.view) {
           this.setActiveMenu(item);
 
-          const pluginName = this.detectPluginFromMenuId(menuId);
+          const extensionName = this.detectPluginFromMenuId(menuId);
 
           const menuResources = {
             scripts: menuData.scripts || [],
             styles: menuData.styles || []
           };
 
-          this.preloadSiblingViews(menuId, level, pluginName);
+          this.preloadSiblingViews(menuId, level, extensionName);
 
-          if (pluginName) {
-            view.loadView(menuData.view, null, pluginName, menuResources, null, menuId);
+          if (extensionName) {
+            view.loadView(menuData.view, null, extensionName, menuResources, null, menuId);
           } else {
             view.loadView(menuData.view, null, null, menuResources, null, menuId);
           }
@@ -174,7 +174,7 @@ class sidebar {
     });
   }
 
-  static preloadSiblingViews(currentMenuId, currentLevel, pluginName) {
+  static preloadSiblingViews(currentMenuId, currentLevel, extensionName) {
     const parentMenu = this.findParentMenu(currentMenuId, currentLevel);
     const siblings = parentMenu ? parentMenu.items : this.menuData.menu;
 
@@ -183,7 +183,7 @@ class sidebar {
     let preloadCount = 0;
     siblings.forEach(sibling => {
       if (sibling.id !== currentMenuId && sibling.preloadViews === true && sibling.view) {
-        this.preloadView(sibling.view, pluginName);
+        this.preloadView(sibling.view, extensionName);
         preloadCount++;
       }
     });
@@ -193,14 +193,14 @@ class sidebar {
     }
   }
 
-  static async preloadView(viewPath, pluginName) {
+  static async preloadView(viewPath, extensionName) {
     try {
       let basePath, fullPath, cacheKey;
 
-      if (pluginName) {
-        basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+      if (extensionName) {
+        basePath = window.appConfig?.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
-        cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
+        cacheKey = `view_${extensionName}_${viewPath.replace(/\//g, '_')}`;
       } else {
         basePath = window.appConfig?.routes?.coreViews || 'js/views';
         fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
@@ -219,7 +219,7 @@ class sidebar {
         window.cache?.set(cacheKey, viewData);
       }
     } catch (error) {
-      logger.warn('cor:sidebar', `No se pudo precargar: ${pluginName ? pluginName + '/' : ''}${viewPath}`);
+      logger.warn('cor:sidebar', `No se pudo precargar: ${extensionName ? extensionName + '/' : ''}${viewPath}`);
     }
   }
 
@@ -251,9 +251,9 @@ class sidebar {
   }
 
   static detectPluginFromMenuId(menuId) {
-    for (const [pluginName, pluginConfig] of Object.entries(view.loadedPlugins)) {
-      if (menuId.startsWith(`${pluginName}-`)) {
-        return pluginName;
+    for (const [extensionName, pluginConfig] of Object.entries(view.loadedExtensions)) {
+      if (menuId.startsWith(`${extensionName}-`)) {
+        return extensionName;
       }
     }
 

@@ -1,82 +1,34 @@
 por donde me quede:
-  ☐ crea ejemplo de hooks donde ingrese contenido filtrando de otro lado
-  ☐ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta
-  ☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
-  ☐ crear un endpoint de systema donde devuelve todos los endpoints disponibles en el sistema
-  luego puedes crear un vista de sistema que llame a esto para llenar una tabla de endpoints
-  y este a su vez es llamado por el plugin admin para mostrar los endpoints disponibles
-  es donde se vera que tipo de layout sera entonces primero los elementos deben ser responsive
-  y luego el layout debe acomodarse a eso.
-  ✔ Debes organizar bien todos los ejemplos porque la plena que estan desordenados y no se entiende bien @done(05-12-2025 22:00)
-  es decir en ejemplos debe estar todo lo que el sistema hace en si
-  ✘ las variables globales creo que debe ponerlo con un prefijo para evitar conflictos con otros plugins @cancelled(05-12-2025 22:00)
-  porque por ejemplo si un plugin define una variable global llamada 'data' y otro plugin tambien define
-  una variable global llamada 'data' entonces habra un conflicto.
-  Y si vas usar el mismo framework para wordpress entonces se va confundir con las variables globales de wordpress
-  en el frontend, es muy probable que pase esto.
-  SOLUCION: se ha decidido hacer apartados diferentes para cada tema es decir para saas y wordpress
-  ✔ Se daño el demo de formulario de item repetibles anidados, no funciona @done(04-12-2025 23:52)
-  ✔ Se daño el demo de formulario de anidados repetible dentro de un modal @done(04-12-2025 23:52)
-  ✔ el datatable no carga a nivel de a/api algo pasa @done(03-12-2025 19:43)
-  ✘ hacer otra vez el ejercicio de crear un plugin desde 0 y ver si hay errores @cancelled(04-12-2025 23:52)
-  seria bueno poner el ejemplo de crear un plugin de cliente desde 0 en la documentacion
-  pero con todo simplificado para evitar que el documento explote.
-  ✘ pide a la ai que reOrganice el plugin de EJEMPLOS para que sea mas facil de entender @cancelled(04-12-2025 23:58)
-  y que tenga ejemplos de formularios, tablas, vistas, modales, etc...
-  SOLUCION:parece quesi estan ordenados bien
-  ✔ en el manual no esta como manejar lo logger @done(03-12-2025 19:46)
-  ☐ ### Vista con Widgets (Dashboard): en esta parte del documento hay que sacarlo porque debe trabajar igual que la tabla osea 
-  con 'source' hay que ver si se refactoriza el componente de widgets para que funcione igual que la tabla en caso se pida 
-  datos de endpoint
-  ✔ Errores al generar plugin: @done(04-12-2025 23:53)
-✔ quiero que de alguna forma un plugin solo sea cargado si el rol o id del usuario tiene permiso a ese plugin @done(30-11-2025 12:42)
-por ejemplo  si role = 'admin' or idUser = 1 entonces carga el plugin en este caso 'admin'
-SOLUCION: ahora lo hace per solo con campos del form.js
+☐ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta
+☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
 ☐ agrega las reglas de copiloto para la AI en el proyecto
-✔ revisa los errores del asisten al momento de crear un plugin y agregarlos a la documentacion @done(30-11-2025 15:40)
-✔ revisa porque no se muestran los usuairo, creo que porque se cambio un poco las rutas, hay que revisar @done(08-12-2025 16:09)
-pendientes:
-✔ Implementar el login @done(20-11-2025 19:10)
-✔ limpiar los console log de los archivos de core @done(20-11-2025 19:10)
-✔ conditions.js en los formularios @don e(20-11-2025 23:10)
-✔ cuando le das clic en un menu o submenu que al darle de nuevo no se cargue de nuevo la vista @done(22-11-2025 01:48)
-✔ poner un active al menu o submenu activo con un estilo porque no lo hace @done(21-11-2025 21:51)
-✔ hook entre plugins aunque creo que ya lo hace, seria entre forms @done(22-11-2025 22:39)
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ tabla con filtros que puede ser lineal o un modal con filtros.
-✔ Obtener valores para un formulario desde una API externa simulado de JSON @done(24-11-2025 14:49)
-ya que se requiere para un proyecto que se vean los campos precargado
-como por ejemplo losplugins wp o joomla que traen campos precargados
-✔ cunado haces campos agrupados, por ejemplo si pones uno de 3 colummnas y hay 4 elementos entonces @done(22-11-2025 22:49)
-debe respetar el agrupamiento y poner el 4to elemento en la siguiente fila
-✔ Hacer que se cargue toda una vista por defecto o varias vistas por menu o submenu @done(24-11-2025 11:55)
-es decir si un submenu tiene tabs entonces que cargue todas las tabs al iniciar la vista
-y no solo la tab activa.
-✔ La posibilidad de que se pueda cambiar el idioma de la pagina sin recargar la pagina @done(23-11-2025 01:08)
-mediante que debe los elementos tenede un data-attribute con el texto del key del idioma
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
-✔ permission.css aun esta en un lugar que debe, llevalo a la carpeta de plugin @done(04-12-2025 23:54)
-✔ console.log inteligentes: @done(25-11-2025 20:45)
- _ pide a la AI que te muestre como hacer console.log que muestren en modulo primero que se esta ejecutando por archivo
- _ que muestren por ejemplo en el main si quieres solo mostrar los console log de un modulo o archivo
- _ que muestren el tiempo que tarda en ejecutarse una funcion o metodo y que lo muestre en el console log
- _ que muestren advertencias si una funcion tarda mas de X tiempo en ejecutarse 
- _ Que muestre colores por medio de warn, log, debug, info, success... (si se puede poner colores en esto)
- _ Identificar si es un componente, modulo o archivo y mostrarlo en el console log
-☐ Log de backend para ver errores a nivel de vistas
+☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
+una persona normal no podria ver X tab pero si un admin.
+✔ Log de backend para ver errores a nivel de vistas @done(09-12-2025 12:23)
  _ que se pueda separar estos logs por usuario/años/mes/dia. entonces se podria ver todo lo que pasa
  _ que estos los se puede ver visualmente y clasificar estos logs son en archivos de texto .log
- _ que se pueda buscar en estos logs por palabras claves o errorse comunes
+ _ que se pueda buscar en estos logs por palabras claves o errorse comunes.
+ _ REVISAR como hacer para tener los filtros o separaciones tipo bot/año/mes o año/mes/dia/bot entonces
+ hay que ver como la AI te resuelve esto. y basado en esto filtrarlo con una router para poder
+ verlo en un interface.
 ☐ Por ejemplo si el modal se le agrega boton como de guardar como se le agrega que tiene que guardar el formularo actual
 actualmente el modal y si adentro hay un form pues hace un lastst para ver el ultimo form y guardar de eso
 pero si se pone el boton en el modal como se haria para que reacione a ese formulario.
 ☐ Sistema de idioma en el backend como frontend en los mensajes de errores e integracion con plugins que manejen sus propios idiomas
  _ que se pueda editar los textos de los idiomas del backend
-✔ Cuando haces cambios en el usuario debes considerar actualizar la session o eliminarla @done(04-12-2025 23:54)
-✔ mE FALTO en form transformation, MAX, MIN ya que como se pude manejar atributos toca asi, mirar user-form.json @done(04-12-2025 23:57)
 ___
+☐ persistencia en widgets posicion
+☐ crear la vista de endpoints para que se pueda ver los endpoints creados en el sistema
+ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
+y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
+☐ recuerda la conversacion que tienes con AI donde decia que habia que hacer unos pequeños cambios
+  para que el sistema se adapte a react native https://claude.ai/chat/56f2b1d7-d4c1-4785-952e-f4f7b4a8570e
 Despues:
+☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Acces 
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
@@ -85,5 +37,6 @@ o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuar
 ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
 ☐ En el condicionaal aunq funciona bien pero en consola log envia un error cada vez hace condiciones es como que buscar unos campos
 y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.
-☐ los hooks estan que filtran html pero no los demas tipos de campos como los inputs, selects, textareas, vistas o no se parece
+✔ los hooks estan que filtran html pero no los demas tipos de campos como los inputs, selects, textareas, vistas o no se parece @done(08-12-2025 23:58)
 que solo esta que filtrar html.
+☐ idioma desde el core de cada backend y frontend...

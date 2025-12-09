@@ -4,7 +4,7 @@ class scraperController {
   function createJob($data) {
     validation::required($data, ['url', 'selector']);
 
-    // Guardar en tabla del plugin
+    // Guardar en tabla del extension
     $jobId = db::table('scraper_jobs')->insert([
       'url' => $data['url'],
       'selector' => $data['selector'],
@@ -19,7 +19,7 @@ class scraperController {
     $job = db::table('scraper_jobs')->find($id);
     if (!$job) response::notFound('Job not found');
 
-    // Usar servicio del plugin
+    // Usar servicio del extension
     $scraper = new puppeteerService();
     $result = $scraper->scrape($job['url'], $job['selector']);
 

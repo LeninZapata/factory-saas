@@ -10,14 +10,14 @@ class hook {
     this.menuItems = [];
 
     try {
-      const registry = await api.get('plugins/index.json');
+      const registry = await api.get('extensions/index.json');
 
-      if (!registry?.plugins || !Array.isArray(registry.plugins)) {
-        logger.warn('cor:hook', 'plugins/index.json vacío o mal formado');
+      if (!registry?.extensions || !Array.isArray(registry.extensions)) {
+        logger.warn('cor:hook', 'extensions/index.json vacío o mal formado');
         return;
       }
 
-      const pluginLoadPromises = registry.plugins.map(async (pluginInfo) => {
+      const pluginLoadPromises = registry.extensions.map(async (pluginInfo) => {
         const pluginConfig = await this.loadPluginConfig(pluginInfo.name);
 
         if (pluginConfig?.enabled) {
@@ -76,19 +76,19 @@ class hook {
       this.menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
       const endTime = performance.now();
-      logger.debug('cor:hook', `${this.loadedHooks.size} plugins cargados en ${(endTime - startTime).toFixed(0)}ms`);
+      logger.debug('cor:hook', `${this.loadedHooks.size} extensions cargados en ${(endTime - startTime).toFixed(0)}ms`);
 
     } catch (error) {
-      logger.error('cor:hook', 'Error cargando plugins:', error);
+      logger.error('cor:hook', 'Error cargando extensions:', error);
     }
   }
 
-  static async loadPluginLanguages(pluginName) {
+  static async loadPluginLanguages(extensionName) {
     if (!window.i18n) return;
     const currentLang = i18n.getLang();
-    const loaded = await this.tryLoadPluginLang(pluginName, currentLang);
+    const loaded = await this.tryLoadPluginLang(extensionName, currentLang);
     if (loaded) {
-      const pluginConfig = this.pluginRegistry.get(pluginName);
+      const pluginConfig = this.pluginRegistry.get(extensionName);
       if (pluginConfig) {
         pluginConfig.hasLanguages = true;
         pluginConfig.loadedLanguages = [currentLang];
@@ -96,8 +96,8 @@ class hook {
     }
   }
 
-  static async tryLoadPluginLang(pluginName, lang) {
-    const langPath = `${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json`;
+  static async tryLoadPluginLang(extensionName, lang) {
+    const langPath = `${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json`;
     const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
 
     // Usar loader.loadJson con opción optional y silent
@@ -109,16 +109,16 @@ class hook {
     if (!translations) return false;
 
     // Guardar traducciones
-    if (!i18n.pluginTranslations.has(pluginName)) {
-      i18n.pluginTranslations.set(pluginName, new Map());
+    if (!i18n.exntesionTranslations.has(extensionName)) {
+      i18n.exntesionTranslations.set(extensionName, new Map());
     }
-    i18n.pluginTranslations.get(pluginName).set(lang, translations);
-    cache.set(`i18n_plugin_${pluginName}_${lang}`, translations, 60 * 60 * 1000);
+    i18n.exntesionTranslations.get(extensionName).set(lang, translations);
+    cache.set(`i18n_extension_${extensionName}_${lang}`, translations, 60 * 60 * 1000);
 
     return true;
   }
 
-  static async preloadPluginViews(pluginName, pluginConfig) {
+  static async preloadPluginViews(extensionName, pluginConfig) {
     if (!pluginConfig.menu?.items) return;
     const viewsToPreload = [];
     const collectViews = (items) => {
@@ -131,29 +131,29 @@ class hook {
 
     for (const viewPath of viewsToPreload) {
       try {
-        const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+        const basePath = window.appConfig?.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
         const fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
         const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
         const response = await fetch(fullPath + cacheBuster);
         if (response.ok) {
           const viewData = await response.json();
-          const cacheKey = `view_${pluginName}_${viewPath.replace(/\//g, '_')}`;
+          const cacheKey = `view_${extensionName}_${viewPath.replace(/\//g, '_')}`;
           window.cache?.set(cacheKey, viewData);
         }
       } catch (error) {}
     }
   }
 
-  static async loadPluginScript(pluginName, scriptFile) {
+  static async loadPluginScript(extensionName, scriptFile) {
     try {
-      const scriptPath = `plugins/${pluginName}/${scriptFile}`;
+      const scriptPath = `extensions/${extensionName}/${scriptFile}`;
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
       const response = await fetch(`${window.BASE_URL}${scriptPath}${cacheBuster}`);
       if (!response.ok) return;
       const scriptContent = await response.text();
       new Function(scriptContent)();
     } catch (error) {
-      logger.error('cor:hook', `Error cargando autoload ${pluginName}:`, error.message);
+      logger.error('cor:hook', `Error cargando autoload ${extensionName}:`, error.message);
     }
   }
 
@@ -190,22 +190,22 @@ class hook {
       .sort((a, b) => (a.order || 100) - (b.order || 100));
   }
 
-  // Filtrar menús solo por plugins enabled=true
+  // Filtrar menús solo por extensions enabled=true
   static getMenuItems() {
     const menuItems = [];
 
     // Reconstruir menuItems desde pluginRegistry (que ya está filtrado por auth.js)
-    for (const [pluginName, pluginConfig] of this.pluginRegistry) {
-      // Solo incluir plugins habilitados
+    for (const [extensionName, pluginConfig] of this.pluginRegistry) {
+      // Solo incluir extensions habilitados
       if (pluginConfig.enabled !== true) {
-        logger.debug('cor:hook', `Plugin "${pluginName}" oculto (enabled=${pluginConfig.enabled})`);
+        logger.debug('cor:hook', `Extension "${extensionName}" oculto (enabled=${pluginConfig.enabled})`);
         continue;
       }
 
-      // Si el plugin tiene menú, agregarlo
+      // Si el extension tiene menú, agregarlo
       if (pluginConfig.hasMenu && pluginConfig.menu) {
         const menuItem = {
-          id: pluginConfig.name || pluginName,
+          id: pluginConfig.name || extensionName,
           title: pluginConfig.menu.title,
           icon: pluginConfig.menu.icon,
           order: pluginConfig.menu.order || 100
@@ -227,9 +227,9 @@ class hook {
     // Ordenar por order
     menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-    logger.debug('cor:hook', `getMenuItems: ${menuItems.length} plugins visibles`);
+    logger.debug('cor:hook', `getMenuItems: ${menuItems.length} extensions visibles`);
 
-    // Log detallado de items por plugin
+    // Log detallado de items por extension
     menuItems.forEach(item => {
       if (item.items) {
         logger.debug('cor:hook', `  - ${item.id}: ${item.items.length} submenú${item.items.length !== 1 ? 's' : ''}`);
@@ -239,13 +239,13 @@ class hook {
     return menuItems;
   }
 
-  // ✅ NUEVO: Obtener TODOS los plugins (sin filtrar por permisos)
+  // ✅ NUEVO: Obtener TODOS los extensions (sin filtrar por permisos)
   static getAllPluginsForPermissions() {
-    const plugins = [];
+    const extensions = [];
 
     // Usar la copia original (sin filtrar)
     for (const [name, config] of this.pluginRegistryOriginal) {
-      plugins.push({
+      extensions.push({
         name,
         hasMenu: config.hasMenu || false,
         hasViews: config.hasViews || false,
@@ -254,40 +254,40 @@ class hook {
       });
     }
 
-    logger.debug('cor:hook', `getAllPluginsForPermissions: ${plugins.length} plugins disponibles`);
-    return plugins;
+    logger.debug('cor:hook', `getAllPluginsForPermissions: ${extensions.length} extensions disponibles`);
+    return extensions;
   }
 
-  static async loadPluginConfig(pluginName) {
+  static async loadPluginConfig(extensionName) {
     try {
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
-      return await api.get(`plugins/${pluginName}/index.json${cacheBuster}`);
+      return await api.get(`extensions/${extensionName}/index.json${cacheBuster}`);
     } catch (error) {
-      return { name: pluginName, enabled: false, hasHooks: false };
+      return { name: extensionName, enabled: false, hasHooks: false };
     }
   }
 
-  static async loadPluginHook(pluginName) {
+  static async loadPluginHook(extensionName) {
     try {
-      const hookPath = `plugins/${pluginName}/hooks.js`;
+      const hookPath = `extensions/${extensionName}/hooks.js`;
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
       const response = await fetch(`${window.BASE_URL}${hookPath}${cacheBuster}`);
       if (!response.ok) return;
       const scriptContent = await response.text();
       new Function(scriptContent)();
-      const hookClassName = `${pluginName}Hooks`;
+      const hookClassName = `${extensionName}Hooks`;
       if (window[hookClassName]) {
-        this.loadedHooks.add(pluginName);
+        this.loadedHooks.add(extensionName);
       }
     } catch (error) {}
   }
 
-  static getPluginConfig(pluginName) {
-    return this.pluginRegistry.get(pluginName);
+  static getPluginConfig(extensionName) {
+    return this.pluginRegistry.get(extensionName);
   }
 
-  static isPluginEnabled(pluginName) {
-    const config = this.pluginRegistry.get(pluginName);
+  static isExtensionEnabled(extensionName) {
+    const config = this.pluginRegistry.get(extensionName);
     return config ? config.enabled === true : false;
   }
 
@@ -301,13 +301,13 @@ class hook {
     return enabled;
   }
 
-  static hasPluginLanguages(pluginName) {
-    const config = this.pluginRegistry.get(pluginName);
+  static hasPluginLanguages(extensionName) {
+    const config = this.pluginRegistry.get(extensionName);
     return config?.hasLanguages || false;
   }
 
-  static getPluginLanguages(pluginName) {
-    const config = this.pluginRegistry.get(pluginName);
+  static getPluginLanguages(extensionName) {
+    const config = this.pluginRegistry.get(extensionName);
     return config?.loadedLanguages || [];
   }
 
@@ -335,15 +335,15 @@ class hook {
 
     let results = [...defaultData];
 
-    // Iterar sobre todos los plugins cargados
-    for (const pluginName of this.loadedHooks) {
-      if (!this.isPluginEnabled(pluginName)) continue;
+    // Iterar sobre todos los extensions cargados
+    for (const extensionName of this.loadedHooks) {
+      if (!this.isExtensionEnabled(extensionName)) continue;
 
-      const hookClass = window[`${pluginName}Hooks`];
+      const hookClass = window[`${extensionName}Hooks`];
 
       if (hookClass && typeof hookClass[finalHookName] === 'function') {
         try {
-          logger.debug('cor:hook', `Ejecutando ${pluginName}Hooks.${finalHookName}()`);
+          logger.debug('cor:hook', `Ejecutando ${extensionName}Hooks.${finalHookName}()`);
 
           const hookResult = hookClass[finalHookName]();
 
@@ -354,10 +354,10 @@ class hook {
             }));
             results = [...results, ...itemsWithOrder];
           } else {
-            logger.warn('cor:hook', `${pluginName}.${finalHookName}() no retornó un array`);
+            logger.warn('cor:hook', `${extensionName}.${finalHookName}() no retornó un array`);
           }
         } catch (error) {
-          logger.error('cor:hook', `Error ejecutando ${pluginName}.${finalHookName}():`, error);
+          logger.error('cor:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
         }
       }
     }

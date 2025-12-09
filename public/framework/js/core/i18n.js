@@ -1,7 +1,7 @@
 class i18n {
   static currentLang = 'es';
   static translations = new Map();
-  static pluginTranslations = new Map();
+  static exntesionTranslations = new Map();
   static defaultLang = 'es';
   static availableLangs = ['es', 'en'];
   static config = {};
@@ -52,8 +52,8 @@ class i18n {
     this.translations.set(lang, data);
   }
 
-  static async loadPluginLang(pluginName, lang) {
-    const cacheKey = `i18n_plugin_${pluginName}_${lang}`;
+  static async loadExtensionLang(extensionName, lang) {
+    const cacheKey = `i18n_extension_${extensionName}_${lang}`;
     let data = cache.get(cacheKey);
 
     if (!data) {
@@ -61,7 +61,7 @@ class i18n {
         const cacheBuster = window.appConfig?.isDevelopment
         ? `?v=${Date.now()}`
         : `?v=${window.appConfig.version}`;
-        const response = await fetch(`${window.BASE_URL}plugins/${pluginName}/lang/${lang}.json${cacheBuster}`);
+        const response = await fetch(`${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json${cacheBuster}`);
 
         if (response.ok) {
           data = await response.json();
@@ -74,11 +74,11 @@ class i18n {
       }
     }
 
-    if (!this.pluginTranslations.has(pluginName)) {
-      this.pluginTranslations.set(pluginName, new Map());
+    if (!this.exntesionTranslations.has(extensionName)) {
+      this.exntesionTranslations.set(extensionName, new Map());
     }
 
-    this.pluginTranslations.get(pluginName).set(lang, data);
+    this.exntesionTranslations.get(extensionName).set(lang, data);
   }
 
   static t(key, params = {}) {
@@ -87,13 +87,13 @@ class i18n {
 
     let translation = null;
 
-    // Buscar en plugin primero (si key empieza con nombre de plugin)
-    if (this.pluginTranslations.has(prefix)) {
-      const pluginLangs = this.pluginTranslations.get(prefix);
-      const pluginData = pluginLangs.get(lang);
+    // Buscar en exntesion primero (si key empieza con nombre de exntesion)
+    if (this.exntesionTranslations.has(prefix)) {
+      const extensionLangs = this.exntesionTranslations.get(prefix);
+      const extensionData = extensionLangs.get(lang);
 
-      if (pluginData) {
-        translation = pluginData[key];
+      if (extensionData) {
+        translation = extensionData[key];
       }
     }
 
@@ -129,9 +129,9 @@ class i18n {
 
     await this.loadCoreLang(lang);
 
-    // Recargar idiomas de plugins activos
-    for (const pluginName of this.pluginTranslations.keys()) {
-      await this.loadPluginLang(pluginName, lang);
+    // Recargar idiomas de extensions activos
+    for (const extensionName of this.exntesionTranslations.keys()) {
+      await this.loadExtensionLang(extensionName, lang);
     }
 
     this.currentLang = lang;
@@ -234,7 +234,7 @@ class i18n {
 
   static clearCache() {
     this.translations.clear();
-    this.pluginTranslations.clear();
+    this.exntesionTranslations.clear();
   }
 }
 

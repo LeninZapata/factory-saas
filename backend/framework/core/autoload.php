@@ -18,7 +18,7 @@ spl_autoload_register(function ($class) {
     'controller' => FRAMEWORK_PATH . '/core/controller.php',
     'router' => FRAMEWORK_PATH . '/core/router.php',
     'resource' => FRAMEWORK_PATH . '/core/resource.php',
-    'pluginloader' => FRAMEWORK_PATH . '/core/pluginLoader.php',
+    'extensionloader' => FRAMEWORK_PATH . '/core/extensionLoader.php',
 
     // Middleware (framework)
     'authmiddleware' => FRAMEWORK_PATH . '/middleware/authMiddleware.php',
@@ -41,7 +41,7 @@ spl_autoload_register(function ($class) {
     return;
   }
 
-  // Búsqueda dinámica (fallback para plugins y clases no mapeadas)
+  // Búsqueda dinámica (fallback para extension y clases no mapeadas)
 
   // Helpers (framework)
   $helperFile = FRAMEWORK_PATH . '/helpers/' . $classLower . '.php';

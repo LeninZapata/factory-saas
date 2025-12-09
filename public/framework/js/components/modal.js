@@ -78,22 +78,22 @@ class modal {
         return;
       }
 
-      // Formulario de plugin con prefijo "plugin:"
-      if (typeof resource === 'string' && resource.startsWith('plugin:')) {
-        const pluginPath = resource.replace('plugin:', '');
-        logger.debug('com:modal', `Cargando formulario plugin: "${pluginPath}"`);
+      // Formulario de extension con prefijo "extension:"
+      if (typeof resource === 'string' && resource.startsWith('extension:')) {
+        const pluginPath = resource.replace('extension:', '');
+        logger.debug('com:modal', `Cargando formulario extension: "${pluginPath}"`);
 
         const afterRenderCallback = options.afterRender || null;
         await form.load(pluginPath, content, null, false, afterRenderCallback);
         return;
       }
 
-      // Formulario de plugin (legacy): "ejemplos|forms/login"
+      // Formulario de extension (legacy): "ejemplos|forms/login"
       if (typeof resource === 'string' && resource.includes('|forms/')) {
-        const [pluginName, formPath] = resource.split('|');
+        const [extensionName, formPath] = resource.split('|');
         const formName = formPath.replace('forms/', '');
-        logger.debug('com:modal', `Cargando formulario plugin: "${pluginName}/${formName}"`);
-        await form.load(`${pluginName}/${formName}`, content, null, false);
+        logger.debug('com:modal', `Cargando formulario extension: "${extensionName}/${formName}"`);
+        await form.load(`${extensionName}/${formName}`, content, null, false);
         return;
       }
 
@@ -114,13 +114,13 @@ class modal {
         return;
       }
 
-      // Vista de plugin: "user|sections/user"
+      // Vista de extension: "user|sections/user"
       if (typeof resource === 'string' && resource.includes('|')) {
-        const [plugin, viewPath] = resource.split('|');
-        logger.debug('com:modal', `Cargando vista plugin: "${plugin}/${viewPath}"`);
+        const [extension, viewPath] = resource.split('|');
+        logger.debug('com:modal', `Cargando vista extension: "${extension}/${viewPath}"`);
 
         const afterRenderCallback = options.afterRender || null;
-        await view.loadView(`${viewPath}`, content, plugin, null, afterRenderCallback);
+        await view.loadView(`${viewPath}`, content, extension, null, afterRenderCallback);
         return;
       }
 
@@ -179,9 +179,9 @@ class modal {
 
     const { modalId, loadPromise } = this.open(resource, options);
 
-    let pluginName = null;
+    let extensionName = null;
     if (resource.includes('|')) {
-      pluginName = resource.split('|')[0];
+      extensionName = resource.split('|')[0];
     }
 
     let dataLoaderConfig = options.dataLoader;
@@ -195,8 +195,8 @@ class modal {
       }
     }
 
-    if (!dataLoaderConfig && pluginName) {
-      const pluginConfig = window.hook?.getPluginConfig(pluginName);
+    if (!dataLoaderConfig && extensionName) {
+      const pluginConfig = window.hook?.getPluginConfig(extensionName);
       if (pluginConfig?.backend) {
         dataLoaderConfig = {
           type: 'auto',
@@ -206,7 +206,7 @@ class modal {
           },
           mock: pluginConfig.mockData
         };
-        logger.debug('com:modal', 'DataLoader construido desde plugin config');
+        logger.debug('com:modal', 'DataLoader construido desde extension config');
       }
     }
 
@@ -215,7 +215,7 @@ class modal {
         await loadPromise;
         logger.debug('com:modal', 'Contenido cargado');
 
-        const data = await dataLoader.loadDetail(dataLoaderConfig, options.id, pluginName);
+        const data = await dataLoader.loadDetail(dataLoaderConfig, options.id, extensionName);
         logger.debug('com:modal', 'Datos cargados', data);
 
         const modalContent = document.querySelector(`#${modalId} .modal-content`);

@@ -22,9 +22,9 @@ class form {
       }
       else if (isCore === false) {
         const parts = formName.split('/');
-        const pluginName = parts[0];
+        const extensionName = parts[0];
         const restPath = parts.slice(1).join('/');
-        const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+        const basePath = window.appConfig?.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
         url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
       }
       else if (formName.startsWith('core:')) {
@@ -36,13 +36,13 @@ class form {
         const parts = formName.split('/');
         const firstPart = parts[0];
 
-        const isPlugin = window.view?.loadedPlugins?.[firstPart] ||
-                        window.hook?.isPluginEnabled?.(firstPart);
+        const isExtension = window.view?.loadedExtensions?.[firstPart] ||
+                        window.hook?.isExtensionEnabled?.(firstPart);
 
-        if (isPlugin) {
-          const pluginName = parts[0];
+        if (isExtension) {
+          const extensionName = parts[0];
           const restPath = parts.slice(1).join('/');
-          const basePath = window.appConfig?.routes?.pluginViews?.replace('{pluginName}', pluginName) || `plugins/${pluginName}/views`;
+          const basePath = window.appConfig?.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
           url = `${window.BASE_URL}${basePath}/forms/${restPath}.json`;
         } else {
           const basePath = window.appConfig?.routes?.coreViews || 'js/views';

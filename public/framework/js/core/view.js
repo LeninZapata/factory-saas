@@ -1,12 +1,12 @@
 class view {
   static views = {};
-  static loadedPlugins = {};
+  static loadedExtensions = {};
   static viewNavigationCache = new Map();
   static lastSessionCheck = 0;
   static SESSION_CHECK_INTERVAL = 30000;
 
-  static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null, menuId = null) {
-    const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
+  static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
+    const navCacheKey = `nav_${extensionContext || 'core'}_${viewName}`;
 
     if (!container && window.appConfig?.cache?.viewNavigation) {
       if (this.viewNavigationCache.has(navCacheKey)) {
@@ -40,9 +40,9 @@ class view {
 
     const frameworkPath = window.appConfig?.frameworkPath || 'framework';
 
-    if (pluginContext) {
-      basePath = `plugins/${pluginContext}/views`;
-      cacheKey = `plugin_view_${pluginContext}_${viewName.replace(/\//g, '_')}`;
+    if (extensionContext) {
+      basePath = `extensions/${extensionContext}/views`;
+      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.startsWith('core:')) {
       viewName = viewName.replace('core:', '');
@@ -52,13 +52,13 @@ class view {
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
       const firstPart = parts[0];
-      const isPlugin = window.hook?.isPluginEnabled?.(firstPart);
-      if (isPlugin) {
-        basePath = `plugins/${firstPart}/views`;
+      const isExtension = window.hook?.isExtensionEnabled?.(firstPart);
+      if (isExtension) {
+        basePath = `extensions/${firstPart}/views`;
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
-        cacheKey = `plugin_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
-        pluginContext = firstPart;
+        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
+        extensionContext = firstPart;
       } else {
         basePath = `${frameworkPath}/js/views`;
         cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
@@ -81,7 +81,7 @@ class view {
           if (container) {
             throw new Error(`Vista no encontrada: ${viewName}`);
           }
-          const found = await this.findViewInPlugins(viewName, container);
+          const found = await this.findViewInExtensions(viewName, container);
           if (!found) {
             throw new Error(`Vista no encontrada: ${viewName}`);
           }
@@ -95,9 +95,9 @@ class view {
         }
       }
 
-      if (viewData.tabs && pluginContext) {
+      if (viewData.tabs && extensionContext) {
         const effectiveMenuId = menuId || viewData.id;
-        viewData.tabs = this.filterTabsByPermissions(viewData.tabs, pluginContext, effectiveMenuId);
+        viewData.tabs = this.filterTabsByPermissions(viewData.tabs, extensionContext, effectiveMenuId);
       }
 
       const combinedData = this.combineResources(viewData, menuResources);
@@ -137,27 +137,27 @@ class view {
     }
   }
 
-  static filterTabsByPermissions(tabs, pluginName, menuId) {
+  static filterTabsByPermissions(tabs, extensionName, menuId) {
     if (window.auth?.user?.role === 'admin') return tabs;
 
-    if (!window.auth?.userPermissions?.plugins) {
+    if (!window.auth?.userPermissions?.extensions) {
       logger.warn('cor:view', 'Usuario sin permisos - ocultando tabs');
       return [];
     }
 
-    const pluginPerms = window.auth.userPermissions.plugins[pluginName];
+    const extensionPerms = window.auth.userPermissions.extensions[extensionName];
 
-    if (!pluginPerms || pluginPerms.enabled === false) {
-      logger.warn('cor:view', `Plugin ${pluginName} sin permisos`);
+    if (!extensionPerms || extensionPerms.enabled === false) {
+      logger.warn('cor:view', `Extension ${extensionName} sin permisos`);
       return [];
     }
 
-    if (!pluginPerms.menus || pluginPerms.menus === '*') {
-      logger.debug('cor:view', `Plugin ${pluginName} con acceso total`);
+    if (!extensionPerms.menus || extensionPerms.menus === '*') {
+      logger.debug('cor:view', `Extension ${extensionName} con acceso total`);
       return tabs;
     }
 
-    const menuPerms = pluginPerms.menus[menuId];
+    const menuPerms = extensionPerms.menus[menuId];
 
     if (menuPerms === true) {
       logger.debug('cor:view', `Menú ${menuId} con acceso total`);
@@ -242,11 +242,11 @@ class view {
     }
   }
 
-  static async findViewInPlugins(viewName, container) {
-    const plugins = Object.keys(window.hook?.plugins || {});
-    for (const pluginName of plugins) {
+  static async findViewInExtensions(viewName, container) {
+    const extensions = Object.keys(window.hook?.extensions || {});
+    for (const extensionName of extensions) {
       try {
-        const url = `${window.BASE_URL}plugins/${pluginName}/views/${viewName}.json?t=${Date.now()}`;
+        const url = `${window.BASE_URL}extensions/${extensionName}/views/${viewName}.json?t=${Date.now()}`;
         const response = await fetch(url);
         if (response.ok) {
           const viewData = await response.json();

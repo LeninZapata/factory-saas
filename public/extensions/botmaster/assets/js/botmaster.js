@@ -1,4 +1,4 @@
-// BotMaster Plugin - Main Logic
+// BotMaster Extension - Main Logic
 class botmaster {
   
   // ==================== TASK BUILDER ====================
@@ -371,4 +371,4 @@ class botmaster {
 // Registrar en el objeto global window
 window.botmaster = botmaster;
 
-console.log('🤖 BotMaster Plugin cargado exitosamente');
+console.log('🤖 BotMaster Extension cargado exitosamente');

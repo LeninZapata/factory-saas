@@ -21,10 +21,10 @@ class datatable {
     }
 
     const tableId = `datatable-${++this.counter}`;
-    const pluginName = actualConfig.pluginName || this.detectPluginName(actualContainer);
-    const data = await this.loadData(actualConfig, pluginName);
+    const extensionName = actualConfig.extensionName || this.detectPluginName(actualContainer);
+    const data = await this.loadData(actualConfig, extensionName);
 
-    this.tables.set(tableId, { config: actualConfig, data, pluginName, container: actualContainer });
+    this.tables.set(tableId, { config: actualConfig, data, extensionName, container: actualContainer });
 
     const html = this.generateHtml(tableId, actualConfig, data);
     actualContainer.innerHTML = html;
@@ -38,14 +38,14 @@ class datatable {
       return null;
     }
 
-    const viewContainer = container.closest('[data-plugin]');
-    if (viewContainer?.dataset.plugin) return viewContainer.dataset.plugin;
+    const viewContainer = container.closest('[data-extension]');
+    if (viewContainer?.dataset.extension) return viewContainer.dataset.extension;
 
     const activeView = document.querySelector('.view-container[data-view]');
     if (activeView?.dataset.view) {
       const viewPath = activeView.dataset.view;
       const parts = viewPath.split('/');
-      if (parts.length > 1 && window.hook?.isPluginEnabled(parts[0])) {
+      if (parts.length > 1 && window.hook?.isExtensionEnabled(parts[0])) {
         return parts[0];
       }
     }
@@ -53,13 +53,13 @@ class datatable {
     if (window.view?.currentPlugin) return window.view.currentPlugin;
 
     const pluginClass = Array.from(container.classList || [])
-      .find(cls => cls.startsWith('plugin-'));
-    if (pluginClass) return pluginClass.replace('plugin-', '');
+      .find(cls => cls.startsWith('extension-'));
+    if (pluginClass) return pluginClass.replace('extension-', '');
 
     return null;
   }
 
-  static async loadData(config, pluginName) {
+  static async loadData(config, extensionName) {
     try {
       if (config.source) {
         const isApiEndpoint = config.source.startsWith('api/') || config.source.startsWith('/api/');
@@ -71,16 +71,16 @@ class datatable {
           if (response.success && response.data) return response.data;
           return response;
         } else {
-          // Si termina en .json, es una ruta COMPLETA (no agregar prefijo de plugin)
+          // Si termina en .json, es una ruta COMPLETA (no agregar prefijo de extension)
           let url;
           if (config.source.endsWith('.json')) {
             url = config.source.startsWith('http') 
               ? config.source 
               : window.BASE_URL + config.source;
           } else {
-            // Si NO termina en .json y hay plugin, agregar prefijo del plugin
-            if (pluginName && !config.source.startsWith('plugins/')) {
-              url = `${window.BASE_URL}plugins/${pluginName}/${config.source}`;
+            // Si NO termina en .json y hay extension, agregar prefijo del extension
+            if (extensionName && !config.source.startsWith('extensions/')) {
+              url = `${window.BASE_URL}extensions/${extensionName}/${config.source}`;
             } else {
               url = window.BASE_URL + config.source;
             }
@@ -203,7 +203,7 @@ class datatable {
 
     const key = label.replace('i18n:', '');
 
-    // Si usa el nuevo formato i18n:plugin.key
+    // Si usa el nuevo formato i18n:extension.key
     if (window.i18n && typeof i18n.t === 'function') {
       const translation = i18n.t(key);
       if (translation !== key) return translation;
@@ -353,10 +353,10 @@ class datatable {
       return;
     }
 
-    const { config, pluginName, container } = table;
-    const data = await this.loadData(config, pluginName);
+    const { config, extensionName, container } = table;
+    const data = await this.loadData(config, extensionName);
 
-    this.tables.set(tableId, { config, data, pluginName, container });
+    this.tables.set(tableId, { config, data, extensionName, container });
 
     const html = this.generateHtml(tableId, config, data);
     container.innerHTML = html;

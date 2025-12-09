@@ -63,6 +63,6 @@ window.logger = logger;
  * // En components/modal.js
  * logger.warn('com:modal', 'Selector no encontrado');
  *
- * // En plugins/permissions.js
+ * // En extensions/permissions.js
  * logger.error('p:permissions', 'Error cargando vista:', error);
  */

@@ -1,67 +1,67 @@
 <?php
-class pluginLoader {
+class extensionLoader {
   private static $loaded = [];
   private static $extensionPath = EXTENSIONS_PATH;
-  
+
   // Cargar SOLO un extension específico
-  static function load($pluginName, $router) {
+  static function load($extensionName, $router) {
     // Evitar cargar dos veces
-    if (isset(self::$loaded[$pluginName])) {
+    if (isset(self::$loaded[$extensionName])) {
       return true;
     }
 
-    $pluginPath = self::$extensionPath . '/' . $pluginName;
-    $configFile = $pluginPath . '/extension.json';
-    
+    $extensionPath = self::$extensionPath . '/' . $extensionName;
+    $configFile = $extensionPath . '/extension.json';
+
     // Verificar que existe
     if (!file_exists($configFile)) {
-      response::error("Plugin '$pluginName' not found", 404);
+      response::error("Extension '$extensionName' not found", 404);
       return false;
     }
-    
+
     $config = json_decode(file_get_contents($configFile), true);
-    
+
     // Verificar que está habilitado
     if (!($config['enabled'] ?? false)) {
-      response::error("Plugin '$pluginName' is disabled", 403);
+      response::error("Extension '$extensionName' is disabled", 403);
       return false;
     }
-    
+
     // Verificar que tiene backend
     if (!($config['backend'] ?? false)) {
-      response::error("Plugin '$pluginName' has no backend", 400);
+      response::error("Extension '$extensionName' has no backend", 400);
       return false;
     }
-    
+
     // Autoload de clases del extension
-    spl_autoload_register(function($class) use ($pluginPath, $pluginName) {
+    spl_autoload_register(function($class) use ($extensionPath, $extensionName) {
       // Controllers
-      $file = $pluginPath . '/controllers/' . $class . '.php';
+      $file = $extensionPath . '/controllers/' . $class . '.php';
       if (file_exists($file)) {
         require_once $file;
         return;
       }
-      
+
       // Services
-      $file = $pluginPath . '/services/' . $class . '.php';
+      $file = $extensionPath . '/services/' . $class . '.php';
       if (file_exists($file)) {
         require_once $file;
         return;
       }
-      
+
       // Models
-      $file = $pluginPath . '/models/' . $class . '.php';
+      $file = $extensionPath . '/models/' . $class . '.php';
       if (file_exists($file)) {
         require_once $file;
         return;
       }
     });
-    
+
     // Cargar rutas del extension
-    $routesFile = $pluginPath . '/routes/routes.php';
+    $routesFile = $extensionPath . '/routes/routes.php';
     if (file_exists($routesFile)) {
-      $prefix = $config['routes_prefix'] ?? "/extension/{$pluginName}";
-      
+      $prefix = $config['routes_prefix'] ?? "/extension/{$extensionName}";
+
       $router->group($prefix, function($router) use ($routesFile) {
         $routesFn = require $routesFile;
         if (is_callable($routesFn)) {
@@ -69,20 +69,20 @@ class pluginLoader {
         }
       });
     }
-    
-    self::$loaded[$pluginName] = $config;
 
-    log::debug("Plugin loaded", ['extension' => $pluginName]);
-    
+    self::$loaded[$extensionName] = $config;
+
+    log::debug("Extension loaded", ['extension' => $extensionName]);
+
     return true;
   }
 
   // Solo si realmente necesitas cargar todos (ejemplo: panel admin)
   static function loadAll($router) {
     $extensionsDir = self::$extensionPath;
-    
+
     if (!is_dir($extensionsDir)) return;
-    
+
     foreach (scandir($extensionsDir) as $extension) {
       if ($extension === '.' || $extension === '..') continue;
       self::load($extension, $router);
@@ -90,41 +90,41 @@ class pluginLoader {
   }
 
   // Verificar si un extension está cargado
-  static function isLoaded($pluginName) {
-    return isset(self::$loaded[$pluginName]);
+  static function isLoaded($extensionName) {
+    return isset(self::$loaded[$extensionName]);
   }
 
   // Obtener lista de extensiones disponibles (sin cargarlos)
   static function getAvailable() {
     $extensionsDir = self::$extensionPath;
     $extensions = [];
-    
+
     if (!is_dir($extensionsDir)) return $extensions;
-    
+
     foreach (scandir($extensionsDir) as $extension) {
       if ($extension === '.' || $extension === '..') continue;
-      
+
       $configFile = $extensionsDir . '/' . $extension . '/extension.json';
       if (file_exists($configFile)) {
         $config = json_decode(file_get_contents($configFile), true);
         $extensions[$extension] = $config;
       }
     }
-    
+
     return $extensions;
   }
 
   // Obtener config de un extension (sin cargarlo)
-  static function getConfig($pluginName) {
-    if (isset(self::$loaded[$pluginName])) {
-      return self::$loaded[$pluginName];
+  static function getConfig($extensionName) {
+    if (isset(self::$loaded[$extensionName])) {
+      return self::$loaded[$extensionName];
     }
-    
-    $configFile = self::$extensionPath . '/' . $pluginName . '/extension.json';
+
+    $configFile = self::$extensionPath . '/' . $extensionName . '/extension.json';
     if (file_exists($configFile)) {
       return json_decode(file_get_contents($configFile), true);
     }
-    
+
     return null;
   }
 }

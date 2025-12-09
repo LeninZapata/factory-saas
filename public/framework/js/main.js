@@ -27,8 +27,7 @@ window.appConfig = {
 
   routes: {
     coreViews: 'framework/js/views',
-    pluginViews: 'plugins/{pluginName}/views',
-    pluginModels: 'plugins/{pluginName}/models',
+    extensionViews: 'extensions/{extensionName}/views',
     coreModels: 'framework/js/models',
     components: 'framework/js/components',
     utils: 'framework/js/utils',

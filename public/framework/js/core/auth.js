@@ -378,8 +378,8 @@ class auth {
     logger.success('cor:auth', '✅ Permisos cargados exitosamente');
     logger.debug('cor:auth', '📋 Config original (tipo):', typeof config);
 
-    if (this.userPermissions.plugins) {
-      const pluginsWithPerms = Object.keys(this.userPermissions.plugins);
+    if (this.userPermissions.extensions) {
+      const pluginsWithPerms = Object.keys(this.userPermissions.extensions);
       logger.info('cor:auth', `📋 Plugins con permisos: [${pluginsWithPerms.map(p => `"${p}"`).join(', ')}]`);
     }
 
@@ -398,33 +398,33 @@ class auth {
         return;
       }
 
-      const permissions = this.userPermissions?.plugins || {};
+      const permissions = this.userPermissions?.extensions || {};
 
-      logger.info('cor:auth', '🔍 Iniciando filtrado de plugins por permisos...');
+      logger.info('cor:auth', '🔍 Iniciando filtrado de extensions por permisos...');
 
-      for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
-        const pluginPerms = permissions[pluginName];
+      for (const [extensionName, pluginConfig] of hook.pluginRegistry) {
+        const extensionPerms = permissions[extensionName];
 
-        if (!pluginPerms || pluginPerms.enabled === false) {
+        if (!extensionPerms || extensionPerms.enabled === false) {
           pluginConfig.enabled = false;
-          logger.warn('cor:auth', `❌ Plugin deshabilitado: ${pluginName}`);
+          logger.warn('cor:auth', `❌ Extension deshabilitado: ${extensionName}`);
           continue;
         }
 
-        logger.success('cor:auth', `✅ Plugin habilitado: ${pluginName}`);
+        logger.success('cor:auth', `✅ Extension habilitado: ${extensionName}`);
 
         if (!pluginConfig.hasMenu || !pluginConfig.menu) continue;
 
-        const menuPerms = pluginPerms.menus;
+        const menuPerms = extensionPerms.menus;
 
         if (menuPerms === '*') {
-          logger.info('cor:auth', `  ✨ Acceso total a menús de: ${pluginName}`);
+          logger.info('cor:auth', `  ✨ Acceso total a menús de: ${extensionName}`);
           continue;
         }
 
         if (!menuPerms || typeof menuPerms !== 'object') {
           pluginConfig.menu.items = [];
-          logger.warn('cor:auth', `  ⚠️ Sin permisos de menús para: ${pluginName}`);
+          logger.warn('cor:auth', `  ⚠️ Sin permisos de menús para: ${extensionName}`);
           continue;
         }
 
@@ -438,7 +438,7 @@ class auth {
           return false;
         });
 
-        logger.info('cor:auth', `  ✅ Menús permitidos para ${pluginName}: [${allowedMenuIds.map(m => `"${m}"`).join(', ')}]`);
+        logger.info('cor:auth', `  ✅ Menús permitidos para ${extensionName}: [${allowedMenuIds.map(m => `"${m}"`).join(', ')}]`);
 
         const filteredMenus = originalMenus.filter(menu => {
           const isAllowed = allowedMenuIds.includes(menu.id);
@@ -457,26 +457,26 @@ class auth {
       }
 
       logger.success('cor:auth', '📊 RESUMEN DEL FILTRADO DE PLUGINS:');
-      for (const [pluginName, pluginConfig] of hook.pluginRegistry) {
+      for (const [extensionName, pluginConfig] of hook.pluginRegistry) {
         if (pluginConfig.enabled && pluginConfig.hasMenu) {
           const menuCount = pluginConfig.menu.items?.length || 0;
-          logger.success('cor:auth', `  ✅ ${pluginName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
+          logger.success('cor:auth', `  ✅ ${extensionName}: ${menuCount} menú${menuCount !== 1 ? 's' : ''}`);
         } else if (!pluginConfig.enabled) {
-          logger.warn('cor:auth', `  ❌ ${pluginName}: deshabilitado`);
+          logger.warn('cor:auth', `  ❌ ${extensionName}: deshabilitado`);
         }
       }
 
-      logger.success('cor:auth', '✅ Filtrado de plugins completado');
+      logger.success('cor:auth', '✅ Filtrado de extensions completado');
     }
 
   static getTabPermissions(menuId) {
-    if (!this.userPermissions?.plugins) return null;
+    if (!this.userPermissions?.extensions) return null;
 
-    for (const pluginName in this.userPermissions.plugins) {
-      const plugin = this.userPermissions.plugins[pluginName];
+    for (const extensionName in this.userPermissions.extensions) {
+      const extension = this.userPermissions.extensions[extensionName];
 
-      if (plugin.menus && plugin.menus[menuId]) {
-        const menuPerm = plugin.menus[menuId];
+      if (extension.menus && extension.menus[menuId]) {
+        const menuPerm = extension.menus[menuId];
 
         if (menuPerm === true) return '*';
         if (typeof menuPerm === 'object' && menuPerm.tabs) {
@@ -529,16 +529,16 @@ class auth {
 
     // ✅ CARGAR PLUGINS ANTES DEL SIDEBAR
     if (window.hook?.loadPluginHooks) {
-      logger.info('cor:auth', 'Cargando plugins...');
+      logger.info('cor:auth', 'Cargando extensions...');
       await hook.loadPluginHooks();
 
-      // Registrar plugins cargados en view
+      // Registrar extensions cargados en view
       if (window.view && hook.getEnabledPlugins) {
         const enabledPlugins = hook.getEnabledPlugins();
-        view.loadedPlugins = {};
+        view.loadedExtensions = {};
 
-        for (const plugin of enabledPlugins) {
-          view.loadedPlugins[plugin.name] = true;
+        for (const extension of enabledPlugins) {
+          view.loadedExtensions[extension.name] = true;
         }
       }
 
@@ -565,7 +565,7 @@ class auth {
     if (window.view) {
       if (view.viewNavigationCache) view.viewNavigationCache.clear();
       view.views = {};
-      view.loadedPlugins = {};
+      view.loadedExtensions = {};
     }
 
     if (window.form) {
@@ -594,10 +594,10 @@ class auth {
 
       if (window.view && hook.getEnabledPlugins) {
         const enabledPlugins = hook.getEnabledPlugins();
-        view.loadedPlugins = {};
+        view.loadedExtensions = {};
 
-        for (const plugin of enabledPlugins) {
-          view.loadedPlugins[plugin.name] = true;
+        for (const extension of enabledPlugins) {
+          view.loadedExtensions[extension.name] = true;
         }
       }
     }

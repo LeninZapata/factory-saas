@@ -1,5 +1,5 @@
 <?php
-// Rutas específicas del plugin webscraper
+// Rutas específicas del extension webscraper
 return function($router) {
   
   // Crear trabajo de scraping
@@ -25,7 +25,7 @@ return function($router) {
   $router->post('/analyze', function() {
     $data = request::data();
     
-    // Usar servicio del plugin
+    // Usar servicio del extension
     $scraper = new puppeteerService();
     $content = $scraper->getContent($data['url']);
     

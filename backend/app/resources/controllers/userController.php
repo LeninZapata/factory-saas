@@ -9,8 +9,6 @@ class userController extends controller {
   function create() {
     $data = request::data();
 
-    log::debug('UserController - create', $data);
-
     // Validar campos requeridos
     if (!isset($data['user']) || !isset($data['pass']) || !isset($data['role'])) {
       log::error('UserController - Campos faltantes');
@@ -129,13 +127,13 @@ class userController extends controller {
     $data['tu'] = time();
 
     $affected = db::table('user')->where('id', $id)->update($data);
-    
+
     // ✅ INVALIDAR SESIONES si se modificó el config (permisos)
     $cleaned = 0;
     if (isset($data['config'])) {
       // ⚠️ NO invalidar sesión del usuario autenticado actual (quien está editando)
       $currentUserId = $GLOBALS['auth_user_id'] ?? null;
-      
+
       if ($currentUserId && $currentUserId == $id) {
         // Si el admin se está editando a sí mismo, NO invalidar su sesión
         log::info('UserController', "Usuario {$id} se editó a sí mismo, no se invalida su sesión");
@@ -145,7 +143,7 @@ class userController extends controller {
         log::info('UserController', "Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas");
       }
     }
-    
+
     response::success([
       'affected' => $affected,
       'sessions_invalidated' => $cleaned

@@ -2,7 +2,7 @@
   "id": "ejemplos-graficos",
   "title": "Gráficos con Scripts Bajo Demanda",
   "scripts": [
-    "plugins/ejemplos/assets/js/chart.js"
+    "extensions/ejemplos/assets/js/chart.js"
   ],
   "content": [
     {

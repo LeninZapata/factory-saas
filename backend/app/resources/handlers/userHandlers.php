@@ -17,7 +17,7 @@ class userHandlers {
       ->first();
 
     if (!$user || !password_verify($data['pass'], $user['pass'])) {
-      log::warning('Login fallido', ['user' => $data['user']]);
+      log::warning('Login fallido', ['user' => $data['user']], ['module' => 'auth']);
       return ['success' => false, 'error' => 'Credenciales inválidas'];
     }
 
@@ -44,7 +44,7 @@ class userHandlers {
       'tu' => time()
     ]);
 
-    log::info('Login exitoso', ['user' => $user['user'], 'id' => $user['id']]);
+    log::info('Login exitoso', ['user' => $user['user'], 'id' => $user['id']], ['module' => 'auth']);
 
     return [
       'success' => true,
@@ -71,7 +71,7 @@ class userHandlers {
     $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     if (file_exists($sessionFile)) {
       unlink($sessionFile);
-      log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...']);
+      log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...'], ['module' => 'auth']);
     }
 
     return ['success' => true, 'message' => 'Logout exitoso'];

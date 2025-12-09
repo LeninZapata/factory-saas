@@ -32,7 +32,7 @@ define('BACKEND_PATH', BASE_PATH . '/backend');
 define('FRAMEWORK_PATH', BACKEND_PATH . '/framework');
 define('APP_PATH', BACKEND_PATH . '/app');
 define('FRONTEND_PATH', BASE_PATH . '/frontend');
-define('PLUGINS_PATH', BACKEND_PATH . '/plugins');
+define('EXTENSIONS_PATH', BACKEND_PATH . '/extensions');
 define('ROUTES_PATH', APP_PATH . '/routes');
 define('STORAGE_PATH', APP_PATH . '/storage');
 define('LOG_PATH', STORAGE_PATH . '/logs');
@@ -41,3 +41,6 @@ define('API_BASE_URL', '/api');
 // Configuración de la API
 define('API_DEFAULT_TIMEOUT', 60);
 define('API_MAX_PAYLOAD_SIZE', 1048576);
+
+// Ejecuta otros archivos de configuración
+require_once APP_PATH . '/config/debug.php';

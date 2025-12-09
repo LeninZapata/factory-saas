@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 ob_start();
 
 $path = __DIR__;
+require_once $path . '/framework/core/autoload.php';
 require_once $path . '/app/config/consts.php';
 
 if (IS_DEV) {
@@ -25,7 +26,6 @@ if (IS_DEV) {
   ini_set('log_errors', '0');
 }
 
-require_once $path . '/framework/core/autoload.php';
 require_once $path . '/framework/core/router.php';
 
 $router = new router();

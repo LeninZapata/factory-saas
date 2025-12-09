@@ -12,8 +12,8 @@ class routeDiscovery {
     // 2. Rutas manuales (routes/apis/)
     $routes = array_merge($routes, self::getManualRoutes());
 
-    // 3. Rutas de plugins
-    $routes = array_merge($routes, self::getPluginRoutes());
+    // 3. Rutas de extensiones
+    $routes = array_merge($routes, self::getExtensionRoutes());
 
     // Ordenar por path
     usort($routes, function($a, $b) {
@@ -201,30 +201,30 @@ class routeDiscovery {
     return [];
   }
 
-  // Obtener rutas de plugins
-  private static function getPluginRoutes() {
+  // Obtener rutas de extensiones
+  private static function getExtensionRoutes() {
     $routes = [];
-    $pluginsDir = BASE_PATH . '/plugins';
+    $extensionsDir = EXTENSIONS_PATH;
 
-    if (!is_dir($pluginsDir)) return $routes;
+    if (!is_dir($extensionsDir)) return $routes;
 
-    foreach (scandir($pluginsDir) as $plugin) {
-      if ($plugin === '.' || $plugin === '..') continue;
+    foreach (scandir($extensionsDir) as $extension) {
+      if ($extension === '.' || $extension === '..') continue;
 
-      $configFile = $pluginsDir . '/' . $plugin . '/plugin.json';
+      $configFile = $extensionsDir . '/' . $extension . '/extension.json';
       if (!file_exists($configFile)) continue;
 
       $config = json_decode(file_get_contents($configFile), true);
 
-      // Solo plugins habilitados con backend
+      // Solo extensiones habilitados con backend
       if (!($config['enabled'] ?? false) || !($config['backend'] ?? false)) {
         continue;
       }
 
-      $prefix = $config['routes_prefix'] ?? "/plugin/{$plugin}";
+      $prefix = $config['routes_prefix'] ?? "/extension/{$extension}";
 
-      // Rutas desde resources del plugin
-      $resourcesDir = $pluginsDir . '/' . $plugin . '/resources';
+      // Rutas desde resources del extension
+      $resourcesDir = $extensionsDir . '/' . $extension . '/resources';
       if (is_dir($resourcesDir)) {
         foreach (scandir($resourcesDir) as $file) {
           if ($file === '.' || $file === '..' || !str_ends_with($file, '.json')) continue;
@@ -234,7 +234,7 @@ class routeDiscovery {
 
           $resourceName = str_replace('.json', '', $file);
 
-          // CRUD routes del plugin
+          // CRUD routes del extension
           $crudRoutes = [
             'list'   => ['GET',    "{$prefix}/{$resourceName}",      'List all'],
             'show'   => ['GET',    "{$prefix}/{$resourceName}/{id}", 'Get by ID'],
@@ -251,25 +251,25 @@ class routeDiscovery {
               'path' => $path,
               'description' => $description,
               'middleware' => $resourceConfig['middleware'] ?? [],
-              'source' => "plugin:{$plugin}",
+              'source' => "extension:{$extension}",
               'type' => 'crud'
             ];
           }
         }
       }
 
-      // Rutas manuales del plugin
-      $routesFile = $pluginsDir . '/' . $plugin . '/routes/routes.php';
+      // Rutas manuales del extension
+      $routesFile = $extensionsDir . '/' . $extension . '/routes/routes.php';
       if (file_exists($routesFile)) {
         $content = file_get_contents($routesFile);
-        $parsedRoutes = self::parsePhpRoutes($content, "plugin:{$plugin}");
+        $parsedRoutes = self::parsePhpRoutes($content, "extension:{$extension}");
 
         // Agregar prefijo a las rutas
         foreach ($parsedRoutes as &$route) {
           if (!str_starts_with($route['path'], $prefix)) {
             $route['path'] = $prefix . $route['path'];
           }
-          $route['source'] = "plugin:{$plugin}";
+          $route['source'] = "extension:{$extension}";
         }
 
         $routes = array_merge($routes, $parsedRoutes);

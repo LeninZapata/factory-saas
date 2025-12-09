@@ -1,5 +1,5 @@
 {
-  "plugins": [
+  "extensions": [
     {
       "name": "ejemplos",
       "description": "Ejemplos de uso del sistema"

@@ -1,6 +1,6 @@
 /**
  * Selector de Permisos de Usuario
- * Componente minimalista para asignar permisos por plugin/menu/tabs
+ * Componente minimalista para asignar permisos por extension/menu/tabs
  */
 
 class permissions {
@@ -11,7 +11,7 @@ class permissions {
    * Renderiza el selector de permisos
    * @param {string} containerId - ID del contenedor
    * @param {object} config - Configuración inicial de permisos
-   * @param {array} pluginsData - Datos de plugins desde hooks
+   * @param {array} pluginsData - Datos de extensions desde hooks
    */
   static async render(containerId, config = {}, pluginsData = []) {
     const container = document.getElementById(containerId);
@@ -29,7 +29,7 @@ class permissions {
     const html = `
       <div class="permissions-selector" id="${selectorId}">
         <div class="permissions-header">
-          <h4>🔐 Permisos por Plugin</h4>
+          <h4>🔐 Permisos por Extension</h4>
           <div class="permissions-actions">
             <button type="button" class="btn-link" onclick="permissions.toggleAll('${selectorId}', true)">
               ✅ Seleccionar Todo
@@ -41,7 +41,7 @@ class permissions {
         </div>
         
         <div class="permissions-list">
-          ${pluginsData.map(plugin => this.renderPlugin(plugin, permissions, selectorId)).join('')}
+          ${pluginsData.map(extension => this.renderPlugin(extension, permissions, selectorId)).join('')}
         </div>
 
         <input type="hidden" name="config" id="${selectorId}-data" value='${JSON.stringify(config)}'>
@@ -56,24 +56,24 @@ class permissions {
   }
 
   /**
-   * Cargar tabs de todas las vistas de todos los plugins
+   * Cargar tabs de todas las vistas de todos los extensions
    */
   static async loadAllViewsTabs(pluginsData) {
-    for (const plugin of pluginsData) {
-      if (!plugin.hasMenu || !plugin.menu?.items) continue;
+    for (const extension of pluginsData) {
+      if (!extension.hasMenu || !extension.menu?.items) continue;
 
-      for (const menuItem of plugin.menu.items) {
+      for (const menuItem of extension.menu.items) {
         if (!menuItem.view) continue;
 
         const viewPath = menuItem.view;
-        const cacheKey = `${plugin.name}:${viewPath}`;
+        const cacheKey = `${extension.name}:${viewPath}`;
 
         // Si ya está en caché, skip
         if (this.viewsCache.has(cacheKey)) continue;
 
         try {
           // Cargar el JSON de la vista
-          const viewData = await this.loadViewJson(plugin.name, viewPath);
+          const viewData = await this.loadViewJson(extension.name, viewPath);
           
           // Extraer tabs si existen
           if (viewData?.tabs && Array.isArray(viewData.tabs)) {
@@ -83,7 +83,7 @@ class permissions {
             this.viewsCache.set(cacheKey, null);
           }
         } catch (error) {
-          logger.error('p:permissions', `Error cargando ${plugin.name}/${viewPath}:`, error.message);
+          logger.error('p:permissions', `Error cargando ${extension.name}/${viewPath}:`, error.message);
           this.viewsCache.set(cacheKey, null);
         }
       }
@@ -93,9 +93,9 @@ class permissions {
   /**
    * Cargar JSON de una vista
    */
-  static async loadViewJson(pluginName, viewPath) {
-    // Construir URL: /plugins/{plugin}/views/{viewPath}.json
-    const url = `${window.BASE_URL}plugins/${pluginName}/views/${viewPath}.json`;
+  static async loadViewJson(extensionName, viewPath) {
+    // Construir URL: /extensions/{extension}/views/{viewPath}.json
+    const url = `${window.BASE_URL}extensions/${extensionName}/views/${viewPath}.json`;
     
     const response = await fetch(url);
     if (!response.ok) {
@@ -106,22 +106,22 @@ class permissions {
   }
 
   /**
-   * Renderiza un plugin con sus menus y tabs
+   * Renderiza un extension con sus menus y tabs
    */
-  static renderPlugin(plugin, permissions, selectorId) {
-    const pluginPerms = permissions.plugins?.[plugin.name] || {};
-    const isEnabled = pluginPerms.enabled !== false;
-    const pluginId = `${selectorId}-plugin-${plugin.name}`;
+  static renderPlugin(extension, permissions, selectorId) {
+    const extensionPerms = permissions.extensions?.[extension.name] || {};
+    const isEnabled = extensionPerms.enabled !== false;
+    const pluginId = `${selectorId}-extension-${extension.name}`;
 
     return `
-      <div class="permission-plugin" data-plugin="${plugin.name}">
-        <div class="permission-plugin-header">
+      <div class="permission-extension" data-extension="${extension.name}">
+        <div class="permission-extension-header">
           <label class="permission-checkbox">
             <input type="checkbox" 
-                   class="plugin-toggle" 
-                   data-plugin="${plugin.name}"
+                   class="extension-toggle" 
+                   data-extension="${extension.name}"
                    ${isEnabled ? 'checked' : ''}>
-            <span class="plugin-name">📦 ${plugin.name}</span>
+            <span class="extension-name">📦 ${extension.name}</span>
           </label>
           <button type="button" 
                   class="btn-collapse" 
@@ -131,20 +131,20 @@ class permissions {
           </button>
         </div>
 
-        <div class="permission-plugin-content ${isEnabled ? 'open' : ''}" id="${pluginId}">
-          ${plugin.hasMenu ? this.renderMenusWithTabs(plugin, pluginPerms, selectorId) : ''}
+        <div class="permission-extension-content ${isEnabled ? 'open' : ''}" id="${pluginId}">
+          ${extension.hasMenu ? this.renderMenusWithTabs(extension, extensionPerms, selectorId) : ''}
         </div>
       </div>
     `;
   }
 
   /**
-   * Renderiza los menus de un plugin CON sus tabs
+   * Renderiza los menus de un extension CON sus tabs
    */
-  static renderMenusWithTabs(plugin, pluginPerms, selectorId) {
-    if (!plugin.menu?.items) return '';
+  static renderMenusWithTabs(extension, extensionPerms, selectorId) {
+    if (!extension.menu?.items) return '';
 
-    const menusPerms = pluginPerms.menus || {};
+    const menusPerms = extensionPerms.menus || {};
     const allMenus = menusPerms === '*';
 
     return `
@@ -154,14 +154,14 @@ class permissions {
           <label class="permission-checkbox-sm">
             <input type="checkbox" 
                    class="section-toggle-all"
-                   data-plugin="${plugin.name}"
+                   data-extension="${extension.name}"
                    data-section="menus"
                    ${allMenus ? 'checked' : ''}>
             <span>Todos</span>
           </label>
         </div>
         <div class="permission-items">
-          ${plugin.menu.items.map(item => this.renderMenuItem(item, plugin, menusPerms, allMenus, selectorId)).join('')}
+          ${extension.menu.items.map(item => this.renderMenuItem(item, extension, menusPerms, allMenus, selectorId)).join('')}
         </div>
       </div>
     `;
@@ -170,16 +170,16 @@ class permissions {
   /**
    * Renderiza un item de menú CON sus tabs (si tiene)
    */
-  static renderMenuItem(menuItem, plugin, menusPerms, allMenus, selectorId) {
+  static renderMenuItem(menuItem, extension, menusPerms, allMenus, selectorId) {
     const menuPerms = menusPerms[menuItem.id] || {};
     const isMenuChecked = allMenus || menuPerms === true || (typeof menuPerms === 'object' && menuPerms.enabled !== false);
     
     // Obtener tabs de la vista
-    const cacheKey = `${plugin.name}:${menuItem.view}`;
+    const cacheKey = `${extension.name}:${menuItem.view}`;
     const tabs = this.viewsCache.get(cacheKey);
 
     const hasExpandableTabs = tabs && tabs.length > 0;
-    const tabsId = `${selectorId}-tabs-${plugin.name}-${menuItem.id}`;
+    const tabsId = `${selectorId}-tabs-${extension.name}-${menuItem.id}`;
     const isExpanded = isMenuChecked && hasExpandableTabs;
 
     return `
@@ -188,7 +188,7 @@ class permissions {
           <label class="permission-item">
             <input type="checkbox" 
                    class="menu-checkbox"
-                   data-plugin="${plugin.name}"
+                   data-extension="${extension.name}"
                    data-menu="${menuItem.id}"
                    ${isMenuChecked ? 'checked' : ''}
                    ${allMenus ? 'disabled' : ''}>
@@ -206,7 +206,7 @@ class permissions {
         
         ${hasExpandableTabs ? `
           <div class="permission-tabs ${isExpanded ? 'open' : ''}" id="${tabsId}">
-            ${this.renderTabs(tabs, plugin, menuItem, menuPerms, selectorId)}
+            ${this.renderTabs(tabs, extension, menuItem, menuPerms, selectorId)}
           </div>
         ` : ''}
       </div>
@@ -216,7 +216,7 @@ class permissions {
   /**
    * Renderiza las tabs de un menú/vista
    */
-  static renderTabs(tabs, plugin, menuItem, menuPerms, selectorId) {
+  static renderTabs(tabs, extension, menuItem, menuPerms, selectorId) {
     const tabsPerms = typeof menuPerms === 'object' ? menuPerms.tabs || {} : {};
     const allTabs = tabsPerms === '*';
 
@@ -226,7 +226,7 @@ class permissions {
         <label class="permission-checkbox-xs">
           <input type="checkbox" 
                  class="tabs-toggle-all"
-                 data-plugin="${plugin.name}"
+                 data-extension="${extension.name}"
                  data-menu="${menuItem.id}"
                  ${allTabs ? 'checked' : ''}>
           <span>Todas</span>
@@ -239,7 +239,7 @@ class permissions {
             <label class="permission-tab-item">
               <input type="checkbox" 
                      class="tab-checkbox"
-                     data-plugin="${plugin.name}"
+                     data-extension="${extension.name}"
                      data-menu="${menuItem.id}"
                      data-tab="${tab.id}"
                      ${isChecked ? 'checked' : ''}
@@ -259,12 +259,12 @@ class permissions {
     const container = document.getElementById(selectorId);
     if (!container) return;
 
-    // Toggle plugin
-    container.querySelectorAll('.plugin-toggle').forEach(checkbox => {
+    // Toggle extension
+    container.querySelectorAll('.extension-toggle').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
-        const plugin = e.target.dataset.plugin;
-        const content = container.querySelector(`#${selectorId}-plugin-${plugin}`);
-        const collapseBtn = e.target.closest('.permission-plugin-header').querySelector('.btn-collapse');
+        const extension = e.target.dataset.extension;
+        const content = container.querySelector(`#${selectorId}-extension-${extension}`);
+        const collapseBtn = e.target.closest('.permission-extension-header').querySelector('.btn-collapse');
         
         if (e.target.checked) {
           content?.classList.add('open');
@@ -281,8 +281,8 @@ class permissions {
     // Toggle section all (menus)
     container.querySelectorAll('.section-toggle-all').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
-        const plugin = e.target.dataset.plugin;
-        const menuCheckboxes = container.querySelectorAll(`.menu-checkbox[data-plugin="${plugin}"]`);
+        const extension = e.target.dataset.extension;
+        const menuCheckboxes = container.querySelectorAll(`.menu-checkbox[data-extension="${extension}"]`);
 
         menuCheckboxes.forEach(cb => {
           cb.disabled = e.target.checked;
@@ -290,7 +290,7 @@ class permissions {
         });
 
         // También deshabilitar todos los tab checkboxes
-        const tabCheckboxes = container.querySelectorAll(`.tab-checkbox[data-plugin="${plugin}"]`);
+        const tabCheckboxes = container.querySelectorAll(`.tab-checkbox[data-extension="${extension}"]`);
         tabCheckboxes.forEach(cb => {
           cb.disabled = e.target.checked;
           cb.checked = e.target.checked;
@@ -303,7 +303,7 @@ class permissions {
     // Toggle menu checkbox
     container.querySelectorAll('.menu-checkbox').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
-        const plugin = e.target.dataset.plugin;
+        const extension = e.target.dataset.extension;
         const menu = e.target.dataset.menu;
         const tabsContainer = e.target.closest('.permission-item-wrapper')?.querySelector('.permission-tabs');
         
@@ -325,10 +325,10 @@ class permissions {
     // Toggle all tabs
     container.querySelectorAll('.tabs-toggle-all').forEach(checkbox => {
       checkbox.addEventListener('change', (e) => {
-        const plugin = e.target.dataset.plugin;
+        const extension = e.target.dataset.extension;
         const menu = e.target.dataset.menu;
         const tabCheckboxes = container.querySelectorAll(
-          `.tab-checkbox[data-plugin="${plugin}"][data-menu="${menu}"]`
+          `.tab-checkbox[data-extension="${extension}"][data-menu="${menu}"]`
         );
 
         tabCheckboxes.forEach(cb => {
@@ -359,71 +359,71 @@ class permissions {
     if (!instance) return;
 
     const newConfig = { ...instance.config };
-    newConfig.permissions = { plugins: {} };
+    newConfig.permissions = { extensions: {} };
 
-    // Procesar cada plugin
-    instance.pluginsData.forEach(plugin => {
-      const pluginCheckbox = container.querySelector(`.plugin-toggle[data-plugin="${plugin.name}"]`);
+    // Procesar cada extension
+    instance.pluginsData.forEach(extension => {
+      const pluginCheckbox = container.querySelector(`.extension-toggle[data-extension="${extension.name}"]`);
       if (!pluginCheckbox) return;
 
-      const pluginData = {
+      const extensionData = {
         enabled: pluginCheckbox.checked
       };
 
-      if (pluginCheckbox.checked && plugin.hasMenu) {
+      if (pluginCheckbox.checked && extension.hasMenu) {
         // Verificar si "Todos los menús" está marcado
         const allMenusCheckbox = container.querySelector(
-          `.section-toggle-all[data-plugin="${plugin.name}"][data-section="menus"]`
+          `.section-toggle-all[data-extension="${extension.name}"][data-section="menus"]`
         );
 
         if (allMenusCheckbox?.checked) {
-          pluginData.menus = '*';
+          extensionData.menus = '*';
         } else {
           // Procesar cada menú individualmente
-          pluginData.menus = {};
+          extensionData.menus = {};
           
-          plugin.menu?.items.forEach(menuItem => {
+          extension.menu?.items.forEach(menuItem => {
             const menuCheckbox = container.querySelector(
-              `.menu-checkbox[data-plugin="${plugin.name}"][data-menu="${menuItem.id}"]`
+              `.menu-checkbox[data-extension="${extension.name}"][data-menu="${menuItem.id}"]`
             );
 
             if (menuCheckbox?.checked) {
               // Verificar si tiene tabs
               const tabsToggleAll = container.querySelector(
-                `.tabs-toggle-all[data-plugin="${plugin.name}"][data-menu="${menuItem.id}"]`
+                `.tabs-toggle-all[data-extension="${extension.name}"][data-menu="${menuItem.id}"]`
               );
 
               if (tabsToggleAll) {
                 // Tiene tabs
                 if (tabsToggleAll.checked) {
                   // Todas las tabs
-                  pluginData.menus[menuItem.id] = { enabled: true, tabs: '*' };
+                  extensionData.menus[menuItem.id] = { enabled: true, tabs: '*' };
                 } else {
                   // Tabs individuales
                   const tabsData = {};
                   container.querySelectorAll(
-                    `.tab-checkbox[data-plugin="${plugin.name}"][data-menu="${menuItem.id}"]`
+                    `.tab-checkbox[data-extension="${extension.name}"][data-menu="${menuItem.id}"]`
                   ).forEach(tabCheckbox => {
                     if (tabCheckbox.checked) {
                       tabsData[tabCheckbox.dataset.tab] = true;
                     }
                   });
 
-                  pluginData.menus[menuItem.id] = {
+                  extensionData.menus[menuItem.id] = {
                     enabled: true,
                     tabs: Object.keys(tabsData).length > 0 ? tabsData : {}
                   };
                 }
               } else {
                 // No tiene tabs, solo el menú
-                pluginData.menus[menuItem.id] = true;
+                extensionData.menus[menuItem.id] = true;
               }
             }
           });
         }
       }
 
-      newConfig.permissions.plugins[plugin.name] = pluginData;
+      newConfig.permissions.extensions[extension.name] = extensionData;
     });
 
     // Actualizar hidden input
@@ -463,8 +463,8 @@ class permissions {
     const container = document.getElementById(selectorId);
     if (!container) return;
 
-    // Plugin toggles
-    container.querySelectorAll('.plugin-toggle').forEach(cb => {
+    // Extension toggles
+    container.querySelectorAll('.extension-toggle').forEach(cb => {
       cb.checked = checked;
       cb.dispatchEvent(new Event('change'));
     });
