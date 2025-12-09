@@ -3,12 +3,9 @@ class view {
   static loadedPlugins = {};
   static viewNavigationCache = new Map();
   static lastSessionCheck = 0;
-  static SESSION_CHECK_INTERVAL = 30000; // 30 segundos
+  static SESSION_CHECK_INTERVAL = 30000;
 
   static async loadView(viewName, container = null, pluginContext = null, menuResources = null, afterRender = null, menuId = null) {
-    // ✅ NO verificar sesión aquí - se hace en auth.startSessionMonitoring()
-    // La verificación cada X minutos es suficiente, no necesitamos verificar en cada clic
-
     const navCacheKey = `nav_${pluginContext || 'core'}_${viewName}`;
 
     if (!container && window.appConfig?.cache?.viewNavigation) {
@@ -41,13 +38,15 @@ class view {
     let basePath;
     let cacheKey;
 
+    const frameworkPath = window.appConfig?.frameworkPath || 'framework';
+
     if (pluginContext) {
       basePath = `plugins/${pluginContext}/views`;
       cacheKey = `plugin_view_${pluginContext}_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.startsWith('core:')) {
       viewName = viewName.replace('core:', '');
-      basePath = 'js/views';
+      basePath = `${frameworkPath}/js/views`;
       cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.includes('/')) {
@@ -61,12 +60,12 @@ class view {
         cacheKey = `plugin_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
         pluginContext = firstPart;
       } else {
-        basePath = 'js/views';
+        basePath = `${frameworkPath}/js/views`;
         cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
       }
     }
     else {
-      basePath = 'js/views';
+      basePath = `${frameworkPath}/js/views`;
       cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
     }
 
@@ -96,7 +95,6 @@ class view {
         }
       }
 
-      // ✅ Filtrar tabs según permisos ANTES de renderizar
       if (viewData.tabs && pluginContext) {
         const effectiveMenuId = menuId || viewData.id;
         viewData.tabs = this.filterTabsByPermissions(viewData.tabs, pluginContext, effectiveMenuId);
@@ -139,7 +137,6 @@ class view {
     }
   }
 
-  // Filtrar tabs según permisos del usuario
   static filterTabsByPermissions(tabs, pluginName, menuId) {
     if (window.auth?.user?.role === 'admin') return tabs;
 
@@ -162,37 +159,31 @@ class view {
 
     const menuPerms = pluginPerms.menus[menuId];
 
-    // Si menuPerms es boolean true, mostrar todas
     if (menuPerms === true) {
       logger.debug('cor:view', `Menú ${menuId} con acceso total`);
       return tabs;
     }
 
-    // Si no hay permisos del menú, NO mostrar tabs
     if (!menuPerms || typeof menuPerms !== 'object') {
       logger.warn('cor:view', `Sin permisos para menú ${menuId}`);
       return [];
     }
 
-    // Si enabled === false, no mostrar tabs
     if (menuPerms.enabled === false) {
       logger.warn('cor:view', `Menú ${menuId} deshabilitado`);
       return [];
     }
 
-    // Si tabs === '*', mostrar todas
     if (menuPerms.tabs === '*') {
       logger.debug('cor:view', `Todas las tabs permitidas para ${menuId}`);
       return tabs;
     }
 
-    // Si tabs no está definido o es array vacío, NO mostrar tabs
     if (!menuPerms.tabs || (Array.isArray(menuPerms.tabs) && menuPerms.tabs.length === 0)) {
       logger.warn('cor:view', `Sin permisos de tabs para ${menuId}`);
       return [];
     }
 
-    // Si tabs es un objeto, filtrar
     if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
       const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
       logger.info('cor:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
@@ -204,7 +195,6 @@ class view {
       return filteredTabs;
     }
 
-    // Default: no mostrar
     logger.warn('cor:view', `Configuración de tabs no válida para ${menuId}`);
     return [];
   }
@@ -234,10 +224,6 @@ class view {
   }
 
   static async loadAndInitResources(viewData) {
-    if (!viewData.scripts && !viewData.styles) {
-      return;
-    }
-
     await this.loadViewResources(viewData);
     await new Promise(resolve => setTimeout(resolve, 1));
     await this.initViewComponents(viewData);
@@ -256,17 +242,12 @@ class view {
     }
   }
 
-  static async findViewInPlugins(viewPath, container) {
-    for (const [pluginName, pluginConfig] of Object.entries(this.loadedPlugins)) {
-      if (!pluginConfig.hasViews) continue;
-
+  static async findViewInPlugins(viewName, container) {
+    const plugins = Object.keys(window.hook?.plugins || {});
+    for (const pluginName of plugins) {
       try {
-        const basePath = `plugins/${pluginName}/views`;
-        const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
-        const url = `${window.BASE_URL}${basePath}/${viewPath}.json${cacheBuster}`;
-
+        const url = `${window.BASE_URL}plugins/${pluginName}/views/${viewName}.json?t=${Date.now()}`;
         const response = await fetch(url);
-
         if (response.ok) {
           const viewData = await response.json();
           this.renderView(viewData);
@@ -280,10 +261,6 @@ class view {
     return false;
   }
 
-  static registerPlugin(pluginName, pluginData) {
-    this.loadedPlugins[pluginName] = pluginData;
-  }
-
   static renderView(viewData) {
     const content = document.getElementById('content');
     document.body.setAttribute('data-view', viewData.id);
@@ -294,18 +271,26 @@ class view {
     if (viewData.layout) {
       document.body.classList.add(`layout-${viewData.layout}`);
     }
-    content.innerHTML = this.generateViewHTML(viewData);
+    
+    const hooksHTML = this.processHooksForHTML(viewData);
+    content.innerHTML = this.generateViewHTML(viewData, hooksHTML);
     this.setupView(viewData);
   }
 
   static renderViewInContainer(viewData, container) {
-    container.innerHTML = this.generateViewHTML(viewData);
+    const hooksHTML = this.processHooksForHTML(viewData);
+    container.innerHTML = this.generateViewHTML(viewData, hooksHTML);
     this.setupView(viewData, container);
   }
 
-  static generateViewHTML(viewData) {
+  static generateViewHTML(viewData, hooksHTML = null) {
+    const hooksBeforeHTML = hooksHTML?.before || '';
+    const hooksAfterHTML = hooksHTML?.after || '';
+    
     return `
       <div class="view-container" data-view="${viewData.id}">
+        ${hooksBeforeHTML}
+        
         ${viewData.header ? `
           <div class="view-header">
             ${viewData.header.title ? `<h1>${viewData.header.title}</h1>` : ''}
@@ -326,6 +311,8 @@ class view {
             ${this.renderContent(viewData.statusbar)}
           </div>
         ` : ''}
+        
+        ${hooksAfterHTML}
       </div>
     `;
   }
@@ -333,21 +320,7 @@ class view {
   static async setupView(viewData, container = null) {
     const viewContainer = container || document.getElementById('content');
 
-    if (viewData.id && window.hook) {
-      const hookName = `hook_${viewData.id}`;
-
-      logger.debug('cor:view', `Ejecutando hooks para vista: ${viewData.id}`);
-
-      // Ejecutar hooks (sin defaultData para obtener todos los hooks)
-      const allHooks = hook.execute(hookName, []);
-
-      if (allHooks.length > 0) {
-        logger.debug('cor:view', `${allHooks.length} hooks encontrados para ${viewData.id}`);
-
-        // Procesar hooks según su contexto
-        await this.processHooksWithContext(viewData, allHooks, viewContainer);
-      }
-    }
+    await this.renderHookComponents(viewContainer);
 
     if (viewData.tabs) {
       const tabsContainer = viewContainer.querySelector('.view-tabs-container');
@@ -359,274 +332,6 @@ class view {
     }
 
     setTimeout(() => this.initFormValidation(), 0);
-  }
-
-  static async processHooksWithContext(viewData, hooks, viewContainer) {
-    // Separar hooks por contexto
-    const hooksBeforeView = hooks.filter(h => h.context === 'view' && h.position === 'before');
-    const hooksAfterView = hooks.filter(h => h.context === 'view' && h.position === 'after');
-    const hooksForTabs = hooks.filter(h => h.context === 'tab');
-    const hooksForContent = hooks.filter(h => h.context === 'content' || !h.context);
-    
-    // 1. Procesar hooks ANTES de la vista (context: view, position: before)
-    if (hooksBeforeView.length > 0) {
-      logger.debug('cor:view', `Procesando ${hooksBeforeView.length} hooks ANTES de la vista`);
-      await this.renderHooksBeforeView(hooksBeforeView, viewContainer);
-    }
-    
-    // 2. Procesar hooks DENTRO de tabs (context: tab, target: tabId)
-    if (hooksForTabs.length > 0 && Array.isArray(viewData.tabs)) {
-      logger.debug('cor:view', `Procesando ${hooksForTabs.length} hooks DENTRO de tabs`);
-      this.mergeHooksIntoTabs(viewData, hooksForTabs);
-    }
-    
-    // 3. Procesar hooks DENTRO de content (context: content)
-    if (hooksForContent.length > 0 && Array.isArray(viewData.content)) {
-      logger.debug('cor:view', `Procesando ${hooksForContent.length} hooks DENTRO de content`);
-      this.mergeHooksIntoContent(viewData, hooksForContent);
-    }
-    
-    // 4. Procesar hooks DESPUÉS de la vista (context: view, position: after)
-    if (hooksAfterView.length > 0) {
-      logger.debug('cor:view', `Procesando ${hooksAfterView.length} hooks DESPUÉS de la vista`);
-      // Se procesan después de que se renderice todo
-      setTimeout(() => {
-        this.renderHooksAfterView(hooksAfterView, viewContainer);
-      }, 300);
-    }
-  }
-
-  static async renderHooksBeforeView(hooks, viewContainer) {
-    // Ordenar por order
-    hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
-    // Crear contenedor
-    const container = document.createElement('div');
-    container.className = 'hooks-before-view';
-    container.style.cssText = 'margin-bottom: 1rem;';
-    
-    // Renderizar cada hook
-    for (const hookItem of hooks) {
-      await this.renderHookItem(hookItem, container);
-    }
-    
-    // Insertar al principio del viewContainer
-    if (container.children.length > 0) {
-      viewContainer.insertBefore(container, viewContainer.firstChild);
-      logger.debug('cor:view', `${hooks.length} hooks insertados ANTES de la vista`);
-    }
-  }
-
-  static async renderHooksAfterView(hooks, viewContainer) {
-    // Ordenar por order
-    hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
-    // Crear contenedor
-    const container = document.createElement('div');
-    container.className = 'hooks-after-view';
-    container.style.cssText = 'margin-top: 1rem;';
-    
-    // Renderizar cada hook
-    for (const hookItem of hooks) {
-      await this.renderHookItem(hookItem, container);
-    }
-    
-    // Agregar al final del viewContainer
-    if (container.children.length > 0) {
-      viewContainer.appendChild(container);
-      logger.debug('cor:view', `${hooks.length} hooks insertados DESPUÉS de la vista`);
-    }
-  }
-
-  static mergeHooksIntoTabs(viewData, hooks) {
-    // Agrupar hooks por target (tab)
-    const hooksByTab = {};
-    
-    hooks.forEach(hook => {
-      const target = hook.target;
-      if (target) {
-        if (!hooksByTab[target]) {
-          hooksByTab[target] = [];
-        }
-        hooksByTab[target].push(hook);
-      }
-    });
-    
-    // Mezclar hooks en cada tab
-    viewData.tabs = viewData.tabs.map(tab => {
-      const tabHooks = hooksByTab[tab.id];
-      
-      if (tabHooks && tabHooks.length > 0 && Array.isArray(tab.content)) {
-        logger.debug('cor:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
-        
-        // Preparar contenido existente con order
-        const existingContent = tab.content.map(item => ({
-          order: item.order || 999,
-          ...item
-        }));
-        
-        // Agregar hooks con order
-        const hooksWithOrder = tabHooks.map(hook => ({
-          order: hook.order || 999,
-          ...hook
-        }));
-        
-        // Mezclar y ordenar
-        const mixedContent = [...hooksWithOrder, ...existingContent];
-        mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
-        
-        return {
-          ...tab,
-          content: mixedContent
-        };
-      }
-      
-      return tab;
-    });
-  }
-
-  static mergeHooksIntoContent(viewData, hooks) {
-    // Preparar contenido existente con order
-    const existingContent = viewData.content.map(item => ({
-      order: item.order || 999,
-      ...item
-    }));
-    
-    // Agregar hooks con order
-    const hooksWithOrder = hooks.map(hook => ({
-      order: hook.order || 999,
-      ...hook
-    }));
-    
-    // Mezclar y ordenar
-    const mixedContent = [...hooksWithOrder, ...existingContent];
-    mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
-    viewData.content = mixedContent;
-    
-    logger.debug('cor:view', `${hooks.length} hooks mezclados en content. Total: ${mixedContent.length} items`);
-  }
-
-  static async renderHookItem(hookItem, container) {
-    if (!hookItem || !container) {
-      logger.warn('cor:view', 'renderHookItem: hookItem o container inválido');
-      return;
-    }
-
-    try {
-      if (hookItem.type === 'html') {
-        // Renderizar HTML
-        const div = document.createElement('div');
-        div.id = hookItem.id || `hook-${Date.now()}`;
-        div.className = 'hook-item hook-html';
-        div.innerHTML = hookItem.content || '';
-        container.appendChild(div);
-        logger.debug('cor:view', `Hook HTML renderizado: ${div.id}`);
-      } 
-      else if (hookItem.type === 'component') {
-        // Renderizar componente
-        const div = document.createElement('div');
-        div.id = hookItem.id || `hook-component-${Date.now()}`;
-        div.className = 'hook-item hook-component';
-        container.appendChild(div);
-        
-        const componentName = hookItem.component;
-        
-        if (window[componentName] && typeof window[componentName].render === 'function') {
-          setTimeout(async () => {
-            try {
-              await window[componentName].render(hookItem.config || {}, div);
-              logger.debug('cor:view', `Hook component renderizado: ${componentName}`);
-            } catch (error) {
-              logger.error('cor:view', `Error renderizando hook component ${componentName}:`, error);
-              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
-            }
-          }, 100);
-        } else {
-          logger.error('cor:view', `Componente ${componentName} no encontrado`);
-          div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
-        }
-      }
-    } catch (error) {
-      logger.error('cor:view', `Error en renderHookItem:`, error);
-    }
-  }
-
-  static async renderHookItem(hookItem, container) {
-    if (!hookItem || !container) return;
-
-    try {
-      if (hookItem.type === 'html') {
-        // Renderizar HTML
-        const div = document.createElement('div');
-        div.id = hookItem.id;
-        div.className = 'hook-item hook-html';
-        div.innerHTML = hookItem.content;
-        container.appendChild(div);
-      }
-      else if (hookItem.type === 'component') {
-        // Renderizar componente
-        const div = document.createElement('div');
-        div.id = hookItem.id;
-        div.className = 'hook-item hook-component';
-        container.appendChild(div);
-
-        const componentName = hookItem.component;
-
-        if (window[componentName] && typeof window[componentName].render === 'function') {
-          try {
-            await window[componentName].render(hookItem.config || {}, div);
-            logger.debug('cor:view', `Componente hook ${componentName} renderizado`);
-          } catch (error) {
-            logger.error('cor:view', `Error renderizando componente hook ${componentName}:`, error);
-            div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
-          }
-        } else {
-          logger.error('cor:view', `Componente ${componentName} no encontrado`);
-          div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
-        }
-      }
-      else if (hookItem.type === 'form') {
-        // Renderizar formulario
-        const div = document.createElement('div');
-        div.id = hookItem.id;
-        div.className = 'hook-item hook-form';
-        container.appendChild(div);
-
-        if (window.form && hookItem.formPath) {
-          setTimeout(async () => {
-            try {
-              await form.load(hookItem.formPath, div);
-              logger.debug('cor:view', `Formulario hook ${hookItem.formPath} renderizado`);
-            } catch (error) {
-              logger.error('cor:view', `Error cargando formulario hook:`, error);
-              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando formulario</div>`;
-            }
-          }, 0);
-        }
-      }
-      else if (hookItem.type === 'view') {
-        // Renderizar vista anidada
-        const div = document.createElement('div');
-        div.id = hookItem.id;
-        div.className = 'hook-item hook-view';
-        container.appendChild(div);
-
-        if (window.view && hookItem.viewPath) {
-          setTimeout(async () => {
-            try {
-              await view.loadView(hookItem.viewPath, div);
-              logger.debug('cor:view', `Vista hook ${hookItem.viewPath} renderizada`);
-            } catch (error) {
-              logger.error('cor:view', `Error cargando vista hook:`, error);
-              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando vista</div>`;
-            }
-          }, 0);
-        }
-      }
-    } catch (error) {
-      logger.error('cor:view', `Error renderizando hook item:`, error);
-    }
   }
 
   static async initViewComponents(viewData) {
@@ -768,22 +473,119 @@ class view {
     }
   }
 
-  static findSafeInsertionPoint(container) {
-    const selectors = [
-      '.view-tabs-container',
-      '.tabs-component',
-      '.view-header',
-      '.widget-grid'
-    ];
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // HOOKS SYSTEM - Agrupado al final
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    for (const selector of selectors) {
-      const element = container.querySelector(selector);
-      if (element && element.parentNode === container) {
-        return element;
+  static processHooksForHTML(viewData) {
+    if (!viewData.id || !window.hook) return null;
+    
+    const allHooks = hook.execute(`hook_${viewData.id}`, []);
+    if (allHooks.length === 0) return null;
+    
+    logger.debug('cor:view', `Procesando ${allHooks.length} hooks para ${viewData.id}`);
+    
+    const hooksBeforeView = allHooks.filter(h => h.context === 'view' && h.position === 'before');
+    const hooksAfterView = allHooks.filter(h => h.context === 'view' && h.position === 'after');
+    const hooksForTabs = allHooks.filter(h => h.context === 'tab');
+    const hooksForContent = allHooks.filter(h => h.context === 'content' || !h.context);
+    
+    if (hooksForTabs.length > 0 && Array.isArray(viewData.tabs)) {
+      this.mergeHooksIntoTabs(viewData, hooksForTabs);
+    }
+    
+    if (hooksForContent.length > 0 && Array.isArray(viewData.content)) {
+      this.mergeHooksIntoContent(viewData, hooksForContent);
+    }
+    
+    return {
+      before: this.generateHooksHTML(hooksBeforeView),
+      after: this.generateHooksHTML(hooksAfterView)
+    };
+  }
+
+  static generateHooksHTML(hooks) {
+    if (!hooks || hooks.length === 0) return '';
+    
+    hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    return hooks.map(hook => {
+      if (hook.type === 'html') {
+        return `<div id="${hook.id}" class="hook-item hook-html">${hook.content || ''}</div>`;
+      } else if (hook.type === 'component') {
+        const config = JSON.stringify(hook.config || {}).replace(/"/g, '&quot;');
+        return `<div id="${hook.id}" class="hook-item hook-component" data-component="${hook.component}" data-config="${config}"></div>`;
+      }
+      return '';
+    }).join('');
+  }
+
+  static async renderHookComponents(viewContainer) {
+    const componentHooks = viewContainer.querySelectorAll('.hook-component[data-component]');
+    if (componentHooks.length === 0) return;
+    
+    logger.debug('cor:view', `Renderizando ${componentHooks.length} componentes de hooks`);
+    
+    for (const hookElement of componentHooks) {
+      const componentName = hookElement.dataset.component;
+      const configStr = hookElement.dataset.config || '{}';
+      
+      try {
+        const config = JSON.parse(configStr.replace(/&quot;/g, '"'));
+        
+        if (window[componentName]?.render) {
+          await window[componentName].render(config, hookElement);
+          logger.debug('cor:view', `Componente hook renderizado: ${componentName}`);
+        } else {
+          logger.warn('cor:view', `Componente ${componentName} no encontrado`);
+          hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
+        }
+      } catch (error) {
+        logger.error('cor:view', `Error renderizando hook component ${componentName}:`, error);
+        hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
       }
     }
+  }
 
-    return container.firstElementChild;
+  static mergeHooksIntoTabs(viewData, hooks) {
+    const hooksByTab = {};
+    
+    hooks.forEach(hook => {
+      const target = hook.target;
+      if (target) {
+        if (!hooksByTab[target]) hooksByTab[target] = [];
+        hooksByTab[target].push(hook);
+      }
+    });
+    
+    viewData.tabs = viewData.tabs.map(tab => {
+      const tabHooks = hooksByTab[tab.id];
+      
+      if (tabHooks && tabHooks.length > 0 && Array.isArray(tab.content)) {
+        logger.debug('cor:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
+        
+        const existingContent = tab.content.map(item => ({ order: item.order || 999, ...item }));
+        const hooksWithOrder = tabHooks.map(hook => ({ order: hook.order || 999, ...hook }));
+        const mixedContent = [...hooksWithOrder, ...existingContent];
+        
+        mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
+        
+        return { ...tab, content: mixedContent };
+      }
+      
+      return tab;
+    });
+  }
+
+  static mergeHooksIntoContent(viewData, hooks) {
+    const existingContent = viewData.content.map(item => ({ order: item.order || 999, ...item }));
+    const hooksWithOrder = hooks.map(hook => ({ order: hook.order || 999, ...hook }));
+    const mixedContent = [...hooksWithOrder, ...existingContent];
+    
+    mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    viewData.content = mixedContent;
+    logger.debug('cor:view', `${hooks.length} hooks mezclados en content`);
   }
 }
 

@@ -2,6 +2,7 @@ window.appConfig = {
   environment: IS_DEV ? 'development' : 'production',
   version: VERSION,
   isDevelopment: IS_DEV,
+  frameworkPath: 'framework',
 
   i18n: {
     enabled: true,
@@ -25,13 +26,13 @@ window.appConfig = {
   },
 
   routes: {
-    coreViews: 'js/views',
+    coreViews: 'framework/js/views',
     pluginViews: 'plugins/{pluginName}/views',
     pluginModels: 'plugins/{pluginName}/models',
-    coreModels: 'js/models',
-    components: 'js/components',
-    utils: 'js/utils',
-    validation: 'js/validation'
+    coreModels: 'framework/js/models',
+    components: 'framework/js/components',
+    utils: 'framework/js/utils',
+    validation: 'framework/js/validation'
   },
 
   cache: {
@@ -78,7 +79,7 @@ async function initializeApp() {
       : `?v=${window.appConfig.version}`;
 
     const scriptPromises = SCRIPTS_TO_LOAD.map(url =>
-      fetch(url + cacheBuster).then(r => {
+      fetch(FRAMEWORK_URL + url + cacheBuster).then(r => {
         if (!r.ok) throw new Error(`Failed to load ${url}`);
         return r.text();
       })

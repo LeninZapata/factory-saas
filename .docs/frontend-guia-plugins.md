@@ -7,70 +7,131 @@ Esta guía te enseña a crear plugins frontend con ejemplos prácticos. Todo est
 ## Estructura del nucleo del frontend
 ```
 public/
-├── css/
-│   ├── components/
-│   │   ├── dataTable.css
-│   │   ├── grouper.css
-│   │   ├── langSelector.css
-│   │   ├── modal.css
-│   │   ├── tabs.css
-│   │   ├── toast.css
-│   │   └── widget.css
-│   ├── core/
-│   │   ├── auth.css
-│   │   ├── button.css
-│   │   ├── form.css
-│   │   ├── layout.css
-│   │   ├── reset.css
-│   │   ├── sidebar.css
-│   │   ├── table.css
-│   │   ├── vars.css
-│   │   └── view.css
-│   └── main.css
-├── js/
-│   ├── components/
-│   │   ├── dataTable.js
-│   │   ├── grouper.js
-│   │   ├── langSelector.js
-│   │   ├── modal.js
-│   │   ├── tabs.js
-│   │   ├── toast.js
-│   │   └── widget.js
-│   ├── core/
-│   │   ├── api.js
-│   │   ├── auth.js
-│   │   ├── cache.js
-│   │   ├── conditions.js
-│   │   ├── dataLoader.js
-│   │   ├── event.js
-│   │   ├── form.js
-│   │   ├── hook.js
-│   │   ├── i18n.js
-│   │   ├── layout.js
-│   │   ├── loader.js
-│   │   ├── logger.js
-│   │   ├── sidebar.js
-│   │   ├── validator.js
-│   │   └── view.js
-│   ├── lang/
-│   │   ├── en.json
-│   │   └── es.json
-│   ├── views/
-│   │   ├── auth/
+├── framework/
+│   ├── css/
+│   │   ├── components/
+│   │   │   ├── dataTable.css
+│   │   │   ├── grouper.css
+│   │   │   ├── langSelector.css
+│   │   │   ├── modal.css
+│   │   │   ├── tabs.css
+│   │   │   ├── toast.css
+│   │   │   └── widget.css
+│   │   ├── core/
+│   │   │   ├── auth.css
+│   │   │   ├── button.css
+│   │   │   ├── form.css
+│   │   │   ├── layout.css
+│   │   │   ├── reset.css
+│   │   │   ├── sidebar.css
+│   │   │   ├── table.css
+│   │   │   ├── vars.css
+│   │   │   └── view.css
+│   │   └── main.css
+│   └── js/
+│       ├── components/
+│       │   ├── dataTable.js
+│       │   ├── grouper.js
+│       │   ├── langSelector.js
+│       │   ├── modal.js
+│       │   ├── tabs.js
+│       │   ├── toast.js
+│       │   └── widget.js
+│       ├── core/
+│       │   ├── api.js
+│       │   ├── auth.js
+│       │   ├── cache.js
+│       │   ├── conditions.js
+│       │   ├── dataLoader.js
+│       │   ├── event.js
+│       │   ├── form.js
+│       │   ├── hook.js
+│       │   ├── i18n.js
+│       │   ├── layout.js
+│       │   ├── loader.js
+│       │   ├── logger.js
+│       │   ├── sidebar.js
+│       │   ├── validator.js
+│       │   └── view.js
+│       ├── lang/
+│       │   ├── en.json
+│       │   └── es.json
+│       ├── views/
+│       │   ├── auth/
+│       │   │   ├── forms/
+│       │   │   │   └── login-form.json
+│       │   │   └── login.json
+│       │   ├── dashboard/
+│       │   │   └── dashboard.json
+│       │   └── user/
+│       │       ├── forms/
+│       │       │   └── user-form.json
+│       │       ├── mock/
+│       │       │   └── mock-users.json
+│       │       ├── sections/
+│       │       │   └── user-list.json
+│       │       └── mock-users.json
+│       └── main.js
+├── plugins/
+│   ├── admin/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── permissions.css
+│   │   │   └── js/
+│   │   │       ├── admin-permissions.js
+│   │   │       ├── admin.js
+│   │   │       └── permissions.js
+│   │   ├── lang/
+│   │   │   ├── en.json
+│   │   │   └── es.json
+│   │   ├── views/
+│   │   │   └── sections/
+│   │   │       └── admin-panel.json
+│   │   ├── hooks.js
+│   │   └── index.json
+│   ├── ejemplos/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── chart.css
+│   │   │   └── js/
+│   │   │       └── chart.js
+│   │   ├── mock/
+│   │   │   ├── format-demo.json
+│   │   │   └── users-mock.json
+│   │   ├── views/
 │   │   │   ├── forms/
-│   │   │   │   └── login-form.json
-│   │   │   └── login.json
-│   │   ├── dashboard/
-│   │   │   └── dashboard.json
-│   │   └── user/
-│   │       ├── forms/
-│   │       │   └── user-form.json
-│   │       ├── mock/
-│   │       │   └── mock-users.json
-│   │       ├── sections/
-│   │       │   └── user-list.json
-│   │       └── mock-users.json
-│   └── main.js
+│   │   │   │   ├── formularios/
+│   │   │   │   │   ├── conditions-advanced.json
+│   │   │   │   │   ├── conditions-multiple.json
+│   │   │   │   │   ├── conditions-repeatable.json
+│   │   │   │   │   ├── conditions-simple.json
+│   │   │   │   │   ├── form-grouped-fields-column-overflow.json
+│   │   │   │   │   ├── form-grouped-fields.json
+│   │   │   │   │   ├── form-inputs-normales.json
+│   │   │   │   │   ├── form-modal-login.json
+│   │   │   │   │   ├── form-modal-register.json
+│   │   │   │   │   ├── form-repeatable-grouped-opt1.json
+│   │   │   │   │   ├── form-repeatable-grouped-opt2.json
+│   │   │   │   │   ├── form-repetibles-anidados.json
+│   │   │   │   │   └── form-repetibles-demo.json
+│   │   │   │   ├── form-grouper-anidado.json
+│   │   │   │   ├── form-grouper-linear.json
+│   │   │   │   └── form-grouper-tabs.json
+│   │   │   └── sections/
+│   │   │       ├── formularios/
+│   │   │       │   └── main.json
+│   │   │       ├── conditions-demo.json
+│   │   │       ├── grouper-demo.json
+│   │   │       ├── hooks-caso1.json
+│   │   │       ├── hooks-caso2.json
+│   │   │       ├── script-bajo-demanda.json
+│   │   │       ├── tabs-demo.json
+│   │   │       ├── toast-demo.json
+│   │   │       ├── users-datatable.json
+│   │   │       └── widgets-demo.json
+│   │   ├── hooks.js
+│   │   └── index.json
+│   └── index.json
 └── index.html
 ```
 ---
@@ -1772,3 +1833,110 @@ logger.error('cor:api', 'Error en petición:', error);
 **⚠️ IMPORTANTE:**
 - Solo usarlo en lugares como errores tipo try/catch
 - Si existe fallas entonces se puede agregarlo dentro de metodos involucrados para el debug
+
+---
+
+## Sistema de Hooks
+
+**Propósito:** Permite a los plugins inyectar contenido dinámicamente en vistas, tabs, content y formularios sin modificar archivos originales.
+
+### Configuración
+
+En `index.json` del plugin:
+```json
+{
+  "hasHooks": true
+}
+```
+
+Crear archivo `hooks.js` en la raíz del plugin:
+```javascript
+class miPluginHooks {
+  
+  static hook_nombreVista() {
+    return [
+      {
+        id: 'hook-unico',
+        type: 'html',
+        order: 15,
+        context: 'content',
+        content: 'Contenido inyectado'
+      }
+    ];
+  }
+  
+  static hook_inputs_demo() {
+    return [
+      {
+        name: 'nuevo_campo',
+        label: 'Campo Inyectado',
+        type: 'text',
+        order: 17,
+        context: 'form'
+      }
+    ];
+  }
+}
+
+window.miPluginHooks = miPluginHooks;
+```
+
+### Contextos Disponibles
+
+| Context | Ubicación | Uso |
+|---------|-----------|-----|
+| `'view'` | Alrededor de vista completa | Banners, headers. Requiere `position: 'before'` o `'after'` |
+| `'tab'` | Dentro de tab específico | Contenido en tabs. Requiere `target: 'tabId'` |
+| `'content'` | En array content | Se mezcla con items por `order` |
+| `'form'` | Dentro de formulario | Inyecta fields adicionales por `order` |
+
+### Ejemplos Rápidos
+
+**Agregar banner antes de vista:**
+```javascript
+{
+  id: 'banner-promo',
+  context: 'view',
+  position: 'before',
+  type: 'html',
+  content: '¡Oferta especial!'
+}
+```
+
+**Inyectar contenido en tab:**
+```javascript
+{
+  id: 'hook-tab',
+  context: 'tab',
+  target: 'tab1',
+  order: 15,
+  type: 'html',
+  content: 'Contenido adicional'
+}
+```
+
+**Agregar field en formulario:**
+```javascript
+{
+  name: 'confirm_email',
+  label: 'Confirmar Email',
+  type: 'email',
+  order: 12,
+  context: 'form'
+}
+```
+
+### Reglas de Order
+
+- Los fields/items originales reciben `order` automático: 5, 10, 15, 20...
+- Los hooks usan `order` para posicionarse entre items existentes
+- `order: 7` → Entre 5 y 10
+- `order: 17` → Entre 15 y 20
+- Todo se ordena al final por `order`
+
+**⚠️ IMPORTANTE:**
+- El nombre del método debe ser: `hook_{id_de_la_vista}` (guiones convertidos a guiones bajos)
+- Exportar la clase a `window`: `window.miPluginHooks = miPluginHooks;`
+- Los hooks se ejecutan automáticamente al cargar la vista
+
+---

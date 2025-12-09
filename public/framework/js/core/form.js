@@ -71,13 +71,27 @@ class form {
     const instanceSchema = JSON.parse(JSON.stringify(schema));
     instanceSchema.id = instanceId;
 
-    if (schema.id && window.hook) {
-      const hookName = `hook_form_${schema.id.replace(/-/g, '_')}`;
-      const hookFields = hook.execute(hookName, []);
+    // Asignar order automático a fields originales (múltiplos de 5)
+    if (instanceSchema.fields) {
+      instanceSchema.fields = instanceSchema.fields.map((field, index) => {
+        if (!field.order) {
+          field.order = (index + 1) * 5;
+        }
+        return field;
+      });
+    }
 
-      if (hookFields.length > 0) {
+    // Procesar hooks con contexto 'form'
+    if (schema.id && window.hook) {
+      const hookName = `hook_${schema.id.replace(/-/g, '_')}`;
+      const allHooks = hook.execute(hookName, []);
+
+      const formHooks = allHooks.filter(h => h.context === 'form');
+
+      if (formHooks.length > 0) {
         if (!instanceSchema.fields) instanceSchema.fields = [];
-        instanceSchema.fields.push(...hookFields);
+        instanceSchema.fields.push(...formHooks);
+        instanceSchema.fields.sort((a, b) => (a.order || 999) - (b.order || 999));
       }
     }
 
@@ -132,7 +146,7 @@ class form {
     return fields.map((field) => {
       // ✅ Validar role antes de renderizar
       if (!this.hasRoleAccess(field)) return '';
-      
+
       const fieldPath = path ? `${path}.${field.name}` : field.name;
 
       if (field.type === 'repeatable') {
@@ -209,7 +223,7 @@ class form {
         ${field.fields ? field.fields.map(subField => {
           // ✅ Validar role antes de renderizar subfields
           if (!this.hasRoleAccess(subField)) return '';
-          
+
           const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
           return this.renderField(subField, fieldPath);
         }).join('') : ''}
@@ -347,7 +361,7 @@ class form {
           tabPanels.forEach(panel => panel.classList.remove('active'));
 
           button.classList.add('active');
-          
+
           // Activar el panel correspondiente de ESTE grouper
           if (tabPanels[index]) {
             tabPanels[index].classList.add('active');
@@ -360,7 +374,7 @@ class form {
   static renderField(field, path) {
     // ✅ Validar role al inicio
     if (!this.hasRoleAccess(field)) return '';
-    
+
     if (field.type === 'html') {
       return field.content || '';
     }
@@ -486,19 +500,19 @@ class form {
         if (field.type === 'repeatable') {
           const fieldPath = basePath ? `${basePath}.${field.name}` : field.name;
           repeatables.push({ field, path: fieldPath, level });
-          
+
           // RECURSIÓN: Buscar repetibles dentro de este repeatable
           if (field.fields && field.fields.length > 0) {
             const nested = findRepeatables(field.fields, fieldPath, level + 1);
             repeatables.push(...nested);
           }
         }
-        
+
         // CASO 2: Group con fields
         else if (field.type === 'group' && field.fields) {
           repeatables.push(...findRepeatables(field.fields, basePath, level));
         }
-        
+
         // CASO 3: Grouper con groups
         else if (field.type === 'grouper' && field.groups) {
           field.groups.forEach(group => {
@@ -519,7 +533,7 @@ class form {
 
     topLevelRepeatables.forEach(({ field, path }) => {
       const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
-      
+
       if (container) {
         this.initRepeatableContainer(container, field, path);
       } else {
@@ -536,7 +550,7 @@ class form {
     // Guardar schema completo
     container.dataset.fieldSchema = JSON.stringify(field.fields);
     container.dataset.itemCount = '0';
-    
+
     // Guardar columns y gap si existen
     if (field.columns) {
       container.dataset.columns = field.columns;
@@ -549,7 +563,7 @@ class form {
   static addRepeatableItem(path, buttonElement = null) {
     // 1. Buscar el container DENTRO del formulario correcto
     let container;
-    
+
     if (buttonElement) {
       // Buscar dentro del formulario que contiene el botón clickeado
       const form = buttonElement.closest('form');
@@ -563,12 +577,12 @@ class form {
         }
       }
     }
-    
+
     // Fallback: búsqueda global (para compatibilidad con código legacy)
     if (!container) {
       container = document.querySelector(`.repeatable-items[data-path="${path}"]`);
     }
-    
+
     if (!container) {
       logger.error('cor:form', `Container no encontrado para: "${path}"`);
       return;
@@ -578,7 +592,7 @@ class form {
     const fieldSchema = JSON.parse(container.dataset.fieldSchema || '[]');
     const itemCount = parseInt(container.dataset.itemCount || '0');
     const newIndex = itemCount;
-    
+
     // Obtener columns y gap si existen
     const columns = container.dataset.columns ? parseInt(container.dataset.columns) : null;
     const gap = container.dataset.gap || 'normal';
@@ -635,14 +649,14 @@ class form {
     if (formId) {
       setTimeout(() => {
         const addedItem = container.lastElementChild;
-        
+
         if (addedItem && addedItem.classList.contains('repeatable-item')) {
           const nestedRepeatables = this.findNestedRepeatables(fieldSchema, itemPath);
-          
+
           if (nestedRepeatables.length > 0) {
             nestedRepeatables.forEach(({ field, path: nestedPath }) => {
               const nestedContainer = addedItem.querySelector(`.repeatable-items[data-path="${nestedPath}"]`);
-              
+
               if (nestedContainer) {
                 this.initRepeatableContainer(nestedContainer, field, nestedPath);
               }
@@ -652,10 +666,10 @@ class form {
         } else {
           logger.error('cor:form', `No se pudo obtener el item recién agregado en: "${path}"`);
         }
-        
+
         // Re-inicializar transforms y conditions
         this.bindTransforms(formId);
-        
+
         if (window.conditions) {
           conditions.init(formId);
         }
@@ -674,7 +688,7 @@ class form {
       if (field.type === 'repeatable') {
         const fieldPath = `${basePath}.${field.name}`;
         repeatables.push({ field, path: fieldPath });
-        
+
         // NO buscar más profundo - los niveles más profundos se inicializan cuando se crean
         // Esto evita errores de "container no encontrado" para repetibles que aún no existen
       }
@@ -954,13 +968,13 @@ class form {
   static hasRoleAccess(field) {
     // Si el campo no tiene restricción de role, permitir acceso
     if (!field.role) return true;
-    
+
     // Obtener role del usuario actual
     const userRole = window.auth?.user?.role;
-    
+
     // Si no hay usuario autenticado, denegar acceso
     if (!userRole) return false;
-    
+
     // Validar si el role coincide
     return userRole === field.role;
   }

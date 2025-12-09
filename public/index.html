@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema</title>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="framework/css/main.css" />
 </head>
 <body>
 <div id="app"></div>
 <script>
   // Detectar automáticamente la ruta base del proyecto
   var BASE_URL = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+  var FRAMEWORK_URL = BASE_URL + 'framework/';
 
   var IS_DEV =  window.location.hostname === 'localhost' ||
                 window.location.hostname === '127.0.0.1' ||
@@ -26,7 +27,7 @@
 
   const script = document.createElement('script');
   script.type = 'module';
-  script.src = `${BASE_URL}js/main.js?v=${VERSION}`;
+  script.src = `${BASE_URL}framework/js/main.js?v=${VERSION}`;
   document.head.appendChild(script);
 
   // console.log('🔧 BASE_URL:', BASE_URL); // ← Para debug

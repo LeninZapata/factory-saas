@@ -2,7 +2,7 @@
   "name": "ejemplos",
   "version": "1.0.0",
   "enabled": true,
-  "hasHooks": false,
+  "hasHooks": true,
   "hasViews": true,
   "hasMenu": true,
   "menu": {
