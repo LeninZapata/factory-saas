@@ -1,12 +1,96 @@
-# Guía Práctica: Creación de Plugins Frontend
+# Guía Práctica: Creación de Extensions Frontend
 
-Esta guía te enseña a crear plugins frontend con ejemplos prácticos. Todo está basado en ejemplos reales del sistema.
+Esta guía te enseña a crear extensions frontend con ejemplos prácticos. Todo está basado en ejemplos reales del sistema.
 
 ---
 
 ## Estructura del nucleo del frontend
 ```
 public/
+├── extensions/
+│   ├── admin/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── permissions.css
+│   │   │   └── js/
+│   │   │       ├── admin-permissions.js
+│   │   │       ├── admin.js
+│   │   │       └── permissions.js
+│   │   ├── lang/
+│   │   │   ├── en.json
+│   │   │   └── es.json
+│   │   ├── views/
+│   │   │   └── sections/
+│   │   │       └── admin-panel.json
+│   │   ├── hooks.js
+│   │   └── index.json
+│   ├── botmaster/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── botmaster.css
+│   │   │   └── js/
+│   │   │       └── botmaster.js
+│   │   ├── lang/
+│   │   │   ├── en.json
+│   │   │   └── es.json
+│   │   ├── mock/
+│   │   │   ├── bots.json
+│   │   │   ├── families.json
+│   │   │   └── tasks.json
+│   │   ├── views/
+│   │   │   ├── forms/
+│   │   │   │   ├── bot-form.json
+│   │   │   │   ├── family-form.json
+│   │   │   │   └── task-builder.json
+│   │   │   └── sections/
+│   │   │       ├── bots.json
+│   │   │       ├── dashboard.json
+│   │   │       ├── families.json
+│   │   │       ├── monitor.json
+│   │   │       └── tasks.json
+│   │   └── index.json
+│   ├── ejemplos/
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   └── chart.css
+│   │   │   └── js/
+│   │   │       └── chart.js
+│   │   ├── mock/
+│   │   │   ├── format-demo.json
+│   │   │   └── users-mock.json
+│   │   ├── views/
+│   │   │   ├── forms/
+│   │   │   │   ├── formularios/
+│   │   │   │   │   ├── conditions-advanced.json
+│   │   │   │   │   ├── conditions-multiple.json
+│   │   │   │   │   ├── conditions-repeatable.json
+│   │   │   │   │   ├── conditions-simple.json
+│   │   │   │   │   ├── form-grouped-fields-column-overflow.json
+│   │   │   │   │   ├── form-grouped-fields.json
+│   │   │   │   │   ├── form-inputs-normales.json
+│   │   │   │   │   ├── form-modal-login.json
+│   │   │   │   │   ├── form-modal-register.json
+│   │   │   │   │   ├── form-repeatable-grouped-opt1.json
+│   │   │   │   │   ├── form-repeatable-grouped-opt2.json
+│   │   │   │   │   ├── form-repetibles-anidados.json
+│   │   │   │   │   └── form-repetibles-demo.json
+│   │   │   │   ├── form-grouper-anidado.json
+│   │   │   │   ├── form-grouper-linear.json
+│   │   │   │   └── form-grouper-tabs.json
+│   │   │   └── sections/
+│   │   │       ├── formularios/
+│   │   │       │   └── main.json
+│   │   │       ├── conditions-demo.json
+│   │   │       ├── grouper-demo.json
+│   │   │       ├── hooks-caso1.json
+│   │   │       ├── hooks-caso2.json
+│   │   │       ├── script-bajo-demanda.json
+│   │   │       ├── tabs-demo.json
+│   │   │       ├── toast-demo.json
+│   │   │       ├── users-datatable.json
+│   │   │       └── widgets-demo.json
+│   │   ├── hooks.js
+│   │   └── index.json
 ├── framework/
 │   ├── css/
 │   │   ├── components/
@@ -72,80 +156,21 @@ public/
 │       │       │   └── user-list.json
 │       │       └── mock-users.json
 │       └── main.js
-├── plugins/
-│   ├── admin/
-│   │   ├── assets/
-│   │   │   ├── css/
-│   │   │   │   └── permissions.css
-│   │   │   └── js/
-│   │   │       ├── admin-permissions.js
-│   │   │       ├── admin.js
-│   │   │       └── permissions.js
-│   │   ├── lang/
-│   │   │   ├── en.json
-│   │   │   └── es.json
-│   │   ├── views/
-│   │   │   └── sections/
-│   │   │       └── admin-panel.json
-│   │   ├── hooks.js
-│   │   └── index.json
-│   ├── ejemplos/
-│   │   ├── assets/
-│   │   │   ├── css/
-│   │   │   │   └── chart.css
-│   │   │   └── js/
-│   │   │       └── chart.js
-│   │   ├── mock/
-│   │   │   ├── format-demo.json
-│   │   │   └── users-mock.json
-│   │   ├── views/
-│   │   │   ├── forms/
-│   │   │   │   ├── formularios/
-│   │   │   │   │   ├── conditions-advanced.json
-│   │   │   │   │   ├── conditions-multiple.json
-│   │   │   │   │   ├── conditions-repeatable.json
-│   │   │   │   │   ├── conditions-simple.json
-│   │   │   │   │   ├── form-grouped-fields-column-overflow.json
-│   │   │   │   │   ├── form-grouped-fields.json
-│   │   │   │   │   ├── form-inputs-normales.json
-│   │   │   │   │   ├── form-modal-login.json
-│   │   │   │   │   ├── form-modal-register.json
-│   │   │   │   │   ├── form-repeatable-grouped-opt1.json
-│   │   │   │   │   ├── form-repeatable-grouped-opt2.json
-│   │   │   │   │   ├── form-repetibles-anidados.json
-│   │   │   │   │   └── form-repetibles-demo.json
-│   │   │   │   ├── form-grouper-anidado.json
-│   │   │   │   ├── form-grouper-linear.json
-│   │   │   │   └── form-grouper-tabs.json
-│   │   │   └── sections/
-│   │   │       ├── formularios/
-│   │   │       │   └── main.json
-│   │   │       ├── conditions-demo.json
-│   │   │       ├── grouper-demo.json
-│   │   │       ├── hooks-caso1.json
-│   │   │       ├── hooks-caso2.json
-│   │   │       ├── script-bajo-demanda.json
-│   │   │       ├── tabs-demo.json
-│   │   │       ├── toast-demo.json
-│   │   │       ├── users-datatable.json
-│   │   │       └── widgets-demo.json
-│   │   ├── hooks.js
-│   │   └── index.json
-│   └── index.json
 └── index.html
+
 ```
 ---
 
-## 📁 Estructura de un Plugin
+## 📁 Estructura de un Extension
 
 ```
-public/plugins/miPlugin/
-├── index.json              # ⚠️ ARCHIVO PRINCIPAL - Configuración del plugin
+public/extensions/miExt/
+├── index.json              # ⚠️ ARCHIVO PRINCIPAL - Configuración del extension
 ├── assets/
 │   ├── css/
-│   │   └── miPlugin.css   # Estilos del plugin
+│   │   └── miExtension.css   # Estilos del extension
 │   └── js/
-│       └── miPlugin.js    # JavaScript del plugin
+│       └── miExntesion.js    # JavaScript del extension
 ├── lang/
 │   ├── es.json            # Traducciones español
 │   └── en.json            # Traducciones inglés
@@ -161,22 +186,22 @@ public/plugins/miPlugin/
 
 ## 1️⃣ index.json - Configuración Principal
 
-Este es el archivo más importante. Define el menú, scripts y configuración del plugin.
+Este es el archivo más importante. Define el menú, scripts y configuración del extension.
 
 ### Ejemplo básico (sin submenús):
 
 ```json
 {
-  "name": "miPlugin",              // Nombre único del plugin (minúsculas, sin espacios)
+  "name": "miExtension",           // Nombre único del extension (minúsculas, sin espacios)
   "version": "1.0.0",              // Versión semántica
-  "enabled": true,                 // ⚠️ REQUERIDO: true para activar el plugin
+  "enabled": true,                 // ⚠️ REQUERIDO: true para activar el extension
   "hasMenu": true,                 // Si tiene menú en sidebar
   "hasViews": true,                // Si tiene vistas (archivos JSON en views/)
   "hasHooks": false,               // Si tiene hooks/eventos personalizados
-  "description": "Descripción",    // Descripción corta del plugin
+  "description": "Descripción",    // Descripción corta del extension
 
   "menu": {
-    "title": "Mi Plugin",          // Título visible en el menú
+    "title": "Mi Extension",          // Título visible en el menú
     "icon": "🔌",                  // Emoji o icono del menú
     "order": 10,                   // Orden de aparición (menor = más arriba)
     "view": "sections/dashboard"   // ⚠️ Ruta DEBE incluir "sections/" si es una vista principal
@@ -185,13 +210,13 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 ```
 
 **⚠️ Reglas Críticas:**
-1. ✅ **`enabled: true` ES REQUERIDO** en index.json del plugin para activarlo
-2. IDs de menú DEBEN empezar con: `"{nombre-plugin}-{id}"` (ej: `"clientes-dashboard"`)
+1. ✅ **`enabled: true` ES REQUERIDO** en index.json del extension para activarlo
+2. IDs de menú DEBEN empezar con: `"{nombre-extension}-{id}"` (ej: `"clientes-dashboard"`)
 3. ⚠️ **Rutas de vistas DEBEN incluir carpeta:** `"sections/listado"` o `"forms/item"` (NO solo `"listado"`)
 4. Keys de traducción en inglés: `field.name` no `field.nombre`
 5. En grouper usar `"fields":[]` NO `"content":[]`
 6. **Keys de idioma:** usar punto `.` no dos puntos `:` → `"i18n:clientes.field.name"` ✅ no `"i18n:clientes:field.name"` ❌
-7. **Keys en lang/*.json:** con prefijo del plugin → `"clientes.field.name"` ✅
+7. **Keys en lang/*.json:** con prefijo del extension → `"clientes.field.name"` ✅
 8. **DataTable:** usar `"source": "ruta"` simple, NO objeto `dataSource` complejo
 
 
@@ -199,7 +224,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 
 ```json
 {
-  "name": "inventario",              // Nombre del plugin
+  "name": "inventario",              // Nombre del extension
   "version": "1.0.0",                // Versión
   "enabled": true,                   // ⚠️ REQUERIDO para activar
   "hasMenu": true,                   // Tiene menú
@@ -213,7 +238,7 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
     "order": 10,                     // Orden en sidebar
     "items": [                       // ⚠️ Array de submenús (NO "view" en raíz si hay "items")
       {
-        "id": "inventario-listado",  // ⚠️ ID único con prefijo del plugin
+        "id": "inventario-listado",  // ⚠️ ID único con prefijo del extension
         "title": "Productos",        // Título visible del submenú
         "view": "sections/listado",  // ⚠️ Ruta completa con "sections/"
         "order": 1                   // Orden dentro del submenú
@@ -233,16 +258,16 @@ Este es el archivo más importante. Define el menú, scripts y configuración de
 
 ```json
 {
-  "name": "botmaster",                                            // Nombre del plugin
+  "name": "botmaster",                                            // Nombre del extension
   "version": "1.0.0",                                             // Versión
   "enabled": true,                                                // ⚠️ REQUERIDO para activar
   "hasMenu": true,                                                // Tiene menú
   "hasViews": true,                                               // Tiene vistas
   "hasHooks": false,                                              // Hooks personalizados
   "description": "Sistema de automatización de bots",             // Descripción
-  "autoload": "plugins/{plugin_name}/assets/js/botmaster.js",     // Script principal (carga automática)
-  "scripts": ["plugins/{plugin_name}/assets/js/helper.js"],       // Scripts adicionales globales
-  "styles": ["plugins/{plugin_name}/assets/css/botmaster.css"],   // Estilos globales
+  "autoload": "extensions/{extension_name}/assets/js/botmaster.js",     // Script principal (carga automática)
+  "scripts": ["extensions/{extension_name}/assets/js/helper.js"],       // Scripts adicionales globales
+  "styles": ["extensions/{extension_name}/assets/css/botmaster.css"],   // Estilos globales
 
   "menu": {
     "title": "Botmaster",                                         // Título del menú
@@ -274,8 +299,8 @@ Si quieres cargar scripts/estilos solo cuando se abre una vista específica (mej
 {
   "id": "graficos",
   "title": "Gráficos",
-  "scripts": ["plugins/{plugin_name}/assets/js/chart.js"],
-  "styles": ["plugins/{plugin_name}/assets/css/chart.css"],
+  "scripts": ["extensions/{extension_name}/assets/js/chart.js"],
+  "styles": ["extensions/{extension_name}/assets/css/chart.css"],
   "content": [...]
 }
 ```
@@ -342,8 +367,8 @@ Puedes cargar formularios directamente dentro de un `type: "html"` usando la cla
 
 **Formatos soportados para `data-form-json`:**
 - `'core:auth/forms/login-form'` - Formulario del core
-- `'miPlugin|forms/item-form'` - Formulario de plugin
-- `'forms/config'` - Formulario relativo (busca en core o plugin según contexto)
+- `'miExtension|forms/item-form'` - Formulario de extension
+- `'forms/config'` - Formulario relativo (busca en core o extension según contexto)
 
 **Versión más legible del HTML:**
 ```html
@@ -458,7 +483,7 @@ Similar a los formularios, puedes cargar componentes dinámicamente:
       "component": "datatable",
       "order": 2,
       "config": {
-        "pluginName": "inventario",
+        "extensionName": "inventario",
         "dataSource": {
           "type": "auto",
           "api": {
@@ -519,7 +544,7 @@ Similar a los formularios, puedes cargar componentes dinámicamente:
           "type": "component",
           "component": "datatable",
           "config": {
-            "pluginName": "admin",
+            "extensionName": "admin",
             "columns": ["key", "value"],
             "dataSource": {
               "type": "auto",
@@ -954,14 +979,14 @@ Los campos pueden mostrarse u ocultarse según el valor de otros campos usando e
 
 ## 4️⃣ Rutas y Referencias
 
-### Cargar vistas del plugin actual:
+### Cargar vistas del extension actual:
 
 ```javascript
-// Desde index.json del plugin
-"view": "dashboard"  // ✅ Relativo al plugin
+// Desde index.json del extension
+"view": "dashboard"  // ✅ Relativo al extension
 
 // Desde código JavaScript
-modal.open('miPlugin|sections/detalle')  // ✅ Especificando plugin
+modal.open('miExtension|sections/detalle')  // ✅ Especificando extension
 ```
 
 ### Cargar vistas del core:
@@ -971,7 +996,7 @@ modal.open('core:dashboard/dashboard')
 view.loadView('core:user/sections/user-list')
 ```
 
-### Cargar formularios del plugin:
+### Cargar formularios del extension:
 
 ```javascript
 modal.open('inventario|forms/producto')
@@ -1005,7 +1030,7 @@ El sistema permite anidar componentes de forma recursiva:
           "type": "component",
           "component": "datatable",
           "config": {
-            "pluginName": "admin",
+            "extensionName": "admin",
             "columns": ["id", "nombre", "email"],
             "dataSource": {
               "type": "auto",
@@ -1028,7 +1053,7 @@ El sistema permite anidar componentes de forma recursiva:
   "content": [
     {
       "type": "html",
-      "content": "<button onclick=\"modal.open('miPlugin|forms/crear', {title: 'Crear Item'})\">Crear</button>"
+      "content": "<button onclick=\"modal.open('miExtension|forms/crear', {title: 'Crear Item'})\">Crear</button>"
     }
   ]
 }
@@ -1092,7 +1117,7 @@ El sistema de modales permite abrir formularios, vistas completas y HTML en vent
 
 **Abrir modal con formulario nuevo:**
 ```javascript
-modal.open('miPlugin|forms/item-form', {
+modal.open('miExtension|forms/item-form', {
   title: 'Nuevo Item',
   width: '80%',
   maxWidth: '900px'
@@ -1101,7 +1126,7 @@ modal.open('miPlugin|forms/item-form', {
 
 **Abrir modal con formulario para editar (carga datos automáticamente):**
 ```javascript
-modal.openWithData('miPlugin|forms/item-form', {
+modal.openWithData('miExtension|forms/item-form', {
   id: 123,
   title: 'Editar Item',
   width: '70%'
@@ -1110,8 +1135,8 @@ modal.openWithData('miPlugin|forms/item-form', {
 
 **Abrir modal con una vista (section) completa:**
 ```javascript
-// Vista de plugin
-modal.open('miPlugin|sections/detalle', {
+// Vista de extension
+modal.open('miExtension|sections/detalle', {
   title: 'Detalles del Item',
   width: '90%',
   maxWidth: '1200px'
@@ -1178,7 +1203,7 @@ Ya explicado en la sección de formularios. Permite agrupar campos en tabs o aco
   "groups": [
     {
       "title": "📝 Formulario",
-      "content": "<div class='dynamic-form' data-form-json='plugin/forms/form1'></div>"
+      "content": "<div class='dynamic-form' data-form-json='extension/forms/form1'></div>"
     },
     {
       "title": "📊 HTML",
@@ -1226,7 +1251,7 @@ Las vistas pueden tener tabs para organizar contenido:
           "type": "component",
           "component": "datatable",
           "config": {
-            "pluginName": "miPlugin",
+            "extensionName": "miExtension",
             "columns": ["id", "nombre"],
             "dataSource": {
               "type": "auto",
@@ -1288,7 +1313,7 @@ Con `preloadAllTabs: true` todas las tabs se cargan al inicio (cambio instantán
 ### Abrir modal con formulario nuevo:
 
 ```javascript
-modal.open('miPlugin|forms/item-form', {
+modal.open('miExtension|forms/item-form', {
   title: 'Nuevo Item'
 })
 ```
@@ -1296,7 +1321,7 @@ modal.open('miPlugin|forms/item-form', {
 ### Abrir modal con formulario para editar:
 
 ```javascript
-modal.openWithData('miPlugin|forms/item-form', {
+modal.openWithData('miExtension|forms/item-form', {
   id: 123,
   title: 'Editar Item'
 })
@@ -1385,29 +1410,29 @@ api.post('/api/blog/123/scrape').then(() => {
 
 ---
 
-## 9️⃣ Registrar el Plugin
+## 9️⃣ Registrar el Extension
 
-Una vez creado el plugin, registrarlo en `/public/plugins/index.json`:
+Una vez creado el extension, registrarlo en `/public/extensions/index.json`:
 
 ```json
 {
-  "plugins": [
+  "extensions": [
     "admin",
     "botmaster",
     "ejemplos",
     "inventario",
-    "miPlugin"
+    "miExtension"
   ]
 }
 ```
 
 ---
 
-## 🔟 Ejemplo Completo: Plugin "TaskManager"
+## 🔟 Ejemplo Completo: Extension "TaskManager"
 
 ### Estructura:
 ```
-public/plugins/taskmanager/
+public/extensions/taskmanager/
 ├── index.json
 ├── assets/
 │   ├── css/
@@ -1515,7 +1540,7 @@ public/plugins/taskmanager/
       "component": "datatable",
       "order": 2,
       "config": {
-        "pluginName": "taskmanager",
+        "extensionName": "taskmanager",
         "dataSource": {
           "type": "auto",
           "api": {
@@ -1674,12 +1699,12 @@ toast.success(__('taskmanager:message.task_completed'));
 ## 🔑 Reglas de Oro
 
 1. **Nombres de componentes en minúsculas:** `"datatable"` no `"dataTable"`
-2. **DataTable requiere `pluginName`:** Siempre especificar el plugin
+2. **DataTable requiere `extensionName`:** Siempre especificar el extension
 3. **Columnas como array simple:** `["id", "nombre"]` no objetos
 4. **Acciones con `onclick`:** Código JavaScript ejecutable
-5. **Rutas relativas en index.json:** `"sections/dashboard"` no `"miPlugin/sections/dashboard"`
+5. **Rutas relativas en index.json:** `"sections/dashboard"` no `"miExtension/sections/dashboard"`
 6. **Content es array:** Todo va dentro del array `content`
-7. **Registrar en plugins/index.json:** No olvides agregarlo a la lista
+7. **Registrar en extensions/index.json:** No olvides agregarlo a la lista
 
 ---
 
@@ -1741,18 +1766,18 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 2. **Archivos JSON** (con `.json` = ruta completa)
    ```json
    {
-     "source": "plugins/inventario/views/mock/productos.json"
+     "source": "extensions/inventario/views/mock/productos.json"
    }
    ```
    → Carga desde ruta exacta (no agrega prefijo)
 
-3. **Archivos JSON de otro plugin**
+3. **Archivos JSON de otro extension**
    ```json
    {
-     "source": "plugins/otro-plugin/data/clientes.json"
+     "source": "extensions/otro-extension/data/clientes.json"
    }
    ```
-   → Permite cargar datos de cualquier plugin
+   → Permite cargar datos de cualquier extension
 
 ### Ejemplos Completos:
 
@@ -1781,7 +1806,7 @@ También puedes cargar formularios y componentes dentro de HTML usando:
   "type": "component",
   "component": "datatable",
   "config": {
-    "source": "plugins/clientes/views/mock/clientes.json",
+    "source": "extensions/clientes/views/mock/clientes.json",
     "columns": [
       {
         "id": { "name": "i18n:clientes.column.id", "width": "80px" }
@@ -1819,7 +1844,7 @@ Todos los métodos reciben: `(module, ...args)`
 **Convención de prefijos:**
 - `cor:xxx` - Core (ej: `cor:auth`, `cor:view`, `cor:api`)
 - `com:xxx` - Componentes (ej: `com:modal`, `com:datatable`)
-- `p:xxx` - Plugins (ej: `p:permissions`, `p:botmaster`)
+- `p:xxx` - Extensions (ej: `p:permissions`, `p:botmaster`)
 - `m:xxx` - main.js solamente
 
 **Ejemplos:**
@@ -1838,21 +1863,21 @@ logger.error('cor:api', 'Error en petición:', error);
 
 ## Sistema de Hooks
 
-**Propósito:** Permite a los plugins inyectar contenido dinámicamente en vistas, tabs, content y formularios sin modificar archivos originales.
+**Propósito:** Permite a los extensions inyectar contenido dinámicamente en vistas, tabs, content y formularios sin modificar archivos originales.
 
 ### Configuración
 
-En `index.json` del plugin:
+En `index.json` del extension:
 ```json
 {
   "hasHooks": true
 }
 ```
 
-Crear archivo `hooks.js` en la raíz del plugin:
+Crear archivo `hooks.js` en la raíz del extension:
 ```javascript
-class miPluginHooks {
-  
+class miExtensionHooks {
+
   static hook_nombreVista() {
     return [
       {
@@ -1864,7 +1889,7 @@ class miPluginHooks {
       }
     ];
   }
-  
+
   static hook_inputs_demo() {
     return [
       {
@@ -1878,7 +1903,7 @@ class miPluginHooks {
   }
 }
 
-window.miPluginHooks = miPluginHooks;
+window.miExtensionHooks = miExtensionHooks;
 ```
 
 ### Contextos Disponibles
@@ -1936,7 +1961,7 @@ window.miPluginHooks = miPluginHooks;
 
 **⚠️ IMPORTANTE:**
 - El nombre del método debe ser: `hook_{id_de_la_vista}` (guiones convertidos a guiones bajos)
-- Exportar la clase a `window`: `window.miPluginHooks = miPluginHooks;`
+- Exportar la clase a `window`: `window.miExtensionHooks = miExtensionHooks;`
 - Los hooks se ejecutan automáticamente al cargar la vista
 
 ---

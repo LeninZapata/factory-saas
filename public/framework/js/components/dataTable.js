@@ -305,6 +305,9 @@ class datatable {
 
   static renderActions(row, actions) {
     return Object.entries(actions).map(([key, action]) => {
+      // ✅ Validar role antes de renderizar el botón
+      if (!this.hasRoleAccess(action)) return '';
+
       const onclick = this.replaceVars(action.onclick, row);
       
       // ⚠️ IMPORTANTE: Traducir el nombre de la acción igual que las columnas
@@ -317,7 +320,7 @@ class datatable {
       }
 
       return `<button class="btn btn-sm btn-secondary" onclick="${onclick}"${dataAttrs}>${actionLabel}</button>`;
-    }).join(' ');
+    }).join(' ').trim();
   }
 
   static replaceVars(str, row) {
@@ -373,6 +376,20 @@ class datatable {
 
     const tableId = firstTable.getAttribute('data-datatable');
     await this.refresh(tableId);
+  }
+
+  static hasRoleAccess(action) {
+    // Si la acción no tiene restricción de role, permitir acceso
+    if (!action.role) return true;
+
+    // Obtener role del usuario actual
+    const userRole = window.auth?.user?.role;
+
+    // Si no hay usuario autenticado, denegar acceso
+    if (!userRole) return false;
+
+    // Validar si el role coincide
+    return userRole === action.role;
   }
 }
 

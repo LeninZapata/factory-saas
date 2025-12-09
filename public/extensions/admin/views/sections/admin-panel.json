@@ -70,10 +70,12 @@
             "actions": {
               "edit": {
                 "name": "✏️ Editar",
+                "role": "admin",
                 "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initFormWithData(formId, {id});}})"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
+                "role": "admin",
                 "onclick": "if(confirm('¿Eliminar usuario {user}?')) admin.delete({id}).then(r => r && location.reload())"
               }
             }
