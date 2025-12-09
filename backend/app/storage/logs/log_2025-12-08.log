@@ -23,3 +23,17 @@
 [2025-12-08 20:32:43] INFO: Login exitoso | {"user":"admin44","id":3}
 [2025-12-08 20:36:57] INFO: Logout exitoso | {"token":"6a9e132923..."}
 [2025-12-08 20:37:00] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-12-08 22:46:40] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 4"
+[2025-12-08 22:46:40] INFO: UserController | "Sesiones invalidadas para user_id=4: 0 sesiones eliminadas"
+[2025-12-08 22:47:27] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 7"
+[2025-12-08 22:47:27] INFO: UserController | "Sesiones invalidadas para user_id=7: 0 sesiones eliminadas"
+[2025-12-08 22:47:47] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 7"
+[2025-12-08 22:47:47] INFO: UserController | "Sesiones invalidadas para user_id=7: 0 sesiones eliminadas"
+[2025-12-08 22:48:34] INFO: sessionCleanup | "Limpiadas 0 sesiones del usuario 7"
+[2025-12-08 22:48:34] INFO: UserController | "Sesiones invalidadas para user_id=7: 0 sesiones eliminadas"
+[2025-12-08 22:48:46] INFO: Logout exitoso | {"token":"65b00ee2e1..."}
+[2025-12-08 22:48:50] INFO: Login exitoso | {"user":"admin6","id":7}
+[2025-12-08 22:48:56] INFO: Logout exitoso | {"token":"440b6ce346..."}
+[2025-12-08 22:49:04] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-12-08 22:49:09] INFO: Logout exitoso | {"token":"34f8461111..."}
+[2025-12-08 22:51:08] INFO: Login exitoso | {"user":"admin44","id":3}

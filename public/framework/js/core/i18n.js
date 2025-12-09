@@ -32,8 +32,9 @@ class i18n {
 
     if (!data) {
       try {
+        const frameworkPath = window.appConfig?.frameworkPath || 'framework';
         const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
-        const response = await fetch(`${window.BASE_URL}js/lang/${lang}.json${cacheBuster}`);
+        const response = await fetch(`${window.BASE_URL}${frameworkPath}/js/lang/${lang}.json${cacheBuster}`);
 
         if (response.ok) {
           data = await response.json();
