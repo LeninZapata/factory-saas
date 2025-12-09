@@ -1,8 +1,0 @@
-[2025-12-09 10:29:14]	INFO	auth	user.php:10	Login exitoso	{"user":"admin44","id":3}
-[2025-12-09 12:45:07]	INFO	auth	user.php:16	Logout exitoso	{"token":"b612c29076..."}
-[2025-12-09 12:45:10]	WARNING	auth	user.php:10	Login fallido	{"user":"admin44"}
-[2025-12-09 12:45:13]	INFO	auth	user.php:10	Login exitoso	{"user":"admin44","id":3}
-[2025-12-09 13:06:05]	INFO	auth	user.php:16	Logout exitoso	{"token":"b1e336fad1..."}
-[2025-12-09 13:06:10]	INFO	auth	user.php:10	Login exitoso	{"user":"admin44","id":3}
-[2025-12-09 13:08:29]	INFO	auth	user.php:16	Logout exitoso	{"token":"8f874fb5af..."}
-[2025-12-09 13:08:33]	INFO	auth	user.php:10	Login exitoso	{"user":"admin44","id":3}

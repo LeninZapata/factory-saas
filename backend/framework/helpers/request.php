@@ -57,4 +57,36 @@ class request {
     if (($pos = strpos($uri, '?')) !== false) $uri = substr($uri, 0, $pos);
     return parse_url($uri, PHP_URL_PATH);
   }
+
+  // Obtener token Bearer del header Authorization
+  static function bearerToken() {
+    // Método 1: HTTP_AUTHORIZATION
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+      if (preg_match('/Bearer\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
+        return $matches[1];
+      }
+    }
+
+    // Método 2: getallheaders()
+    if (function_exists('getallheaders')) {
+      $headers = getallheaders();
+      if (isset($headers['Authorization'])) {
+        if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+          return $matches[1];
+        }
+      }
+    }
+
+    // Método 3: apache_request_headers()
+    if (function_exists('apache_request_headers')) {
+      $headers = apache_request_headers();
+      if (isset($headers['Authorization'])) {
+        if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+          return $matches[1];
+        }
+      }
+    }
+
+    return null;
+  }
 }

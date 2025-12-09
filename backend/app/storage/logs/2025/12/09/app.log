@@ -1,1 +1,2 @@
-[2025-12-09 13:13:04]	ERROR	app	router.php:170	Response Error	{"code":404,"data":{"success":false,"error":"Route not found","path":"/api/users"}}
+[2025-12-09 14:10:01]	WARNING	app	authMiddleware.php:13	authMiddleware	"Token no encontrado: fb6c9134fcda46817aa2c129f49209370c642fd3f5fee5cfd4b96a215eea3c6d"
+[2025-12-09 14:10:01]	ERROR	app	response.php:43	Response Error	{"code":401,"data":{"success":false,"error":"Token inválido"}}

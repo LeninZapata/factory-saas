@@ -19,8 +19,8 @@ window.appConfig = {
     tokenTTL: 24 * 60 * 60 * 1000,
     sessionCheckInterval: 2*60*1000, // 2 minutos
     api: {
-      login: '/api/user/login',
-      logout: '/api/user/logout',
+      login: '/api/auth/login',
+      logout: '/api/auth/logout',
       me: '/api/user/profile'
     }
   },

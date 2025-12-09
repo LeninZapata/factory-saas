@@ -1,21 +1,7 @@
 <?php
-// routes/apis/user.php - Solo rutas especiales de autenticación
+// routes/apis/user.php
 // Las rutas CRUD (create, update, delete, etc.) se auto-registran desde user.json
 $router->group('/api/user', function($router) {
-
-  // RUTAS ESPECIALES DE AUTENTICACIÓN
-
-  // Login - POST /api/user/login
-  $router->post('/login', function() {
-    $result = userHandlers::login([]);
-    response::json($result);
-  })->middleware(['json', 'throttle:10,1']);
-
-  // Logout - POST /api/user/logout
-  $router->post('/logout', function() {
-    $result = userHandlers::logout([]);
-    response::json($result);
-  })->middleware('auth');
 
   // Profile - GET /api/user/profile
   $router->get('/profile', function() {

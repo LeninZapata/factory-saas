@@ -1,5 +1,0 @@
-[2025-12-06 00:42:53] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
-[2025-12-06 00:52:34] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
-[2025-12-06 00:58:19] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
-[2025-12-06 01:07:39] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
-[2025-12-06 18:46:17] INFO: Login exitoso | {"user":"admin44","id":3}

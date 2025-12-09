@@ -1,4 +1,0 @@
-[2025-12-04 21:29:54] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
-[2025-12-04 21:31:54] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
-[2025-12-04 21:34:00] WARNING: Login fallido | {"user":"admin44"}
-[2025-12-04 21:34:05] INFO: Login exitoso | {"user":"admin44","id":3}
