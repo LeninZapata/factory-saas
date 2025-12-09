@@ -68,14 +68,14 @@ class authMiddleware {
     $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
 
     if (!file_exists($sessionFile)) {
-      log::warning('authMiddleware', "Token no encontrado: {$token}");
+      log::warning('authMiddleware', "Token no encontrado: {$token}", ['module' => 'auth']);
       return null;
     }
 
     $session = json_decode(file_get_contents($sessionFile), true);
 
     if (!$session || !isset($session['user_id'])) {
-      log::error('authMiddleware', 'Sesión corrupta');
+      log::error('authMiddleware', 'Sesión corrupta', ['module' => 'auth']);
       return null;
     }
 
@@ -87,7 +87,7 @@ class authMiddleware {
     $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
     if (file_exists($sessionFile)) {
       unlink($sessionFile);
-      log::info('authMiddleware', 'Token expirado eliminado');
+      log::info('authMiddleware', 'Token expirado eliminado', ['module' => 'auth']);
     }
   }
 }

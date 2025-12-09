@@ -36,7 +36,7 @@ class authHandlers {
     unset($user['pass']);
 
     // Guardar sesión CON datos del usuario
-    // self::saveSession($user, $token, $expiresAt);
+    self::saveSession($user, $token, $expiresAt);
 
     // Actualizar último acceso
     db::table('user')->where('id', $user['id'])->update([
@@ -75,6 +75,27 @@ class authHandlers {
     }
 
     return ['success' => true, 'message' => 'Logout exitoso'];
+  }
+
+  // ============ MÉTODOS PRIVADOS HELPERS ============
+
+  // Guardar sesión con datos completos del usuario
+  private static function saveSession($user, $token, $expiresAt) {
+    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
+
+    if (!is_dir(dirname($sessionFile))) {
+      mkdir(dirname($sessionFile), 0755, true);
+    }
+
+    file_put_contents($sessionFile, json_encode([
+      'user_id' => $user['id'],
+      'user' => $user, // Guardamos el usuario completo
+      'token' => $token,
+      'expires_at' => $expiresAt,
+      'ip_address' => request::ip(),
+      'user_agent' => request::userAgent(),
+      'created_at' => date('Y-m-d H:i:s')
+    ], JSON_UNESCAPED_UNICODE));
   }
 
 }

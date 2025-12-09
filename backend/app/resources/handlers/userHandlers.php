@@ -66,25 +66,6 @@ class userHandlers {
 
   // ============ MÉTODOS PRIVADOS HELPERS ============
 
-  // Guardar sesión con datos completos del usuario
-  private static function saveSession($user, $token, $expiresAt) {
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
-
-    if (!is_dir(dirname($sessionFile))) {
-      mkdir(dirname($sessionFile), 0755, true);
-    }
-
-    file_put_contents($sessionFile, json_encode([
-      'user_id' => $user['id'],
-      'user' => $user, // Guardamos el usuario completo
-      'token' => $token,
-      'expires_at' => $expiresAt,
-      'ip_address' => request::ip(),
-      'user_agent' => request::userAgent(),
-      'created_at' => date('Y-m-d H:i:s')
-    ], JSON_UNESCAPED_UNICODE));
-  }
-
   // Obtener sesión completa desde archivo
   private static function getSessionFromToken($token) {
     $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
