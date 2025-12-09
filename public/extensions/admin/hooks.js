@@ -1,7 +1,7 @@
 class adminHooks {
   // Hook para el dashboard
   static hook_dashboard() {
-    logger.debug('p:admin', 'hook_dashboard ejecutado');
+    logger.debug('ext:admin', 'hook_dashboard ejecutado');
 
     return [
       {
@@ -109,7 +109,7 @@ class adminHooks {
 
   // 🎯 Ejemplo de hook para el tab específico de usuarios dentro de admin-panel
   static hook_adminPanelUsers() {
-    logger.debug('p:admin', 'hook_adminPanelUsers ejecutado');
+    logger.debug('ext:admin', 'hook_adminPanelUsers ejecutado');
 
     return [
       {

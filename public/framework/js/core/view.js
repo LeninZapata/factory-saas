@@ -27,7 +27,7 @@ class view {
             try {
               afterRender(cachedData.viewId, content);
             } catch (error) {
-              logger.error('cor:view', 'Error en afterRender:', error);
+              logger.error('core:view', 'Error en afterRender:', error);
             }
           }
           return;
@@ -115,7 +115,7 @@ class view {
         try {
           afterRender(combinedData.id, content);
         } catch (error) {
-          logger.error('cor:view', 'Error en afterRender:', error);
+          logger.error('core:view', 'Error en afterRender:', error);
         }
       }
 
@@ -132,7 +132,7 @@ class view {
       }
 
     } catch (error) {
-      logger.error('cor:view', `Error cargando vista ${viewName}:`, error);
+      logger.error('core:view', `Error cargando vista ${viewName}:`, error);
       this.renderError(viewName, container);
     }
   }
@@ -141,61 +141,61 @@ class view {
     if (window.auth?.user?.role === 'admin') return tabs;
 
     if (!window.auth?.userPermissions?.extensions) {
-      logger.warn('cor:view', 'Usuario sin permisos - ocultando tabs');
+      logger.warn('core:view', 'Usuario sin permisos - ocultando tabs');
       return [];
     }
 
     const extensionPerms = window.auth.userPermissions.extensions[extensionName];
 
     if (!extensionPerms || extensionPerms.enabled === false) {
-      logger.warn('cor:view', `Extension ${extensionName} sin permisos`);
+      logger.warn('core:view', `Extension ${extensionName} sin permisos`);
       return [];
     }
 
     if (!extensionPerms.menus || extensionPerms.menus === '*') {
-      logger.debug('cor:view', `Extension ${extensionName} con acceso total`);
+      logger.debug('core:view', `Extension ${extensionName} con acceso total`);
       return tabs;
     }
 
     const menuPerms = extensionPerms.menus[menuId];
 
     if (menuPerms === true) {
-      logger.debug('cor:view', `Menú ${menuId} con acceso total`);
+      logger.debug('core:view', `Menú ${menuId} con acceso total`);
       return tabs;
     }
 
     if (!menuPerms || typeof menuPerms !== 'object') {
-      logger.warn('cor:view', `Sin permisos para menú ${menuId}`);
+      logger.warn('core:view', `Sin permisos para menú ${menuId}`);
       return [];
     }
 
     if (menuPerms.enabled === false) {
-      logger.warn('cor:view', `Menú ${menuId} deshabilitado`);
+      logger.warn('core:view', `Menú ${menuId} deshabilitado`);
       return [];
     }
 
     if (menuPerms.tabs === '*') {
-      logger.debug('cor:view', `Todas las tabs permitidas para ${menuId}`);
+      logger.debug('core:view', `Todas las tabs permitidas para ${menuId}`);
       return tabs;
     }
 
     if (!menuPerms.tabs || (Array.isArray(menuPerms.tabs) && menuPerms.tabs.length === 0)) {
-      logger.warn('cor:view', `Sin permisos de tabs para ${menuId}`);
+      logger.warn('core:view', `Sin permisos de tabs para ${menuId}`);
       return [];
     }
 
     if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
       const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
-      logger.info('cor:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
+      logger.info('core:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
 
       if (filteredTabs.length === 0) {
-        logger.warn('cor:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
+        logger.warn('core:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
       }
 
       return filteredTabs;
     }
 
-    logger.warn('cor:view', `Configuración de tabs no válida para ${menuId}`);
+    logger.warn('core:view', `Configuración de tabs no válida para ${menuId}`);
     return [];
   }
 
@@ -237,7 +237,7 @@ class view {
           viewData.styles || []
         );
       } catch (error) {
-        logger.error('cor:view', 'Error cargando recursos:', error);
+        logger.error('core:view', 'Error cargando recursos:', error);
       }
     }
   }
@@ -346,7 +346,7 @@ class view {
           try {
             window[componentName].init();
           } catch (error) {
-            logger.error('cor:view', `Error ejecutando ${componentName}.init():`, error);
+            logger.error('core:view', `Error ejecutando ${componentName}.init():`, error);
           }
         }
       }
@@ -483,7 +483,7 @@ class view {
     const allHooks = hook.execute(`hook_${viewData.id}`, []);
     if (allHooks.length === 0) return null;
     
-    logger.debug('cor:view', `Procesando ${allHooks.length} hooks para ${viewData.id}`);
+    logger.debug('core:view', `Procesando ${allHooks.length} hooks para ${viewData.id}`);
     
     const hooksBeforeView = allHooks.filter(h => h.context === 'view' && h.position === 'before');
     const hooksAfterView = allHooks.filter(h => h.context === 'view' && h.position === 'after');
@@ -524,7 +524,7 @@ class view {
     const componentHooks = viewContainer.querySelectorAll('.hook-component[data-component]');
     if (componentHooks.length === 0) return;
     
-    logger.debug('cor:view', `Renderizando ${componentHooks.length} componentes de hooks`);
+    logger.debug('core:view', `Renderizando ${componentHooks.length} componentes de hooks`);
     
     for (const hookElement of componentHooks) {
       const componentName = hookElement.dataset.component;
@@ -535,13 +535,13 @@ class view {
         
         if (window[componentName]?.render) {
           await window[componentName].render(config, hookElement);
-          logger.debug('cor:view', `Componente hook renderizado: ${componentName}`);
+          logger.debug('core:view', `Componente hook renderizado: ${componentName}`);
         } else {
-          logger.warn('cor:view', `Componente ${componentName} no encontrado`);
+          logger.warn('core:view', `Componente ${componentName} no encontrado`);
           hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
         }
       } catch (error) {
-        logger.error('cor:view', `Error renderizando hook component ${componentName}:`, error);
+        logger.error('core:view', `Error renderizando hook component ${componentName}:`, error);
         hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
       }
     }
@@ -562,7 +562,7 @@ class view {
       const tabHooks = hooksByTab[tab.id];
       
       if (tabHooks && tabHooks.length > 0 && Array.isArray(tab.content)) {
-        logger.debug('cor:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
+        logger.debug('core:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
         
         const existingContent = tab.content.map(item => ({ order: item.order || 999, ...item }));
         const hooksWithOrder = tabHooks.map(hook => ({ order: hook.order || 999, ...hook }));
@@ -585,7 +585,7 @@ class view {
     mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
     
     viewData.content = mixedContent;
-    logger.debug('cor:view', `${hooks.length} hooks mezclados en content`);
+    logger.debug('core:view', `${hooks.length} hooks mezclados en content`);
   }
 }
 

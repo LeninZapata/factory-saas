@@ -19,7 +19,7 @@ class sidebar {
       if (window.hook && typeof hook.getMenuItems === 'function') {
         const pluginMenus = hook.getMenuItems();
         
-        logger.info('cor:sidebar', `Menús cargados: ${pluginMenus.length}`);
+        logger.info('core:sidebar', `Menús cargados: ${pluginMenus.length}`);
 
         const baseMenu = [
           {
@@ -36,7 +36,7 @@ class sidebar {
 
         this.menuData.menu = uniqueMenuItems;
       } else {
-        logger.warn('cor:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
+        logger.warn('core:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
         this.menuData.menu = [
           {
             id: "dashboard",
@@ -50,7 +50,7 @@ class sidebar {
       this.renderMenu();
 
     } catch (error) {
-      logger.error('cor:sidebar', 'Error cargando menú:', error);
+      logger.error('core:sidebar', 'Error cargando menú:', error);
       this.menuData.menu = [
         {
           id: "dashboard",
@@ -189,7 +189,7 @@ class sidebar {
     });
 
     if (preloadCount > 0) {
-      logger.debug('cor:sidebar', `Precargadas ${preloadCount} vistas hermanas`);
+      logger.debug('core:sidebar', `Precargadas ${preloadCount} vistas hermanas`);
     }
   }
 
@@ -219,7 +219,7 @@ class sidebar {
         window.cache?.set(cacheKey, viewData);
       }
     } catch (error) {
-      logger.warn('cor:sidebar', `No se pudo precargar: ${extensionName ? extensionName + '/' : ''}${viewPath}`);
+      logger.warn('core:sidebar', `No se pudo precargar: ${extensionName ? extensionName + '/' : ''}${viewPath}`);
     }
   }
 

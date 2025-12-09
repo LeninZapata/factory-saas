@@ -59,9 +59,9 @@ class events {
   }
 
   static debug() {
-    logger.debug('cor:event', 'Listeners activos:');
+    logger.debug('core:event', 'Listeners activos:');
     this.listeners.forEach((listener, id) => {
-      logger.debug('cor:event', `  #${id}: ${listener.eventType} en ${listener.selector}`);
+      logger.debug('core:event', `  #${id}: ${listener.eventType} en ${listener.selector}`);
     });
   }
 }

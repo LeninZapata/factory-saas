@@ -68,7 +68,7 @@ class admin {
       }
       return response.data || response;
     } catch (error) {
-      logger.error('p:admin', error);
+      logger.error('ext:admin', error);
       toast.error(`❌ ${error.message}`);
       return null;
     }

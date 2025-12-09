@@ -43,13 +43,13 @@
 }
 
 /* Plugin */
-.permission-plugin {
+.permission-extension {
   border: 1px solid #e5e7eb;
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
 
-.permission-plugin-header {
+.permission-extension-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,13 +85,13 @@
 }
 
 /* Content */
-.permission-plugin-content {
+.permission-extension-content {
   display: none;
   padding: 1rem;
   border-top: 1px solid #e5e7eb;
 }
 
-.permission-plugin-content.open {
+.permission-extension-content.open {
   display: block;
 }
 

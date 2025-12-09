@@ -41,24 +41,24 @@ window.logger = logger;
  * FORMATOS DE LOGS POR TIPO DE MÓDULO:
  *
  * CORE (archivos del sistema principal):
- * logger.debug('cor:auth', 'Usuario autenticado');
- * logger.info('cor:view', 'Vista cargada: dashboard');
- * logger.error('cor:api', 'Error en petición:', error);
+ * logger.debug('core:auth', 'Usuario autenticado');
+ * logger.info('core:view', 'Vista cargada: dashboard');
+ * logger.error('core:api', 'Error en petición:', error);
  *
  * COMPONENTES (componentes reutilizables):
  * logger.warn('com:modal', 'Modal no encontrado');
  * logger.success('com:datatable', 'Datos cargados correctamente');
  * logger.debug('com:tabs', 'Tab cambiado: perfil');
  *
- * PLUGINS (funcionalidades extendidas):
- * logger.error('p:permissions', 'Container no encontrado');
- * logger.info('p:chart', 'Gráficos inicializados');
- * logger.debug('p:reportes', 'Generando reporte...');
+ * EXTENSIONS (funcionalidades extendidas):
+ * logger.error('ext:permissions', 'Container no encontrado');
+ * logger.info('ext:chart', 'Gráficos inicializados');
+ * logger.debug('ext:reportes', 'Generando reporte...');
  *
  * EJEMPLOS DE USO:
  *
  * // En core/auth.js
- * logger.success('cor:auth', 'Permisos cargados');
+ * logger.success('core:auth', 'Permisos cargados');
  *
  * // En components/modal.js
  * logger.warn('com:modal', 'Selector no encontrado');

@@ -90,30 +90,30 @@ async function initializeApp() {
     // Inicializar i18n
     if (window.appConfig.i18n?.enabled && window.i18n) {
       await i18n.init(window.appConfig.i18n);
-      logger.success('m:main', `Idioma ${i18n.getLang()} cargado`);
+      logger.success('main', `Idioma ${i18n.getLang()} cargado`);
     }
 
     // Inicializar auth
     if (window.appConfig.auth?.enabled && window.auth) {
-      logger.info('m:main', 'Inicializando autenticación...');
+      logger.info('main', 'Inicializando autenticación...');
       await auth.init(window.appConfig.auth);
 
       if (!auth.isAuthenticated()) {
-        logger.warn('m:main', 'Usuario no autenticado, redirigiendo al login');
+        logger.warn('main', 'Usuario no autenticado, redirigiendo al login');
         return;
       }
 
-      logger.success('m:main', 'Usuario autenticado');
+      logger.success('main', 'Usuario autenticado');
       await auth.showApp();
     }
 
     // Cleanup
     window.cache?.cleanup?.();
 
-    logger.success('m:main', 'Sistema inicializado correctamente');
+    logger.success('main', 'Sistema inicializado correctamente');
 
   } catch (error) {
-    logger.error('m:main', 'Error crítico al inicializar:', error);
+    logger.error('main', 'Error crítico al inicializar:', error);
     document.getElementById('app').innerHTML = `
       <div style="padding: 20px; color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px;">
         <h2>Error de Carga</h2>

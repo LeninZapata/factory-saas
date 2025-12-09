@@ -13,7 +13,7 @@ class hook {
       const registry = await api.get('extensions/index.json');
 
       if (!registry?.extensions || !Array.isArray(registry.extensions)) {
-        logger.warn('cor:hook', 'extensions/index.json vacío o mal formado');
+        logger.warn('core:hook', 'extensions/index.json vacío o mal formado');
         return;
       }
 
@@ -27,7 +27,7 @@ class hook {
           this.pluginRegistryOriginal.set(pluginInfo.name, JSON.parse(JSON.stringify(pluginConfig)));
 
           if (pluginConfig.autoload) {
-            await this.loadPluginScript(pluginInfo.name, pluginConfig.autoload);
+            await this.loadExtensionScript(pluginInfo.name, pluginConfig.autoload);
           }
 
           if (pluginConfig.scripts?.length > 0) {
@@ -76,10 +76,10 @@ class hook {
       this.menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
       const endTime = performance.now();
-      logger.debug('cor:hook', `${this.loadedHooks.size} extensions cargados en ${(endTime - startTime).toFixed(0)}ms`);
+      logger.debug('core:hook', `${this.loadedHooks.size} extensions cargados en ${(endTime - startTime).toFixed(0)}ms`);
 
     } catch (error) {
-      logger.error('cor:hook', 'Error cargando extensions:', error);
+      logger.error('core:hook', 'Error cargando extensions:', error);
     }
   }
 
@@ -144,7 +144,7 @@ class hook {
     }
   }
 
-  static async loadPluginScript(extensionName, scriptFile) {
+  static async loadExtensionScript(extensionName, scriptFile) {
     try {
       const scriptPath = `extensions/${extensionName}/${scriptFile}`;
       const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
@@ -153,7 +153,7 @@ class hook {
       const scriptContent = await response.text();
       new Function(scriptContent)();
     } catch (error) {
-      logger.error('cor:hook', `Error cargando autoload ${extensionName}:`, error.message);
+      logger.error('core:hook', `Error cargando autoload ${extensionName}:`, error.message);
     }
   }
 
@@ -165,7 +165,7 @@ class hook {
     }
   }
 
-  static processMenuItems(items, parentPlugin = '', pluginScripts = [], pluginStyles = []) {
+  static processMenuItems(items, parentPlugin = '', extensionScripts = [], extensionStyles = []) {
     return items
       .map(item => {
         const processedItem = {
@@ -174,14 +174,14 @@ class hook {
           order: item.order || 999
         };
         const itemScripts = item.scripts || [];
-        const combinedScripts = [...pluginScripts, ...itemScripts];
+        const combinedScripts = [...extensionScripts, ...itemScripts];
         if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
         const itemStyles = item.styles || [];
-        const combinedStyles = [...pluginStyles, ...itemStyles];
+        const combinedStyles = [...extensionStyles, ...itemStyles];
         if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
         if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
         if (item.items?.length > 0) {
-          processedItem.items = this.processMenuItems(item.items, parentPlugin, pluginScripts, pluginStyles);
+          processedItem.items = this.processMenuItems(item.items, parentPlugin, extensionScripts, extensionStyles);
         } else if (item.view) {
           processedItem.view = item.view;
         }
@@ -198,7 +198,7 @@ class hook {
     for (const [extensionName, pluginConfig] of this.pluginRegistry) {
       // Solo incluir extensions habilitados
       if (pluginConfig.enabled !== true) {
-        logger.debug('cor:hook', `Extension "${extensionName}" oculto (enabled=${pluginConfig.enabled})`);
+        logger.debug('core:hook', `Extension "${extensionName}" oculto (enabled=${pluginConfig.enabled})`);
         continue;
       }
 
@@ -227,12 +227,12 @@ class hook {
     // Ordenar por order
     menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-    logger.debug('cor:hook', `getMenuItems: ${menuItems.length} extensions visibles`);
+    logger.debug('core:hook', `getMenuItems: ${menuItems.length} extensions visibles`);
 
     // Log detallado de items por extension
     menuItems.forEach(item => {
       if (item.items) {
-        logger.debug('cor:hook', `  - ${item.id}: ${item.items.length} submenú${item.items.length !== 1 ? 's' : ''}`);
+        logger.debug('core:hook', `  - ${item.id}: ${item.items.length} submenú${item.items.length !== 1 ? 's' : ''}`);
       }
     });
 
@@ -240,7 +240,7 @@ class hook {
   }
 
   // ✅ NUEVO: Obtener TODOS los extensions (sin filtrar por permisos)
-  static getAllPluginsForPermissions() {
+  static getAllExtensionsForPermissions() {
     const extensions = [];
 
     // Usar la copia original (sin filtrar)
@@ -254,7 +254,7 @@ class hook {
       });
     }
 
-    logger.debug('cor:hook', `getAllPluginsForPermissions: ${extensions.length} extensions disponibles`);
+    logger.debug('core:hook', `getAllExtensionsForPermissions: ${extensions.length} extensions disponibles`);
     return extensions;
   }
 
@@ -291,7 +291,7 @@ class hook {
     return config ? config.enabled === true : false;
   }
 
-  static getEnabledPlugins() {
+  static getEnabledExtensions() {
     const enabled = [];
     for (const [name, config] of this.pluginRegistry) {
       if (config.enabled === true) {
@@ -330,7 +330,7 @@ class hook {
 
     // Log solo si hubo normalización
     if (baseName !== normalizedName) {
-      logger.debug('cor:hook', `Nombre normalizado: "${hookName}" → "${finalHookName}"`);
+      logger.debug('core:hook', `Nombre normalizado: "${hookName}" → "${finalHookName}"`);
     }
 
     let results = [...defaultData];
@@ -343,7 +343,7 @@ class hook {
 
       if (hookClass && typeof hookClass[finalHookName] === 'function') {
         try {
-          logger.debug('cor:hook', `Ejecutando ${extensionName}Hooks.${finalHookName}()`);
+          logger.debug('core:hook', `Ejecutando ${extensionName}Hooks.${finalHookName}()`);
 
           const hookResult = hookClass[finalHookName]();
 
@@ -354,10 +354,10 @@ class hook {
             }));
             results = [...results, ...itemsWithOrder];
           } else {
-            logger.warn('cor:hook', `${extensionName}.${finalHookName}() no retornó un array`);
+            logger.warn('core:hook', `${extensionName}.${finalHookName}() no retornó un array`);
           }
         } catch (error) {
-          logger.error('cor:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
+          logger.error('core:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
         }
       }
     }
@@ -366,7 +366,7 @@ class hook {
     results.sort((a, b) => (a.order || 999) - (b.order || 999));
 
     if (results.length > defaultData.length) {
-      logger.debug('cor:hook', `Hook "${finalHookName}" agregó ${results.length - defaultData.length} items`);
+      logger.debug('core:hook', `Hook "${finalHookName}" agregó ${results.length - defaultData.length} items`);
     }
 
     return results;
@@ -394,13 +394,13 @@ class hook {
       if (window[componentName] && typeof window[componentName].render === 'function') {
         try {
           await window[componentName].render(hookResult.config, wrapper);
-          logger.debug('cor:hook', `Componente "${componentName}" renderizado para hook "${hookResult.id}"`);
+          logger.debug('core:hook', `Componente "${componentName}" renderizado para hook "${hookResult.id}"`);
         } catch (error) {
-          logger.error('cor:hook', `Error renderizando componente "${componentName}":`, error);
+          logger.error('core:hook', `Error renderizando componente "${componentName}":`, error);
           wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando componente ${componentName}</div>`;
         }
       } else {
-        logger.error('cor:hook', `Componente "${componentName}" no encontrado`);
+        logger.error('core:hook', `Componente "${componentName}" no encontrado`);
         wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
       }
     }
@@ -410,7 +410,7 @@ class hook {
   static async renderHooks(hookName, containerId, defaultData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
-      logger.error('cor:hook', `Container "${containerId}" no encontrado`);
+      logger.error('core:hook', `Container "${containerId}" no encontrado`);
       return;
     }
 
@@ -420,7 +420,7 @@ class hook {
       await this.renderHookResult(result, container);
     }
 
-    logger.debug('cor:hook', `Renderizados ${results.length} hooks en "${containerId}"`);
+    logger.debug('core:hook', `Renderizados ${results.length} hooks en "${containerId}"`);
   }
 
   static normalizeHookName(viewId) {

@@ -18,7 +18,7 @@ class api {
     fullURL = protocol + normalizedPath;
 
     // 🔍 Log temporal para debug
-    logger.info('cor:api', `📡 Ejecutando: ${options.method || 'GET'} ${fullURL}`);
+    logger.info('core:api', `📡 Ejecutando: ${options.method || 'GET'} ${fullURL}`);
 
     const headers = { ...this.headers };
     const token = auth?.getToken?.();
@@ -26,9 +26,9 @@ class api {
     console.log(`token:`, token);
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
-      logger.debug('cor:api', `🔑 Token incluido: ${token.substring(0, 20)}...`);
+      logger.debug('core:api', `🔑 Token incluido: ${token.substring(0, 20)}...`);
     } else {
-      logger.warn('cor:api', '⚠️ NO se encontró token para esta petición');
+      logger.warn('core:api', '⚠️ NO se encontró token para esta petición');
     }
 
     try {
@@ -37,7 +37,7 @@ class api {
       // Manejo mejorado de 401
       if (res.status === 401) {
         if (auth?.isAuthenticated?.()) {
-          logger.warn('cor:api', 'Token inválido (401), cerrando sesión');
+          logger.warn('core:api', 'Token inválido (401), cerrando sesión');
           auth.handleExpiredSession();
         }
         throw new Error('No autorizado');
@@ -46,7 +46,7 @@ class api {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     } catch (error) {
-      logger.error('cor:api', `Error: ${fullURL}`, error.message);
+      logger.error('core:api', `Error: ${fullURL}`, error.message);
       throw error;
     }
   }

@@ -28,23 +28,23 @@ class adminPermissions {
     if (!container || !window.permissions) return;
     
     // ✅ Obtener TODOS los extensions disponibles (sin filtrar por permisos del usuario actual)
-    const allPlugins = this.getAllPlugins();
+    const allExtensions = this.getallExtensions();
     
-    logger.debug('p:admin-permissions', `Renderizando selector con ${allPlugins.length} extensions`);
+    logger.debug('ext:admin-permissions', `Renderizando selector con ${allExtensions.length} extensions`);
     
-    permissions.render('permissions-container', config, allPlugins);
+    permissions.render('permissions-container', config, allExtensions);
   }
 
   // Obtener TODOS los extensions disponibles en el sistema
-  static getAllPlugins() {
+  static getallExtensions() {
     // ✅ Usar método especial que retorna la copia original sin filtrar
-    if (window.hook?.getAllPluginsForPermissions) {
-      return hook.getAllPluginsForPermissions();
+    if (window.hook?.getallExtensionsForPermissions) {
+      return hook.getallExtensionsForPermissions();
     }
 
     // Fallback: Si no existe el método, intentar con pluginRegistry normal
     if (!window.hook?.pluginRegistry) {
-      logger.warn('p:admin-permissions', 'hook.pluginRegistry no disponible');
+      logger.warn('ext:admin-permissions', 'hook.pluginRegistry no disponible');
       return [];
     }
 

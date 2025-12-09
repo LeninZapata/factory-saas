@@ -17,7 +17,7 @@ class dataLoader {
       return await this.loadFromMock(config, extensionName);
     }
 
-    logger.error('cor:dataLoader', `Tipo de dataSource no válido: ${type}`);
+    logger.error('core:dataLoader', `Tipo de dataSource no válido: ${type}`);
     return null;
   }
 
@@ -34,7 +34,7 @@ class dataLoader {
       try {
         return await this.loadFromApi(config.api);
       } catch (error) {
-        logger.warn('cor:dataLoader', `API falló, fallback a mock: ${error.message}`);
+        logger.warn('core:dataLoader', `API falló, fallback a mock: ${error.message}`);
         return await this.loadFromMock(config.mock, extensionName);
       }
     }
@@ -70,14 +70,14 @@ class dataLoader {
       return response;
 
     } catch (error) {
-      logger.error('cor:dataLoader', `Error en API ${endpoint}: ${error.message}`);
+      logger.error('core:dataLoader', `Error en API ${endpoint}: ${error.message}`);
       throw error;
     }
   }
 
   static async loadFromMock(mockConfig, extensionName) {
     if (!mockConfig || !mockConfig.file) {
-      logger.error('cor:dataLoader', 'No se especificó archivo mock');
+      logger.error('core:dataLoader', 'No se especificó archivo mock');
       return null;
     }
 
@@ -116,7 +116,7 @@ class dataLoader {
       return data;
 
     } catch (error) {
-      logger.error('cor:dataLoader', `Error cargando mock: ${error.message}`);
+      logger.error('core:dataLoader', `Error cargando mock: ${error.message}`);
       throw error;
     }
   }

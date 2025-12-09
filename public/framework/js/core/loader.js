@@ -13,7 +13,7 @@ class loader {
       };
       script.onerror = () => {
         if (options.optional) {
-          logger.warn('cor:loader', `Script opcional no encontrado: ${url}`);
+          logger.warn('core:loader', `Script opcional no encontrado: ${url}`);
           resolve(false);
         } else {
           reject(new Error(`Failed to load: ${url}`));
@@ -36,7 +36,7 @@ class loader {
       };
       link.onerror = () => {
         if (options.optional) {
-          logger.warn('cor:loader', `Style opcional no encontrado: ${url}`);
+          logger.warn('core:loader', `Style opcional no encontrado: ${url}`);
           resolve(false);
         } else {
           reject(new Error(`Failed to load: ${url}`));
@@ -63,7 +63,7 @@ class loader {
       if (!response.ok) {
         if (response.status === 404 && options.optional) {
           if (options.silent !== true) {
-            logger.debug('cor:loader', `JSON opcional no encontrado: ${url}`);
+            logger.debug('core:loader', `JSON opcional no encontrado: ${url}`);
           }
           return null;
         }
@@ -74,7 +74,7 @@ class loader {
     } catch (error) {
       if (options.optional) {
         if (options.silent !== true) {
-          logger.warn('cor:loader', `Error cargando JSON opcional: ${url}`);
+          logger.warn('core:loader', `Error cargando JSON opcional: ${url}`);
         }
         return null;
       }

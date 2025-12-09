@@ -11,9 +11,9 @@ class permissions {
    * Renderiza el selector de permisos
    * @param {string} containerId - ID del contenedor
    * @param {object} config - Configuración inicial de permisos
-   * @param {array} pluginsData - Datos de extensions desde hooks
+   * @param {array} extensionsData - Datos de extensions desde hooks
    */
-  static async render(containerId, config = {}, pluginsData = []) {
+  static async render(containerId, config = {}, extensionsData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
       logger.error('p:permissions', 'Container no encontrado:', containerId);
@@ -24,7 +24,7 @@ class permissions {
     const selectorId = `permissions-${Date.now()}`;
 
     // Cargar tabs de todas las vistas
-    await this.loadAllViewsTabs(pluginsData);
+    await this.loadAllViewsTabs(extensionsData);
 
     const html = `
       <div class="permissions-selector" id="${selectorId}">
@@ -41,7 +41,7 @@ class permissions {
         </div>
         
         <div class="permissions-list">
-          ${pluginsData.map(extension => this.renderPlugin(extension, permissions, selectorId)).join('')}
+          ${extensionsData.map(extension => this.renderPlugin(extension, permissions, selectorId)).join('')}
         </div>
 
         <input type="hidden" name="config" id="${selectorId}-data" value='${JSON.stringify(config)}'>
@@ -49,7 +49,7 @@ class permissions {
     `;
 
     container.innerHTML = html;
-    this.instances.set(selectorId, { config, pluginsData });
+    this.instances.set(selectorId, { config, extensionsData });
     this.bindEvents(selectorId);
     
     logger.success('p:permissions', 'Renderizado exitosamente');
@@ -58,8 +58,8 @@ class permissions {
   /**
    * Cargar tabs de todas las vistas de todos los extensions
    */
-  static async loadAllViewsTabs(pluginsData) {
-    for (const extension of pluginsData) {
+  static async loadAllViewsTabs(extensionsData) {
+    for (const extension of extensionsData) {
       if (!extension.hasMenu || !extension.menu?.items) continue;
 
       for (const menuItem of extension.menu.items) {
@@ -362,7 +362,7 @@ class permissions {
     newConfig.permissions = { extensions: {} };
 
     // Procesar cada extension
-    instance.pluginsData.forEach(extension => {
+    instance.extensionsData.forEach(extension => {
       const pluginCheckbox = container.querySelector(`.extension-toggle[data-extension="${extension.name}"]`);
       if (!pluginCheckbox) return;
 

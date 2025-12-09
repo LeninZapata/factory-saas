@@ -242,7 +242,7 @@ class conditions {
     const fieldElement = this.findFieldElement(formEl, fieldPath);
 
     if (!fieldElement) {
-      logger.warn('cor:conditions', `No se encontró el elemento para "${fieldPath}"`);
+      logger.warn('core:conditions', `No se encontró el elemento para "${fieldPath}"`);
       return;
     }
 
@@ -302,7 +302,7 @@ class conditions {
     }
 
     if (!fieldEl) {
-      logger.warn('cor:conditions', `Campo "${field}" no encontrado en contexto`);
+      logger.warn('core:conditions', `Campo "${field}" no encontrado en contexto`);
       return false;
     }
 
@@ -366,7 +366,7 @@ class conditions {
         return !String(fieldValue).toLowerCase().includes(String(targetValue).toLowerCase());
 
       default:
-        logger.warn('cor:conditions', `Operador desconocido "${operator}"`);
+        logger.warn('core:conditions', `Operador desconocido "${operator}"`);
         return false;
     }
   }
@@ -498,15 +498,15 @@ class conditions {
   }
 
   static debug(formId) {
-    logger.debug('cor:conditions', `Debug: ${formId}`);
+    logger.debug('core:conditions', `Debug: ${formId}`);
 
     const rules = this.rules.get(formId);
     if (!rules) {
-      logger.debug('cor:conditions', 'No hay reglas registradas para este formulario');
+      logger.debug('core:conditions', 'No hay reglas registradas para este formulario');
       return;
     }
 
-    logger.debug('cor:conditions', `Reglas activas: ${rules.size}`);
+    logger.debug('core:conditions', `Reglas activas: ${rules.size}`);
   }
 }
 

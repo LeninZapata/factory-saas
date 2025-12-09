@@ -22,8 +22,8 @@ class i18n {
     await this.loadCoreLang(this.currentLang);
 
     const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
-    logger.debug('cor:i18n', `Idioma '${this.currentLang}' desde ${source}`);
-    logger.debug('cor:i18n', `Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
+    logger.debug('core:i18n', `Idioma '${this.currentLang}' desde ${source}`);
+    logger.debug('core:i18n', `Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
   }
 
   static async loadCoreLang(lang) {
@@ -40,11 +40,11 @@ class i18n {
           data = await response.json();
           cache.set(cacheKey, data, 60 * 60 * 1000);
         } else {
-          logger.warn('cor:i18n', `Idioma ${lang} no encontrado`);
+          logger.warn('core:i18n', `Idioma ${lang} no encontrado`);
           return;
         }
       } catch (error) {
-        logger.error('cor:i18n', 'Error cargando idioma core:', error);
+        logger.error('core:i18n', 'Error cargando idioma core:', error);
         return;
       }
     }
@@ -111,7 +111,7 @@ class i18n {
 
     // Si aún no hay traducción, retornar la key
     if (!translation) {
-      logger.warn('cor:i18n', `Key no encontrada: ${key}`);
+      logger.warn('core:i18n', `Key no encontrada: ${key}`);
       return key;
     }
 
@@ -123,7 +123,7 @@ class i18n {
 
   static async setLang(lang) {
     if (!this.availableLangs.includes(lang)) {
-      logger.warn('cor:i18n', `Idioma ${lang} no disponible`);
+      logger.warn('core:i18n', `Idioma ${lang} no disponible`);
       return;
     }
 
@@ -140,11 +140,11 @@ class i18n {
     // ✅ NUEVO: Decidir entre refresh o dinámico
     if (this.config.refreshOnChange) {
       // Modo refresh: recargar página
-      logger.info('cor:i18n', '🔄 Recargando página...');
+      logger.info('core:i18n', '🔄 Recargando página...');
       window.location.reload();
     } else {
       // Modo dinámico: actualizar sin recargar
-      logger.info('cor:i18n', '⚡ Actualizando dinámicamente...');
+      logger.info('core:i18n', '⚡ Actualizando dinámicamente...');
       this.updateDynamicContent();
 
       // Trigger evento para componentes personalizados
@@ -190,7 +190,7 @@ class i18n {
     });
 
     const elementsCount = document.querySelectorAll('[data-i18n]').length;
-    logger.success('cor:i18n', `${elementsCount} elementos actualizados`);
+    logger.success('core:i18n', `${elementsCount} elementos actualizados`);
   }
 
   // ✅ NUEVO: Parsear parámetros de data attributes
@@ -202,7 +202,7 @@ class i18n {
       try {
         Object.assign(params, JSON.parse(paramsAttr));
       } catch (e) {
-        logger.warn('cor:i18n', 'Error parseando data-i18n-params');
+        logger.warn('core:i18n', 'Error parseando data-i18n-params');
       }
     }
 

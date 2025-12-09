@@ -11,7 +11,7 @@ class userController extends controller {
 
     // Validar campos requeridos
     if (!isset($data['user']) || !isset($data['pass']) || !isset($data['role'])) {
-      log::error('UserController - Campos faltantes');
+      log::error('UserController - Campos faltantes', $data, ['module' => 'user']);
       response::json([
         'success' => false,
         'error' => 'Los campos user, pass y role son requeridos'
@@ -42,7 +42,7 @@ class userController extends controller {
 
     // Validar user único
     if (db::table('user')->where('user', $data['user'])->exists()) {
-      log::warning('UserController - Usuario ya existe', ['user' => $data['user']]);
+      log::warning('UserController - Usuario ya existe', ['user' => $data['user']], ['module' => 'user']);
       response::json([
         'success' => false,
         'error' => 'El usuario ya existe'
@@ -52,7 +52,7 @@ class userController extends controller {
     // Validar email único si se proporciona
     if (isset($data['email']) && !empty($data['email'])) {
       if (db::table('user')->where('email', $data['email'])->exists()) {
-        log::warning('UserController - Email ya existe', ['email' => $data['email']]);
+        log::warning('UserController - Email ya existe', ['email' => $data['email']], ['module' => 'user']);
         response::json([
           'success' => false,
           'error' => 'El email ya existe'
@@ -62,10 +62,10 @@ class userController extends controller {
 
     try {
       $id = db::table('user')->insert($data);
-      log::info('UserController - Usuario creado', ['id' => $id]);
+      log::info('UserController - Usuario creado', ['id' => $id], ['module' => 'user']);
       response::success(['id' => $id], 'Usuario creado', 201);
     } catch (Exception $e) {
-      log::error('UserController - Error SQL', ['message' => $e->getMessage()]);
+      log::error('UserController - Error SQL', ['message' => $e->getMessage()], ['module' => 'user']);
       // Errores fatales sí usan 500
       response::serverError('Error al crear usuario', IS_DEV ? $e->getMessage() : null);
     }
@@ -136,11 +136,11 @@ class userController extends controller {
 
       if ($currentUserId && $currentUserId == $id) {
         // Si el admin se está editando a sí mismo, NO invalidar su sesión
-        log::info('UserController', "Usuario {$id} se editó a sí mismo, no se invalida su sesión");
+        log::info('UserController', "Usuario {$id} se editó a sí mismo, no se invalida su sesión", ['module' => 'user']);
       } else {
         // Invalidar todas las sesiones del usuario editado
         $cleaned = sessionCleanup::cleanByUserId($id);
-        log::info('UserController', "Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas");
+        log::info('UserController', "Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", ['module' => 'user']);
       }
     }
 

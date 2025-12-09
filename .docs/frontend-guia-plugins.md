@@ -506,6 +506,7 @@ Similar a los formularios, puedes cargar componentes dinámicamente:
           },
           "delete": {
             "name": "🗑️ Eliminar",
+            "role": "admin", // opcional
             "onclick": "if(confirm('¿Eliminar {nombre}?')) { api.delete('/api/productos/{id}').then(() => { toast.success('Eliminado'); datatable.refreshFirst(); }); }"
           }
         }
@@ -514,6 +515,11 @@ Similar a los formularios, puedes cargar componentes dinámicamente:
   ]
 }
 ```
+
+**⚠️ Actions con validación de role:**
+- Agrega `"role": "admin"` en cualquier action para mostrarla solo a usuarios con ese rol
+- Sin `role` → visible para todos los usuarios
+- Con `role` → visible solo si `window.auth.user.role` coincide exactamente
 
 ### Vista con Tabs:
 
@@ -1842,18 +1848,18 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 Todos los métodos reciben: `(module, ...args)`
 
 **Convención de prefijos:**
-- `cor:xxx` - Core (ej: `cor:auth`, `cor:view`, `cor:api`)
+- `core:xxx` - Core (ej: `core:auth`, `core:view`, `core:api`)
 - `com:xxx` - Componentes (ej: `com:modal`, `com:datatable`)
-- `p:xxx` - Extensions (ej: `p:permissions`, `p:botmaster`)
+- `ext:xxx` - Extensions (ej: `ext:permissions`, `ext:botmaster`)
 - `m:xxx` - main.js solamente
 
 **Ejemplos:**
 ```javascript
-logger.debug('cor:auth', 'Token válido');
-logger.info('cor:view', 'Vista cargada:', viewName);
+logger.debug('core:auth', 'Token válido');
+logger.info('core:view', 'Vista cargada:', viewName);
 logger.warn('com:modal', 'Modal no encontrado');
-logger.success('p:botmaster', 'Bots cargados');
-logger.error('cor:api', 'Error en petición:', error);
+logger.success('ext:botmaster', 'Bots cargados');
+logger.error('core:api', 'Error en petición:', error);
 ```
 **⚠️ IMPORTANTE:**
 - Solo usarlo en lugares como errores tipo try/catch

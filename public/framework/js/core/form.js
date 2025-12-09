@@ -118,7 +118,7 @@ class form {
           try {
             afterRender(instanceId, formEl);
           } catch (error) {
-            logger.error('cor:form', 'Error en afterRender:', error);
+            logger.error('core:form', 'Error en afterRender:', error);
           }
         }
       }
@@ -481,13 +481,13 @@ class form {
   static initRepeatables(formId) {
     const formEl = document.getElementById(formId);
     if (!formEl) {
-      logger.error('cor:form', `Formulario no encontrado: ${formId}`);
+      logger.error('core:form', `Formulario no encontrado: ${formId}`);
       return;
     }
 
     const schema = this.schemas.get(formId);
     if (!schema) {
-      logger.error('cor:form', `Schema no encontrado para: ${formId}`);
+      logger.error('core:form', `Schema no encontrado para: ${formId}`);
       return;
     }
 
@@ -537,7 +537,7 @@ class form {
       if (container) {
         this.initRepeatableContainer(container, field, path);
       } else {
-        logger.error('cor:form', `Container no encontrado para repeatable: "${path}"`);
+        logger.error('core:form', `Container no encontrado para repeatable: "${path}"`);
       }
     });
   }
@@ -584,7 +584,7 @@ class form {
     }
 
     if (!container) {
-      logger.error('cor:form', `Container no encontrado para: "${path}"`);
+      logger.error('core:form', `Container no encontrado para: "${path}"`);
       return;
     }
 
@@ -664,7 +664,7 @@ class form {
             });
           }
         } else {
-          logger.error('cor:form', `No se pudo obtener el item recién agregado en: "${path}"`);
+          logger.error('core:form', `No se pudo obtener el item recién agregado en: "${path}"`);
         }
 
         // Re-inicializar transforms y conditions

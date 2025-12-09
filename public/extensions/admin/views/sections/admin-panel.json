@@ -3,12 +3,12 @@
   "title": "⚙️ Panel de Administración",
   "type": "tabs",
   "scripts": [
-    "plugins/admin/assets/js/permissions.js",
-    "plugins/admin/assets/js/admin-permissions.js",
-    "plugins/admin/assets/js/admin.js"
+    "extensions/admin/assets/js/permissions.js",
+    "extensions/admin/assets/js/admin-permissions.js",
+    "extensions/admin/assets/js/admin.js"
   ],
   "styles": [
-    "plugins/admin/assets/css/permissions.css"
+    "extensions/admin/assets/css/permissions.css"
   ],
   "tabs": [
     {
