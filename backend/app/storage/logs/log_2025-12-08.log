@@ -1,5 +1,25 @@
-[2025-12-08 01:22:47] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Route not found","path":"\/api\/users"}}
-[2025-12-08 14:18:20] INFO: Logout exitoso | {"token":"49f92864c8..."}
-[2025-12-08 14:18:26] INFO: Login exitoso | {"user":"admin44","id":3}
-[2025-12-08 16:22:33] ERROR: Response Error | {"code":400,"data":{"success":false,"error":"Content-Type debe ser application\/json"}}
-[2025-12-08 16:22:52] ERROR: Response Error | {"code":400,"data":{"success":false,"error":"Content-Type debe ser application\/json"}}
+[2025-12-08 20:15:28] INFO: Base pathinfo | "C:\\laragon\\www\\factory-saas"
+[2025-12-08 20:15:28] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:20:40] INFO: Cargando rutas manuales para el módulo: system
+[2025-12-08 20:20:40] INFO: Archivo de rutas manuales: C:\laragon\www\factory-saas/backend/app/routes/apis/system.php
+[2025-12-08 20:21:19] INFO: Cargando rutas manuales para el módulo: system
+[2025-12-08 20:21:19] INFO: Archivo de rutas manuales: C:\laragon\www\factory-saas/backend/app/routes/apis/system.php
+[2025-12-08 20:22:48] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:22:52] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:22:52] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:22:53] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:22:53] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}[2025-12-08 20:24:45] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:26:45] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:27:43] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:27:46] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:28:03] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:28:04] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:30:45] ERROR: Response Error | {"code":404,"data":{"success":false,"error":"Resource 'user' not found"}}
+[2025-12-08 20:32:25] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
+[2025-12-08 20:32:26] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
+[2025-12-08 20:32:26] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
+[2025-12-08 20:32:27] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
+[2025-12-08 20:32:27] ERROR: Response Error | {"code":401,"data":{"success":false,"error":"Token no proporcionado"}}
+[2025-12-08 20:32:43] INFO: Login exitoso | {"user":"admin44","id":3}
+[2025-12-08 20:36:57] INFO: Logout exitoso | {"token":"6a9e132923..."}
+[2025-12-08 20:37:00] INFO: Login exitoso | {"user":"admin44","id":3}

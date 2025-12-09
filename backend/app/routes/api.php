@@ -17,19 +17,19 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
   $module = $matches[1];
 }
 
-// ✅ PASO 1: Auto-registrar rutas CRUD desde JSON
+// PASO 1: Auto-registrar rutas CRUD desde JSON
 if ($module) {
   $resourceFile = APP_PATH . "/resources/{$module}.json";
 
   if (file_exists($resourceFile)) {
-    
+
     $config = json_decode(file_get_contents($resourceFile), true);
 
     // Verificar si existe controller personalizado
     $controllerClass = $module . 'Controller';
     $ctrl = class_exists($controllerClass)
-      ? new $controllerClass()
-      : new controller($module);
+    ? new $controllerClass()
+    : new controller($module);
 
     $globalMw = $config['middleware'] ?? [];
 
@@ -65,7 +65,7 @@ if ($module) {
   }
 }
 
-// ✅ PASO 2: Cargar rutas manuales (custom routes)
+// PASO 2: Cargar rutas manuales (custom routes)
 $manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
   require_once $manualRoutes;

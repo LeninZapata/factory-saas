@@ -336,57 +336,18 @@ class view {
     if (viewData.id && window.hook) {
       const hookName = `hook_${viewData.id}`;
 
-      logger.debug('cor:view', `Buscando hooks para vista: ${viewData.id}`);
+      logger.debug('cor:view', `Ejecutando hooks para vista: ${viewData.id}`);
 
-      // CASO 1: Vista con "content" directo
-      if (Array.isArray(viewData.content)) {
-        const existingContent = viewData.content.map(item => ({
-          order: item.order || 999,
-          ...item
-        }));
+      // Ejecutar hooks (sin defaultData para obtener todos los hooks)
+      const allHooks = hook.execute(hookName, []);
 
-        const hookResults = hook.execute(hookName, existingContent);
+      if (allHooks.length > 0) {
+        logger.debug('cor:view', `${allHooks.length} hooks encontrados para ${viewData.id}`);
 
-        if (hookResults.length > existingContent.length) {
-          viewData.content = hookResults;
-          logger.debug('cor:view', `Hooks mezclados: ${hookResults.length} items totales`);
-        }
-      }
-      // CASO 2: Vista con "tabs" - Mezclar hooks SOLO en el primer tab
-      else if (Array.isArray(viewData.tabs) && viewData.tabs.length > 0) {
-        const hookResults = hook.execute(hookName, []);
-
-        if (hookResults.length > 0) {
-          logger.debug('cor:view', `Hooks agregaron ${hookResults.length} items`);
-
-          // Obtener el primer tab
-          const firstTab = viewData.tabs[0];
-
-          if (Array.isArray(firstTab.content)) {
-            // Preparar contenido existente con order
-            const existingTabContent = firstTab.content.map(item => ({
-              order: item.order || 999,
-              ...item
-            }));
-
-            // Mezclar hooks con contenido del primer tab
-            const mixedContent = [...hookResults, ...existingTabContent];
-
-            // Ordenar por order
-            mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
-
-            // Actualizar solo el primer tab
-            viewData.tabs[0] = {
-              ...firstTab,
-              content: mixedContent
-            };
-
-            logger.debug('cor:view', `Hooks mezclados en primer tab (${firstTab.id}): ${mixedContent.length} items totales`);
-          }
-        }
+        // Procesar hooks según su contexto
+        await this.processHooksWithContext(viewData, allHooks, viewContainer);
       }
     }
-
 
     if (viewData.tabs) {
       const tabsContainer = viewContainer.querySelector('.view-tabs-container');
@@ -398,6 +359,197 @@ class view {
     }
 
     setTimeout(() => this.initFormValidation(), 0);
+  }
+
+  static async processHooksWithContext(viewData, hooks, viewContainer) {
+    // Separar hooks por contexto
+    const hooksBeforeView = hooks.filter(h => h.context === 'view' && h.position === 'before');
+    const hooksAfterView = hooks.filter(h => h.context === 'view' && h.position === 'after');
+    const hooksForTabs = hooks.filter(h => h.context === 'tab');
+    const hooksForContent = hooks.filter(h => h.context === 'content' || !h.context);
+    
+    // 1. Procesar hooks ANTES de la vista (context: view, position: before)
+    if (hooksBeforeView.length > 0) {
+      logger.debug('cor:view', `Procesando ${hooksBeforeView.length} hooks ANTES de la vista`);
+      await this.renderHooksBeforeView(hooksBeforeView, viewContainer);
+    }
+    
+    // 2. Procesar hooks DENTRO de tabs (context: tab, target: tabId)
+    if (hooksForTabs.length > 0 && Array.isArray(viewData.tabs)) {
+      logger.debug('cor:view', `Procesando ${hooksForTabs.length} hooks DENTRO de tabs`);
+      this.mergeHooksIntoTabs(viewData, hooksForTabs);
+    }
+    
+    // 3. Procesar hooks DENTRO de content (context: content)
+    if (hooksForContent.length > 0 && Array.isArray(viewData.content)) {
+      logger.debug('cor:view', `Procesando ${hooksForContent.length} hooks DENTRO de content`);
+      this.mergeHooksIntoContent(viewData, hooksForContent);
+    }
+    
+    // 4. Procesar hooks DESPUÉS de la vista (context: view, position: after)
+    if (hooksAfterView.length > 0) {
+      logger.debug('cor:view', `Procesando ${hooksAfterView.length} hooks DESPUÉS de la vista`);
+      // Se procesan después de que se renderice todo
+      setTimeout(() => {
+        this.renderHooksAfterView(hooksAfterView, viewContainer);
+      }, 300);
+    }
+  }
+
+  static async renderHooksBeforeView(hooks, viewContainer) {
+    // Ordenar por order
+    hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    // Crear contenedor
+    const container = document.createElement('div');
+    container.className = 'hooks-before-view';
+    container.style.cssText = 'margin-bottom: 1rem;';
+    
+    // Renderizar cada hook
+    for (const hookItem of hooks) {
+      await this.renderHookItem(hookItem, container);
+    }
+    
+    // Insertar al principio del viewContainer
+    if (container.children.length > 0) {
+      viewContainer.insertBefore(container, viewContainer.firstChild);
+      logger.debug('cor:view', `${hooks.length} hooks insertados ANTES de la vista`);
+    }
+  }
+
+  static async renderHooksAfterView(hooks, viewContainer) {
+    // Ordenar por order
+    hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    // Crear contenedor
+    const container = document.createElement('div');
+    container.className = 'hooks-after-view';
+    container.style.cssText = 'margin-top: 1rem;';
+    
+    // Renderizar cada hook
+    for (const hookItem of hooks) {
+      await this.renderHookItem(hookItem, container);
+    }
+    
+    // Agregar al final del viewContainer
+    if (container.children.length > 0) {
+      viewContainer.appendChild(container);
+      logger.debug('cor:view', `${hooks.length} hooks insertados DESPUÉS de la vista`);
+    }
+  }
+
+  static mergeHooksIntoTabs(viewData, hooks) {
+    // Agrupar hooks por target (tab)
+    const hooksByTab = {};
+    
+    hooks.forEach(hook => {
+      const target = hook.target;
+      if (target) {
+        if (!hooksByTab[target]) {
+          hooksByTab[target] = [];
+        }
+        hooksByTab[target].push(hook);
+      }
+    });
+    
+    // Mezclar hooks en cada tab
+    viewData.tabs = viewData.tabs.map(tab => {
+      const tabHooks = hooksByTab[tab.id];
+      
+      if (tabHooks && tabHooks.length > 0 && Array.isArray(tab.content)) {
+        logger.debug('cor:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
+        
+        // Preparar contenido existente con order
+        const existingContent = tab.content.map(item => ({
+          order: item.order || 999,
+          ...item
+        }));
+        
+        // Agregar hooks con order
+        const hooksWithOrder = tabHooks.map(hook => ({
+          order: hook.order || 999,
+          ...hook
+        }));
+        
+        // Mezclar y ordenar
+        const mixedContent = [...hooksWithOrder, ...existingContent];
+        mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
+        
+        return {
+          ...tab,
+          content: mixedContent
+        };
+      }
+      
+      return tab;
+    });
+  }
+
+  static mergeHooksIntoContent(viewData, hooks) {
+    // Preparar contenido existente con order
+    const existingContent = viewData.content.map(item => ({
+      order: item.order || 999,
+      ...item
+    }));
+    
+    // Agregar hooks con order
+    const hooksWithOrder = hooks.map(hook => ({
+      order: hook.order || 999,
+      ...hook
+    }));
+    
+    // Mezclar y ordenar
+    const mixedContent = [...hooksWithOrder, ...existingContent];
+    mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    viewData.content = mixedContent;
+    
+    logger.debug('cor:view', `${hooks.length} hooks mezclados en content. Total: ${mixedContent.length} items`);
+  }
+
+  static async renderHookItem(hookItem, container) {
+    if (!hookItem || !container) {
+      logger.warn('cor:view', 'renderHookItem: hookItem o container inválido');
+      return;
+    }
+
+    try {
+      if (hookItem.type === 'html') {
+        // Renderizar HTML
+        const div = document.createElement('div');
+        div.id = hookItem.id || `hook-${Date.now()}`;
+        div.className = 'hook-item hook-html';
+        div.innerHTML = hookItem.content || '';
+        container.appendChild(div);
+        logger.debug('cor:view', `Hook HTML renderizado: ${div.id}`);
+      } 
+      else if (hookItem.type === 'component') {
+        // Renderizar componente
+        const div = document.createElement('div');
+        div.id = hookItem.id || `hook-component-${Date.now()}`;
+        div.className = 'hook-item hook-component';
+        container.appendChild(div);
+        
+        const componentName = hookItem.component;
+        
+        if (window[componentName] && typeof window[componentName].render === 'function') {
+          setTimeout(async () => {
+            try {
+              await window[componentName].render(hookItem.config || {}, div);
+              logger.debug('cor:view', `Hook component renderizado: ${componentName}`);
+            } catch (error) {
+              logger.error('cor:view', `Error renderizando hook component ${componentName}:`, error);
+              div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
+            }
+          }, 100);
+        } else {
+          logger.error('cor:view', `Componente ${componentName} no encontrado`);
+          div.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
+        }
+      }
+    } catch (error) {
+      logger.error('cor:view', `Error en renderHookItem:`, error);
+    }
   }
 
   static async renderHookItem(hookItem, container) {

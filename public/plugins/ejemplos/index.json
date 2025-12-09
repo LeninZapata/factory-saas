@@ -54,6 +54,18 @@
         "title": "Tabs",
         "view": "sections/tabs-demo",
         "order": 7
+      },
+      {
+        "id": "ejemplos-hooks-caso1",
+        "title": "🎯 Hooks (Caso 1)",
+        "view": "sections/hooks-caso1",
+        "order": 1
+      },
+      {
+        "id": "ejemplos-hooks-caso2",
+        "title": "🎯 Hooks (Caso 2)",
+        "view": "sections/hooks-caso2",
+        "order": 2
       }
     ]
   },

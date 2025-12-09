@@ -9,7 +9,7 @@ class pluginLoader {
       return true;
     }
 
-    $pluginPath = BASE_PATH . '/plugins/' . $pluginName;
+    $pluginPath = PLUGINS_PATH . '/' . $pluginName;
     $configFile = $pluginPath . '/plugin.json';
     
     // Verificar que existe
@@ -78,7 +78,7 @@ class pluginLoader {
 
   // Solo si realmente necesitas cargar todos (ejemplo: panel admin)
   static function loadAll($router) {
-    $pluginsDir = BASE_PATH . '/plugins';
+    $pluginsDir = PLUGINS_PATH;
     
     if (!is_dir($pluginsDir)) return;
     
@@ -95,7 +95,7 @@ class pluginLoader {
 
   // Obtener lista de plugins disponibles (sin cargarlos)
   static function getAvailable() {
-    $pluginsDir = BASE_PATH . '/plugins';
+    $pluginsDir = PLUGINS_PATH;
     $plugins = [];
     
     if (!is_dir($pluginsDir)) return $plugins;
@@ -119,7 +119,7 @@ class pluginLoader {
       return self::$loaded[$pluginName];
     }
     
-    $configFile = BASE_PATH . '/plugins/' . $pluginName . '/plugin.json';
+    $configFile = PLUGINS_PATH . '/' . $pluginName . '/plugin.json';
     if (file_exists($configFile)) {
       return json_decode(file_get_contents($configFile), true);
     }

@@ -1,0 +1,23 @@
+{
+  "id": "hooksCaso2",
+  "title": "🎯 Caso 2: Hooks en Vista con Content",
+  "description": "Demuestra hooks mezclados con content según order",
+  "type": "content",
+  "content": [
+    {
+      "type": "html",
+      "order": 10,
+      "content": "<div style='padding:1rem;background:#fef3c7;border-radius:6px;margin:0.5rem 0;border-left:4px solid #f59e0b;'><strong>📄 Contenido Original - Order 10</strong><p style='margin:0.5rem 0 0 0;'>Este es el primer contenido original.</p></div>"
+    },
+    {
+      "type": "html",
+      "order": 20,
+      "content": "<div style='padding:1rem;background:#fde68a;border-radius:6px;margin:0.5rem 0;border-left:4px solid #f59e0b;'><strong>📄 Más Contenido - Order 20</strong><p style='margin:0.5rem 0 0 0;'>Segundo contenido original.</p></div>"
+    },
+    {
+      "type": "html",
+      "order": 30,
+      "content": "<div style='padding:1rem;background:#fbbf24;border-radius:6px;margin:0.5rem 0;border-left:4px solid #f59e0b;'><strong>📄 Final - Order 30</strong><p style='margin:0.5rem 0 0 0;'>Tercer y último contenido original.</p></div>"
+    }
+  ]
+}

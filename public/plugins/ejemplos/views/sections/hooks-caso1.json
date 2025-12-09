@@ -1,0 +1,46 @@
+{
+  "id": "hooksCaso1",
+  "title": "🎯 Caso 1: Hooks en Vista con Tabs",
+  "description": "Demuestra hooks con contexto en diferentes posiciones",
+  "type": "tabs",
+  "tabs": [
+    {
+      "id": "tab1",
+      "title": "📋 Tab 1",
+      "content": [
+        {
+          "type": "html",
+          "order": 10,
+          "content": "<div style='padding:1rem;background:#e0f2fe;border-radius:6px;margin:0.5rem 0;border-left:4px solid #0284c7;'><strong>📄 Contenido Tab 1 - Order 10</strong><p style='margin:0.5rem 0 0 0;'>Este es el contenido original del tab 1.</p></div>"
+        },
+        {
+          "type": "html",
+          "order": 20,
+          "content": "<div style='padding:1rem;background:#dbeafe;border-radius:6px;margin:0.5rem 0;border-left:4px solid #0284c7;'><strong>📄 Más Contenido - Order 20</strong><p style='margin:0.5rem 0 0 0;'>Más contenido del tab 1.</p></div>"
+        }
+      ]
+    },
+    {
+      "id": "tab2",
+      "title": "📄 Tab 2",
+      "content": [
+        {
+          "type": "html",
+          "order": 10,
+          "content": "<div style='padding:1rem;background:#dcfce7;border-radius:6px;margin:0.5rem 0;border-left:4px solid #16a34a;'><strong>📄 Contenido Tab 2 - Order 10</strong><p style='margin:0.5rem 0 0 0;'>Este es el contenido del tab 2.</p></div>"
+        }
+      ]
+    },
+    {
+      "id": "tab3",
+      "title": "📊 Tab 3",
+      "content": [
+        {
+          "type": "html",
+          "order": 10,
+          "content": "<div style='padding:1rem;background:#fef3c7;border-radius:6px;margin:0.5rem 0;border-left:4px solid #f59e0b;'><strong>📄 Contenido Tab 3 - Order 10</strong><p style='margin:0.5rem 0 0 0;'>Este tab NO tiene hooks (solo tabs 1 y 2 tienen).</p></div>"
+        }
+      ]
+    }
+  ]
+}

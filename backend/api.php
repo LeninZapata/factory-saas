@@ -29,6 +29,7 @@ require_once $path . '/framework/core/autoload.php';
 require_once $path . '/framework/core/router.php';
 
 $router = new router();
+
 require_once $path . '/app/routes/api.php';
 
 $captured = ob_get_clean();
