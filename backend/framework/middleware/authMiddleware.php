@@ -5,7 +5,7 @@ class authMiddleware {
     $token = $this->getToken();
 
     if (!$token) {
-      response::unauthorized('Token no proporcionado');
+      response::unauthorized(__('middleware.auth.token_missing'));
       return false;
     }
 
@@ -13,14 +13,14 @@ class authMiddleware {
     $session = $this->getSessionFromToken($token);
 
     if (!$session) {
-      response::unauthorized('Token inválido');
+      response::unauthorized(__('middleware.auth.token_invalid'));
       return false;
     }
 
     // Verificar expiración (usando timestamp del archivo)
     if ($session['expires_timestamp'] < time()) {
       $this->deleteSession($token);
-      response::unauthorized('Token expirado');
+      response::unauthorized(__('middleware.auth.token_expired'));
       return false;
     }
 
@@ -77,7 +77,7 @@ class authMiddleware {
     $files = glob($pattern);
 
     if (empty($files)) {
-      log::warning('authMiddleware', "Token no encontrado: {$tokenShort}...", ['module' => 'auth']);
+      log::warning(__('middleware.auth.token_not_found') . ": {$tokenShort}...",  null, ['module' => 'auth']);
       return null;
     }
 
@@ -86,13 +86,13 @@ class authMiddleware {
     $session = json_decode(file_get_contents($sessionFile), true);
 
     if (!$session || !isset($session['user_id'])) {
-      log::error('authMiddleware', 'Sesión corrupta', ['module' => 'auth']);
+      log::error(__('middleware.auth.session_corrupted'), null, ['module' => 'auth']);
       return null;
     }
 
     // Verificar que el token completo coincida
     if ($session['token'] !== $token) {
-      log::warning('authMiddleware', 'Token no coincide', ['module' => 'auth']);
+      log::warning(__('middleware.auth.token_mismatch'), null, ['module' => 'auth']);
       return null;
     }
 
@@ -110,7 +110,7 @@ class authMiddleware {
       $session = json_decode(file_get_contents($file), true);
       if ($session && $session['token'] === $token) {
         unlink($file);
-        log::info('authMiddleware', 'Token expirado eliminado', ['module' => 'auth']);
+        log::info(__('middleware.auth.token_expired_deleted'), [], ['module' => 'auth']);
         return;
       }
     }

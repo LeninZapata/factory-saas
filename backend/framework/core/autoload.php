@@ -8,6 +8,7 @@ spl_autoload_register(function ($class) {
     'db' => FRAMEWORK_PATH . '/helpers/db.php',
     'log' => FRAMEWORK_PATH . '/helpers/log.php',
     'logreader' => FRAMEWORK_PATH . '/helpers/logReader.php',
+    'lang' => FRAMEWORK_PATH . '/helpers/lang.php',
     'request' => FRAMEWORK_PATH . '/helpers/request.php',
     'response' => FRAMEWORK_PATH . '/helpers/response.php',
     'utils' => FRAMEWORK_PATH . '/helpers/utils.php',

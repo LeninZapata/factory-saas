@@ -119,20 +119,22 @@ class datatable {
 
     return `
       <div class="datatable-container" id="${tableId}" data-datatable="${tableId}">
-        <table class="table">
-          <thead>
-            <tr>
-              ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
-              ${hasActions ? '<th>Acciones</th>' : ''}
-            </tr>
-          </thead>
-          <tbody>
-            ${isEmpty 
-              ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">📭 No hay datos para mostrar</td></tr>`
-              : data.map(row => this.renderRow(row, columns, config.actions)).join('')
-            }
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
+                ${hasActions ? '<th>Acciones</th>' : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${isEmpty 
+                ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">📭 No hay datos para mostrar</td></tr>`
+                : data.map(row => this.renderRow(row, columns, config.actions)).join('')
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     `;
   }
@@ -346,7 +348,41 @@ class datatable {
   }
 
   static bindEvents(tableId) {
-    // Eventos futuros
+    // Detectar overflow para mostrar sombra
+    setTimeout(() => {
+      this.checkTableOverflow(tableId);
+    }, 100);
+    
+    // Recheck on window resize
+    window.addEventListener('resize', () => this.checkTableOverflow(tableId));
+  }
+
+  static checkTableOverflow(tableId) {
+    const container = document.getElementById(tableId);
+    if (!container) return;
+    
+    const wrapper = container.querySelector('.table-responsive');
+    if (!wrapper) return;
+    
+    // Verificar si hay overflow horizontal
+    const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth;
+    
+    if (hasOverflow) {
+      wrapper.classList.add('has-overflow');
+    } else {
+      wrapper.classList.remove('has-overflow');
+    }
+    
+    // Actualizar en scroll para ocultar sombra cuando llega al final
+    wrapper.addEventListener('scroll', () => {
+      const isAtEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
+      
+      if (isAtEnd) {
+        wrapper.classList.remove('has-overflow');
+      } else if (hasOverflow) {
+        wrapper.classList.add('has-overflow');
+      }
+    }, { once: false });
   }
 
   static async refresh(tableId) {

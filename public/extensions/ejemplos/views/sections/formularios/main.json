@@ -2,6 +2,9 @@
   "id": "ejemplos-formularios",
   "title": "Ejemplos de Formularios",
   "type": "tabs",
+  "scripts": [
+    "extensions/ejemplos/assets/js/ejemplos.js"
+  ],
   "tabs": [
     {
       "id": "inputs-basicos",
@@ -112,7 +115,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<h3>Repetibles Anidados</h3><p>Hasta 3 niveles: Proyectos → Tareas → Subtareas</p><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-repetibles-anidados\", { title: \"🪟 Modal\", width: \"95%\", maxWidth: \"1200px\" })' style='margin-bottom: 1rem;'>🪟 Abrir en Modal</button>"
+                    "content": "<h3>Repetibles Anidados</h3><p>Hasta 3 niveles: Proyectos → Tareas → Subtareas</p><div style='display: flex; gap: 0.5rem; margin-bottom: 1rem;'><button class='btn btn-primary' onclick='modal.open(\"ejemplos|forms/formularios/form-repetibles-anidados\", { title: \"🪟 Modal Vacío\", width: \"95%\", maxWidth: \"1200px\" })'>🪟 Abrir Vacío</button><button class='btn btn-success' onclick='ejemplos.openRepeatableWithData()'>📊 Abrir con Datos</button></div>"
                   },
                   {
                     "type": "form",

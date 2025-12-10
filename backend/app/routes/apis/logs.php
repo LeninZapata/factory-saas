@@ -95,7 +95,7 @@ $router->group('/api/logs', function($router) {
       response::success([
         'logs' => [],
         'count' => 0,
-        'message' => 'No logs found for this date'
+        'message' => __('logs.not_found_date')
       ]);
       return;
     }
@@ -134,7 +134,7 @@ $router->group('/api/logs', function($router) {
       response::success([
         'logs' => [],
         'count' => 0,
-        'message' => 'No logs found for this month'
+        'message' => __('logs.not_found_month')
       ]);
       return;
     }

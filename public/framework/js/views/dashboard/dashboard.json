@@ -1,12 +1,6 @@
 {
   "id": "dashboard",
   "title": "Dashboard",
-  "scripts": [
-    "js/components/widget.js"
-  ],
-  "styles": [
-    "css/components/widget.css"
-  ],
   "content": [
     {
       "id": "welcome",

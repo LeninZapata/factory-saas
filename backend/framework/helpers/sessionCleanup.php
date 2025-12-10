@@ -47,12 +47,12 @@ class sessionCleanup {
         }
       } catch (Exception $e) {
         $errors++;
-        log::error('sessionCleanup', "Error procesando {$file}: " . $e->getMessage(), ['module' => 'session']);
+        log::error("Error procesando {$file}: " , $e->getMessage(), ['module' => 'session']);
       }
     }
 
     if ($cleaned > 0) {
-      log::info('sessionCleanup', "Limpieza completada: {$cleaned} sesiones eliminadas", ['module' => 'session']);
+      log::info(__('helper.session.cleanup_completed', ['cleaned' => $cleaned]), null, ['module' => 'session']);
     }
 
     return [
@@ -145,12 +145,12 @@ class sessionCleanup {
         unlink($file);
         $cleaned++;
       } catch (Exception $e) {
-        log::error('sessionCleanup', "Error limpiando sesión: " . $e->getMessage(), ['module' => 'session']);
+        log::error( __('helper.session.cleanup_error') , $e->getMessage(), ['module' => 'session']);
       }
     }
 
     if ($cleaned > 0) {
-      log::info('sessionCleanup', "Limpiadas {$cleaned} sesiones del usuario {$userId}", ['module' => 'session']);
+      log::info( __('helper.session.cleaned_user', ['cleaned' => $cleaned, 'userId' => $userId]), ['module' => 'session']);
     }
 
     return $cleaned;

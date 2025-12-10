@@ -7,7 +7,7 @@ class authHandlers {
     $data = request::data();
 
     if (!isset($data['user']) || !isset($data['pass'])) {
-      return ['success' => false, 'error' => 'Usuario y contraseña requeridos'];
+      return ['success' => false, 'error' => __('auth.credentials.required')];
     }
 
     // Buscar usuario por username o email
@@ -18,7 +18,7 @@ class authHandlers {
 
     if (!$user || !password_verify($data['pass'], $user['pass'])) {
       log::warning('Login fallido', ['user' => $data['user']], ['module' => 'auth']);
-      return ['success' => false, 'error' => 'Credenciales inválidas'];
+      return ['success' => false, 'error' => __('auth.credentials.invalid')];
     }
 
     // Generar token
@@ -49,7 +49,7 @@ class authHandlers {
 
     return [
       'success' => true,
-      'message' => 'Login exitoso',
+      'message' => __('auth.login.success'),
       'data' => [
         'user' => $user,
         'token' => $token,
@@ -65,7 +65,7 @@ class authHandlers {
     $token = request::bearerToken();
 
     if (!$token) {
-      return ['success' => false, 'error' => 'Token no proporcionado'];
+      return ['success' => false, 'error' => __('auth.token.missing')];
     }
 
     // Buscar y eliminar archivo de sesión
@@ -75,7 +75,7 @@ class authHandlers {
       log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...'], ['module' => 'auth']);
     }
 
-    return ['success' => true, 'message' => 'Logout exitoso'];
+    return ['success' => true, 'message' => __('auth.logout.success')];
   }
 
   // ============ MÉTODOS PRIVADOS HELPERS ============

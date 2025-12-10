@@ -13,7 +13,7 @@ class clientHandlers {
 
     return [
       'success' => true,
-      'message' => 'All client data deleted',
+      'message' => __('client.delete_all.success'),
       'deleted' => [
         'client' => 1,
         'sales' => $sales,
@@ -31,7 +31,7 @@ class clientHandlers {
       ->first();
 
     if (!$client) {
-      return ['success' => false, 'error' => 'Client not found'];
+      return ['success' => false, 'error' => __('client.not_found')];
     }
 
     return ['success' => true, 'data' => $client];

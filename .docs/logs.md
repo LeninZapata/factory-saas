@@ -19,10 +19,14 @@
 [timestamp]	LEVEL	module	file:line	message	tags	context_json
 ```
 
+**Nota:** Campos vacíos usan `-` para mantener formato consistente
+
 ### Ejemplo Real
 ```
 [2025-12-08 23:38:54]	INFO	auth	userHandlers.php:142	Login exitoso	auth,login	{"user":"admin44","id":3}
 [2025-12-08 23:40:12]	ERROR	integrations/whatsapp	whatsapp.php:87	Error al enviar	whatsapp,error	{"number":"593987654321","bot_id":10}
+[2025-12-08 23:41:00]	INFO	user	userController.php:160	Usuario actualizado	-	{"user_id":5}
+[2025-12-08 23:42:15]	INFO	worker	worker.php:50	Proceso completado	-	-
 ```
 
 ---
@@ -66,7 +70,25 @@ log::info('Mensaje recibido',
 );
 ```
 
-### 5. Diferentes Niveles
+### 5. Log sin Contexto (usa null o [])
+```php
+// Ambos son válidos
+log::info('Sesiones invalidadas', null, ['module' => 'user', 'bot_id' => 10]);
+log::info('Proceso completado', [], ['module' => 'worker']);
+// En el log aparece: ... - {"bot_id":10}
+// En el log aparece: ... - -
+```
+
+### 6. Contexto Flexible (acepta string, número, boolean)
+```php
+log::info('Items procesados', 150, ['module' => 'worker']);
+// En el log: ... - {"value":150}
+
+log::info('Estado', true, ['module' => 'system']);
+// En el log: ... - {"value":true}
+```
+
+### 7. Diferentes Niveles
 ```php
 log::debug('Debugging info');     // Solo en IS_DEV = true
 log::info('General info');
@@ -294,4 +316,11 @@ ENDPOINTS → logs.php (API)
 ✅ Tags consistentes: `['whatsapp', 'telegram']`, `['inbound', 'outbound']`, `['error', 'success']`
 ✅ Custom vars útiles: `number`, `bot_id`, `user_id`, `client_id`
 ✅ Niveles apropiados: DEBUG para desarrollo, ERROR para problemas
+✅ Sin contexto: Usa `null` o `[]` (aparece como `-` en logs)
+✅ Contexto flexible: Acepta arrays, strings, números, booleans
 ❌ No loguear passwords ni datos sensibles
+
+**Formato de campos vacíos:**
+- Tags vacíos → `-`
+- Context vacío → `-`
+- Mantiene formato consistente (7 columnas) para parsers TSV

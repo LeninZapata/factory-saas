@@ -22,6 +22,12 @@ class tabs {
     container.innerHTML = tabsHTML;
     this.bindTabEvents(tabsData, container);
 
+    // Detectar overflow para mostrar degradado
+    this.checkOverflow(container);
+    
+    // Recheck on window resize
+    window.addEventListener('resize', () => this.checkOverflow(container));
+
     const firstTab = tabsData.tabs[0];
     if (firstTab) {
       await this.loadTabContent(tabsData, firstTab.id, container);
@@ -31,6 +37,32 @@ class tabs {
     if (tabsData.preloadAllTabs === true) {
       await this.preloadAllTabs(tabsData, container);
     }
+  }
+
+  // Detectar si hay overflow y agregar clase
+  static checkOverflow(container) {
+    const tabsHeader = container.querySelector('.tabs-header');
+    if (!tabsHeader) return;
+
+    // Verificar si el contenido es más ancho que el contenedor
+    const hasOverflow = tabsHeader.scrollWidth > tabsHeader.clientWidth;
+    
+    if (hasOverflow) {
+      tabsHeader.classList.add('has-overflow');
+    } else {
+      tabsHeader.classList.remove('has-overflow');
+    }
+
+    // Actualizar en scroll para ocultar degradado cuando llega al final
+    tabsHeader.addEventListener('scroll', () => {
+      const isAtEnd = tabsHeader.scrollLeft + tabsHeader.clientWidth >= tabsHeader.scrollWidth - 5;
+      
+      if (isAtEnd) {
+        tabsHeader.classList.remove('has-overflow');
+      } else if (hasOverflow) {
+        tabsHeader.classList.add('has-overflow');
+      }
+    });
   }
 
   static async preloadAllTabs(tabsData, container) {
@@ -76,6 +108,9 @@ class tabs {
 
         tabButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Scroll suave al tab activo si está fuera de vista
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
         await this.loadTabContent(tabsData, tabId, container);
       });

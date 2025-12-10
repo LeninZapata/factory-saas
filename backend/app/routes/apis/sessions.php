@@ -75,7 +75,7 @@ $router->group('/api/sessions', function($router) {
   // DELETE /api/sessions/cleanup - Limpiar expiradas
   $router->delete('/cleanup', function() {
     $result = sessionCleanup::clean();
-    response::success($result, 'Limpieza completada');
+    response::success($result, __('session.cleanup.success'));
   })->middleware($middleware);
 
   // DELETE /api/sessions/user/{user_id} - Invalidar sesiones de usuario
@@ -84,7 +84,7 @@ $router->group('/api/sessions', function($router) {
     response::success([
       'user_id' => (int)$userId,
       'cleaned' => $cleaned
-    ], 'Sesiones invalidadas');
+    ], __('session.invalidated', ['count' => $cleaned]));
   })->middleware($middleware);
 
 });

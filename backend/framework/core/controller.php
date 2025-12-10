@@ -7,7 +7,7 @@ class controller {
     $configFile = APP_PATH . "/resources/{$resourceName}.json";
 
     if (!file_exists($configFile)) {
-      response::error("Resource '$resourceName' not found", 404);
+      response::error(__('core.controller.resource_not_found', ['resource' => $resourceName]), 404);
     }
 
     $this->config = json_decode(file_get_contents($configFile), true);
@@ -45,7 +45,7 @@ class controller {
   // SHOW - Obtener uno
   function show($id) {
     $data = db::table($this->table)->find($id);
-    if (!$data) response::notFound("{$this->resource} not found");
+    if (!$data) response::notFound(__('core.controller.not_found', ['resource' => $this->resource]));
     response::success($data);
   }
 
@@ -67,13 +67,13 @@ class controller {
     }
 
     $id = db::table($this->table)->insert($data);
-    response::success(['id' => $id], "{$this->resource} created", 201);
+    response::success(['id' => $id], __('core.controller.created', ['resource' => $this->resource]), 201);
   }
 
   // UPDATE - Actualizar
   function update($id) {
     $exists = db::table($this->table)->find($id);
-    if (!$exists) response::notFound("{$this->resource} not found");
+    if (!$exists) response::notFound(__('core.controller.not_found', ['resource' => $this->resource]));
 
     $data = request::data();
 
@@ -86,16 +86,16 @@ class controller {
     }
 
     $affected = db::table($this->table)->where('id', $id)->update($data);
-    response::success(['affected' => $affected], "{$this->resource} updated");
+    response::success(['affected' => $affected], __('core.controller.updated', ['resource' => $this->resource]));
   }
 
   // DELETE - Eliminar
   function delete($id) {
     $exists = db::table($this->table)->find($id);
-    if (!$exists) response::notFound("{$this->resource} not found");
+    if (!$exists) response::notFound(__('core.controller.not_found', ['resource' => $this->resource]));
 
     $affected = db::table($this->table)->where('id', $id)->delete();
-    response::success(['affected' => $affected], "{$this->resource} deleted");
+    response::success(['affected' => $affected], __('core.controller.deleted', ['resource' => $this->resource]));
   }
 
   // Obtener campos requeridos del schema
@@ -119,7 +119,7 @@ class controller {
         if ($excludeId) $query = $query->where('id', '!=', $excludeId);
 
         if ($query->exists()) {
-          response::error("{$field['name']} already exists", 400);
+          response::error(__('core.controller.field_exists', ['field' => $field['name']]), 400);
         }
       }
     }

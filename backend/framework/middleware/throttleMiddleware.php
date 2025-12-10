@@ -45,7 +45,7 @@ class throttleMiddleware {
       header("X-RateLimit-Reset: " . ($now + $retryAfter));
 
       response::error(
-        "Demasiadas peticiones. Límite: $maxRequests requests por $minutes minuto(s)",
+        __('middleware.throttle.too_many_requests', ['max' => $maxRequests, 'minutes' => $minutes]),
         429
       );
       return false;

@@ -8,6 +8,15 @@
   &[data-cols="3"] { grid-template-columns: repeat(3, 1fr); }
   &[data-cols="4"] { grid-template-columns: repeat(4, 1fr); }
 
+  /* Tablet: 2 columnas si tiene 3 o 4 */
+  @media (max-width: 1024px) {
+    &[data-cols="3"],
+    &[data-cols="4"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Mobile: siempre 1 columna */
   @media (max-width: 768px) {
     grid-template-columns: 1fr !important;
   }

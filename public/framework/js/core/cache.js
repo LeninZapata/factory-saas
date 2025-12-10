@@ -87,7 +87,6 @@ class cache {
       .forEach(key => localStorage.removeItem(key));
   }
 
-  // Verificar si una clave específica ha expirado sin eliminarla
   static isExpired(key) {
     const stored = localStorage.getItem(`cache_${key}`);
     if (!stored) return true;
@@ -100,7 +99,6 @@ class cache {
     }
   }
 
-  // Obtener tiempo restante antes de expiración (en ms)
   static getTimeToExpire(key) {
     const stored = localStorage.getItem(`cache_${key}`);
     if (!stored) return 0;
@@ -184,6 +182,7 @@ window.addEventListener('load', () => cache.cleanup());
 
 window.cache = cache;
 
-if (window.appConfig.isDevelopment) {
+// Guard para appConfig - puede no estar definido al cargar cache.js
+if (window.appConfig?.isDevelopment) {
   cache.enableDebug();
 }

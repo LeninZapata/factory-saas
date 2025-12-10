@@ -245,7 +245,7 @@ class form {
 
     setTimeout(() => {
       this.bindGrouperEvents(grouperId, mode);
-    }, 100);
+    }, 10);
 
     return html;
   }
@@ -673,7 +673,7 @@ class form {
         if (window.conditions) {
           conditions.init(formId);
         }
-      }, 50);
+      }, 20);
     }
   }
 
@@ -782,19 +782,157 @@ class form {
 
   static fill(formId, data) {
     const formEl = document.getElementById(formId);
-    if (!formEl) return;
+    if (!formEl) {
+      logger.warn('core:form', `Formulario ${formId} no encontrado`);
+      return;
+    }
 
-    Object.entries(data).forEach(([key, value]) => {
-      const input = formEl.querySelector(`[name="${key}"]`);
-      if (input) {
-        if (input.type === 'checkbox') {
-          input.checked = !!value;
+    const schema = this.schemas.get(formId);
+    if (!schema) {
+      logger.warn('core:form', `Schema para ${formId} no encontrado`);
+      return;
+    }
+
+    logger.debug('core:form', `Llenando formulario ${formId} con datos:`, data);
+
+    // Procesar campos del schema
+    if (schema.fields) {
+      schema.fields.forEach(field => {
+        if (field.type === 'repeatable') {
+          // Llenar repeatable
+          this.fillRepeatable(formEl, field, data, '');
         } else {
-          input.value = value;
+          // Campo normal
+          const value = data[field.name];
+          if (value !== undefined && value !== null) {
+            const input = formEl.querySelector(`[name="${field.name}"]`);
+            if (input) {
+              this.setInputValue(input, value);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  // Llenar campos repetibles (RECURSIVO - funciona en cualquier nivel)
+  static fillRepeatable(container, field, data, parentPath) {
+    const fieldName = field.name;
+    const items = data[fieldName];
+
+    if (!Array.isArray(items) || items.length === 0) {
+      logger.debug('core:form', `No hay datos para: ${fieldName}`);
+      return;
+    }
+
+    const fullPath = parentPath ? `${parentPath}.${fieldName}` : fieldName;
+    logger.info('core:form', `📋 Llenando ${fullPath}: ${items.length} items`);
+
+    // Encontrar botón "Agregar" (puede tener path completo o simple)
+    let addButton = container.querySelector(`.repeatable-add[data-path="${fullPath}"]`);
+    if (!addButton) {
+      addButton = container.querySelector(`.repeatable-add[data-path="${fieldName}"]`);
+    }
+    
+    if (!addButton) {
+      logger.error('core:form', `Botón "Agregar" no encontrado para: ${fullPath}`);
+      return;
+    }
+
+    // Encontrar contenedor de items
+    let itemsContainer = container.querySelector(`.repeatable-items[data-path="${fullPath}"]`);
+    if (!itemsContainer) {
+      itemsContainer = container.querySelector(`.repeatable-items[data-path="${fieldName}"]`);
+    }
+    
+    if (!itemsContainer) {
+      logger.error('core:form', `Contenedor no encontrado para: ${fullPath}`);
+      return;
+    }
+
+    // Limpiar items existentes
+    itemsContainer.innerHTML = '';
+
+    // Agregar items uno por uno
+    items.forEach((itemData, index) => {
+      setTimeout(() => {
+        logger.debug('core:form', `Agregando item ${index + 1}/${items.length} de ${fullPath}`);
+        
+        // Click en "Agregar"
+        addButton.click();
+        
+        // Esperar y llenar
+        setTimeout(() => {
+          this.fillRepeatableItem(itemsContainer, fieldName, index, itemData, field.fields, fullPath);
+        }, 100);
+        
+      }, index * 300); // 300ms entre cada item
+    });
+  }
+
+  // Llenar un item específico del repeatable (RECURSIVO)
+  static fillRepeatableItem(container, fieldName, index, itemData, fieldSchema, parentPath) {
+    logger.debug('core:form', `Llenando item [${index}] de ${parentPath || fieldName}:`, itemData);
+
+    // Obtener el item recién agregado
+    const items = container.querySelectorAll('.repeatable-item');
+    const currentItem = items[items.length - 1];
+
+    if (!currentItem) {
+      logger.error('core:form', `Item [${index}] no encontrado en el DOM`);
+      return;
+    }
+
+    // Calcular path del item: proyectos[0] o proyectos[0].tareas[1]
+    const itemPath = parentPath ? `${parentPath}[${index}]` : `${fieldName}[${index}]`;
+
+    // Iterar sobre cada campo del schema
+    fieldSchema.forEach(subField => {
+      if (subField.type === 'repeatable') {
+        // ✅ RECURSIÓN: Llenar repeatable anidado
+        logger.debug('core:form', `🔄 Procesando repeatable anidado: ${subField.name}`);
+        
+        // Llamar recursivamente pasando el item actual como contenedor
+        this.fillRepeatable(currentItem, subField, itemData, itemPath);
+        
+      } else {
+        // Campo normal
+        const value = itemData[subField.name];
+        
+        if (value === undefined || value === null) {
+          return;
+        }
+
+        // Selector con path completo: proyectos[0].nombre_proyecto
+        const inputName = `${itemPath}.${subField.name}`;
+        const input = currentItem.querySelector(`[name="${inputName}"]`);
+
+        if (input) {
+          this.setInputValue(input, value);
+          logger.debug('core:form', `✓ ${inputName} = ${value}`);
+        } else {
+          logger.warn('core:form', `Campo no encontrado: ${inputName}`);
         }
       }
     });
   }
+
+  // Asignar valor a un input
+  static setInputValue(input, value) {
+    if (input.type === 'checkbox') {
+      input.checked = !!value;
+    } else if (input.type === 'radio') {
+      if (input.value === value) {
+        input.checked = true;
+      }
+    } else {
+      input.value = value;
+    }
+    
+    // Disparar evento change
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
 
   static validate(formId) {
     const formEl = document.getElementById(formId);

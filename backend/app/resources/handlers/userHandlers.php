@@ -10,20 +10,20 @@ class userHandlers {
     $token = request::bearerToken();
 
     if (!$token) {
-      return ['success' => false, 'error' => 'Token no proporcionado'];
+      return ['success' => false, 'error' => __('auth.token.missing')];
     }
 
     // Obtener datos directamente del archivo de sesión
     $session = self::getSessionFromToken($token);
 
     if (!$session) {
-      return ['success' => false, 'error' => 'Token inválido o expirado'];
+      return ['success' => false, 'error' => __('auth.token.invalid')];
     }
 
     // Verificar expiración
     if ($session['expires_timestamp'] < time()) {
       self::deleteSession($token);
-      return ['success' => false, 'error' => 'Token expirado'];
+      return ['success' => false, 'error' => __('auth.token.expired')];
     }
 
     return ['success' => true, 'data' => $session['user']];
@@ -35,14 +35,14 @@ class userHandlers {
     $data = request::data();
 
     if (!isset($data['config'])) {
-      return ['success' => false, 'error' => 'Config requerido'];
+      return ['success' => false, 'error' => __('user.config.required')];
     }
 
     // Validar JSON
     $config = is_string($data['config']) ? $data['config'] : json_encode($data['config']);
 
     if (json_decode($config) === null) {
-      return ['success' => false, 'error' => 'Config JSON inválido'];
+      return ['success' => false, 'error' => __('user.config.invalid')];
     }
 
     $affected = db::table('user')->where('id', $id)->update([
@@ -59,7 +59,7 @@ class userHandlers {
 
     return [
       'success' => true,
-      'message' => 'Configuración actualizada',
+      'message' => __('user.config.updated'),
       'affected' => $affected
     ];
   }

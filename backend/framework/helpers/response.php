@@ -36,19 +36,19 @@ class response {
 
   // Shortcuts HTTP
   static function notFound($msg = null) {
-    self::json(['success' => false, 'error' => $msg ?? 'Resource not found'], 404);
+    self::json(['success' => false, 'error' => $msg ?? __('helper.response.not_found')], 404);
   }
 
   static function unauthorized($msg = null) {
-    self::json(['success' => false, 'error' => $msg ?? 'Unauthorized'], 401);
+    self::json(['success' => false, 'error' => $msg ?? __('helper.response.unauthorized')], 401);
   }
 
   static function forbidden($msg = null) {
-    self::json(['success' => false, 'error' => $msg ?? 'Forbidden'], 403);
+    self::json(['success' => false, 'error' => $msg ?? __('helper.response.forbidden')], 403);
   }
 
   static function serverError($msg = null, $debug = null) {
-    $res = ['success' => false, 'error' => $msg ?? 'Internal Server Error'];
+    $res = ['success' => false, 'error' => $msg ?? __('helper.response.server_error')];
     if (IS_DEV && $debug) $res['debug'] = $debug;
     self::json($res, 500);
   }

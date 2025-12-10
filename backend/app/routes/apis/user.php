@@ -22,7 +22,7 @@ $router->group('/api/user', function($router) {
       if (empty($key)) {
         response::json([
           'success' => false,
-          'error' => 'Debes proporcionar una contraseña'
+          'error' => __('user.password.required')
         ]);
       }
 

@@ -136,7 +136,7 @@ class router {
         return;
       }
     }
-    throw new Exception("Invalid handler");
+    throw new Exception(__('core.router.invalid_handler'));
   }
 
   // Ejecutar middleware
@@ -146,20 +146,20 @@ class router {
     $mwParams = isset($parts[1]) ? explode(',', $parts[1]) : [];
 
     if (!isset($this->middleware[$name])) {
-      throw new Exception("Middleware '$name' no encontrado");
+      throw new Exception(__('core.router.middleware_not_found', ['middleware' => $name]));
     }
 
     $mwClass = $this->middleware[$name];
     $mwFile = __DIR__ . '/../middleware/' . $mwClass . '.php';
 
     if (!file_exists($mwFile)) {
-      throw new Exception("Archivo de middleware '$mwClass.php' no encontrado");
+      throw new Exception(__('core.router.middleware_file_not_found', ['middleware' => $mwClass]));
     }
 
     require_once $mwFile;
 
     if (!class_exists($mwClass)) {
-      throw new Exception("Clase middleware '$mwClass' no encontrada");
+      throw new Exception(__('core.router.middleware_class_not_found', ['middleware' => $mwClass]));
     }
 
     $mw = new $mwClass();
@@ -174,7 +174,7 @@ class router {
 
   // 404
   private function notFound() {
-    response::json(['success' => false, 'error' => 'Route not found', 'path' => $this->getPath()], 404);
+    response::json(['success' => false, 'error' => __('core.router.not_found'), 'path' => $this->getPath()], 404);
   }
 }
 

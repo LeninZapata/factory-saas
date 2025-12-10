@@ -97,25 +97,32 @@ class hook {
   }
 
   static async tryLoadPluginLang(extensionName, lang) {
-    const langPath = `${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json`;
-    const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+    try {
+      const langPath = `${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json`;
+      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
 
-    // Usar loader.loadJson con opción optional y silent
-    const translations = await loader.loadJson(langPath + cacheBuster, {
-      optional: true,
-      silent: true
-    });
+      // Usar loader.loadJson con opción optional y silent
+      const translations = await loader.loadJson(langPath + cacheBuster, {
+        optional: true,
+        silent: true
+      });
 
-    if (!translations) return false;
+      if (!translations) return false;
 
-    // Guardar traducciones
-    if (!i18n.exntesionTranslations.has(extensionName)) {
-      i18n.exntesionTranslations.set(extensionName, new Map());
+      // Guardar traducciones
+      if (!i18n.exntesionTranslations.has(extensionName)) {
+        i18n.exntesionTranslations.set(extensionName, new Map());
+      }
+      i18n.exntesionTranslations.get(extensionName).set(lang, translations);
+      cache.set(`i18n_extension_${extensionName}_${lang}`, translations, 60 * 60 * 1000);
+
+      logger.success('core:hook', `✅ Idioma ${lang} cargado para ${extensionName}`);
+      return true;
+    } catch (error) {
+      // Capturar cualquier error inesperado sin mostrar en consola
+      logger.debug('core:hook', `⚠️ ${extensionName} no tiene traducciones para '${lang}'`);
+      return false;
     }
-    i18n.exntesionTranslations.get(extensionName).set(lang, translations);
-    cache.set(`i18n_extension_${extensionName}_${lang}`, translations, 60 * 60 * 1000);
-
-    return true;
   }
 
   static async preloadPluginViews(extensionName, pluginConfig) {

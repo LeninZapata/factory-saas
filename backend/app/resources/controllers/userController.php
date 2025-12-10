@@ -14,7 +14,7 @@ class userController extends controller {
       log::error('UserController - Campos faltantes', $data, ['module' => 'user']);
       response::json([
         'success' => false,
-        'error' => 'Los campos user, pass y role son requeridos'
+        'error' => __('user.fields_required')
       ], 200);
     }
 
@@ -23,7 +23,7 @@ class userController extends controller {
       if (!validation::email($data['email'])) {
         response::json([
           'success' => false,
-          'error' => 'Email inválido'
+          'error' => __('user.email_invalid')
         ], 200);
       }
     }
@@ -45,7 +45,7 @@ class userController extends controller {
       log::warning('UserController - Usuario ya existe', ['user' => $data['user']], ['module' => 'user']);
       response::json([
         'success' => false,
-        'error' => 'El usuario ya existe'
+        'error' => __('user.already_exists')
       ], 200);
     }
 
@@ -55,7 +55,7 @@ class userController extends controller {
         log::warning('UserController - Email ya existe', ['email' => $data['email']], ['module' => 'user']);
         response::json([
           'success' => false,
-          'error' => 'El email ya existe'
+          'error' => __('user.email_exists')
         ], 200);
       }
     }
@@ -63,18 +63,17 @@ class userController extends controller {
     try {
       $id = db::table('user')->insert($data);
       log::info('UserController - Usuario creado', ['id' => $id], ['module' => 'user']);
-      response::success(['id' => $id], 'Usuario creado', 201);
+      response::success(['id' => $id], __('user.create.success'), 201);
     } catch (Exception $e) {
       log::error('UserController - Error SQL', ['message' => $e->getMessage()], ['module' => 'user']);
-      // Errores fatales sí usan 500
-      response::serverError('Error al crear usuario', IS_DEV ? $e->getMessage() : null);
+      response::serverError(__('user.create.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
 
   // Override update para hashear contraseña si se proporciona
   function update($id) {
     $exists = db::table('user')->find($id);
-    if (!$exists) response::notFound('Usuario no encontrado');
+    if (!$exists) response::notFound(__('user.not_found'));
 
     $data = request::data();
 
@@ -90,7 +89,7 @@ class userController extends controller {
       if (!validation::email($data['email'])) {
         response::json([
           'success' => false,
-          'error' => 'Email inválido'
+          'error' => __('user.email_invalid')
         ], 200);
       }
     }
@@ -106,7 +105,7 @@ class userController extends controller {
       if ($query->exists()) {
         response::json([
           'success' => false,
-          'error' => 'El usuario ya existe'
+          'error' => __('user.already_exists')
         ], 200);
       }
     }
@@ -117,7 +116,7 @@ class userController extends controller {
       if ($query->exists()) {
         response::json([
           'success' => false,
-          'error' => 'El email ya existe'
+          'error' => __('user.email_exists')
         ], 200);
       }
     }
@@ -136,7 +135,7 @@ class userController extends controller {
 
       if ($currentUserId && $currentUserId == $id) {
         // Si el admin se está editando a sí mismo, NO invalidar su sesión
-        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión",null, ['module' => 'user']);
+        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión", null, ['module' => 'user']);
       } else {
         // Invalidar todas las sesiones del usuario editado
         $cleaned = sessionCleanup::cleanByUserId($id);
@@ -147,13 +146,13 @@ class userController extends controller {
     response::success([
       'affected' => $affected,
       'sessions_invalidated' => $cleaned
-    ], 'Usuario actualizado');
+    ], __('user.update.success'));
   }
 
   // Override show para no devolver la contraseña
   function show($id) {
     $data = db::table('user')->find($id);
-    if (!$data) response::notFound('Usuario no encontrado');
+    if (!$data) response::notFound(__('user.not_found'));
 
     // Parsear config si es string JSON
     if (isset($data['config']) && is_string($data['config'])) {

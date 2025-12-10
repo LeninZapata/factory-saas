@@ -6,7 +6,7 @@ $router->group('/api/system', function($router) {
   // ✅ Limpiar sesiones expiradas - GET /api/system/cleanup-sessions
   $router->get('/cleanup-sessions', function() {
     $result = sessionCleanup::clean();
-    response::success($result, "Limpieza completada");
+    response::success($result, __('session.cleanup.success'));
   })->middleware('auth');
 
   // ✅ Estadísticas de sesiones - GET /api/system/sessions-stats

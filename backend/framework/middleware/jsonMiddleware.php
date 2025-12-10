@@ -6,7 +6,7 @@ class jsonMiddleware {
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
     if (strpos($contentType, 'application/json') === false) {
-      response::error('Content-Type debe ser application/json', 400);
+      response::error(__('middleware.json.content_type_required'), 400);
       return false;
     }
 
@@ -15,7 +15,7 @@ class jsonMiddleware {
     $data = json_decode($json, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-      response::error('JSON inválido: ' . json_last_error_msg(), 400);
+      response::error(__('middleware.json.invalid_json', ['error' => json_last_error_msg()]), 400);
       return false;
     }
 

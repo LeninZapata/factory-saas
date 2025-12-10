@@ -15,7 +15,7 @@ class extensionLoader {
 
     // Verificar que existe
     if (!file_exists($configFile)) {
-      response::error("Extension '$extensionName' not found", 404);
+      response::error(__('core.extension.not_found', ['extension' => $extensionName]), 404);
       return false;
     }
 
@@ -23,13 +23,13 @@ class extensionLoader {
 
     // Verificar que está habilitado
     if (!($config['enabled'] ?? false)) {
-      response::error("Extension '$extensionName' is disabled", 403);
+      response::error(__('core.extension.disabled', ['extension' => $extensionName]), 403);
       return false;
     }
 
     // Verificar que tiene backend
     if (!($config['backend'] ?? false)) {
-      response::error("Extension '$extensionName' has no backend", 400);
+      response::error(__('core.extension.no_backend', ['extension' => $extensionName]), 400);
       return false;
     }
 
