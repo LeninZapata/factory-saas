@@ -1,24 +1,24 @@
 class adminPermissions {
   // Inicializar permisos vacíos (nuevo usuario)
   static init(formId) {
-    const config = { 
-      permissions: { extensions: {} }, 
+    const config = {
+      permissions: { extensions: {} },
       preferences: { theme: 'light', language: 'es', notifications: true }
     };
-    setTimeout(() => this.render(config), 200);
+    setTimeout(() => this.render(config), 100);
   }
 
   // Cargar permisos existentes (editar)
   static load(formId, userData) {
-    const config = typeof userData.config === 'string' 
-      ? JSON.parse(userData.config) 
+    const config = typeof userData.config === 'string'
+      ? JSON.parse(userData.config)
       : (userData.config || {});
-    
-    const normalized = { 
+
+    const normalized = {
       permissions: config.permissions || { extensions: {} },
       preferences: config.preferences || { theme: 'light', language: 'es', notifications: true }
     };
-    
+
     setTimeout(() => this.render(normalized), 200);
   }
 
@@ -26,12 +26,12 @@ class adminPermissions {
   static render(config) {
     const container = document.getElementById('permissions-container');
     if (!container || !window.permissions) return;
-    
+
     // ✅ Obtener TODOS los extensions disponibles (sin filtrar por permisos del usuario actual)
     const allExtensions = this.getallExtensions();
-    
+
     logger.debug('ext:admin-permissions', `Renderizando selector con ${allExtensions.length} extensions`);
-    
+
     permissions.render('permissions-container', config, allExtensions);
   }
 

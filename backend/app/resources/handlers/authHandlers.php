@@ -24,8 +24,9 @@ class authHandlers {
     // Generar token
     $token = utils::token(64);
 
-    // Usar constante SESSION_TTL
-    $expiresAt = date('Y-m-d H:i:s', time() + SESSION_TTL);
+    // Calcular expiración
+    $expiresAt = time() + SESSION_TTL;
+    $expiresAtFormatted = date('Y-m-d H:i:s', $expiresAt);
 
     // Parsear config si es JSON string
     if (isset($user['config']) && is_string($user['config'])) {
@@ -35,7 +36,7 @@ class authHandlers {
     // Ocultar contraseña
     unset($user['pass']);
 
-    // Guardar sesión CON datos del usuario
+    // Guardar sesión con nombre optimizado
     self::saveSession($user, $token, $expiresAt);
 
     // Actualizar último acceso
@@ -52,9 +53,9 @@ class authHandlers {
       'data' => [
         'user' => $user,
         'token' => $token,
-        'expires_at' => $expiresAt,
-        'ttl' => SESSION_TTL, // Segundos
-        'ttl_ms' => SESSION_TTL_MS // Milisegundos para frontend
+        'expires_at' => $expiresAtFormatted,
+        'ttl' => SESSION_TTL,
+        'ttl_ms' => SESSION_TTL_MS
       ]
     ];
   }
@@ -67,10 +68,10 @@ class authHandlers {
       return ['success' => false, 'error' => 'Token no proporcionado'];
     }
 
-    // Eliminar sesión
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
-    if (file_exists($sessionFile)) {
-      unlink($sessionFile);
+    // Buscar y eliminar archivo de sesión
+    $deleted = self::deleteSessionByToken($token);
+
+    if ($deleted) {
       log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...'], ['module' => 'auth']);
     }
 
@@ -79,23 +80,64 @@ class authHandlers {
 
   // ============ MÉTODOS PRIVADOS HELPERS ============
 
-  // Guardar sesión con datos completos del usuario
+  /**
+   * Guardar sesión con nombre optimizado
+   * Formato: {expires_timestamp}_{user_id}_{token_short}.json
+   * 
+   * Ventajas:
+   * - Limpieza rápida sin leer archivos
+   * - Búsqueda por user_id con glob()
+   * - Ordenamiento natural por expiración
+   */
   private static function saveSession($user, $token, $expiresAt) {
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
+    $sessionsDir = STORAGE_PATH . '/sessions/';
 
-    if (!is_dir(dirname($sessionFile))) {
-      mkdir(dirname($sessionFile), 0755, true);
+    if (!is_dir($sessionsDir)) {
+      mkdir($sessionsDir, 0755, true);
     }
+
+    // Nombre optimizado: {timestamp}_{user_id}_{token_short}.json
+    $tokenShort = substr($token, 0, 16);
+    $filename = "{$expiresAt}_{$user['id']}_{$tokenShort}.json";
+    $sessionFile = $sessionsDir . $filename;
 
     file_put_contents($sessionFile, json_encode([
       'user_id' => $user['id'],
-      'user' => $user, // Guardamos el usuario completo
+      'user' => $user,
       'token' => $token,
-      'expires_at' => $expiresAt,
+      'expires_at' => date('Y-m-d H:i:s', $expiresAt),
+      'expires_timestamp' => $expiresAt,
       'ip_address' => request::ip(),
       'user_agent' => request::userAgent(),
       'created_at' => date('Y-m-d H:i:s')
     ], JSON_UNESCAPED_UNICODE));
   }
 
+  /**
+   * Eliminar sesión por token
+   * Busca el archivo que contiene el token
+   */
+  private static function deleteSessionByToken($token) {
+    $sessionsDir = STORAGE_PATH . '/sessions/';
+
+    if (!is_dir($sessionsDir)) {
+      return false;
+    }
+
+    // Buscar archivo que contiene el token (primeros 16 chars)
+    $tokenShort = substr($token, 0, 16);
+    $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
+    $files = glob($pattern);
+
+    foreach ($files as $file) {
+      // Verificar que el token completo coincida
+      $session = json_decode(file_get_contents($file), true);
+      if ($session && $session['token'] === $token) {
+        unlink($file);
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

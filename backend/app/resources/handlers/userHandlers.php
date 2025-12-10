@@ -2,7 +2,10 @@
 // userHandlers - Handlers personalizados para user
 class userHandlers {
 
-  // Profile optimizado - SIN consulta a BD
+  /**
+   * Profile optimizado - SIN consulta a BD
+   * Usa sesión del archivo para obtener datos del usuario
+   */
   static function profile($params) {
     $token = request::bearerToken();
 
@@ -18,15 +21,12 @@ class userHandlers {
     }
 
     // Verificar expiración
-    if (strtotime($session['expires_at']) < time()) {
+    if ($session['expires_timestamp'] < time()) {
       self::deleteSession($token);
       return ['success' => false, 'error' => 'Token expirado'];
     }
 
-    // El usuario ya está en la sesión (desde login)
-    $user = $session['user'];
-
-    return ['success' => true, 'data' => $user];
+    return ['success' => true, 'data' => $session['user']];
   }
 
   // Actualizar config del usuario
@@ -66,24 +66,37 @@ class userHandlers {
 
   // ============ MÉTODOS PRIVADOS HELPERS ============
 
-  // Obtener sesión completa desde archivo
+  /**
+   * Obtener sesión desde archivo optimizado
+   * Busca usando patrón con primeros 16 chars del token
+   */
   private static function getSessionFromToken($token) {
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
+    $sessionsDir = STORAGE_PATH . '/sessions/';
 
-    if (!file_exists($sessionFile)) {
+    if (!is_dir($sessionsDir)) {
       return null;
     }
 
-    $session = json_decode(file_get_contents($sessionFile), true);
+    $tokenShort = substr($token, 0, 16);
+    $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
+    $files = glob($pattern);
 
-    if (!$session || !isset($session['user_id'])) {
+    if (empty($files)) {
+      return null;
+    }
+
+    $session = json_decode(file_get_contents($files[0]), true);
+
+    if (!$session || !isset($session['user_id']) || $session['token'] !== $token) {
       return null;
     }
 
     return $session;
   }
 
-  // Actualizar datos del usuario en sesión
+  /**
+   * Actualizar datos del usuario en sesión
+   */
   private static function updateSessionUserData($token, $updates) {
     $session = self::getSessionFromToken($token);
 
@@ -94,18 +107,33 @@ class userHandlers {
       $session['user'][$key] = $value;
     }
 
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
-    file_put_contents($sessionFile, json_encode($session, JSON_UNESCAPED_UNICODE));
+    // Guardar de nuevo (mantener nombre de archivo)
+    $tokenShort = substr($token, 0, 16);
+    $pattern = STORAGE_PATH . "/sessions/*_*_{$tokenShort}.json";
+    $files = glob($pattern);
+
+    if (!empty($files)) {
+      file_put_contents($files[0], json_encode($session, JSON_UNESCAPED_UNICODE));
+    }
 
     return true;
   }
 
-  // Eliminar sesión
+  /**
+   * Eliminar sesión
+   */
   private static function deleteSession($token) {
-    $sessionFile = STORAGE_PATH . "/sessions/{$token}.json";
-    if (file_exists($sessionFile)) {
-      unlink($sessionFile);
+    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $tokenShort = substr($token, 0, 16);
+    $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
+    $files = glob($pattern);
+
+    foreach ($files as $file) {
+      $session = json_decode(file_get_contents($file), true);
+      if ($session && $session['token'] === $token) {
+        unlink($file);
+        return;
+      }
     }
   }
-
 }

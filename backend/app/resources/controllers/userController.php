@@ -128,7 +128,7 @@ class userController extends controller {
 
     $affected = db::table('user')->where('id', $id)->update($data);
 
-    // ✅ INVALIDAR SESIONES si se modificó el config (permisos)
+    // INVALIDAR SESIONES si se modificó el config (permisos)
     $cleaned = 0;
     if (isset($data['config'])) {
       // ⚠️ NO invalidar sesión del usuario autenticado actual (quien está editando)
@@ -136,11 +136,11 @@ class userController extends controller {
 
       if ($currentUserId && $currentUserId == $id) {
         // Si el admin se está editando a sí mismo, NO invalidar su sesión
-        log::info('UserController', "Usuario {$id} se editó a sí mismo, no se invalida su sesión", ['module' => 'user']);
+        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión",null, ['module' => 'user']);
       } else {
         // Invalidar todas las sesiones del usuario editado
         $cleaned = sessionCleanup::cleanByUserId($id);
-        log::info('UserController', "Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", ['module' => 'user']);
+        log::info("Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", null, ['module' => 'user']);
       }
     }
 

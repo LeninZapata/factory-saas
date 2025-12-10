@@ -3,8 +3,9 @@ class api {
   static headers = { 'Content-Type': 'application/json', ...window.appConfig?.api?.headers };
 
   static async request(endpoint, options = {}) {
-    // ✅ Normalizar URL: eliminar slashes duplicados (excepto en protocolo)
+    // Normalizar URL: eliminar slashes duplicados (excepto en protocolo)
     let fullURL = `${this.baseURL}${endpoint}`;
+    console.log(`fullURL:`, fullURL);
 
     // Separar protocolo del resto
     const protocolMatch = fullURL.match(/^(https?:\/\/)/);
@@ -32,6 +33,9 @@ class api {
     }
 
     try {
+      console.log(`fullURL:`, fullURL);
+      console.log(`options:`, options);
+      console.log(`headers:`, headers);
       const res = await fetch(fullURL, { ...options, headers });
 
       // Manejo mejorado de 401

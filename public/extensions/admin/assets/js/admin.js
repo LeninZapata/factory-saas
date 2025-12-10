@@ -13,7 +13,24 @@ class admin {
     this.currentId = id;
     const data = await this.get(id);
     if (data) {
-      form.fill(formId, { username: data.user, email: data.email, role: data.role });
+      // Parsear config si viene como string
+      const config = typeof data.config === 'string' ? JSON.parse(data.config) : (data.config || {});
+
+      // Llenar campos básicos y preferencias
+      const formData = {
+        username: data.user,
+        email: data.email,
+        role: data.role,
+        preferences_theme: config.preferences?.theme || 'light',
+        preferences_language: config.preferences?.language || 'es',
+        preferences_notifications: config.preferences?.notifications ? 'on' : ''
+      };
+
+      logger.debug('ext:admin', 'Llenando formulario con datos:', formData);
+
+      form.fill(formId, formData);
+
+      // Cargar permisos
       if (window.adminPermissions) adminPermissions.load(formId, data);
     }
   }
@@ -23,15 +40,33 @@ class admin {
     const validation = form.validate(formId);
     if (!validation.success) return toast.error(`❌ ${validation.message}`);
 
+    logger.debug('ext:admin', 'Datos del formulario:', validation.data);
+
+    // Construir config combinando permisos y preferencias
+    const baseConfig = window.adminPermissions ? adminPermissions.getData() : { permissions: { extensions: {} }};
+
+    const preferences = {
+      theme: validation.data.preferences_theme || 'light',
+      language: validation.data.preferences_language || 'es',
+      notifications: validation.data.preferences_notifications === 'on' || validation.data.preferences_notifications === true
+    };
+
+    const config = {
+      ...baseConfig,
+      preferences
+    };
+
+    logger.debug('ext:admin', 'Config final:', config);
+
     const data = {
       user: validation.data.username,
       email: validation.data.email,
       role: validation.data.role,
       pass: validation.data.password || undefined,
-      config: window.adminPermissions ? adminPermissions.getData() : {}
+      config
     };
 
-    const result = this.currentId 
+    const result = this.currentId
       ? await this.update(this.currentId, data)
       : await this.create(data);
 

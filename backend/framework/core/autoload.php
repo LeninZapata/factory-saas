@@ -2,11 +2,12 @@
 spl_autoload_register(function ($class) {
   $classLower = strtolower($class);
 
-  // Mapa estático de clases más utilizadas (búsqueda O(1) ultra rápida)
+  // Mapa estático de clases más utilizadas
   static $classMap = [
     // Helpers (framework)
     'db' => FRAMEWORK_PATH . '/helpers/db.php',
     'log' => FRAMEWORK_PATH . '/helpers/log.php',
+    'logreader' => FRAMEWORK_PATH . '/helpers/logReader.php',
     'request' => FRAMEWORK_PATH . '/helpers/request.php',
     'response' => FRAMEWORK_PATH . '/helpers/response.php',
     'utils' => FRAMEWORK_PATH . '/helpers/utils.php',
@@ -35,13 +36,12 @@ spl_autoload_register(function ($class) {
     'clienthandlers' => APP_PATH . '/resources/handlers/clientHandlers.php',
   ];
 
-  // Búsqueda rápida en el mapa estático
   if (isset($classMap[$classLower])) {
     require_once $classMap[$classLower];
     return;
   }
 
-  // Búsqueda dinámica (fallback para extension y clases no mapeadas)
+  // Búsqueda dinámica (fallback)
 
   // Helpers (framework)
   $helperFile = FRAMEWORK_PATH . '/helpers/' . $classLower . '.php';
@@ -57,14 +57,14 @@ spl_autoload_register(function ($class) {
     return;
   }
 
-  // Controllers personalizados (app/resources/controllers/)
+  // Controllers personalizados
   $controllerFile = APP_PATH . '/resources/controllers/' . $class . '.php';
   if (file_exists($controllerFile)) {
     require_once $controllerFile;
     return;
   }
 
-  // Handlers personalizados (app/resources/handlers/)
+  // Handlers personalizados
   $handlerFile = APP_PATH . '/resources/handlers/' . $class . '.php';
   if (file_exists($handlerFile)) {
     require_once $handlerFile;
@@ -78,14 +78,14 @@ spl_autoload_register(function ($class) {
     return;
   }
 
-  // Services principales (framework)
+  // Services principales
   $serviceFile = FRAMEWORK_PATH . '/services/' . $classLower . '.php';
   if (file_exists($serviceFile)) {
     require_once $serviceFile;
     return;
   }
 
-  // Buscar en integrations (ai/deepseek, email/plusemail, etc) (framework)
+  // Integrations
   $servicesDir = FRAMEWORK_PATH . '/services/integrations/';
   if (is_dir($servicesDir)) {
     foreach (scandir($servicesDir) as $category) {

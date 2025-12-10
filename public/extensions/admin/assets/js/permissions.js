@@ -172,7 +172,29 @@ class permissions {
    */
   static renderMenuItem(menuItem, extension, menusPerms, allMenus, selectorId) {
     const menuPerms = menusPerms[menuItem.id] || {};
-    const isMenuChecked = allMenus || menuPerms === true || (typeof menuPerms === 'object' && menuPerms.enabled !== false);
+    
+    // Determinar si el menu debe estar checked
+    let isMenuChecked = false;
+    
+    if (allMenus) {
+      // Si "Todos los menús" está marcado
+      isMenuChecked = true;
+    } else if (menuPerms === true) {
+      // Menú simple sin tabs
+      isMenuChecked = true;
+    } else if (typeof menuPerms === 'object') {
+      // Menú con tabs
+      if (menuPerms.tabs === '*') {
+        // Todas las tabs marcadas
+        isMenuChecked = true;
+      } else if (menuPerms.tabs && typeof menuPerms.tabs === 'object') {
+        // Verificar si hay al menos 1 tab en true
+        const hasAnyTabChecked = Object.values(menuPerms.tabs).some(value => value === true);
+        isMenuChecked = hasAnyTabChecked;
+        
+        logger.debug('p:permissions', `Menú "${menuItem.id}": hasAnyTabChecked=${hasAnyTabChecked}, tabs:`, menuPerms.tabs);
+      }
+    }
     
     // Obtener tabs de la vista
     const cacheKey = `${extension.name}:${menuItem.view}`;

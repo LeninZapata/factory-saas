@@ -1,5 +1,4 @@
 por donde me quede:
-☐ sistema de session revisa como puedes obtimizarla inclusive para con un endpoint puedas ver las sessiones
 ☐ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta
 ☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
 ☐ agrega las reglas de copiloto para la AI en el proyecto
@@ -9,13 +8,6 @@ por donde me quede:
 ☐ Repetibles tipo acordions
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
-✔ Log de backend para ver errores a nivel de vistas @done(09-12-2025 12:23)
- _ que se pueda separar estos logs por usuario/años/mes/dia. entonces se podria ver todo lo que pasa
- _ que estos los se puede ver visualmente y clasificar estos logs son en archivos de texto .log
- _ que se pueda buscar en estos logs por palabras claves o errorse comunes.
- _ REVISAR como hacer para tener los filtros o separaciones tipo bot/año/mes o año/mes/dia/bot entonces
- hay que ver como la AI te resuelve esto. y basado en esto filtrarlo con una router para poder
- verlo en un interface.
 ☐ Por ejemplo si el modal se le agrega boton como de guardar como se le agrega que tiene que guardar el formularo actual
 actualmente el modal y si adentro hay un form pues hace un lastst para ver el ultimo form y guardar de eso
 pero si se pone el boton en el modal como se haria para que reacione a ese formulario.
@@ -23,7 +15,7 @@ pero si se pone el boton en el modal como se haria para que reacione a ese formu
  _ que se pueda editar los textos de los idiomas del backend
 ___
 ☐ persistencia en widgets posicion
-☐ crear la vista de endpoints para que se pueda ver los endpoints creados en el sistema
+☐ crear la vista de endpoints para que se pueda ver los  eendpoints creadosn el sistema
 ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
 y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
 ☐ recuerda la conversacion que tienes con AI donde decia que habia que hacer unos pequeños cambios
@@ -38,6 +30,4 @@ o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuar
 ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
 ☐ En el condicionaal aunq funciona bien pero en consola log envia un error cada vez hace condiciones es como que buscar unos campos
 y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.
-✔ los hooks estan que filtran html pero no los demas tipos de campos como los inputs, selects, textareas, vistas o no se parece @done(08-12-2025 23:58)
-que solo esta que filtrar html.
 ☐ idioma desde el core de cada backend y frontend...

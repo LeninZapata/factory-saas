@@ -35,11 +35,18 @@ class router {
     return $this;
   }
 
-  // Agregar ruta
+  // Agregar ruta (soporta array de paths)
   private function add($method, $path, $handler) {
-    $route = new route($method, $this->prefix . $path, $handler);
-    if ($this->groupMiddleware) $route->middleware($this->groupMiddleware);
-    $this->routes[$method][$this->prefix . $path] = $route;
+    $paths = is_array($path) ? $path : [$path];
+    $route = null;
+
+    foreach ($paths as $p) {
+      $fullPath = $this->prefix . $p;
+      $route = new route($method, $fullPath, $handler);
+      if ($this->groupMiddleware) $route->middleware($this->groupMiddleware);
+      $this->routes[$method][$fullPath] = $route;
+    }
+
     return $route;
   }
 
