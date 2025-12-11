@@ -38,7 +38,7 @@ class api {
           logger.warn('core:api', 'Token inválido (401), cerrando sesión');
           auth.handleExpiredSession();
         }
-        throw new Error('No autorizado');
+        throw new Error(__('core.api.unauthorized'));
       }
 
       if (!res.ok) {
@@ -68,9 +68,9 @@ class api {
 
             // Intentar extraer mensaje útil
             const errorMatch = text.match(/<b>(Warning|Fatal error|Error)<\/b>:([^<]+)/);
-            const errorMsg = errorMatch ? errorMatch[2].trim() : 'JSON corrupto con HTML mezclado';
+            const errorMsg = errorMatch ? errorMatch[2].trim() : __('core.api.json_corrupted');
 
-            throw new Error(`Backend Error: ${errorMsg}`);
+            throw new Error(`${__('core.api.backend_error')}: ${errorMsg}`);
           }
         } else if (contentType.includes('text/html')) {
           // Es HTML puro
@@ -86,9 +86,9 @@ class api {
           console.groupEnd();
 
           const errorMatch = htmlError.match(/<b>(Warning|Fatal error|Error)<\/b>:([^<]+)/);
-          const errorMsg = errorMatch ? errorMatch[2].trim() : 'Error en el backend (HTML)';
+          const errorMsg = errorMatch ? errorMatch[2].trim() : __('core.api.backend_error');
 
-          throw new Error(`Backend Error: ${errorMsg}`);
+          throw new Error(`${__('core.api.backend_error')}: ${errorMsg}`);
         } else {
           // Otro tipo de contenido
           const textError = await res.text();
@@ -120,7 +120,7 @@ class api {
           console.log('--- FIN RESPUESTA ---');
           console.groupEnd();
 
-          throw new Error('Backend devolvió JSON corrupto (contiene HTML/PHP warnings)');
+          throw new Error(__('core.api.json_corrupted_success'));
         }
       } else if (contentType.includes('text/html')) {
         // Backend devolvió HTML cuando esperábamos JSON
@@ -135,7 +135,7 @@ class api {
         console.log('--- FIN HTML ---');
         console.groupEnd();
 
-        throw new Error('Backend devolvió HTML en lugar de JSON');
+        throw new Error(__('core.api.html_instead_json'));
       } else {
         // Otro tipo de contenido
         const text = await res.text();
@@ -146,7 +146,7 @@ class api {
         try {
           return JSON.parse(text);
         } catch {
-          throw new Error(`Respuesta no es JSON: ${contentType}`);
+          throw new Error(`${__('core.api.invalid_content_type')}: ${contentType}`);
         }
       }
 

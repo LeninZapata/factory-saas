@@ -24,7 +24,7 @@ class tabs {
 
     // Detectar overflow para mostrar degradado
     this.checkOverflow(container);
-    
+
     // Recheck on window resize
     window.addEventListener('resize', () => this.checkOverflow(container));
 
@@ -48,45 +48,45 @@ class tabs {
       const scrollLeft = tabsHeader.scrollLeft;
       const scrollWidth = tabsHeader.scrollWidth;
       const clientWidth = tabsHeader.clientWidth;
-      
+
       // Hay overflow si el contenido es más ancho que el contenedor
       const hasOverflow = scrollWidth > clientWidth;
-      
+
       if (!hasOverflow) {
         tabsHeader.classList.remove('has-overflow-left', 'has-overflow-right');
         return;
       }
-      
+
       // Detectar si está al inicio (no hay scroll a la izquierda)
       const isAtStart = scrollLeft <= 5;
-      
+
       // Detectar si está al final (no hay más contenido a la derecha)
       const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 5;
-      
+
       // Agregar/quitar clases según posición
       if (isAtStart) {
         tabsHeader.classList.remove('has-overflow-left');
       } else {
         tabsHeader.classList.add('has-overflow-left');
       }
-      
+
       if (isAtEnd) {
         tabsHeader.classList.remove('has-overflow-right');
       } else {
         tabsHeader.classList.add('has-overflow-right');
       }
     };
-    
+
     // Ejecutar al cargar
     updateOverflow();
-    
+
     // Actualizar en scroll
     tabsHeader.addEventListener('scroll', updateOverflow);
   }
 
   static async preloadAllTabs(tabsData, container) {
     const tabsToPreload = tabsData.tabs.slice(1);
-    
+
     for (const tab of tabsToPreload) {
       try {
         await this.loadTabContentSilent(tabsData, tab.id, container);
@@ -101,7 +101,7 @@ class tabs {
     if (!tab) return;
 
     const cacheKey = `${tabsData.id}-${tabId}`;
-    
+
     if (this.tabCache.has(cacheKey)) {
       return;
     }
@@ -145,7 +145,7 @@ class tabs {
     const tab = tabsData.tabs.find(t => t.id === tabId);
 
     if (!tab) {
-      tabContent.innerHTML = '<div class="tab-error">Tab no encontrado</div>';
+      tabContent.innerHTML = `<div class="tab-error">${__('com.tabs.not_found')}</div>`;
       return;
     }
 
@@ -158,7 +158,7 @@ class tabs {
       return;
     }
 
-    tabContent.innerHTML = '<div class="tab-loading">Cargando...</div>';
+    tabContent.innerHTML = `<div class="tab-loading">${__('com.tabs.loading')}</div>`;
 
     try {
       const renderedContent = this.renderContent(tab.content);
@@ -175,7 +175,7 @@ class tabs {
 
     } catch (error) {
       logger.error('com:tabs', `Error cargando tab ${tabId}:`, error);
-      tabContent.innerHTML = '<div class="tab-error">Error cargando contenido</div>';
+      tabContent.innerHTML = `<div class="tab-error">${__('com.tabs.error_loading')}</div>`;
     }
   }
 
@@ -224,7 +224,7 @@ class tabs {
         await form.load(formJson, formContainer);
       } catch (error) {
         logger.error('com:tabs', 'Error cargando formulario:', error);
-        formContainer.innerHTML = `<div class="error">Error: ${formJson}</div>`;
+        formContainer.innerHTML = `<div class="error">${__('com.tabs.error_form', { form: formJson })}</div>`;
       }
     }
 
@@ -244,11 +244,11 @@ class tabs {
           await window[componentName].render(config, compContainer);
         } else {
           logger.warn('com:tabs', `Componente ${componentName} no encontrado`);
-          compContainer.innerHTML = `<div class="error">Componente '${componentName}' no disponible</div>`;
+          compContainer.innerHTML = `<div class="error">${__('com.tabs.component_not_available', { component: componentName })}</div>`;
         }
       } catch (error) {
         logger.error('com:tabs', `Error cargando componente ${componentName}:`, error);
-        compContainer.innerHTML = `<div class="error">Error en componente: ${componentName}</div>`;
+        compContainer.innerHTML = `<div class="error">${__('com.tabs.error_component', { component: componentName })}</div>`;
       }
     }
   }

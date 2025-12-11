@@ -14,28 +14,24 @@
   // ============================================
   // Como .htaccess redirige internamente a public/,
   // BASE_URL NO debe incluir /public/
-  
+
   var pathname = window.location.pathname;
-  
+
   // Remover index.html si está al final
   if (pathname.endsWith('/index.html')) {
     pathname = pathname.replace('/index.html', '/');
   }
-  
+
   // Remover /public/ si está en la ruta (no debería estar por .htaccess)
   pathname = pathname.replace('/public/', '/');
-  
+
   // Si termina en /, perfecto. Si no, agregar /
   if (!pathname.endsWith('/')) {
     pathname += '/';
   }
-  
+
   var BASE_URL = pathname;
   var FRAMEWORK_URL = BASE_URL + 'framework/';
-
-  console.log('🏠 Base URL:', BASE_URL);
-  console.log('🔧 Framework:', FRAMEWORK_URL);
-  console.log('📍 Pathname original:', window.location.pathname);
 
   var IS_DEV =  window.location.hostname === 'localhost' ||
                 window.location.hostname === '127.0.0.1' ||
@@ -48,6 +44,7 @@
                 window.location.port === '8080';
 
   var VERSION = IS_DEV ? `dev-${Date.now()}` : '1.0.0';
+  console.log(`App Version: ${VERSION}`);
 
   const script = document.createElement('script');
   script.type = 'module';

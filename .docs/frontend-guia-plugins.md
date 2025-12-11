@@ -665,6 +665,79 @@ Similar a los formularios, puedes cargar componentes dinámicamente:
 }
 ```
 
+### Formulario con repetibles anidados (Nested Repeatable):
+
+```json
+{
+  "id": "proyectos-form",
+  "title": "Gestión de Proyectos",
+  "fields": [
+    {
+      "name": "proyectos",
+      "label": "Proyectos",
+      "type": "repeatable",
+      "addButtonText": "➕ Agregar Proyecto",
+      "fields": [
+        {
+          "name": "nombre_proyecto",
+          "label": "Nombre del Proyecto",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "tareas",
+          "label": "Tareas",
+          "type": "repeatable",
+          "addButtonText": "➕ Agregar Tarea",
+          "fields": [
+            {
+              "name": "nombre_tarea",
+              "label": "Nombre de la Tarea",
+              "type": "text"
+            },
+            {
+              "name": "completada",
+              "label": "Completada",
+              "type": "checkbox"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Cargar datos en repetibles anidados:**
+```javascript
+// Estructura de datos JSON
+const mockData = {
+  proyectos: [
+    {
+      nombre_proyecto: "Sistema Web",
+      tareas: [
+        { nombre_tarea: "Diseño", completada: true },
+        { nombre_tarea: "Desarrollo", completada: false }
+      ]
+    },
+    {
+      nombre_proyecto: "App Mobile",
+      tareas: [
+        { nombre_tarea: "Prototipo", completada: true }
+      ]
+    }
+  ]
+};
+
+// Cargar datos en el formulario
+form.fill('proyectos-form', mockData);
+```
+
+**💡 Notas:**
+- Soporta **infinitos niveles** de anidación
+- Los datos se cargan **secuencialmente** con delays automáticos
+- Los paths se construyen automáticamente: `proyectos[0].tareas[1].nombre_tarea`
+
 ### Formulario con agrupación (Grouper - Acordeón):
 
 ```json

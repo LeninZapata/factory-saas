@@ -79,11 +79,11 @@ class view {
 
         if (!response.ok) {
           if (container) {
-            throw new Error(`Vista no encontrada: ${viewName}`);
+            throw new Error(__('core.view.not_found', { view: viewName }));
           }
           const found = await this.findViewInExtensions(viewName, container);
           if (!found) {
-            throw new Error(`Vista no encontrada: ${viewName}`);
+            throw new Error(__('core.view.not_found', { view: viewName }));
           }
           return;
         }
@@ -271,7 +271,7 @@ class view {
     if (viewData.layout) {
       document.body.classList.add(`layout-${viewData.layout}`);
     }
-    
+
     const hooksHTML = this.processHooksForHTML(viewData);
     content.innerHTML = this.generateViewHTML(viewData, hooksHTML);
     this.setupView(viewData);
@@ -286,11 +286,11 @@ class view {
   static generateViewHTML(viewData, hooksHTML = null) {
     const hooksBeforeHTML = hooksHTML?.before || '';
     const hooksAfterHTML = hooksHTML?.after || '';
-    
+
     return `
       <div class="view-container" data-view="${viewData.id}">
         ${hooksBeforeHTML}
-        
+
         ${viewData.header ? `
           <div class="view-header">
             ${viewData.header.title ? `<h1>${viewData.header.title}</h1>` : ''}
@@ -311,7 +311,7 @@ class view {
             ${this.renderContent(viewData.statusbar)}
           </div>
         ` : ''}
-        
+
         ${hooksAfterHTML}
       </div>
     `;
@@ -479,25 +479,25 @@ class view {
 
   static processHooksForHTML(viewData) {
     if (!viewData.id || !window.hook) return null;
-    
+
     const allHooks = hook.execute(`hook_${viewData.id}`, []);
     if (allHooks.length === 0) return null;
-    
+
     logger.debug('core:view', `Procesando ${allHooks.length} hooks para ${viewData.id}`);
-    
+
     const hooksBeforeView = allHooks.filter(h => h.context === 'view' && h.position === 'before');
     const hooksAfterView = allHooks.filter(h => h.context === 'view' && h.position === 'after');
     const hooksForTabs = allHooks.filter(h => h.context === 'tab');
     const hooksForContent = allHooks.filter(h => h.context === 'content' || !h.context);
-    
+
     if (hooksForTabs.length > 0 && Array.isArray(viewData.tabs)) {
       this.mergeHooksIntoTabs(viewData, hooksForTabs);
     }
-    
+
     if (hooksForContent.length > 0 && Array.isArray(viewData.content)) {
       this.mergeHooksIntoContent(viewData, hooksForContent);
     }
-    
+
     return {
       before: this.generateHooksHTML(hooksBeforeView),
       after: this.generateHooksHTML(hooksAfterView)
@@ -506,9 +506,9 @@ class view {
 
   static generateHooksHTML(hooks) {
     if (!hooks || hooks.length === 0) return '';
-    
+
     hooks.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
+
     return hooks.map(hook => {
       if (hook.type === 'html') {
         return `<div id="${hook.id}" class="hook-item hook-html">${hook.content || ''}</div>`;
@@ -523,16 +523,16 @@ class view {
   static async renderHookComponents(viewContainer) {
     const componentHooks = viewContainer.querySelectorAll('.hook-component[data-component]');
     if (componentHooks.length === 0) return;
-    
+
     logger.debug('core:view', `Renderizando ${componentHooks.length} componentes de hooks`);
-    
+
     for (const hookElement of componentHooks) {
       const componentName = hookElement.dataset.component;
       const configStr = hookElement.dataset.config || '{}';
-      
+
       try {
         const config = JSON.parse(configStr.replace(/&quot;/g, '"'));
-        
+
         if (window[componentName]?.render) {
           await window[componentName].render(config, hookElement);
           logger.debug('core:view', `Componente hook renderizado: ${componentName}`);
@@ -549,7 +549,7 @@ class view {
 
   static mergeHooksIntoTabs(viewData, hooks) {
     const hooksByTab = {};
-    
+
     hooks.forEach(hook => {
       const target = hook.target;
       if (target) {
@@ -557,22 +557,22 @@ class view {
         hooksByTab[target].push(hook);
       }
     });
-    
+
     viewData.tabs = viewData.tabs.map(tab => {
       const tabHooks = hooksByTab[tab.id];
-      
+
       if (tabHooks && tabHooks.length > 0 && Array.isArray(tab.content)) {
         logger.debug('core:view', `Mezclando ${tabHooks.length} hooks en tab "${tab.id}"`);
-        
+
         const existingContent = tab.content.map(item => ({ order: item.order || 999, ...item }));
         const hooksWithOrder = tabHooks.map(hook => ({ order: hook.order || 999, ...hook }));
         const mixedContent = [...hooksWithOrder, ...existingContent];
-        
+
         mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
-        
+
         return { ...tab, content: mixedContent };
       }
-      
+
       return tab;
     });
   }
@@ -581,9 +581,9 @@ class view {
     const existingContent = viewData.content.map(item => ({ order: item.order || 999, ...item }));
     const hooksWithOrder = hooks.map(hook => ({ order: hook.order || 999, ...hook }));
     const mixedContent = [...hooksWithOrder, ...existingContent];
-    
+
     mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
+
     viewData.content = mixedContent;
     logger.debug('core:view', `${hooks.length} hooks mezclados en content`);
   }

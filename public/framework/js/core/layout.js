@@ -14,17 +14,17 @@ class layout {
         <div class="layout">
           <header class="header" id="header">
             <button class="menu-toggle" id="menu-toggle" style="display: none;">☰</button>
-            <span>Sistema</span>
+            <span>${__('core.layout.system_title')}</span>
           </header>
           <div class="sidebar-overlay" id="sidebar-overlay"></div>
           <aside class="sidebar" id="sidebar"></aside>
           <main class="content" id="content">
             <div class="view-container">
               <div class="welcome-message">
-                <p>Cargando...</p>
+                <p>${__('core.layout.loading')}</p>
               </div>
             </div>
-            <footer class="footer">© 2024 - Sistema</footer>
+            <footer class="footer">${__('core.layout.footer')}</footer>
           </main>
         </div>
       `;

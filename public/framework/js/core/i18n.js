@@ -34,10 +34,19 @@ class i18n {
       try {
         const frameworkPath = window.appConfig?.frameworkPath || 'framework';
         const cacheBuster = `?v=${window.VERSION}`;
-        const response = await fetch(`${window.BASE_URL}${frameworkPath}/js/lang/${lang}.json${cacheBuster}`);
+        const url = `${window.BASE_URL}${frameworkPath}/js/lang/${lang}.json${cacheBuster}`;
+
+        logger.info('core:i18n', `📥 Cargando idioma desde: ${url}`);
+
+        const response = await fetch(url);
 
         if (response.ok) {
           data = await response.json();
+
+          logger.success('core:i18n', `✅ Idioma ${lang} cargado exitosamente`);
+          logger.info('core:i18n', `📊 Total de keys cargadas: ${Object.keys(data).length}`);
+          logger.debug('core:i18n', `🔑 Primeras 10 keys:`, Object.keys(data).slice(0, 10));
+
           cache.set(cacheKey, data, 60 * 60 * 1000);
         } else {
           logger.warn('core:i18n', `Idioma ${lang} no encontrado`);
@@ -47,9 +56,13 @@ class i18n {
         logger.error('core:i18n', 'Error cargando idioma core:', error);
         return;
       }
+    } else {
+      logger.info('core:i18n', `♻️ Idioma ${lang} cargado desde caché`);
+      logger.debug('core:i18n', `📊 Keys en caché: ${Object.keys(data).length}`);
     }
 
     this.translations.set(lang, data);
+    logger.success('core:i18n', `✓ Idioma ${lang} disponible para uso`);
   }
 
   static async loadExtensionLang(extensionName, lang) {
@@ -99,6 +112,12 @@ class i18n {
     if (!translation) {
       const coreData = this.translations.get(lang);
       translation = coreData?.[key];
+
+      // Log de debug cuando se busca una key
+      if (!translation && !key.startsWith('i18n:')) {
+        logger.warn('core:i18n', `❌ Key no encontrada: "${key}" (idioma: ${lang})`);
+        logger.debug('core:i18n', `📋 Keys disponibles en core:`, coreData ? Object.keys(coreData).length : 0);
+      }
     }
 
     // Fallback a idioma por defecto

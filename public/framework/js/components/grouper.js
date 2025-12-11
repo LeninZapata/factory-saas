@@ -15,8 +15,8 @@ class grouper {
       return;
     }
 
-    const html = mode === 'linear' ? 
-      this.renderLinear(grouperId, config) : 
+    const html = mode === 'linear' ?
+      this.renderLinear(grouperId, config) :
       this.renderTabs(grouperId, config);
 
     container.innerHTML = html;
@@ -39,7 +39,7 @@ class grouper {
 
   static async loadDynamicForms(container) {
     const formContainers = container.querySelectorAll('.dynamic-form[data-form-json]');
-    
+
     if (formContainers.length === 0) {
       return;
     }
@@ -50,7 +50,7 @@ class grouper {
         await form.load(formJson, formContainer);
       } catch (error) {
         logger.error('com:grouper', `Error cargando formulario ${formJson}:`, error);
-        formContainer.innerHTML = `<div class="error" style="padding: 1rem; background: #fee; border: 1px solid #fcc; border-radius: 0.5rem;">Error cargando formulario: ${formJson}</div>`;
+        formContainer.innerHTML = `<div class="error" style="padding: 1rem; background: #fee; border: 1px solid #fcc; border-radius: 0.5rem;">${__('com.grouper.error_loading_form', { form: formJson })}</div>`;
       }
     }
   }
@@ -99,14 +99,14 @@ class grouper {
 
   static bindEvents(grouperId) {
     const container = document.getElementById(grouperId);
-    
+
     if (!container) {
       logger.error('com:grouper', `Container ${grouperId} no encontrado al bindear eventos`);
       return;
     }
 
     const instance = this.instances.get(grouperId);
-    
+
     if (!instance) {
       logger.error('com:grouper', `Instancia ${grouperId} no encontrada al bindear eventos`);
       return;
@@ -126,7 +126,7 @@ class grouper {
       header.addEventListener('click', () => {
         const content = document.getElementById(header.dataset.toggle);
         const section = header.closest('.grouper-section');
-        
+
         if (!content) {
           logger.error('com:grouper', `Content no encontrado para toggle: ${header.dataset.toggle}`);
           return;
@@ -150,7 +150,7 @@ class grouper {
 
     // Detectar overflow para mostrar degradado
     this.checkTabsOverflow(grouperId, container);
-    
+
     // Recheck on window resize
     window.addEventListener('resize', () => this.checkTabsOverflow(grouperId, container));
 
@@ -160,16 +160,16 @@ class grouper {
 
         tabButtons.forEach(btn => btn.classList.remove('active'));
         tabPanels.forEach(panel => panel.classList.remove('active'));
-        
+
         button.classList.add('active');
-        
+
         // Scroll suave al tab activo si está fuera de vista
         button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        
+
         const targetPanel = container.querySelector(`[data-panel-index="${tabIndex}"]`);
         if (targetPanel) {
           targetPanel.classList.add('active');
-          
+
           // Cargar formularios dinámicos al cambiar de tab
           this.loadDynamicForms(targetPanel);
         } else {
@@ -182,43 +182,43 @@ class grouper {
   static checkTabsOverflow(grouperId, container) {
     const tabsHeader = container.querySelector('.grouper-tabs-header');
     if (!tabsHeader) return;
-    
+
     const updateOverflow = () => {
       const scrollLeft = tabsHeader.scrollLeft;
       const scrollWidth = tabsHeader.scrollWidth;
       const clientWidth = tabsHeader.clientWidth;
-      
+
       // Hay overflow si el contenido es más ancho que el contenedor
       const hasOverflow = scrollWidth > clientWidth;
-      
+
       if (!hasOverflow) {
         tabsHeader.classList.remove('has-overflow-left', 'has-overflow-right');
         return;
       }
-      
+
       // Detectar si está al inicio
       const isAtStart = scrollLeft <= 5;
-      
+
       // Detectar si está al final
       const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 5;
-      
+
       // Agregar/quitar clases según posición
       if (isAtStart) {
         tabsHeader.classList.remove('has-overflow-left');
       } else {
         tabsHeader.classList.add('has-overflow-left');
       }
-      
+
       if (isAtEnd) {
         tabsHeader.classList.remove('has-overflow-right');
       } else {
         tabsHeader.classList.add('has-overflow-right');
       }
     };
-    
+
     // Ejecutar al cargar
     updateOverflow();
-    
+
     // Actualizar en scroll
     tabsHeader.addEventListener('scroll', updateOverflow);
   }

@@ -404,11 +404,11 @@ class hook {
           logger.debug('core:hook', `Componente "${componentName}" renderizado para hook "${hookResult.id}"`);
         } catch (error) {
           logger.error('core:hook', `Error renderizando componente "${componentName}":`, error);
-          wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error cargando componente ${componentName}</div>`;
+          wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">${__('core.hook.error.loading_component', { component: componentName })}</div>`;
         }
       } else {
         logger.error('core:hook', `Componente "${componentName}" no encontrado`);
-        wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
+        wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">${__('core.hook.error.component_not_available', { component: componentName })}</div>`;
       }
     }
   }

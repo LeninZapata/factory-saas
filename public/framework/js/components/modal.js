@@ -20,14 +20,14 @@ class modal {
     const header = document.createElement('div');
     header.className = 'modal-header';
     header.innerHTML = `
-      <h3>${options.title || 'Modal'}</h3>
+      <h3>${options.title || __('com.modal.title')}</h3>
       <button class="modal-close" onclick="modal.close('${modalId}')">&times;</button>
     `;
 
     // Content
     const content = document.createElement('div');
     content.className = 'modal-content';
-    content.innerHTML = '<div class="modal-loading">Cargando...</div>';
+    content.innerHTML = `<div class="modal-loading">${__('com.modal.loading')}</div>`;
 
     // Footer (opcional)
     const footer = document.createElement('div');
@@ -36,7 +36,7 @@ class modal {
       footer.innerHTML = options.footer;
     } else if (options.showFooter !== false) {
       footer.innerHTML = `
-        <button class="btn btn-secondary" onclick="modal.close('${modalId}')">Cerrar</button>
+        <button class="btn btn-secondary" onclick="modal.close('${modalId}')">${__('com.modal.close')}</button>
       `;
     }
 
@@ -148,8 +148,8 @@ class modal {
       logger.error('com:modal', 'Error cargando contenido:', error);
       content.innerHTML = `
         <div class="alert alert-danger">
-          <h4>Error</h4>
-          <p>No se pudo cargar el contenido: ${error.message}</p>
+          <h4>${__('com.modal.error')}</h4>
+          <p>${__('com.modal.error_loading', { error: error.message })}</p>
         </div>
       `;
     }
@@ -224,7 +224,7 @@ class modal {
         if (!formElement) {
           logger.error('com:modal', 'No se encontró ningún formulario en el modal');
           if (window.toast) {
-            toast.error('Error: No se encontró el formulario');
+            toast.error(__('com.modal.form_not_found'));
           }
           return modalId;
         }
@@ -239,7 +239,7 @@ class modal {
       } catch (error) {
         logger.error('com:modal', 'Error cargando datos', error);
         if (window.toast) {
-          toast.error('Error al cargar los datos');
+          toast.error(__('com.modal.error_loading_data'));
         }
       }
     } else {

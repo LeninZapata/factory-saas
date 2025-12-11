@@ -101,7 +101,7 @@ class auth {
           logger.error('core:auth', 'Respuesta incompleta del servidor');
           return {
             success: false,
-            error: 'Error en la respuesta del servidor'
+            error: __('core.auth.error.server_response')
           };
         }
 
@@ -130,14 +130,14 @@ class auth {
       logger.warn('core:auth', 'Credenciales incorrectas');
       return {
         success: false,
-        error: response.error || 'Usuario o contraseña incorrectos'
+        error: response.error || __('core.auth.error.invalid_credentials')
       };
 
     } catch (error) {
       logger.error('core:auth', 'Error en login:', error.message);
       return {
         success: false,
-        error: 'Error de conexión con el servidor'
+        error: __('core.auth.error.connection')
       };
     }
   }
@@ -186,7 +186,7 @@ class auth {
 
       // Validar campos requeridos
       if (!data.user || !data.pass) {
-        auth.showLoginError(form, 'Usuario y contraseña son requeridos');
+        auth.showLoginError(form, __('core.auth.error.required_fields'));
         return;
       }
 
@@ -194,7 +194,7 @@ class auth {
 
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Ingresando...';
+        btn.textContent = __('core.auth.login.loading');
       }
 
       // Login
@@ -202,12 +202,12 @@ class auth {
 
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Ingresar';
+        btn.textContent = __('core.auth.login.submit_text');
       }
 
       if (!result.success) {
         logger.warn('core:auth', 'Login falló:', result.error);
-        auth.showLoginError(form, result.error || 'Error al iniciar sesión');
+        auth.showLoginError(form, result.error || __('core.auth.error.login_failed'));
       }
     }, document);
 
@@ -339,9 +339,8 @@ class auth {
     this.stopSessionMonitoring();
 
     if (window.toast) {
-      const message = 'Tu sesión ha expirado o fue invalidada. Por favor, inicia sesión nuevamente.';
+      const message = __('core.auth.session.expired');
 
-      // ✅ Firma correcta: toast.show(message, options)
       toast.show(message, {
         type: 'warning',
         duration: 5000

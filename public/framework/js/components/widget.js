@@ -46,12 +46,12 @@ class widget {
     const widgetBody = document.createElement('div');
     widgetBody.className = 'widget-body';
     widgetBody.setAttribute('data-widget-id', widgetId);
-    widgetBody.innerHTML = '<div class="widget-loading">Cargando...</div>';
+    widgetBody.innerHTML = `<div class="widget-loading">${__('com.widget.loading')}</div>`;
 
     const widgetHeader = document.createElement('div');
     widgetHeader.className = 'widget-header';
     widgetHeader.innerHTML = `
-      <h4>${config.title || 'Widget'}</h4>
+      <h4>${config.title || __('com.widget.title')}</h4>
       <span class="widget-drag">⋮⋮</span>
     `;
 
@@ -93,7 +93,7 @@ class widget {
       }
     } catch (error) {
       logger.error('com:widget', `Error cargando widget:`, error);
-      body.innerHTML = '<div class="widget-error">Error al cargar</div>';
+      body.innerHTML = `<div class="widget-error">${__('com.widget.error_loading')}</div>`;
     }
   }
 

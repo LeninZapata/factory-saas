@@ -110,9 +110,8 @@ class sidebar {
   }
 
   static generateLogoutButton() {
-    // ✅ auth.user está en memoria (no es Promise)
     const user = window.auth?.user;
-    const userName = user?.user || user?.email || 'Usuario';
+    const userName = user?.user || user?.email || __('core.sidebar.user_default');
 
     return `
       <div class="sidebar-footer">
@@ -122,7 +121,7 @@ class sidebar {
         </div>
         <button class="btn-logout" id="btn-logout">
           <span class="logout-icon">🚪</span>
-          <span class="logout-text">Cerrar Sesión</span>
+          <span class="logout-text">${__('core.sidebar.logout')}</span>
         </button>
       </div>
     `;
@@ -132,7 +131,7 @@ class sidebar {
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
-        const confirmed = confirm('¿Estás seguro que deseas cerrar sesión?');
+        const confirmed = confirm(__('core.sidebar.logout_confirm'));
         if (confirmed) {
           await auth.logout();
         }

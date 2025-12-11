@@ -74,8 +74,8 @@ class datatable {
           // Si termina en .json, es una ruta COMPLETA (no agregar prefijo de extension)
           let url;
           if (config.source.endsWith('.json')) {
-            url = config.source.startsWith('http') 
-              ? config.source 
+            url = config.source.startsWith('http')
+              ? config.source
               : window.BASE_URL + config.source;
           } else {
             // Si NO termina en .json y hay extension, agregar prefijo del extension
@@ -88,9 +88,9 @@ class datatable {
 
           // Agregar cache buster
           const cacheBuster = `?t=${window.VERSION}`;
-          
+
           logger.debug('com:datatable', `Cargando datos de: ${url}`);
-          
+
           const response = await fetch(url + cacheBuster);
           if (!response.ok) {
             logger.error('com:datatable', `Error ${response.status} al cargar: ${url}`);
@@ -124,12 +124,12 @@ class datatable {
             <thead>
               <tr>
                 ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
-                ${hasActions ? '<th>Acciones</th>' : ''}
+                ${hasActions ? `<th>${__('com.datatable.actions')}</th>` : ''}
               </tr>
             </thead>
             <tbody>
-              ${isEmpty 
-                ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">📭 No hay datos para mostrar</td></tr>`
+              ${isEmpty
+                ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">${__('com.datatable.no_data')}</td></tr>`
                 : data.map(row => this.renderRow(row, columns, config.actions)).join('')
               }
             </tbody>
@@ -260,7 +260,7 @@ class datatable {
         return this.formatMoney(value);
 
       case 'boolean':
-        return value ? 'Sí' : 'No';
+        return value ? __('com.datatable.yes') : __('com.datatable.no');
 
       case 'uppercase':
         return String(value).toUpperCase();
@@ -311,7 +311,7 @@ class datatable {
       if (!this.hasRoleAccess(action)) return '';
 
       const onclick = this.replaceVars(action.onclick, row);
-      
+
       // ⚠️ IMPORTANTE: Traducir el nombre de la acción igual que las columnas
       const actionLabel = this.translateLabel(action.name);
 
@@ -352,7 +352,7 @@ class datatable {
     setTimeout(() => {
       this.checkTableOverflow(tableId);
     }, 100);
-    
+
     // Recheck on window resize
     window.addEventListener('resize', () => this.checkTableOverflow(tableId));
   }
@@ -360,23 +360,23 @@ class datatable {
   static checkTableOverflow(tableId) {
     const container = document.getElementById(tableId);
     if (!container) return;
-    
+
     const wrapper = container.querySelector('.table-responsive');
     if (!wrapper) return;
-    
+
     // Verificar si hay overflow horizontal
     const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth;
-    
+
     if (hasOverflow) {
       wrapper.classList.add('has-overflow');
     } else {
       wrapper.classList.remove('has-overflow');
     }
-    
+
     // Actualizar en scroll para ocultar sombra cuando llega al final
     wrapper.addEventListener('scroll', () => {
       const isAtEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
-      
+
       if (isAtEnd) {
         wrapper.classList.remove('has-overflow');
       } else if (hasOverflow) {

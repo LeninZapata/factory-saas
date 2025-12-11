@@ -166,7 +166,7 @@ class form {
   }
 
   static renderRepeatable(field, path) {
-    const addText = this.t(field.addText) || 'Agregar';
+    const addText = this.t(field.addText) || __('core.form.repeatable.add');
     const buttonPosition = field.buttonPosition || 'top';
 
     const addButton = `
@@ -937,7 +937,7 @@ class form {
   static validate(formId) {
     const formEl = document.getElementById(formId);
     if (!formEl) {
-      return { success: false, errors: ['Formulario no encontrado'], message: 'Formulario no encontrado' };
+      return { success: false, errors: [__('core.form.validation.form_not_found')], message: __('core.form.validation.form_not_found') };
     }
 
     const schema = this.schemas.get(formId);
@@ -975,15 +975,15 @@ class form {
       if (field.required) {
         const isEmpty = value === null || value === undefined || value.toString().trim() === '';
         if (isEmpty) {
-          fieldErrors.push(`${label} es requerido`);
+          fieldErrors.push(__('core.form.validation.required', { field: label }));
         }
       }
 
       // Validar regla 'required' dentro del string de validation
       if (field.validation && field.validation.includes('required')) {
         const isEmpty = value === null || value === undefined || value.toString().trim() === '';
-        if (isEmpty && !fieldErrors.some(err => err.includes('es requerido'))) {
-          fieldErrors.push(`${label} es requerido`);
+        if (isEmpty && !fieldErrors.some(err => err.includes(__('core.form.validation.required_text')))) {
+          fieldErrors.push(__('core.form.validation.required', { field: label }));
         }
       }
 
@@ -999,42 +999,42 @@ class form {
 
           if (ruleName === 'email') {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-              fieldErrors.push(`${label} debe ser un email válido`);
+              fieldErrors.push(__('core.form.validation.email', { field: label }));
             }
           }
           else if (ruleName === 'min') {
             if (value.toString().length < parseInt(ruleParam)) {
-              fieldErrors.push(`${label} debe tener al menos ${ruleParam} caracteres`);
+              fieldErrors.push(__('core.form.validation.min', { field: label, min: ruleParam }));
             }
           }
           else if (ruleName === 'max') {
             if (value.toString().length > parseInt(ruleParam)) {
-              fieldErrors.push(`${label} no puede tener más de ${ruleParam} caracteres`);
+              fieldErrors.push(__('core.form.validation.max', { field: label, max: ruleParam }));
             }
           }
           else if (ruleName === 'minValue') {
             if (parseFloat(value) < parseFloat(ruleParam)) {
-              fieldErrors.push(`${label} debe ser mayor o igual a ${ruleParam}`);
+              fieldErrors.push(__('core.form.validation.min_value', { field: label, min: ruleParam }));
             }
           }
           else if (ruleName === 'maxValue') {
             if (parseFloat(value) > parseFloat(ruleParam)) {
-              fieldErrors.push(`${label} debe ser menor o igual a ${ruleParam}`);
+              fieldErrors.push(__('core.form.validation.max_value', { field: label, max: ruleParam }));
             }
           }
           else if (ruleName === 'number') {
             if (isNaN(value) || !isFinite(value)) {
-              fieldErrors.push(`${label} debe ser un número válido`);
+              fieldErrors.push(__('core.form.validation.number', { field: label }));
             }
           }
           else if (ruleName === 'url') {
             if (!/^https?:\/\/.+/.test(value)) {
-              fieldErrors.push(`${label} debe ser una URL válida`);
+              fieldErrors.push(__('core.form.validation.url', { field: label }));
             }
           }
           else if (ruleName === 'alpha_num') {
             if (!/^[a-zA-Z0-9]+$/.test(value)) {
-              fieldErrors.push(`${label} solo puede contener letras y números`);
+              fieldErrors.push(__('core.form.validation.alpha_num', { field: label }));
             }
           }
         }
@@ -1080,7 +1080,7 @@ class form {
     processFields(schema.fields);
 
     const success = errors.length === 0;
-    const message = success ? 'Formulario válido' : `${errors.length} error${errors.length > 1 ? 'es' : ''} de validación`;
+    const message = success ? __('core.form.validation.success') : __('core.form.validation.errors', { count: errors.length });
 
     return {
       success,
