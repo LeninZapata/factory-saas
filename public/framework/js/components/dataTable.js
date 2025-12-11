@@ -15,6 +15,32 @@ class datatable {
       logger.debug('com:datatable', 'Parámetros invertidos detectados - corrigiendo');
     }
 
+    // ✅ NUEVO: Normalizar alias (list, FlatList → datatable)
+    if (actualConfig && actualConfig.type) {
+      const typeAliases = {
+        'list': 'datatable',
+        'FlatList': 'datatable',
+        'flatlist': 'datatable'
+      };
+
+      const normalizedType = typeAliases[actualConfig.type.toLowerCase()];
+
+      if (normalizedType) {
+        logger.debug('com:datatable', `Normalizando tipo: ${actualConfig.type} → ${normalizedType}`);
+        actualConfig = { ...actualConfig, type: normalizedType };
+
+        // Mapear propiedades de 'list' a 'datatable'
+        if (actualConfig.data && !actualConfig.source) {
+          actualConfig.source = actualConfig.data;
+          logger.debug('com:datatable', `Mapeando: data → source`);
+        }
+
+        // Remover propiedades específicas de RN (no aplican en web)
+        delete actualConfig.renderItem;
+        delete actualConfig.keyExtractor;
+      }
+    }
+
     if (!actualContainer || typeof actualContainer.appendChild !== 'function') {
       logger.error('com:datatable', 'Container inválido - debe ser un elemento DOM', actualContainer);
       return;

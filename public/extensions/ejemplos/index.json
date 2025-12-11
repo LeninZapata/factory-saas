@@ -66,6 +66,12 @@
         "title": "🎯 Hooks (Caso 2)",
         "view": "sections/hooks-caso2",
         "order": 2
+      },
+      {
+        "id": "ejemplos-react-native",
+        "title": "📱 React Native",
+        "view": "sections/react-native/main",
+        "order": 10
       }
     ]
   },

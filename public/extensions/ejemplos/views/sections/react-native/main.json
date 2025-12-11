@@ -1,0 +1,89 @@
+{
+  "id": "react-native-test",
+  "title": "📱 Pruebas de Nomenclatura React Native",
+  "type": "tabs",
+  "tabs": [
+    {
+      "id": "rn-inputs",
+      "title": "TextInput",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='background:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1rem;'><h2>📝 TextInput (React Native)</h2><p>Este formulario usa <code>type: \"TextInput\"</code> en lugar de <code>type: \"text\"</code></p><p><strong>Resultado esperado:</strong> Debe renderizarse idéntico a los inputs normales.</p></div>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/react-native/form-textinput"
+        }
+      ]
+    },
+    {
+      "id": "rn-switch",
+      "title": "Switch",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='background:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1rem;'><h2>☑️ Switch (React Native)</h2><p>Este formulario usa <code>type: \"Switch\"</code> en lugar de <code>type: \"checkbox\"</code></p><p><strong>Resultado esperado:</strong> Debe renderizarse como checkbox normal.</p></div>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/react-native/form-switch"
+        }
+      ]
+    },
+    {
+      "id": "rn-picker",
+      "title": "Picker",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='background:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1rem;'><h2>📋 Picker (React Native)</h2><p>Este formulario usa <code>type: \"Picker\"</code> en lugar de <code>type: \"select\"</code></p><p><strong>Resultado esperado:</strong> Debe renderizarse como select normal.</p></div>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/react-native/form-picker"
+        }
+      ]
+    },
+    {
+      "id": "rn-flatlist",
+      "title": "FlatList",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='background:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1rem;'><h2>📊 FlatList (React Native)</h2><p>Este componente usa <code>type: \"FlatList\"</code> en lugar de <code>type: \"datatable\"</code></p><p><strong>Resultado esperado:</strong> Debe renderizarse como tabla normal.</p></div>"
+        },
+        {
+          "type": "FlatList",
+          "data": "mock/users-mock.json",
+          "columns": [
+            {"name": "name", "label": "Nombre"},
+            {"name": "email", "label": "Email"},
+            {"name": "role", "label": "Rol"}
+          ],
+          "actions": [
+            {
+              "label": "Ver",
+              "style": "primary",
+              "action": "view"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rn-completo",
+      "title": "✅ Completo",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='background:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1rem;'><h2>🎯 Formulario Completo RN</h2><p>Todos los tipos usando nomenclatura de React Native:</p><ul><li><code>TextInput</code> - Campos de texto</li><li><code>Switch</code> - Checkboxes</li><li><code>Picker</code> - Selectores</li><li><code>TextInput multiline</code> - Textarea</li></ul><p><strong>Resultado esperado:</strong> Todo debe funcionar perfectamente.</p></div>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/react-native/form-completo"
+        }
+      ]
+    }
+  ]
+}

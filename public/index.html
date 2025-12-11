@@ -9,6 +9,9 @@
 <body>
 <div id="app"></div>
 <script>
+  var VERSION = IS_DEV ? `dev-${Date.now()}` : '1.0.0';
+  console.log(`App Version: ${VERSION}`);
+
   // ============================================
   // DETECCIÓN AUTOMÁTICA DE RUTAS
   // ============================================
@@ -33,18 +36,8 @@
   var BASE_URL = pathname;
   var FRAMEWORK_URL = BASE_URL + 'framework/';
 
-  var IS_DEV =  window.location.hostname === 'localhost' ||
-                window.location.hostname === '127.0.0.1' ||
-                window.location.hostname.includes('.local') ||
-                window.location.hostname.startsWith('192.168.') ||
-                window.location.hostname.startsWith('10.') ||
-                window.location.hostname === '0.0.0.0' ||
-                window.location.port === '3000' ||
-                window.location.port === '5173' ||
-                window.location.port === '8080';
-
-  var VERSION = IS_DEV ? `dev-${Date.now()}` : '1.0.0';
-  console.log(`App Version: ${VERSION}`);
+  var IS_DEV = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|.*\.local|192\.168\.|10\.)/.test(window.location.hostname) || 
+              ['3000', '5173', '8080'].includes(window.location.port);
 
   const script = document.createElement('script');
   script.type = 'module';

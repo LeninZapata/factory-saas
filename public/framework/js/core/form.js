@@ -2,6 +2,56 @@ class form {
   static schemas = new Map();
   static registeredEvents = new Set();
 
+  // Mapeo de tipos genéricos (Web, Genérico, React Native)
+  static typeAliases = {
+    // Nivel 2: Genérico → Web
+    'input': 'text',
+    'textarea': 'textarea',
+    'checkbox': 'checkbox',
+    'switch': 'checkbox',
+    'select': 'select',
+    'picker': 'select',
+
+    // Nivel 3: React Native → Web
+    'textinput': 'text',
+    'TextInput': 'text',
+    'Switch': 'checkbox',
+    'Picker': 'select',
+    'FlatList': 'repeatable',
+    'flatlist': 'repeatable'
+  };
+
+  // Normalizar tipo de campo (soporta 3 niveles)
+  static normalizeFieldType(field) {
+    if (!field || !field.type) return field;
+
+    const type = field.type.toLowerCase();
+
+    // Si el tipo tiene un alias, usarlo
+    if (this.typeAliases[type]) {
+      const normalizedType = this.typeAliases[type];
+
+      const normalized = { ...field, type: normalizedType };
+
+      // Casos especiales basados en propiedades adicionales
+      // TextInput con multiline → textarea
+      if ((type === 'textinput') && field.multiline === true) {
+        normalized.type = 'textarea';
+        normalized.rows = field.numberOfLines || field.rows || 4;
+      }
+
+      // Input con inputType → usar inputType específico
+      if (type === 'input' && field.inputType) {
+        normalized.type = field.inputType;
+      }
+
+      return normalized;
+    }
+
+    // Si no tiene alias, devolver sin cambios
+    return field;
+  }
+
   static t(text) {
     if (!text || typeof text !== 'string') return text || '';
     if (!text.startsWith('i18n:')) return text;
@@ -144,24 +194,27 @@ class form {
 
   static renderFields(fields, path = '') {
     return fields.map((field) => {
+      // ✅ Normalizar tipo ANTES de procesar
+      const normalizedField = this.normalizeFieldType(field);
+      
       // ✅ Validar role antes de renderizar
-      if (!this.hasRoleAccess(field)) return '';
+      if (!this.hasRoleAccess(normalizedField)) return '';
 
-      const fieldPath = path ? `${path}.${field.name}` : field.name;
+      const fieldPath = path ? `${path}.${normalizedField.name}` : normalizedField.name;
 
-      if (field.type === 'repeatable') {
-        return this.renderRepeatable(field, fieldPath);
+      if (normalizedField.type === 'repeatable') {
+        return this.renderRepeatable(normalizedField, fieldPath);
       }
 
-      if (field.type === 'group') {
-        return this.renderGroup(field, path);
+      if (normalizedField.type === 'group') {
+        return this.renderGroup(normalizedField, path);
       }
 
-      if (field.type === 'grouper') {
-        return this.renderGrouper(field, path);
+      if (normalizedField.type === 'grouper') {
+        return this.renderGrouper(normalizedField, path);
       }
 
-      return this.renderField(field, fieldPath);
+      return this.renderField(normalizedField, fieldPath);
     }).join('');
   }
 
@@ -221,11 +274,14 @@ class form {
     return `
       <div class="${groupClass}">
         ${field.fields ? field.fields.map(subField => {
-          // ✅ Validar role antes de renderizar subfields
-          if (!this.hasRoleAccess(subField)) return '';
+          // ✅ Normalizar tipo
+          const normalizedSubField = this.normalizeFieldType(subField);
 
-          const fieldPath = basePath ? `${basePath}.${subField.name}` : subField.name;
-          return this.renderField(subField, fieldPath);
+          // ✅ Validar role antes de renderizar subfields
+          if (!this.hasRoleAccess(normalizedSubField)) return '';
+
+          const fieldPath = basePath ? `${basePath}.${normalizedSubField.name}` : normalizedSubField.name;
+          return this.renderField(normalizedSubField, fieldPath);
         }).join('') : ''}
       </div>
     `;
@@ -833,7 +889,7 @@ class form {
     if (!addButton) {
       addButton = container.querySelector(`.repeatable-add[data-path="${fieldName}"]`);
     }
-    
+
     if (!addButton) {
       logger.error('core:form', `Botón "Agregar" no encontrado para: ${fullPath}`);
       return;
@@ -844,7 +900,7 @@ class form {
     if (!itemsContainer) {
       itemsContainer = container.querySelector(`.repeatable-items[data-path="${fieldName}"]`);
     }
-    
+
     if (!itemsContainer) {
       logger.error('core:form', `Contenedor no encontrado para: ${fullPath}`);
       return;
@@ -857,15 +913,15 @@ class form {
     items.forEach((itemData, index) => {
       setTimeout(() => {
         logger.debug('core:form', `Agregando item ${index + 1}/${items.length} de ${fullPath}`);
-        
+
         // Click en "Agregar"
         addButton.click();
-        
+
         // Esperar y llenar
         setTimeout(() => {
           this.fillRepeatableItem(itemsContainer, fieldName, index, itemData, field.fields, fullPath);
         }, 100);
-        
+
       }, index * 300); // 300ms entre cada item
     });
   }
@@ -891,14 +947,14 @@ class form {
       if (subField.type === 'repeatable') {
         // ✅ RECURSIÓN: Llenar repeatable anidado
         logger.debug('core:form', `🔄 Procesando repeatable anidado: ${subField.name}`);
-        
+
         // Llamar recursivamente pasando el item actual como contenedor
         this.fillRepeatable(currentItem, subField, itemData, itemPath);
-        
+
       } else {
         // Campo normal
         const value = itemData[subField.name];
-        
+
         if (value === undefined || value === null) {
           return;
         }
@@ -928,7 +984,7 @@ class form {
     } else {
       input.value = value;
     }
-    
+
     // Disparar evento change
     input.dispatchEvent(new Event('change', { bubbles: true }));
   }
