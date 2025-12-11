@@ -39,30 +39,49 @@ class tabs {
     }
   }
 
-  // Detectar si hay overflow y agregar clase
+  // Detectar overflow en ambos lados
   static checkOverflow(container) {
     const tabsHeader = container.querySelector('.tabs-header');
     if (!tabsHeader) return;
 
-    // Verificar si el contenido es más ancho que el contenedor
-    const hasOverflow = tabsHeader.scrollWidth > tabsHeader.clientWidth;
-    
-    if (hasOverflow) {
-      tabsHeader.classList.add('has-overflow');
-    } else {
-      tabsHeader.classList.remove('has-overflow');
-    }
-
-    // Actualizar en scroll para ocultar degradado cuando llega al final
-    tabsHeader.addEventListener('scroll', () => {
-      const isAtEnd = tabsHeader.scrollLeft + tabsHeader.clientWidth >= tabsHeader.scrollWidth - 5;
+    const updateOverflow = () => {
+      const scrollLeft = tabsHeader.scrollLeft;
+      const scrollWidth = tabsHeader.scrollWidth;
+      const clientWidth = tabsHeader.clientWidth;
+      
+      // Hay overflow si el contenido es más ancho que el contenedor
+      const hasOverflow = scrollWidth > clientWidth;
+      
+      if (!hasOverflow) {
+        tabsHeader.classList.remove('has-overflow-left', 'has-overflow-right');
+        return;
+      }
+      
+      // Detectar si está al inicio (no hay scroll a la izquierda)
+      const isAtStart = scrollLeft <= 5;
+      
+      // Detectar si está al final (no hay más contenido a la derecha)
+      const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 5;
+      
+      // Agregar/quitar clases según posición
+      if (isAtStart) {
+        tabsHeader.classList.remove('has-overflow-left');
+      } else {
+        tabsHeader.classList.add('has-overflow-left');
+      }
       
       if (isAtEnd) {
-        tabsHeader.classList.remove('has-overflow');
-      } else if (hasOverflow) {
-        tabsHeader.classList.add('has-overflow');
+        tabsHeader.classList.remove('has-overflow-right');
+      } else {
+        tabsHeader.classList.add('has-overflow-right');
       }
-    });
+    };
+    
+    // Ejecutar al cargar
+    updateOverflow();
+    
+    // Actualizar en scroll
+    tabsHeader.addEventListener('scroll', updateOverflow);
   }
 
   static async preloadAllTabs(tabsData, container) {

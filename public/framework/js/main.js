@@ -47,11 +47,12 @@ window.appConfig = {
 const SCRIPTS_TO_LOAD = [
   // Core
   'js/core/logger.js',
-  'js/core/api.js',
   'js/core/cache.js',
-  'js/core/event.js',
   'js/core/i18n.js',
+  'js/core/event.js',
+  'js/core/api.js',
   'js/core/loader.js',
+
   'js/core/validator.js',
   'js/core/conditions.js',
   'js/core/dataLoader.js',
@@ -61,6 +62,7 @@ const SCRIPTS_TO_LOAD = [
   'js/core/view.js',
   'js/core/sidebar.js',
   'js/core/layout.js',
+
   // Components
   'js/components/langSelector.js',
   'js/components/toast.js',
@@ -73,9 +75,7 @@ const SCRIPTS_TO_LOAD = [
 
 async function initializeApp() {
   try {
-    const cacheBuster = window.appConfig.isDevelopment
-      ? `?v=${Date.now()}`
-      : `?v=${window.appConfig.version}`;
+    const cacheBuster = `?v=${window.VERSION}`;
 
     const scriptPromises = SCRIPTS_TO_LOAD.map(url =>
       fetch(FRAMEWORK_URL + url + cacheBuster).then(r => {

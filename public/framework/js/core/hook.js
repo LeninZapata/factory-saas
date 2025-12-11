@@ -99,7 +99,7 @@ class hook {
   static async tryLoadPluginLang(extensionName, lang) {
     try {
       const langPath = `${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json`;
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const cacheBuster = `?v=${window.VERSION}`;
 
       // Usar loader.loadJson con opción optional y silent
       const translations = await loader.loadJson(langPath + cacheBuster, {
@@ -140,7 +140,7 @@ class hook {
       try {
         const basePath = window.appConfig?.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
         const fullPath = `${window.BASE_URL}${basePath}/${viewPath}.json`;
-        const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+        const cacheBuster = `?v=${window.VERSION}`;
         const response = await fetch(fullPath + cacheBuster);
         if (response.ok) {
           const viewData = await response.json();
@@ -154,7 +154,7 @@ class hook {
   static async loadExtensionScript(extensionName, scriptFile) {
     try {
       const scriptPath = `extensions/${extensionName}/${scriptFile}`;
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const cacheBuster = `?v=${window.VERSION}`;
       const response = await fetch(`${window.BASE_URL}${scriptPath}${cacheBuster}`);
       if (!response.ok) return;
       const scriptContent = await response.text();
@@ -267,7 +267,7 @@ class hook {
 
   static async loadPluginConfig(extensionName) {
     try {
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const cacheBuster = `?v=${window.VERSION}`;
       return await api.get(`extensions/${extensionName}/index.json${cacheBuster}`);
     } catch (error) {
       return { name: extensionName, enabled: false, hasHooks: false };
@@ -277,7 +277,7 @@ class hook {
   static async loadPluginHook(extensionName) {
     try {
       const hookPath = `extensions/${extensionName}/hooks.js`;
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const cacheBuster = `?v=${window.VERSION}`;
       const response = await fetch(`${window.BASE_URL}${hookPath}${cacheBuster}`);
       if (!response.ok) return;
       const scriptContent = await response.text();

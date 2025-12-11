@@ -33,7 +33,7 @@ class i18n {
     if (!data) {
       try {
         const frameworkPath = window.appConfig?.frameworkPath || 'framework';
-        const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
+        const cacheBuster = `?v=${window.VERSION}`;
         const response = await fetch(`${window.BASE_URL}${frameworkPath}/js/lang/${lang}.json${cacheBuster}`);
 
         if (response.ok) {
@@ -58,9 +58,7 @@ class i18n {
 
     if (!data) {
       try {
-        const cacheBuster = window.appConfig?.isDevelopment
-        ? `?v=${Date.now()}`
-        : `?v=${window.appConfig.version}`;
+        const cacheBuster = `?v=${window.VERSION}`;
         const response = await fetch(`${window.BASE_URL}extensions/${extensionName}/lang/${lang}.json${cacheBuster}`);
 
         if (response.ok) {

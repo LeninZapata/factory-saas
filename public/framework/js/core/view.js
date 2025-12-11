@@ -73,7 +73,7 @@ class view {
       let viewData = cache.get(cacheKey);
 
       if (!viewData) {
-        const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
+        const cacheBuster = `?t=${window.VERSION}`;
         const url = `${window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
         const response = await fetch(url);
 
@@ -246,7 +246,7 @@ class view {
     const extensions = Object.keys(window.hook?.extensions || {});
     for (const extensionName of extensions) {
       try {
-        const url = `${window.BASE_URL}extensions/${extensionName}/views/${viewName}.json?t=${Date.now()}`;
+        const url = `${window.BASE_URL}extensions/${extensionName}/views/${viewName}.json?t=${window.VERSION}`;
         const response = await fetch(url);
         if (response.ok) {
           const viewData = await response.json();

@@ -148,6 +148,12 @@ class grouper {
     const tabButtons = container.querySelectorAll('.grouper-tab-btn');
     const tabPanels = container.querySelectorAll('.grouper-tab-panel');
 
+    // Detectar overflow para mostrar degradado
+    this.checkTabsOverflow(grouperId, container);
+    
+    // Recheck on window resize
+    window.addEventListener('resize', () => this.checkTabsOverflow(grouperId, container));
+
     tabButtons.forEach((button, index) => {
       button.addEventListener('click', () => {
         const tabIndex = parseInt(button.dataset.tabIndex);
@@ -156,6 +162,9 @@ class grouper {
         tabPanels.forEach(panel => panel.classList.remove('active'));
         
         button.classList.add('active');
+        
+        // Scroll suave al tab activo si está fuera de vista
+        button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         
         const targetPanel = container.querySelector(`[data-panel-index="${tabIndex}"]`);
         if (targetPanel) {
@@ -168,6 +177,50 @@ class grouper {
         }
       });
     });
+  }
+
+  static checkTabsOverflow(grouperId, container) {
+    const tabsHeader = container.querySelector('.grouper-tabs-header');
+    if (!tabsHeader) return;
+    
+    const updateOverflow = () => {
+      const scrollLeft = tabsHeader.scrollLeft;
+      const scrollWidth = tabsHeader.scrollWidth;
+      const clientWidth = tabsHeader.clientWidth;
+      
+      // Hay overflow si el contenido es más ancho que el contenedor
+      const hasOverflow = scrollWidth > clientWidth;
+      
+      if (!hasOverflow) {
+        tabsHeader.classList.remove('has-overflow-left', 'has-overflow-right');
+        return;
+      }
+      
+      // Detectar si está al inicio
+      const isAtStart = scrollLeft <= 5;
+      
+      // Detectar si está al final
+      const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 5;
+      
+      // Agregar/quitar clases según posición
+      if (isAtStart) {
+        tabsHeader.classList.remove('has-overflow-left');
+      } else {
+        tabsHeader.classList.add('has-overflow-left');
+      }
+      
+      if (isAtEnd) {
+        tabsHeader.classList.remove('has-overflow-right');
+      } else {
+        tabsHeader.classList.add('has-overflow-right');
+      }
+    };
+    
+    // Ejecutar al cargar
+    updateOverflow();
+    
+    // Actualizar en scroll
+    tabsHeader.addEventListener('scroll', updateOverflow);
   }
 
   static switchTab(grouperId, tabIndex) {

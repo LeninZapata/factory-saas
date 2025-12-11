@@ -12,7 +12,11 @@ class layout {
     } else {
       app.innerHTML = `
         <div class="layout">
-          <header class="header" id="header">Sistema</header>
+          <header class="header" id="header">
+            <button class="menu-toggle" id="menu-toggle" style="display: none;">☰</button>
+            <span>Sistema</span>
+          </header>
+          <div class="sidebar-overlay" id="sidebar-overlay"></div>
           <aside class="sidebar" id="sidebar"></aside>
           <main class="content" id="content">
             <div class="view-container">
@@ -24,7 +28,37 @@ class layout {
           </main>
         </div>
       `;
+      this.initResponsive();
     }
+  }
+
+  static initResponsive() {
+    const toggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    const updateUI = () => {
+      if (window.innerWidth <= 1024) {
+        toggle.style.display = 'flex';
+      } else {
+        toggle.style.display = 'none';
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+    };
+
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+
+    overlay?.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+
+    window.addEventListener('resize', updateUI);
+    updateUI();
   }
 }
 

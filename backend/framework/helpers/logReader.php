@@ -1,7 +1,7 @@
 <?php
 /**
  * logReader - Leer, parsear y filtrar logs
- * 
+ *
  * Responsabilidad: SOLO leer/consultar logs
  * Separado de log.php para mantener responsabilidades claras
  */
@@ -9,7 +9,7 @@ class logReader {
 
   /**
    * Parsear archivo de log
-   * 
+   *
    * @param string $file Ruta del archivo
    * @param int $limit Límite de líneas (0 = todas)
    * @return array Array de logs parseados
@@ -29,22 +29,44 @@ class logReader {
     foreach ($lines as $line) {
       $parts = explode("\t", $line);
 
-      if (count($parts) >= 6) {
-        // Formato con tags
-        $tagsStr = $parts[5] ?? '';
-        $tags = ($tagsStr && $tagsStr !== '-') ? explode(',', $tagsStr) : [];
-
-        $contextJson = $parts[6] ?? '';
+      if (count($parts) >= 8) {
+        // Formato nuevo: [timestamp] [level] [module] [message] [context_json] [file:line] [user_id] [tags]
+        $contextJson = $parts[4] ?? '';
         $context = ($contextJson && $contextJson !== '-') ? json_decode($contextJson, true) : null;
+
+        $userId = $parts[6] ?? '';
+        $userId = ($userId && $userId !== '-') ? $userId : null;
+
+        $tagsStr = $parts[7] ?? '';
+        $tags = ($tagsStr && $tagsStr !== '-') ? explode(',', $tagsStr) : [];
 
         $logs[] = [
           'timestamp' => trim($parts[0], '[]'),
           'level' => $parts[1],
           'module' => $parts[2],
-          'location' => $parts[3],
+          'message' => $parts[3],
+          'context' => $context,
+          'location' => $parts[5],
+          'user_id' => $userId,
+          'tags' => $tags
+        ];
+      } elseif (count($parts) >= 6) {
+        // Formato anterior: [timestamp] [level] [module] [file:line] [message] [context_json] [tags]
+        $contextJson = $parts[5] ?? '';
+        $context = ($contextJson && $contextJson !== '-') ? json_decode($contextJson, true) : null;
+
+        $tagsStr = $parts[6] ?? '';
+        $tags = ($tagsStr && $tagsStr !== '-') ? explode(',', $tagsStr) : [];
+
+        $logs[] = [
+          'timestamp' => trim($parts[0], '[]'),
+          'level' => $parts[1],
+          'module' => $parts[2],
           'message' => $parts[4],
-          'tags' => $tags,
-          'context' => $context
+          'location' => $parts[3],
+          'context' => $context,
+          'user_id' => null,
+          'tags' => $tags
         ];
       } elseif (count($parts) >= 5) {
         // Formato antiguo sin tags (retrocompatibilidad)
@@ -68,7 +90,7 @@ class logReader {
 
   /**
    * Buscar archivos de log según criterios
-   * 
+   *
    * @param array $criteria Criterios: year, month, day
    * @return array Array de rutas de archivos
    */
@@ -107,7 +129,7 @@ class logReader {
 
   /**
    * Obtener logs de hoy
-   * 
+   *
    * @param int $limit Límite de logs
    * @return array Array de logs
    */
@@ -123,7 +145,7 @@ class logReader {
 
   /**
    * Obtener últimos logs
-   * 
+   *
    * @param int $limit Límite de logs
    * @return array Array de logs
    */
@@ -143,7 +165,7 @@ class logReader {
 
   /**
    * Obtener logs en un rango de fechas
-   * 
+   *
    * @param string $from Fecha inicio (Y-m-d)
    * @param string $to Fecha fin (Y-m-d)
    * @param int $limit Límite de logs
@@ -181,7 +203,7 @@ class logReader {
 
   /**
    * Filtrar logs según criterios
-   * 
+   *
    * @param array $logs Array de logs
    * @param array $filters Filtros disponibles:
    *   - level: Nivel del log
@@ -272,7 +294,7 @@ class logReader {
 
   /**
    * Obtener estadísticas de logs
-   * 
+   *
    * @param array $logs Array de logs
    * @return array Estadísticas
    */

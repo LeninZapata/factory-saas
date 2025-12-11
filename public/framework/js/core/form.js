@@ -53,7 +53,7 @@ class form {
         url = `${window.BASE_URL}${basePath}/${formName}.json`;
       }
 
-      const cacheBuster = window.appConfig?.cache?.forms ? '' : `?t=${Date.now()}`;
+      const cacheBuster = `?t=${window.VERSION}`;
       const response = await fetch(url + cacheBuster);
 
       if (!response.ok) {
@@ -67,7 +67,7 @@ class form {
       }
     }
 
-    const instanceId = `${schema.id}-${Date.now()}`;
+    const instanceId = `${schema.id}-${window.VERSION}`;
     const instanceSchema = JSON.parse(JSON.stringify(schema));
     instanceSchema.id = instanceId;
 

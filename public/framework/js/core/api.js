@@ -44,11 +44,11 @@ class api {
       if (!res.ok) {
         // ❌ Error HTTP - intentar obtener detalles
         const contentType = res.headers.get('content-type') || '';
-        
+
         if (contentType.includes('application/json')) {
           // Dice ser JSON - pero puede estar corrupto
           const text = await res.text();
-          
+
           try {
             const errorData = JSON.parse(text);
             logger.error('core:api', `❌ Error ${res.status}:`, errorData);
@@ -56,7 +56,7 @@ class api {
           } catch (parseError) {
             // JSON corrupto - probablemente tiene HTML mezclado
             logger.error('core:api', `❌ Error ${res.status} - JSON corrupto (contiene HTML/PHP)`);
-            
+
             console.group(`🚨 JSON Corrupto - ${fullURL}`);
             console.error('Status:', res.status);
             console.error('Content-Type:', contentType);
@@ -65,18 +65,18 @@ class api {
             console.log(text);
             console.log('--- FIN RESPUESTA ---');
             console.groupEnd();
-            
+
             // Intentar extraer mensaje útil
             const errorMatch = text.match(/<b>(Warning|Fatal error|Error)<\/b>:([^<]+)/);
             const errorMsg = errorMatch ? errorMatch[2].trim() : 'JSON corrupto con HTML mezclado';
-            
+
             throw new Error(`Backend Error: ${errorMsg}`);
           }
         } else if (contentType.includes('text/html')) {
           // Es HTML puro
           const htmlError = await res.text();
           logger.error('core:api', `❌ Error ${res.status} - Respuesta HTML del backend:`);
-          
+
           console.group(`🚨 Error HTML Backend - ${fullURL}`);
           console.error('Status:', res.status);
           console.error('Content-Type:', contentType);
@@ -84,10 +84,10 @@ class api {
           console.log(htmlError);
           console.log('--- FIN HTML ---');
           console.groupEnd();
-          
+
           const errorMatch = htmlError.match(/<b>(Warning|Fatal error|Error)<\/b>:([^<]+)/);
           const errorMsg = errorMatch ? errorMatch[2].trim() : 'Error en el backend (HTML)';
-          
+
           throw new Error(`Backend Error: ${errorMsg}`);
         } else {
           // Otro tipo de contenido
@@ -100,17 +100,17 @@ class api {
 
       // ✅ Respuesta exitosa - verificar tipo de contenido
       const contentType = res.headers.get('content-type') || '';
-      
+
       if (contentType.includes('application/json')) {
         // Dice ser JSON - pero verificar que realmente lo sea
         const text = await res.text();
-        
+
         try {
           return JSON.parse(text);
         } catch (parseError) {
           // ⚠️ JSON corrupto en respuesta exitosa (200)
           logger.error('core:api', `⚠️ Respuesta exitosa pero JSON corrupto:`);
-          
+
           console.group(`⚠️ JSON Corrupto (200 OK) - ${fullURL}`);
           console.warn('Status:', res.status);
           console.warn('Content-Type:', contentType);
@@ -119,14 +119,14 @@ class api {
           console.log(text);
           console.log('--- FIN RESPUESTA ---');
           console.groupEnd();
-          
+
           throw new Error('Backend devolvió JSON corrupto (contiene HTML/PHP warnings)');
         }
       } else if (contentType.includes('text/html')) {
         // Backend devolvió HTML cuando esperábamos JSON
         const htmlResponse = await res.text();
         logger.error('core:api', `⚠️ Backend devolvió HTML en lugar de JSON:`);
-        
+
         console.group(`⚠️ Respuesta HTML inesperada - ${fullURL}`);
         console.warn('Status:', res.status, '(success)');
         console.warn('Content-Type:', contentType);
@@ -134,14 +134,14 @@ class api {
         console.log(htmlResponse);
         console.log('--- FIN HTML ---');
         console.groupEnd();
-        
+
         throw new Error('Backend devolvió HTML en lugar de JSON');
       } else {
         // Otro tipo de contenido
         const text = await res.text();
         logger.warn('core:api', `⚠️ Content-Type inesperado: ${contentType}`);
         console.warn('Respuesta:', text);
-        
+
         // Intentar parsear como JSON de todas formas
         try {
           return JSON.parse(text);

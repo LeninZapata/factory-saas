@@ -1,28 +1,19 @@
 por donde me quede:
-✔ carga un json config de campos agrupados o repetibles agrupados para ver como se comporta @done(10-12-2025 14:52)
-☐ responsive sistema, por ejemplo esto viene desde la parte de layout, recuerda que layouts
-☐ idioma desde el core de cada backend y frontend...
-___
-☐ crear la vista de endpoints para que se pueda ver los  eendpoints creadosn el sistema
-ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
-y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
+☐ idioma frontend (core)
 ☐ recuerda la conversacion que tienes con AI donde decia que habia que hacer unos pequeños cambios
   para que el sistema se adapte a react native https://claude.ai/chat/56f2b1d7-d4c1-4785-952e-f4f7b4a8570e
-☐ Hay un Date.now() que creo que es vista pero no tiene version de cache siempre se cambia
 ☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
-☐ las cargas .json por alli vi creo en view.js que no estan con version de cache
-☐ el log debe tene un parametro por defecto que vaya superior al modulo, entonces esto puede ser personalizable
 en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
+SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
 Despues:
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no
-☐ El componente de permission tiene una falla y es que tiene una falla que si editas puese ese componente las vistas de primer nivel seleccionada opr
-ddefecto, en el edditar no debe pasar esto, tal vez en el crear..
-☐ En el condicionaal aunq funciona bien pero en consola log envia un error cada vez hace condiciones es como que buscar unos campos
-y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.
-☐ tabla con filtros que puede ser lineal o un modal con filtros.
+☐ crear la vista de endpoints para que se pueda ver los  eendpoints creadosn el sistema
+ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
+y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
+☐ crear la vista de logs en el sistema, debe tener filtros por usuario, fecha, modulo, accion
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
@@ -30,3 +21,4 @@ y no los encuentra aunq este si funciona bien hayy que ver porque ocurre esto.
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
 ☐ persistencia en widgets posicion
+☐ grouper tabs no se ve los estilos de degradados como lo hace tabs

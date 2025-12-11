@@ -21,7 +21,7 @@ class permissions {
     }
 
     const permissions = config.permissions || {};
-    const selectorId = `permissions-${Date.now()}`;
+    const selectorId = `permissions-${window.VERSION}`;
 
     // Cargar tabs de todas las vistas
     await this.loadAllViewsTabs(extensionsData);

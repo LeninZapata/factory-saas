@@ -13,7 +13,7 @@ class widget {
       return;
     }
 
-    const gridId = `widget-grid-${Date.now()}`;
+    const gridId = `widget-grid-${window.VERSION}`;
     this.grids.set(gridId, config);
     const cols = config.columns || 2;
 
@@ -35,7 +35,7 @@ class widget {
   static async addWidget(grid, config) {
     if (!grid) return;
 
-    const widgetId = `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const widgetId = `widget-${window.VERSION}-${Math.random().toString(36).substr(2, 9)}`;
 
     const widget = document.createElement('div');
     widget.className = 'widget-item';

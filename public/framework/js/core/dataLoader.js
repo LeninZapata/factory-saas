@@ -93,7 +93,7 @@ class dataLoader {
         mockPath = `${window.BASE_URL}${mockConfig.file}`;
       }
 
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
+      const cacheBuster = `?v=${window.VERSION}`;
       
       // Para archivos mock locales, usar fetch directo (no necesitan auth)
       const response = await fetch(mockPath + cacheBuster);

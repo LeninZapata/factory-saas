@@ -58,7 +58,7 @@ class ejemplos {
     try {
       // Usar mock COMPLETO con 3 niveles (proyectos + tareas + subtareas + miembros)
       const url = `${window.BASE_URL}extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : '';
+      const cacheBuster = `?v=${window.VERSION}`;
       
       const response = await fetch(url + cacheBuster);
       

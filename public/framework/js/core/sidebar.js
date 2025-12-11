@@ -169,6 +169,11 @@ class sidebar {
           } else {
             view.loadView(menuData.view, null, null, menuResources, null, menuId);
           }
+
+          if (window.innerWidth <= 1024) {
+            document.getElementById('sidebar')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('active');
+          }
         }
       });
     });
@@ -211,7 +216,7 @@ class sidebar {
         return;
       }
 
-      const cacheBuster = window.appConfig?.isDevelopment ? `?v=${Date.now()}` : `?v=${window.appConfig.version}`;
+      const cacheBuster = `?v=${window.VERSION}`;
       const response = await fetch(fullPath + cacheBuster);
 
       if (response.ok) {

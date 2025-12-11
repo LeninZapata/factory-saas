@@ -3,7 +3,7 @@
  * Log - Sistema de logging minimalista
  * 
  * Responsabilidad: SOLO escribir logs
- * Formato: [timestamp] [level] [module] [file:line] [message] [tags] [context_json]
+ * Formato: [timestamp] [level] [module] [message] [context_json] [file:line] [user_id] [tags]
  */
 class log {
 
@@ -50,7 +50,7 @@ class log {
 
   /**
    * Escribir log
-   * Formato: [timestamp] [level] [module] [file:line] [message] [tags] [context_json]
+   * Formato: [timestamp] [level] [module] [message] [context_json] [file:line] [user_id] [tags]
    */
   private static function write($level, $msg, $ctx = [], $meta = []) {
     if (!self::$config['enabled']) return;
@@ -93,19 +93,27 @@ class log {
 
     $timestamp = date('Y-m-d H:i:s');
 
+    // Extraer user_id si existe (para columna separada)
+    $userId = $customVars['user_id'] ?? ($GLOBALS['auth_user_id'] ?? null);
+    $userIdStr = $userId ? (string)$userId : '';
+    
+    // Remover user_id de customVars para no duplicarlo en context
+    unset($customVars['user_id']);
+
     // Combinar contexto + custom vars
     $fullContext = array_merge($ctx, $customVars);
     $contextJson = !empty($fullContext) ? json_encode($fullContext, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '-';
 
-    // Formato TAB-separated (usar '-' para campos vacíos)
+    // Formato TAB-separated - NUEVO ORDEN
     $logLine = implode("\t", [
       "[$timestamp]",
       $level,
       $module,
-      "$file:$line",
       $msg,
-      $tagsStr ?: '-',
-      $contextJson
+      $contextJson,
+      "$file:$line",
+      $userIdStr ?: '-',
+      $tagsStr ?: '-'
     ]) . PHP_EOL;
 
     // Obtener ruta y escribir

@@ -1,6 +1,5 @@
 .tabs-component {
   width: 100%;
-  position: relative;
 }
 
 .tabs-header {
@@ -15,13 +14,13 @@
   overflow-y: hidden;
   
   /* Ocultar scrollbar pero mantener funcionalidad */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   
   /* Smooth scroll */
   scroll-behavior: smooth;
   
-  /* Posición relativa para el degradado */
+  /* Posición relativa para los degradados */
   position: relative;
 }
 
@@ -30,22 +29,43 @@
   display: none;
 }
 
-/* Degradado blanco a la derecha cuando hay overflow */
+/* Degradado DERECHA */
 .tabs-header::after {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 40px;
-  background: linear-gradient(to left, #f8f9fa 0%, transparent 100%);
+  width: 60px;
+  background: linear-gradient(to left, #f8f9fa 30%, transparent 100%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: 10;
 }
 
-/* Mostrar degradado solo cuando hay scroll disponible */
-.tabs-header.has-overflow::after {
+/* Degradado IZQUIERDA */
+.tabs-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  background: linear-gradient(to right, #f8f9fa 30%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+/* Mostrar degradado derecho cuando hay overflow a la derecha */
+.tabs-header.has-overflow-right::after {
+  opacity: 1;
+}
+
+/* Mostrar degradado izquierdo cuando hay scroll hacia la izquierda */
+.tabs-header.has-overflow-left::before {
   opacity: 1;
 }
 
@@ -62,6 +82,10 @@
   /* Evitar que se contraigan */
   flex-shrink: 0;
   white-space: nowrap;
+  
+  /* Posición y z-index para que el degradado quede encima */
+  position: relative;
+  z-index: 1;
 }
 
 .tab-btn:hover {

@@ -87,7 +87,7 @@ class datatable {
           }
 
           // Agregar cache buster
-          const cacheBuster = window.appConfig?.cache?.views ? '' : `?t=${Date.now()}`;
+          const cacheBuster = `?t=${window.VERSION}`;
           
           logger.debug('com:datatable', `Cargando datos de: ${url}`);
           
