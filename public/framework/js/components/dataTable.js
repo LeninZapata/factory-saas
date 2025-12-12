@@ -31,8 +31,15 @@ class datatable {
 
         // Mapear propiedades de 'list' a 'datatable'
         if (actualConfig.data && !actualConfig.source) {
-          actualConfig.source = actualConfig.data;
-          logger.debug('com:datatable', `Mapeando: data → source`);
+          let source = actualConfig.data;
+
+          // Si NO empieza con "extensions/", agregarla
+          if (!source.startsWith('extensions/') && !source.startsWith('api/')) {
+            source = `extensions/${source}`;
+          }
+
+          actualConfig.source = source;
+          logger.debug('com:datatable', `Mapeando: data (${actualConfig.data}) → source (${source})`);
         }
 
         // Remover propiedades específicas de RN (no aplican en web)
@@ -86,53 +93,112 @@ class datatable {
   }
 
   static async loadData(config, extensionName) {
-    try {
-      if (config.source) {
-        const isApiEndpoint = config.source.startsWith('api/') || config.source.startsWith('/api/');
+    const source = config.source;
 
-        if (isApiEndpoint) {
-          const endpoint = config.source.startsWith('/') ? config.source : `/${config.source}`;
-          const response = await api.get(endpoint);
-
-          if (response.success && response.data) return response.data;
-          return response;
-        } else {
-          // Si termina en .json, es una ruta COMPLETA (no agregar prefijo de extension)
-          let url;
-          if (config.source.endsWith('.json')) {
-            url = config.source.startsWith('http')
-              ? config.source
-              : window.BASE_URL + config.source;
-          } else {
-            // Si NO termina en .json y hay extension, agregar prefijo del extension
-            if (extensionName && !config.source.startsWith('extensions/')) {
-              url = `${window.BASE_URL}extensions/${extensionName}/${config.source}`;
-            } else {
-              url = window.BASE_URL + config.source;
-            }
-          }
-
-          // Agregar cache buster
-          const cacheBuster = `?t=${window.VERSION}`;
-
-          logger.debug('com:datatable', `Cargando datos de: ${url}`);
-
-          const response = await fetch(url + cacheBuster);
-          if (!response.ok) {
-            logger.error('com:datatable', `Error ${response.status} al cargar: ${url}`);
-            throw new Error(`Error ${response.status} loading data`);
-          }
-          return await response.json();
-        }
-      }
-
-      logger.error('com:datatable', 'No se especificó source');
-      return [];
-
-    } catch (error) {
-      logger.error('com:datatable', 'Error loading data:', error);
+    if (!source) {
+      logger.warn('com:datatable', 'No source specified');
       return [];
     }
+
+    try {
+      // Detectar tipo de source
+      const isApi = source.startsWith('api/');
+      const isExternal = source.startsWith('http://') || source.startsWith('https://');
+      const isAbsolute = source.startsWith('/');
+      const hasExtensions = source.startsWith('extensions/');
+
+      let finalUrl;
+
+      if (isApi) {
+        // API → usar api.get()
+        logger.debug('com:datatable', `Cargando desde API: ${source}`);
+        const response = await api.get(source);
+        return this.normalizeData(response);
+
+      } else if (isExternal) {
+        // URL externa → usar tal cual
+        logger.debug('com:datatable', `Cargando desde URL externa: ${source}`);
+        finalUrl = source;
+
+      } else if (isAbsolute) {
+        // Ruta absoluta → usar tal cual
+        logger.debug('com:datatable', `Cargando desde ruta absoluta: ${source}`);
+        finalUrl = `${window.BASE_URL}${source.substring(1)}`;
+
+      } else if (hasExtensions) {
+        // Ya tiene "extensions/" → usar tal cual
+        logger.debug('com:datatable', `Cargando desde ruta con extensions/: ${source}`);
+        finalUrl = `${window.BASE_URL}${source}`;
+
+      } else {
+        // Ruta relativa → agregar "extensions/" automáticamente
+        logger.debug('com:datatable', `Cargando mock: ${source} → extensions/${source}`);
+        finalUrl = `${window.BASE_URL}extensions/${source}`;
+      }
+
+      // Agregar cache buster
+      const cacheBuster = `?v=${window.VERSION}`;
+      const response = await fetch(finalUrl + cacheBuster);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return this.normalizeData(data);
+
+    } catch (error) {
+      logger.error('com:datatable', `Error cargando datos desde ${source}:`, error);
+      return [];
+    }
+  }
+
+  static normalizeData(response) {
+    // Si la respuesta es null o undefined, retornar array vacío
+    if (!response) {
+      logger.debug('com:datatable', 'Response is null/undefined - returning empty array');
+      return [];
+    }
+
+    // Si ya es un array, retornarlo directamente
+    if (Array.isArray(response)) {
+      logger.debug('com:datatable', `Data is array with ${response.length} items`);
+      return response;
+    }
+
+    // Si es un objeto con propiedad 'data' (formato API común)
+    if (typeof response === 'object' && response.data) {
+      if (Array.isArray(response.data)) {
+        logger.debug('com:datatable', `Data extracted from response.data (${response.data.length} items)`);
+        return response.data;
+      }
+    }
+
+    // Si es un objeto con propiedad 'results' (otro formato API común)
+    if (typeof response === 'object' && response.results) {
+      if (Array.isArray(response.results)) {
+        logger.debug('com:datatable', `Data extracted from response.results (${response.results.length} items)`);
+        return response.results;
+      }
+    }
+
+    // Si es un objeto con propiedad 'items'
+    if (typeof response === 'object' && response.items) {
+      if (Array.isArray(response.items)) {
+        logger.debug('com:datatable', `Data extracted from response.items (${response.items.length} items)`);
+        return response.items;
+      }
+    }
+
+    // Si es un objeto simple (no array), convertirlo a array de un elemento
+    if (typeof response === 'object') {
+      logger.debug('com:datatable', 'Converting single object to array');
+      return [response];
+    }
+
+    // Cualquier otra cosa, retornar array vacío
+    logger.warn('com:datatable', 'Unexpected response format - returning empty array', response);
+    return [];
   }
 
   static generateHtml(tableId, config, data) {
@@ -333,21 +399,39 @@ class datatable {
 
   static renderActions(row, actions) {
     return Object.entries(actions).map(([key, action]) => {
-      // ✅ Validar role antes de renderizar el botón
+      // Validar acceso por rol
       if (!this.hasRoleAccess(action)) return '';
-
-      const onclick = this.replaceVars(action.onclick, row);
-
-      // ⚠️ IMPORTANTE: Traducir el nombre de la acción igual que las columnas
+      
+      // Traducir label
       const actionLabel = this.translateLabel(action.name);
-
+      
+      // Determinar click handler (PRIORIDAD: action > onclick)
+      let clickHandler = '';
+      
+      if (action.action) {
+        // Usar actionHandler con variables reemplazadas
+        const actionStr = this.replaceVars(action.action, row);
+        // Escapar comillas simples para uso en HTML
+        const escapedAction = actionStr.replace(/'/g, "\\'");
+        clickHandler = `actionHandler.handle('${escapedAction}')`;
+        
+      } else if (action.onclick) {
+        // Usar onclick tradicional (backward compatibility)
+        clickHandler = this.replaceVars(action.onclick, row);
+        
+      } else {
+        // Fallback: log de warning
+        clickHandler = `console.warn('No action defined for ${key}')`;
+      }
+      
+      // Construir data attributes (para dataLoader si existe)
       let dataAttrs = '';
       if (action.dataLoader) {
         const loaderConfig = JSON.stringify(action.dataLoader).replace(/"/g, '&quot;');
         dataAttrs = ` data-loader-config="${loaderConfig}" data-row-id="${row.id || row.ID || ''}"`;
       }
-
-      return `<button class="btn btn-sm btn-secondary" onclick="${onclick}"${dataAttrs}>${actionLabel}</button>`;
+      
+      return `<button class="btn btn-sm btn-secondary" onclick="${clickHandler}"${dataAttrs}>${actionLabel}</button>`;
     }).join(' ').trim();
   }
 

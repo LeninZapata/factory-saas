@@ -1845,7 +1845,7 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 2. **Archivos JSON** (con `.json` = ruta completa)
    ```json
    {
-     "source": "extensions/inventario/views/mock/productos.json"
+     "source": "inventario/views/mock/productos.json"
    }
    ```
    → Carga desde ruta exacta (no agrega prefijo)
@@ -1853,7 +1853,7 @@ También puedes cargar formularios y componentes dentro de HTML usando:
 3. **Archivos JSON de otro extension**
    ```json
    {
-     "source": "extensions/otro-extension/data/clientes.json"
+     "source": "otro-extension/data/clientes.json"
    }
    ```
    → Permite cargar datos de cualquier extension
@@ -1885,7 +1885,7 @@ También puedes cargar formularios y componentes dentro de HTML usando:
   "type": "component",
   "component": "datatable",
   "config": {
-    "source": "extensions/clientes/views/mock/clientes.json",
+    "source": "clientes/views/mock/clientes.json",
     "columns": [
       {
         "id": { "name": "i18n:clientes.column.id", "width": "80px" }

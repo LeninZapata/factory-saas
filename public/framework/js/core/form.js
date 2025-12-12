@@ -196,7 +196,7 @@ class form {
     return fields.map((field) => {
       // ✅ Normalizar tipo ANTES de procesar
       const normalizedField = this.normalizeFieldType(field);
-      
+
       // ✅ Validar role antes de renderizar
       if (!this.hasRoleAccess(normalizedField)) return '';
 
@@ -460,16 +460,47 @@ class form {
       ${classNames ? `class="${classNames}"` : ''}
     `.trim();
 
+    // Procesar estilos
+    const styleAttr = this.buildStyleAttr(field.style);
+
+    // Procesar props custom
+    const propsAttr = this.buildPropsAttr(field.props);
+
     switch(field.type) {
       case 'button':
         const buttonI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
-        return `<button type="${field.action || 'button'}" class="btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}" ${buttonI18n} ${field.onclick ? `onclick="${field.onclick}"` : ''}>${label}</button>`;
+        // Determinar el click handler
+        let clickHandler = '';
+
+        if (field.action) {
+          // Prioridad 1: Usar actionHandler para acciones abstractas
+          // Escapar comillas para uso en HTML
+          const escapedAction = field.action.replace(/"/g, '&quot;');
+          clickHandler = `actionHandler.handle('${escapedAction}')`;
+
+        } else if (field.onclick) {
+          // Prioridad 2: Usar onclick tradicional (backward compatibility)
+          clickHandler = field.onclick;
+
+        } else if (field.type === 'submit') {
+          // Prioridad 3: Submit form si es tipo submit
+          const formId = field.formId || 'form';
+          clickHandler = `form.submit('${formId}')`;
+        }
+
+        // Construir atributos del botón
+        //const btnType = field.type === 'submit' ? 'submit' : 'button';
+        const btnClass = `btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}`;
+        const onclickAttr = clickHandler ? `onclick="${clickHandler}"` : '';
+
+        // const btnPropsAttr = this.buildPropsAttr(field.props);
+        return `<button class="${btnClass}" ${buttonI18n} ${onclickAttr} ${propsAttr}>${label}</button>`;
 
       case 'select':
         return `
           <div class="form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
-            <select ${common}>
+            <select ${common} ${styleAttr} ${propsAttr}>
               <option value="">Selecciona...</option>
               ${field.options?.map(opt => {
                 const optI18n = opt.label?.startsWith('i18n:') ? `data-i18n="${opt.label.replace('i18n:', '')}"` : '';
@@ -483,7 +514,7 @@ class form {
         return `
           <div class="form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
-            <textarea ${common}></textarea>
+            <textarea ${common} ${styleAttr} ${propsAttr}></textarea>
             <span class="form-error"></span>
           </div>`;
 
@@ -491,7 +522,7 @@ class form {
         return `
           <div class="form-group form-checkbox">
             <label ${labelI18n}>
-              <input type="checkbox" name="${path}" ${field.required ? 'required' : ''}>
+              <input type="checkbox" name="${path}" ${field.required ? 'required' : ''} ${styleAttr} ${propsAttr}>
               ${label}${requiredAsterisk}
             </label>
             <span class="form-error"></span>
@@ -501,7 +532,7 @@ class form {
         return `
           <div class="form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
-            <input type="${field.type}" ${common}>
+            <input type="${field.type}" ${common} ${styleAttr} ${propsAttr}>
             <span class="form-error"></span>
           </div>`;
     }
@@ -851,14 +882,20 @@ class form {
 
     logger.debug('core:form', `Llenando formulario ${formId} con datos:`, data);
 
-    // Procesar campos del schema
-    if (schema.fields) {
-      schema.fields.forEach(field => {
+    // Procesar campos recursivamente
+    const processFields = (fields) => {
+      if (!fields) return;
+
+      fields.forEach(field => {
         if (field.type === 'repeatable') {
-          // Llenar repeatable
           this.fillRepeatable(formEl, field, data, '');
-        } else {
-          // Campo normal
+        } else if (field.type === 'group' && field.fields) {
+          processFields(field.fields);
+        } else if (field.type === 'grouper' && field.groups) {
+          field.groups.forEach(group => {
+            if (group.fields) processFields(group.fields);
+          });
+        } else if (field.name) {
           const value = data[field.name];
           if (value !== undefined && value !== null) {
             const input = formEl.querySelector(`[name="${field.name}"]`);
@@ -868,7 +905,9 @@ class form {
           }
         }
       });
-    }
+    };
+
+    processFields(schema.fields);
   }
 
   // Llenar campos repetibles (RECURSIVO - funciona en cualquier nivel)
@@ -1171,6 +1210,58 @@ class form {
 
     // Validar si el role coincide
     return userRole === field.role;
+  }
+
+  static buildStyleAttr(styleConfig) {
+    if (!styleConfig) return '';
+
+    // Si es string, usar tal cual (backward compatibility)
+    if (typeof styleConfig === 'string') {
+      return `style="${styleConfig}"`;
+    }
+
+    // Si es objeto, usar styleHandler
+    if (typeof styleConfig === 'object') {
+      if (!window.styleHandler) {
+        logger.warn('cor:form', 'styleHandler no disponible');
+        return '';
+      }
+
+      const inlineStyle = styleHandler.resolve(styleConfig);
+      return inlineStyle ? `style="${inlineStyle}"` : '';
+    }
+
+    return '';
+  }
+
+  /**
+   * Construir atributos custom desde props (estilo React Native)
+   * Convierte: {autoCapitalize: "none"} → autocapitalize="none"
+   */
+  static buildPropsAttr(props) {
+    if (!props || typeof props !== 'object') return '';
+
+    const attrs = [];
+
+    for (const [key, value] of Object.entries(props)) {
+      const attrName = this.camelToKebab(key);
+
+      if (value === true) {
+        attrs.push(attrName);
+      } else if (value === false || value === null || value === undefined) {
+        continue;
+      } else if (typeof value === 'object') {
+        attrs.push(`${attrName}='${JSON.stringify(value)}'`);
+      } else {
+        attrs.push(`${attrName}="${value}"`);
+      }
+    }
+
+    return attrs.join(' ');
+  }
+
+  static camelToKebab(str) {
+    return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
   }
 }
 

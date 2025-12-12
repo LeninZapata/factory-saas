@@ -20,17 +20,46 @@ class api {
     logger.info('core:api', `📡 Ejecutando: ${options.method || 'GET'} ${fullURL}`);
 
     const headers = { ...this.headers };
-    const token = auth?.getToken?.();
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-      logger.debug('core:api', `🔐 Token incluido: ${token.substring(0, 20)}...`);
-    } else {
-      logger.warn('core:api', '⚠️ NO se encontró token para esta petición');
+    // Solo agregar token si NO es skipAuth
+    if (!options.skipAuth) {
+      const token = auth?.getToken?.();
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        logger.debug('core:api', `🔐 Token incluido: ${token.substring(0, 20)}...`);
+      } else {
+        logger.warn('core:api', '⚠️ NO se encontró token para esta petición');
+      }
     }
 
     try {
       const res = await fetch(fullURL, { ...options, headers });
+
+      // Manejo de 400 Bad Request
+      if (res.status === 400) {
+        logger.error('core:api', `❌ Bad Request (400) - ${fullURL}`);
+        
+        // Intentar obtener detalles del error
+        const contentType = res.headers.get('content-type') || '';
+        let errorMsg = __('core.api.bad_request');
+        
+        if (contentType.includes('application/json')) {
+          try {
+            const errorData = await res.json();
+            errorMsg = errorData.error || errorData.message || __('core.api.bad_request');
+          } catch (parseError) {
+            // Si no puede parsear, usar mensaje genérico
+          }
+        }
+        
+        // Mostrar toast
+        if (window.toast && typeof toast.error === 'function') {
+          toast.error(errorMsg);
+        }
+        
+        throw new Error(errorMsg);
+      }
 
       // Manejo mejorado de 401
       if (res.status === 401) {
@@ -52,7 +81,15 @@ class api {
           try {
             const errorData = JSON.parse(text);
             logger.error('core:api', `❌ Error ${res.status}:`, errorData);
-            throw new Error(errorData.message || errorData.error || `HTTP ${res.status}`);
+            
+            const errorMsg = errorData.message || errorData.error || `HTTP ${res.status}`;
+            
+            // Mostrar toast para errores
+            if (window.toast && typeof toast.error === 'function') {
+              toast.error(errorMsg);
+            }
+            
+            throw new Error(errorMsg);
           } catch (parseError) {
             // JSON corrupto - probablemente tiene HTML mezclado
             logger.error('core:api', `❌ Error ${res.status} - JSON corrupto (contiene HTML/PHP)`);
@@ -156,10 +193,10 @@ class api {
     }
   }
 
-  static get = (e) => this.request(e);
-  static post = (e, d) => this.request(e, { method: 'POST', body: JSON.stringify(d) });
-  static put = (e, d) => this.request(e, { method: 'PUT', body: JSON.stringify(d) });
-  static delete = (e) => this.request(e, { method: 'DELETE' });
+  static get = (e, opts = {}) => this.request(e, opts);
+  static post = (e, d, opts = {}) => this.request(e, { method: 'POST', body: JSON.stringify(d), ...opts });
+  static put = (e, d, opts = {}) => this.request(e, { method: 'PUT', body: JSON.stringify(d), ...opts });
+  static delete = (e, opts = {}) => this.request(e, { method: 'DELETE', ...opts });
 }
 
 window.api = api;

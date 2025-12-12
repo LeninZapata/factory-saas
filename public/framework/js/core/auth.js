@@ -90,7 +90,8 @@ class auth {
     try {
       logger.debug('core:auth', 'Iniciando login...');
 
-      const response = await api.post(this.config.api.login, credentials);
+      // ✅ CAMBIO AQUÍ: Agregar { skipAuth: true }
+      const response = await api.post(this.config.api.login, credentials, { skipAuth: true });
 
       logger.debug('core:auth', 'Respuesta del servidor:', response);
 

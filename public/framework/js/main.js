@@ -52,6 +52,7 @@ const SCRIPTS_TO_LOAD = [
   'js/core/event.js',
   'js/core/api.js',
   'js/core/actionHandler.js',
+  'js/core/styleHandler.js',
 
   'js/core/loader.js',
   'js/core/hook.js',

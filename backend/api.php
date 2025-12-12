@@ -19,7 +19,7 @@ require_once $path . '/app/config/consts.php';
 
 if (IS_DEV) {
   error_reporting(E_ALL);
-  ini_set('display_errors', '1');
+  ini_set('display_errors', '0');
   ini_set('log_errors', '1');
 } else {
   error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
@@ -67,7 +67,7 @@ $output = ob_get_clean();
 // Verificar si el output es JSON válido
 if (!empty($output)) {
   $trimmed = trim($output);
-  
+
   // Detectar si contiene HTML/warnings de PHP
   if (preg_match('/<br\s*\/?>|<b>|<\/b>/', $trimmed)) {
     if (IS_DEV) {
@@ -88,7 +88,7 @@ if (!empty($output)) {
     }
     exit;
   }
-  
+
   // Intentar validar JSON
   $decoded = json_decode($trimmed);
 

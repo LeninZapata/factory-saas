@@ -23,6 +23,7 @@
   "core.api.loading": "Procesando...",
   "core.api.timeout": "Tiempo de espera agotado",
   "core.api.unauthorized": "No autorizado",
+  "core.api.bad_request": "❌ Petición incorrecta: Verifica que los datos enviados sean válidos",
   "core.api.json_corrupted": "JSON corrupto con HTML mezclado",
   "core.api.backend_error": "Error en el backend",
   "core.api.html_instead_json": "Backend devolvió HTML en lugar de JSON",
@@ -104,7 +105,7 @@
   "core.view.not_found": "Vista no encontrada: {view}",
 
   "com.datatable.actions": "Acciones",
-  "com.datatable.no_data": "📭 No hay datos para mostrar",
+  "com.datatable.no_data": "🔭 No hay datos para mostrar",
   "com.datatable.yes": "Sí",
   "com.datatable.no": "No",
 

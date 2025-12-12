@@ -1,10 +1,13 @@
 por donde me quede:
-✔ idioma frontend (core) @done(10-12-2025 22:54)
-☐ recuerda la conversacion que tienes con AI donde decia que habia que hacer unos pequeños cambios
+✔ recuerda la conversacion que tienes con AI donde decia que habia que hacer unos pequeños cambios @done(11-12-2025 21:22)
   para que el sistema se adapte a react native https://claude.ai/chat/56f2b1d7-d4c1-4785-952e-f4f7b4a8570e
+☐ Rol por menu, es decir que un menu es visto solo si es por un rol especifico
+en este caso administracion solo debo verlo yo
 ☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
 en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
 SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
+☐ quitar la palabra extensiones "scripts": ["extensions/{extension_name}/assets/js/helper.js"] ya que siempre sera una asi que es redundante
+lo mismo para <div class='dynamic-form' data-form-json='extension/forms/form1'></div> porque de ley va hacer por una extension
 Despues:
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
@@ -22,3 +25,6 @@ y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente e
 una persona normal no podria ver X tab pero si un admin.
 ☐ persistencia en widgets posicion
 ☐ grouper tabs no se ve los estilos de degradados como lo hace tabs
+☐ El tipy submit el label de json debe ser su value para que cambie el txto del boton
+actualmente si pones un type : "submit" crea un boton con el texto "enviar" y label se coloca
+en una extraña posicion en si.

@@ -13,10 +13,8 @@ class admin {
     this.currentId = id;
     const data = await this.get(id);
     if (data) {
-      // Parsear config si viene como string
       const config = typeof data.config === 'string' ? JSON.parse(data.config) : (data.config || {});
 
-      // Llenar campos básicos y preferencias
       const formData = {
         username: data.user,
         email: data.email,
@@ -27,10 +25,8 @@ class admin {
       };
 
       logger.debug('ext:admin', 'Llenando formulario con datos:', formData);
-
       form.fill(formId, formData);
 
-      // Cargar permisos
       if (window.adminPermissions) adminPermissions.load(formId, data);
     }
   }
@@ -42,7 +38,6 @@ class admin {
 
     logger.debug('ext:admin', 'Datos del formulario:', validation.data);
 
-    // Construir config combinando permisos y preferencias
     const baseConfig = window.adminPermissions ? adminPermissions.getData() : { permissions: { extensions: {} }};
 
     const preferences = {
@@ -51,10 +46,7 @@ class admin {
       notifications: validation.data.preferences_notifications === 'on' || validation.data.preferences_notifications === true
     };
 
-    const config = {
-      ...baseConfig,
-      preferences
-    };
+    const config = { ...baseConfig, preferences };
 
     logger.debug('ext:admin', 'Config final:', config);
 
@@ -66,9 +58,7 @@ class admin {
       config
     };
 
-    const result = this.currentId
-      ? await this.update(this.currentId, data)
-      : await this.create(data);
+    const result = this.currentId ? await this.update(this.currentId, data) : await this.create(data);
 
     if (result) {
       toast.success(this.currentId ? '✅ Usuario actualizado' : '✅ Usuario creado');
@@ -81,30 +71,56 @@ class admin {
 
   // Refrescar tabla sin reload
   static refreshTable() {
-    if (window.datatable) {
-      datatable.refreshFirst();
+    if (window.datatable) datatable.refreshFirst();
+  }
+
+  // CRUD usando api.js directamente
+  static async create(data) {
+    try {
+      const response = await api.post(this.API, data);
+      return response.success === false ? null : (response.data || response);
+    } catch (error) {
+      logger.error('ext:admin', error);
+      return null;
     }
   }
 
-  // CRUD básico
-  static async create(data) { return this.request('POST', this.API, data); }
-  static async update(id, data) { return this.request('PUT', `${this.API}/${id}`, {...data, id}); }
-  static async delete(id) { return this.request('DELETE', `${this.API}/${id}`); }
-  static async get(id) { return this.request('GET', `${this.API}/${id}`); }
-  static async list() { return this.request('GET', this.API); }
-
-  // Request genérico
-  static async request(method, url, data = null) {
+  static async update(id, data) {
     try {
-      const response = await api[method.toLowerCase()](url, data);
-      if (response.success === false) {
-        toast.error(`❌ ${response.error || 'Error'}`);
-        return null;
-      }
-      return response.data || response;
+      const response = await api.put(`${this.API}/${id}`, {...data, id});
+      return response.success === false ? null : (response.data || response);
     } catch (error) {
       logger.error('ext:admin', error);
-      toast.error(`❌ ${error.message}`);
+      return null;
+    }
+  }
+
+  static async delete(id) {
+    try {
+      const response = await api.delete(`${this.API}/${id}`);
+      return response.success === false ? null : (response.data || response);
+    } catch (error) {
+      logger.error('ext:admin', error);
+      return null;
+    }
+  }
+
+  static async get(id) {
+    try {
+      const response = await api.get(`${this.API}/${id}`);
+      return response.success === false ? null : (response.data || response);
+    } catch (error) {
+      logger.error('ext:admin', error);
+      return null;
+    }
+  }
+
+  static async list() {
+    try {
+      const response = await api.get(this.API);
+      return response.success === false ? null : (response.data || response);
+    } catch (error) {
+      logger.error('ext:admin', error);
       return null;
     }
   }
