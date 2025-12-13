@@ -235,6 +235,14 @@
           "content": "<div style='background:#f8f9fa;padding:1.5rem;border-radius:8px;margin-top:1.5rem;'><h3>🎯 Roadmap Sugerido</h3><ol style='line-height:2;'><li><strong>Corto Plazo:</strong> Completar estilos en todos los componentes (botones, forms, modales)</li><li><strong>Medio Plazo:</strong> Sistema de clases (StyleSheet) + Navegación genérica</li><li><strong>Largo Plazo:</strong> Extraer lógica común y crear versiones React Native</li></ol><p style='margin-top:1rem;color:#6c757d;'><em>Nota: La preparación actual (Puntos 1-3) ya hace que la migración a RN sea mucho más fácil. Los JSONs y la lógica core ya están preparados.</em></p></div>"
         }
       ]
+    },
+    {
+      "id": "navigation",
+      "title": "🧭 Navegación",
+      "content": {
+        "type": "form",
+        "form_json": "ejemplos/react-native/navigation-demo"
+      }
     }
   ]
 }

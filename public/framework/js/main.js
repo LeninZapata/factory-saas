@@ -62,6 +62,7 @@ const SCRIPTS_TO_LOAD = [
   'js/core/form.js',
   'js/core/auth.js',
   'js/core/view.js',
+  'js/core/navigation.js',
   'js/core/sidebar.js',
   'js/core/layout.js',
 

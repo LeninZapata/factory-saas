@@ -60,15 +60,20 @@ class action {
   static handleNavigate(screen, params, context) {
     logger.debug('core:action', `Navigate to: ${screen}`, params);
 
-    // Web: usar view.loadView()
-    if (window.view && typeof view.loadView === 'function') {
-      view.loadView(screen, context.container || null, context.extensionContext || null, null, null, context.menuId || null);
+    // Usar navigation si está disponible
+    if (window.navigation && typeof navigation.navigate === 'function') {
+      navigation.navigate(screen, {
+        container: context.container,
+        extension: context.extensionContext,
+        menuId: context.menuId,
+        ...params
+      });
+    } else {
+      // Fallback: view.loadView() directo
+      if (window.view && typeof view.loadView === 'function') {
+        view.loadView(screen, context.container || null, context.extensionContext || null, null, null, context.menuId || null);
+      }
     }
-
-    // React Native (futuro):
-    // if (context.navigation) {
-    //   context.navigation.navigate(screen, params);
-    // }
   }
 
   static handleModal(viewPath, params, context) {
