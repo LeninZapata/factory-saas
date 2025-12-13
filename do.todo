@@ -1,4 +1,5 @@
 por donde me quede:
+☐ Validar que si es php 8.1 o superior para las apis porque sino no funciona inteernamente
 ☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
 en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
 SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
