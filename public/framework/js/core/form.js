@@ -151,15 +151,16 @@ class form {
     const target = container || document.getElementById('content');
     target.innerHTML = html;
 
-    if (data) this.fill(instanceId, data);
+    if (data) this.fill(instanceId, data, target);
 
     this.bindEventsOnce();
 
     setTimeout(() => {
-      const formEl = document.getElementById(instanceId);
+      // Buscar el formulario dentro del contexto (container) en lugar de globalmente
+      const formEl = target.querySelector(`#${instanceId}`) || document.getElementById(instanceId);
       if (formEl) {
-        this.initRepeatables(instanceId);
-        this.bindTransforms(instanceId);
+        this.initRepeatables(instanceId, target);
+        this.bindTransforms(instanceId, target);
         if (window.conditions) {
           conditions.init(instanceId);
         }
@@ -178,12 +179,13 @@ class form {
   }
 
   static render(schema) {
+    const realId = schema.id.split('-')[0]; // Extraer el id original sin timestamp
     return `
       <div class="form-container">
         ${schema.title ? `<h2>${this.t(schema.title)}</h2>` : ''}
         ${schema.description ? `<p class="form-desc">${this.t(schema.description)}</p>` : ''}
 
-        <form id="${schema.id}" data-form-id="${schema.id}" method="post">
+        <form id="${schema.id}" data-form-id="${schema.id}" data-real-id="${realId}" method="post">
           ${schema.toolbar ? `<div class="form-toolbar">${this.renderFields(schema.toolbar)}</div>` : ''}
           ${schema.fields ? this.renderFields(schema.fields) : ''}
           ${schema.statusbar ? `<div class="form-statusbar">${this.renderFields(schema.statusbar)}</div>` : ''}
@@ -469,14 +471,25 @@ class form {
     switch(field.type) {
       case 'button':
         const buttonI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
+        
+        // Extraer y remover type de props si existe (solo para buttons)
+        let btnPropsAttr = propsAttr;
+        let extractedType = null;
+        if (field.props?.type) {
+          extractedType = field.props.type;
+          const propsWithoutType = { ...field.props };
+          delete propsWithoutType.type;
+          btnPropsAttr = this.buildPropsAttr(propsWithoutType);
+        }
+        
         // Determinar el click handler
         let clickHandler = '';
 
         if (field.action) {
-          // Prioridad 1: Usar actionHandler para acciones abstractas
+          // Prioridad 1: Usar action para acciones abstractas
           // Escapar comillas para uso en HTML
           const escapedAction = field.action.replace(/"/g, '&quot;');
-          clickHandler = `actionHandler.handle('${escapedAction}')`;
+          clickHandler = `actionProxy.handle('${escapedAction}', {}, {button: this, event: event})`;
 
         } else if (field.onclick) {
           // Prioridad 2: Usar onclick tradicional (backward compatibility)
@@ -489,12 +502,11 @@ class form {
         }
 
         // Construir atributos del botón
-        //const btnType = field.type === 'submit' ? 'submit' : 'button';
+        const btnType = extractedType === 'submit' ? 'submit' : 'button';
         const btnClass = `btn ${field.style === 'secondary' ? 'btn-secondary' : 'btn-primary'}`;
         const onclickAttr = clickHandler ? `onclick="${clickHandler}"` : '';
 
-        // const btnPropsAttr = this.buildPropsAttr(field.props);
-        return `<button class="${btnClass}" ${buttonI18n} ${onclickAttr} ${propsAttr}>${label}</button>`;
+        return `<button type="${btnType}" class="${btnClass}" ${buttonI18n} ${onclickAttr} ${btnPropsAttr}>${label}</button>`;
 
       case 'select':
         return `
@@ -565,8 +577,12 @@ class form {
   // FASE 2: REPETIBLES CON ANIDACIÓN
   // ============================================================================
 
-  static initRepeatables(formId) {
-    const formEl = document.getElementById(formId);
+  static initRepeatables(formId, container = null) {
+    // Buscar el formulario dentro del contexto o globalmente
+    const formEl = container
+      ? container.querySelector(`#${formId}`)
+      : document.getElementById(formId);
+
     if (!formEl) {
       logger.error('core:form', `Formulario no encontrado: ${formId}`);
       return;
@@ -829,8 +845,11 @@ class form {
     current[keys[keys.length - 1]] = value;
   }
 
-  static bindTransforms(formId) {
-    const formEl = document.getElementById(formId);
+  static bindTransforms(formId, container = null) {
+    const formEl = container
+      ? container.querySelector(`#${formId}`)
+      : document.getElementById(formId);
+
     if (!formEl) return;
 
     const transforms = {
@@ -867,8 +886,12 @@ class form {
     });
   }
 
-  static fill(formId, data) {
-    const formEl = document.getElementById(formId);
+  static fill(formId, data, container = null) {
+    // Buscar el formulario dentro del contexto (modal) o globalmente
+    const formEl = container
+      ? container.querySelector(`#${formId}`)
+      : document.getElementById(formId);
+
     if (!formEl) {
       logger.warn('core:form', `Formulario ${formId} no encontrado`);
       return;
@@ -1262,6 +1285,59 @@ class form {
 
   static camelToKebab(str) {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  }
+
+  // Agregar error manualmente a un campo
+  static setError(formId, fieldName, errorMessage) {
+    // Buscar formulario por data-real-id
+    const formEl = document.querySelector(`[data-real-id="${formId}"]`) || document.getElementById(formId);
+    if (!formEl) return;
+
+    const input = formEl.querySelector(`[name="${fieldName}"]`);
+    if (!input) return;
+
+    const formGroup = input.closest('.form-group');
+    if (!formGroup) return;
+
+    formGroup.classList.add('has-error');
+    const errorEl = formGroup.querySelector('.form-error');
+    if (errorEl) {
+      errorEl.textContent = errorMessage;
+      errorEl.style.display = 'block';
+    }
+  }
+
+  // Quitar error manualmente de un campo
+  static clearError(formId, fieldName) {
+    // Buscar formulario por data-real-id
+    const formEl = document.querySelector(`[data-real-id="${formId}"]`) || document.getElementById(formId);
+    if (!formEl) return;
+
+    const input = formEl.querySelector(`[name="${fieldName}"]`);
+    if (!input) return;
+
+    const formGroup = input.closest('.form-group');
+    if (!formGroup) return;
+
+    formGroup.classList.remove('has-error');
+    const errorEl = formGroup.querySelector('.form-error');
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
+  }
+
+  // Limpiar todos los errores del formulario
+  static clearAllErrors(formId) {
+    // Buscar formulario por data-real-id
+    const formEl = document.querySelector(`[data-real-id="${formId}"]`) || document.getElementById(formId);
+    if (!formEl) return;
+
+    formEl.querySelectorAll('.form-error').forEach(el => {
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+    formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
   }
 }
 

@@ -100,6 +100,10 @@ class datatable {
       return [];
     }
 
+    // Generar clave de caché
+    const cacheKey = `datatable_${source.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const cacheTTL = config.cacheTTL || 5 * 60 * 1000; // 5 minutos default
+
     try {
       // Detectar tipo de source
       const isApi = source.startsWith('api/');
@@ -108,12 +112,17 @@ class datatable {
       const hasExtensions = source.startsWith('extensions/');
 
       let finalUrl;
+      let data;
 
       if (isApi) {
         // API → usar api.get()
         logger.debug('com:datatable', `Cargando desde API: ${source}`);
         const response = await api.get(source);
-        return this.normalizeData(response);
+        data = this.normalizeData(response);
+
+        // Guardar en caché
+        cache.set(cacheKey, data, cacheTTL);
+        logger.debug('com:datatable', `Datos guardados en caché: ${cacheKey}`);
 
       } else if (isExternal) {
         // URL externa → usar tal cual
@@ -136,19 +145,35 @@ class datatable {
         finalUrl = `${window.BASE_URL}extensions/${source}`;
       }
 
-      // Agregar cache buster
-      const cacheBuster = `?v=${window.VERSION}`;
-      const response = await fetch(finalUrl + cacheBuster);
+      // Para archivos JSON (no APIs)
+      if (finalUrl) {
+        const cacheBuster = `?v=${window.VERSION}`;
+        const response = await fetch(finalUrl + cacheBuster);
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        data = await response.json();
+        data = this.normalizeData(data);
+
+        // Guardar en caché
+        cache.set(cacheKey, data, cacheTTL);
+        logger.debug('com:datatable', `Datos guardados en caché: ${cacheKey}`);
       }
 
-      const data = await response.json();
-      return this.normalizeData(data);
+      return data;
 
     } catch (error) {
       logger.error('com:datatable', `Error cargando datos desde ${source}:`, error);
+
+      // Intentar obtener del caché si falla la petición
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        logger.warn('com:datatable', `Usando datos cacheados debido a error: ${cacheKey}`);
+        return cachedData;
+      }
+
       return [];
     }
   }
@@ -401,36 +426,36 @@ class datatable {
     return Object.entries(actions).map(([key, action]) => {
       // Validar acceso por rol
       if (!this.hasRoleAccess(action)) return '';
-      
+
       // Traducir label
       const actionLabel = this.translateLabel(action.name);
-      
+
       // Determinar click handler (PRIORIDAD: action > onclick)
       let clickHandler = '';
-      
+
       if (action.action) {
         // Usar actionHandler con variables reemplazadas
         const actionStr = this.replaceVars(action.action, row);
         // Escapar comillas simples para uso en HTML
         const escapedAction = actionStr.replace(/'/g, "\\'");
         clickHandler = `actionHandler.handle('${escapedAction}')`;
-        
+
       } else if (action.onclick) {
         // Usar onclick tradicional (backward compatibility)
         clickHandler = this.replaceVars(action.onclick, row);
-        
+
       } else {
         // Fallback: log de warning
         clickHandler = `console.warn('No action defined for ${key}')`;
       }
-      
+
       // Construir data attributes (para dataLoader si existe)
       let dataAttrs = '';
       if (action.dataLoader) {
         const loaderConfig = JSON.stringify(action.dataLoader).replace(/"/g, '&quot;');
         dataAttrs = ` data-loader-config="${loaderConfig}" data-row-id="${row.id || row.ID || ''}"`;
       }
-      
+
       return `<button class="btn btn-sm btn-secondary" onclick="${clickHandler}"${dataAttrs}>${actionLabel}</button>`;
     }).join(' ').trim();
   }
@@ -536,6 +561,50 @@ class datatable {
 
     // Validar si el role coincide
     return userRole === action.role;
+  }
+
+  // ============================================
+  // HELPERS DE CACHÉ
+  // ============================================
+
+  // Obtener datos cacheados de una tabla por source
+  static getCached(source) {
+    const cacheKey = `datatable_${source.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const cached = cache.get(cacheKey);
+
+    // Si es null o undefined, retornar null
+    if (!cached) return null;
+
+    // Si ya es un array, retornarlo directamente
+    if (Array.isArray(cached)) return cached;
+
+    // Si es un objeto con propiedad data (algunas APIs)
+    if (cached.data && Array.isArray(cached.data)) return cached.data;
+
+    // Si es un objeto simple, convertirlo a array
+    if (typeof cached === 'object') return [cached];
+
+    return null;
+  }
+
+  // Buscar un registro en caché por ID
+  static findInCache(source, id, idField = 'id') {
+    const data = this.getCached(source);
+    if (!data || !Array.isArray(data)) return null;
+    return data.find(item => item[idField] == id);
+  }
+
+  // Filtrar registros en caché
+  static filterInCache(source, filterFn) {
+    const data = this.getCached(source);
+    if (!data || !Array.isArray(data)) return [];
+    return data.filter(filterFn);
+  }
+
+  // Limpiar caché de una tabla específica
+  static clearCache(source) {
+    const cacheKey = `datatable_${source.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    cache.delete(cacheKey);
   }
 }
 

@@ -3,12 +3,12 @@
   "title": "⚙️ Panel de Administración",
   "type": "tabs",
   "scripts": [
-    "extensions/admin/assets/js/permissions.js",
-    "extensions/admin/assets/js/admin-permissions.js",
-    "extensions/admin/assets/js/admin.js"
+    "admin/assets/js/permissions.js",
+    "admin/assets/js/admin-permissions.js",
+    "admin/assets/js/admin.js"
   ],
   "styles": [
-    "extensions/admin/assets/css/permissions.css"
+    "admin/assets/css/permissions.css"
   ],
   "tabs": [
     {
@@ -22,7 +22,7 @@
         },
         {
           "type": "html",
-          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initForm(formId);}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button></div>"
+          "content": "<div class='view-toolbar' style='display: flex; gap: 0.5rem; margin: 1rem 0;'><button class='btn btn-primary' onclick=\"modal.open('core:user/forms/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.openNew(formId);}})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='admin.refresh();toast.info(\"i18n:admin.refresh.success\")'>🔄 Actualizar</button></div>"
         },
         {
           "type": "component",
@@ -32,7 +32,7 @@
             "columns": [
               {
                 "id": {
-                  "name": "i18n:admin:user.column.id",
+                  "name": "i18n:admin.user.column.id",
                   "width": "80px",
                   "align": "center",
                   "sortable": true
@@ -40,20 +40,20 @@
               },
               {
                 "user": {
-                  "name": "i18n:admin:user.column.username",
+                  "name": "i18n:admin.user.column.username",
                   "width": "200px",
                   "sortable": true
                 }
               },
               {
                 "email": {
-                  "name": "i18n:admin:user.column.email",
+                  "name": "i18n:admin.user.column.email",
                   "width": "250px"
                 }
               },
               {
                 "dc": {
-                  "name": "i18n:admin:user.column.created",
+                  "name": "i18n:admin.user.column.created",
                   "format": "datetime",
                   "width": "180px",
                   "align": "center"
@@ -61,7 +61,7 @@
               },
               {
                 "role": {
-                  "name": "i18n:admin:user.column.role",
+                  "name": "i18n:admin.user.column.role",
                   "format": "uppercase",
                   "align": "center"
                 }
@@ -71,12 +71,12 @@
               "edit": {
                 "name": "✏️ Editar",
                 "role": "admin",
-                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.initFormWithData(formId, {id});}})"
+                "onclick": "modal.open('core:user/forms/user-form', {title: '✏️ Editar Usuario', width: '90%', maxWidth: '900px', showFooter: false, afterRender: function(formId){admin.openEdit(formId, {id});}})"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
                 "role": "admin",
-                "onclick": "if(confirm('¿Eliminar usuario {user}?')) admin.delete({id}).then(r => r && location.reload())"
+                "onclick": "if(confirm('¿Eliminar usuario {user}?')) admin.delete({id}).then(r => r && admin.refresh())"
               }
             }
           }

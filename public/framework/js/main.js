@@ -47,12 +47,12 @@ window.appConfig = {
 const SCRIPTS_TO_LOAD = [
   // Core
   'js/core/logger.js',
+  'js/core/action.js',
   'js/core/cache.js',
   'js/core/i18n.js',
   'js/core/event.js',
   'js/core/api.js',
-  'js/core/actionHandler.js',
-  'js/core/styleHandler.js',
+  'js/core/style.js',
 
   'js/core/loader.js',
   'js/core/hook.js',

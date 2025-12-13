@@ -154,18 +154,17 @@
   ],
   "statusbar": [
     {
-      "name": "submit",
       "type": "button",
-      "label": "💾 Guardar Usuario",
-      "action": "submit",
-      "onclick": "event.preventDefault(); admin.save(this.closest('form').id);"
+      "label": "💾 Guardar",
+      "action": "submit:admin.save",
+      "_onclick": "event.preventDefault(); admin.save(this.closest('form').id);"
     },
     {
-      "name": "cancel",
       "type": "button",
       "label": "❌ Cancelar",
       "style": "secondary",
-      "onclick": "event.preventDefault(); modal.closeAll();"
+      "action": "call:modal.closeAll",
+      "_onclick": "modal.closeAll()"
     }
   ]
 }

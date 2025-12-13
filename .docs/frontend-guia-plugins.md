@@ -184,6 +184,71 @@ public/extensions/miExt/
 
 ---
 
+## 🏗️ Estructura CRUD para Extensions
+
+Para extensions que manejan datos (create, read, update, delete), usa esta estructura normalizada en `assets/js/miExtension.js`:
+
+```javascript
+class miExtension {
+  // APIs del extension
+  static apis = {
+    main: '/api/recurso',     // CRUD principal
+    options: '/api/opciones'  // APIs auxiliares (selects, etc)
+  };
+
+  static currentId = null;
+
+  // FORMULARIOS
+  static openNew(formId) { this.currentId = null; }
+  static async openEdit(formId, id) { 
+    this.currentId = id;
+    const data = await this.get(id);
+    if (data) this.fillForm(formId, data);
+  }
+  static fillForm(formId, data) { 
+    form.fill(formId, { campo1: data.campo1 }); 
+  }
+
+  // GUARDAR
+  static async save(formId) {
+    const validation = form.validate(formId);
+    if (!validation.success) return toast.error(validation.message);
+    const body = this.buildBody(validation.data);
+    const result = this.currentId 
+      ? await this.update(this.currentId, body) 
+      : await this.create(body);
+    if (result) {
+      toast.success(this.currentId ? 'Actualizado' : 'Creado');
+      setTimeout(() => { modal.closeAll(); this.refresh(); }, 800);
+    }
+  }
+  static buildBody(formData) { 
+    return { campo1: formData.campo1 }; 
+  }
+
+  // CRUD (métodos estándar)
+  static async create(data) { /* api.post */ }
+  static async get(id) { /* api.get */ }
+  static async update(id, data) { /* api.put */ }
+  static async delete(id) { /* api.delete */ }
+  static async list() { /* api.get */ }
+
+  // UTILIDADES
+  static refresh() { if (window.datatable) datatable.refreshFirst(); }
+}
+
+window.miExtension = miExtension;
+```
+
+**Ventajas:**
+- ✅ Minimalista y fácil de replicar
+- ✅ Validación automática con `form.validate()`
+- ✅ Separación clara: formularios, guardar, CRUD, utilidades
+- ✅ `buildBody()` centraliza mapeo de datos
+- ✅ Actualización automática de datatable
+
+---
+
 ## 1️⃣ index.json - Configuración Principal
 
 Este es el archivo más importante. Define el menú, scripts y configuración del extension.
@@ -1748,13 +1813,13 @@ public/extensions/taskmanager/
   "task.priority.low": "Baja",
   "task.priority.medium": "Media",
   "task.priority.high": "Alta",
-  "title.tasks": "Gestión de Tareas",
-  "title.dashboard": "Dashboard de Tareas",
-  "description.tasks": "Administra tus tareas diarias",
-  "button.new_task": "Nueva Tarea",
-  "message.task_completed": "Tarea completada exitosamente",
-  "message.task_deleted": "Tarea eliminada",
-  "message.confirm_delete": "¿Está seguro de eliminar esta tarea?"
+  "task.title.tasks": "Gestión de Tareas",
+  "task.title.dashboard": "Dashboard de Tareas",
+  "task.description.tasks": "Administra tus tareas diarias",
+  "task.button.new_task": "Nueva Tarea",
+  "task.message.task_completed": "Tarea completada exitosamente",
+  "task.message.task_deleted": "Tarea eliminada",
+  "task.message.confirm_delete": "¿Está seguro de eliminar esta tarea?"
 }
 ```
 
@@ -1769,7 +1834,8 @@ toast.success(__('taskmanager:message.task_completed'));
 // En formularios JSON:
 {
   "label": "i18n:taskmanager:task.column.title",
-  "placeholder": "i18n:taskmanager:placeholder.enter_title"
+  "placeholder": "i18n:taskmanager:placeholder.enter_title",
+  "onclick": "toast.info(\"i18n:task.message.task_deleted\")"
 }
 ```
 

@@ -34,7 +34,12 @@ class sidebar {
         const allMenuItems = [...baseMenu, ...pluginMenus];
         const uniqueMenuItems = this.removeDuplicateMenus(allMenuItems);
 
-        this.menuData.menu = uniqueMenuItems;
+        // Filtrar menús por role del usuario
+        const filteredMenuItems = this.filterMenusByRole(uniqueMenuItems);
+
+        this.menuData.menu = filteredMenuItems;
+
+        logger.debug('core:sidebar', `Menús después de filtrar por role: ${filteredMenuItems.length}`);
       } else {
         logger.warn('core:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
         this.menuData.menu = [
@@ -315,6 +320,44 @@ class sidebar {
     };
 
     return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
+  }
+
+  // Validar acceso por role (igual que form.js)
+  static hasRoleAccess(menuItem) {
+    // Si el menú no tiene restricción de role, permitir acceso
+    if (!menuItem.role) return true;
+
+    // Obtener role del usuario actual
+    const userRole = window.auth?.user?.role;
+
+    // Si no hay usuario autenticado, denegar acceso
+    if (!userRole) return false;
+
+    // Validar si el role coincide
+    return userRole === menuItem.role;
+  }
+
+  // Filtrar menús por role de forma recursiva
+  static filterMenusByRole(menuItems) {
+    return menuItems
+      .filter(item => this.hasRoleAccess(item))
+      .map(item => {
+        // Si tiene submenús, filtrarlos también
+        if (item.items && item.items.length > 0) {
+          return {
+            ...item,
+            items: this.filterMenusByRole(item.items)
+          };
+        }
+        return item;
+      })
+      .filter(item => {
+        // Si es un menú con submenús y todos fueron filtrados, eliminarlo también
+        if (item.items) {
+          return item.items.length > 0;
+        }
+        return true;
+      });
   }
 }
 

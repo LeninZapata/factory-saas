@@ -232,10 +232,21 @@ class view {
   static async loadViewResources(viewData) {
     if (viewData.scripts || viewData.styles) {
       try {
-        await loader.loadResources(
-          viewData.scripts || [],
-          viewData.styles || []
-        );
+        // Normalizar rutas agregando 'extensions/' si no lo tienen
+        const normalizeResources = (resources = []) => {
+          return resources.map(path => {
+            if (!path) return path;
+            // Si ya empieza con 'extensions/', dejarlo como está
+            if (path.startsWith('extensions/')) return path;
+            // Si NO empieza con 'extensions/', agregarlo
+            return `extensions/${path}`;
+          });
+        };
+
+        const normalizedScripts = normalizeResources(viewData.scripts || []);
+        const normalizedStyles = normalizeResources(viewData.styles || []);
+
+        await loader.loadResources(normalizedScripts, normalizedStyles);
       } catch (error) {
         logger.error('core:view', 'Error cargando recursos:', error);
       }

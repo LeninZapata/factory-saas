@@ -31,7 +31,15 @@ class hook {
           }
 
           if (pluginConfig.scripts?.length > 0) {
-            await this.loadPluginResources(pluginConfig.scripts, pluginConfig.styles || []);
+            // Normalizar rutas antes de cargar
+            const normalizedScripts = this.normalizeResources(pluginConfig.scripts);
+            const normalizedStyles = this.normalizeResources(pluginConfig.styles || []);
+
+            await this.loadPluginResources(normalizedScripts, normalizedStyles);
+
+            // Actualizar en pluginConfig para que los menús usen las rutas normalizadas
+            pluginConfig.scripts = normalizedScripts;
+            pluginConfig.styles = normalizedStyles;
           }
 
           await this.loadPluginLanguages(pluginInfo.name);
@@ -45,6 +53,11 @@ class hook {
               icon: pluginConfig.menu.icon,
               order: pluginConfig.menu.order || 100
             };
+
+            // Preservar role del menú principal si existe
+            if (pluginConfig.menu.role) {
+              menuItem.role = pluginConfig.menu.role;
+            }
 
             if (pluginConfig.menu.items?.length > 0) {
               menuItem.items = this.processMenuItems(
@@ -172,6 +185,24 @@ class hook {
     }
   }
 
+  // Normalizar rutas de recursos (agregar 'extensions/' si no lo tiene)
+  static normalizeResourcePath(path) {
+    if (!path) return path;
+
+    // Si ya empieza con 'extensions/', dejarlo como está
+    if (path.startsWith('extensions/')) {
+      return path;
+    }
+
+    // Si NO empieza con 'extensions/', agregarlo
+    return `extensions/${path}`;
+  }
+
+  // Normalizar array de recursos
+  static normalizeResources(resources = []) {
+    return resources.map(path => this.normalizeResourcePath(path));
+  }
+
   static processMenuItems(items, parentPlugin = '', extensionScripts = [], extensionStyles = []) {
     return items
       .map(item => {
@@ -180,10 +211,17 @@ class hook {
           title: item.title,
           order: item.order || 999
         };
-        const itemScripts = item.scripts || [];
+
+        // Preservar role si existe
+        if (item.role) {
+          processedItem.role = item.role;
+        }
+
+        // Normalizar scripts/styles del item
+        const itemScripts = this.normalizeResources(item.scripts || []);
         const combinedScripts = [...extensionScripts, ...itemScripts];
         if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
-        const itemStyles = item.styles || [];
+        const itemStyles = this.normalizeResources(item.styles || []);
         const combinedStyles = [...extensionStyles, ...itemStyles];
         if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
         if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
@@ -217,6 +255,11 @@ class hook {
           icon: pluginConfig.menu.icon,
           order: pluginConfig.menu.order || 100
         };
+
+        // Preservar role del menú principal si existe
+        if (pluginConfig.menu.role) {
+          menuItem.role = pluginConfig.menu.role;
+        }
 
         // Usar los items YA FILTRADOS del pluginConfig.menu
         if (pluginConfig.menu.items?.length > 0) {

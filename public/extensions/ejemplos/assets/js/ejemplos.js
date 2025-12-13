@@ -39,9 +39,9 @@ class ejemplos {
       const formId = formElement.getAttribute('id');
       logger.info('ext:ejemplos', `Llenando formulario ${formId} con datos mock`);
 
-      // Llenar el formulario con los datos
+      // Llenar el formulario con los datos pasando el contexto del modal
       setTimeout(() => {
-        form.fill(formId, mockData);
+        form.fill(formId, mockData, modalContent);
         toast.success('✅ Datos cargados correctamente');
       }, 300);
 

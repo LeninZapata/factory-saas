@@ -39,11 +39,11 @@ class api {
       // Manejo de 400 Bad Request
       if (res.status === 400) {
         logger.error('core:api', `❌ Bad Request (400) - ${fullURL}`);
-        
+
         // Intentar obtener detalles del error
         const contentType = res.headers.get('content-type') || '';
         let errorMsg = __('core.api.bad_request');
-        
+
         if (contentType.includes('application/json')) {
           try {
             const errorData = await res.json();
@@ -52,12 +52,12 @@ class api {
             // Si no puede parsear, usar mensaje genérico
           }
         }
-        
+
         // Mostrar toast
         if (window.toast && typeof toast.error === 'function') {
           toast.error(errorMsg);
         }
-        
+
         throw new Error(errorMsg);
       }
 
@@ -81,14 +81,14 @@ class api {
           try {
             const errorData = JSON.parse(text);
             logger.error('core:api', `❌ Error ${res.status}:`, errorData);
-            
+
             const errorMsg = errorData.message || errorData.error || `HTTP ${res.status}`;
-            
+
             // Mostrar toast para errores
             if (window.toast && typeof toast.error === 'function') {
               toast.error(errorMsg);
             }
-            
+
             throw new Error(errorMsg);
           } catch (parseError) {
             // JSON corrupto - probablemente tiene HTML mezclado

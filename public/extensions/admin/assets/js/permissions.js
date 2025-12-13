@@ -16,7 +16,7 @@ class permissions {
   static async render(containerId, config = {}, extensionsData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
-      logger.error('p:permissions', 'Container no encontrado:', containerId);
+      logger.error('com:permissions', 'Container no encontrado:', containerId);
       return;
     }
 
@@ -24,6 +24,7 @@ class permissions {
     const selectorId = `permissions-${window.VERSION}`;
 
     // Cargar tabs de todas las vistas
+    console.log(`extensionsData:`, extensionsData);
     await this.loadAllViewsTabs(extensionsData);
 
     const html = `
@@ -52,7 +53,7 @@ class permissions {
     this.instances.set(selectorId, { config, extensionsData });
     this.bindEvents(selectorId);
     
-    logger.success('p:permissions', 'Renderizado exitosamente');
+    logger.success('com:permissions', 'Renderizado exitosamente');
   }
 
   /**
@@ -83,7 +84,7 @@ class permissions {
             this.viewsCache.set(cacheKey, null);
           }
         } catch (error) {
-          logger.error('p:permissions', `Error cargando ${extension.name}/${viewPath}:`, error.message);
+          logger.error('com:permissions', `Error cargando ${extension.name}/${viewPath}:`, error.message);
           this.viewsCache.set(cacheKey, null);
         }
       }
@@ -192,7 +193,7 @@ class permissions {
         const hasAnyTabChecked = Object.values(menuPerms.tabs).some(value => value === true);
         isMenuChecked = hasAnyTabChecked;
         
-        logger.debug('p:permissions', `Menú "${menuItem.id}": hasAnyTabChecked=${hasAnyTabChecked}, tabs:`, menuPerms.tabs);
+        logger.debug('com:permissions', `Menú "${menuItem.id}": hasAnyTabChecked=${hasAnyTabChecked}, tabs:`, menuPerms.tabs);
       }
     }
     

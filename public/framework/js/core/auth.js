@@ -86,11 +86,26 @@ class auth {
     }
   }
 
-  static async login(credentials) {
+  static async login(formIdOrCredentials) {
     try {
       logger.debug('core:auth', 'Iniciando login...');
 
-      // ✅ CAMBIO AQUÍ: Agregar { skipAuth: true }
+      // Determinar si es formId o credentials
+      let credentials;
+      if (typeof formIdOrCredentials === 'string') {
+        // Es formId, extraer datos del formulario
+        const validation = form.validate(formIdOrCredentials);
+        if (!validation.success) {
+          toast.error(validation.message);
+          return { success: false, error: validation.message };
+        }
+        credentials = validation.data;
+      } else {
+        // Es un objeto con las credenciales directamente
+        credentials = formIdOrCredentials;
+      }
+
+      console.log(`credentials:`, credentials);
       const response = await api.post(this.config.api.login, credentials, { skipAuth: true });
 
       logger.debug('core:auth', 'Respuesta del servidor:', response);
@@ -128,6 +143,7 @@ class auth {
         return { success: true, user, token, ttl_ms: tokenTTL };
       }
 
+      //  toast.error(__('core.auth.error.invalid_credentials'));
       logger.warn('core:auth', 'Credenciales incorrectas');
       return {
         success: false,

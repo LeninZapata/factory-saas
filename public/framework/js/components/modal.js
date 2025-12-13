@@ -233,7 +233,7 @@ class modal {
         logger.debug('com:modal', `Formulario encontrado con ID: "${realFormId}"`);
 
         if (window.form) {
-          form.fill(realFormId, data);
+          form.fill(realFormId, data, modalContent);
         }
 
       } catch (error) {

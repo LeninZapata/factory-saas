@@ -38,11 +38,14 @@ class toast {
   static display(message, config) {
     const container = this.ensureContainer(config.position);
 
+    // Traducir mensaje si empieza con "i18n:" o si es una key de traducción
+    const translatedMessage = this.translateMessage(message);
+
     const toastEl = document.createElement('div');
     toastEl.className = `toast toast-${config.type}`;
     toastEl.innerHTML = `
       <span class="toast-icon">${this.getIcon(config.type)}</span>
-      <span class="toast-message">${message}</span>
+      <span class="toast-message">${translatedMessage}</span>
       <button class="toast-close" onclick="toast.remove(this.parentElement)">×</button>
     `;
 
@@ -52,6 +55,28 @@ class toast {
     setTimeout(() => toastEl.classList.add('toast-show'), 10);
 
     setTimeout(() => this.remove(toastEl), config.duration);
+  }
+
+  // Traducir mensaje si es una key i18n
+  static translateMessage(message) {
+    if (!message) return message;
+
+    // Si empieza con "i18n:", quitar el prefijo y traducir
+    if (message.startsWith('i18n:')) {
+      const key = message.substring(5); // Quitar "i18n:"
+      return window.__ ? window.__(key) : message;
+    }
+
+    // Si NO contiene espacios y tiene puntos, probablemente es una key
+    // Ejemplo: "admin.user.success.created"
+    if (!message.includes(' ') && message.includes('.')) {
+      const translated = window.__ ? window.__(message) : message;
+      // Si la traducción es diferente a la key, usarla
+      return translated !== message ? translated : message;
+    }
+
+    // Si no, retornar el mensaje tal cual
+    return message;
   }
 
   static remove(toastEl) {
