@@ -30,3 +30,5 @@ en una extraña posicion en si.
 ☐ crear el ejemplo de un menu de 3 niveles porque si lo hace
 ☐ en react native quedo pendiente seguir con el tema de la navegacion
 link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
+☐ sgun esta conversacion el "action": "submit:auth.login" esta generando otro evento y se duplica en el submit
+almenos en el login hay que preguntar si esto va duplicar al resto deformularios

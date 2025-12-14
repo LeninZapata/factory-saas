@@ -6,6 +6,13 @@ class view {
   static SESSION_CHECK_INTERVAL = 30000;
 
   static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
+    // Manejar notación extension|path (ej: botws|sections/botws-listado)
+    if (viewName.includes('|')) {
+      const [targetExtension, targetPath] = viewName.split('|');
+      extensionContext = targetExtension;
+      viewName = targetPath;
+    }
+
     const navCacheKey = `nav_${extensionContext || 'core'}_${viewName}`;
 
     if (!container && window.appConfig?.cache?.viewNavigation) {
@@ -416,13 +423,13 @@ class view {
   // Procesar cadenas i18n en contenido HTML
   static processI18nInString(str) {
     if (!str || typeof str !== 'string') return str;
-
+    
     // Reemplazar {i18n:key} o {i18n:key|param1:value1|param2:value2}
     return str.replace(/\{i18n:([^}]+)\}/g, (match, content) => {
       const parts = content.split('|');
       const key = parts[0];
       const params = {};
-
+      
       // Procesar parámetros opcionales
       for (let i = 1; i < parts.length; i++) {
         const [paramKey, paramValue] = parts[i].split(':');
@@ -430,7 +437,7 @@ class view {
           params[paramKey] = paramValue;
         }
       }
-
+      
       return window.i18n ? i18n.t(key, params) : key;
     });
   }

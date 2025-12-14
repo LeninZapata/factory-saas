@@ -132,6 +132,41 @@
           "placeholder": "Describe tus responsabilidades..."
         }
       ]
+    },
+    {
+      "name": "credenciales",
+      "label": "🔑 Credenciales API",
+      "type": "repeatable",
+      "buttonPosition": "top",
+      "addText": "➕ Agregar Credencial",
+      "removeText": "🗑️ Eliminar",
+      "initialItems": 1,
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fae8ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #a855f7; font-size: 0.9rem;'><strong>💡 Con item inicial (initialItems: 1)</strong><br>Este repeatable muestra automáticamente 1 item al cargar el formulario, útil para campos que requieren al menos 1 valor</div>"
+        },
+        {
+          "name": "servicio",
+          "label": "Servicio",
+          "type": "select",
+          "required": true,
+          "placeholder": "Seleccione un servicio",
+          "options": [
+            { "value": "", "label": "-- Seleccionar --" },
+            { "value": "openai", "label": "OpenAI GPT" },
+            { "value": "anthropic", "label": "Anthropic Claude" },
+            { "value": "google", "label": "Google Gemini" },
+            { "value": "aws", "label": "AWS Bedrock" }
+          ]
+        },
+        {
+          "name": "api_key",
+          "label": "API Key",
+          "type": "text",
+          "placeholder": "sk-..."
+        }
+      ]
     }
   ],
   "statusbar": [
