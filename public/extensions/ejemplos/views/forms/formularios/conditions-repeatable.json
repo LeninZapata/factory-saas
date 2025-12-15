@@ -197,7 +197,7 @@
       "name": "info",
       "type": "button",
       "label": "💡 Cómo funciona",
-      "onclick": "event.preventDefault(); alert('🎯 CONDICIONES EN REPETIBLES ANIDADOS:\\n\\n📁 NIVEL 1 - Proyectos:\\n  • Cambia TIPO para ver campos diferentes\\n  • Activa CHECKBOX \"tiene_fases\" para ver repetible anidado\\n\\n📋 NIVEL 2 - Fases (dentro de cada proyecto):\\n  • Cada fase tiene sus propias condiciones\\n  • Cambia TIPO DE FASE para ver campos específicos\\n  • Escribe duración > 30 para ver alerta\\n\\n⚡ Cada proyecto e item se evalúa INDEPENDIENTEMENTE');"
+      "onclick": ""
     },
     {
       "name": "submit",

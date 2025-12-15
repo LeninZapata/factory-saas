@@ -1,0 +1,188 @@
+{
+  "id": "inputs-defaults-demo",
+  "title": "Valores por Defecto",
+  "description": "⭐ Los campos se llenan automáticamente con valores por defecto. Los tokens especiales generan valores únicos.",
+  "fields": [
+    {
+      "name": "nombre",
+      "label": "📝 Nombre (valor normal)",
+      "type": "text",
+      "placeholder": "Tu nombre",
+      "defaultValue": "Juan Pérez"
+    },
+    {
+      "name": "edad",
+      "label": "🎂 Edad (valor numérico)",
+      "type": "number",
+      "defaultValue": "25",
+      "min": 0,
+      "step": 1
+    },
+    {
+      "name": "pais",
+      "label": "🌍 País (select con default)",
+      "type": "select",
+      "defaultValue": "mx",
+      "options": [
+        { "value": "mx", "label": "🇲🇽 México" },
+        { "value": "co", "label": "🇨🇴 Colombia" },
+        { "value": "ar", "label": "🇦🇷 Argentina" },
+        { "value": "es", "label": "🇪🇸 España" }
+      ]
+    },
+    {
+      "name": "acepta_terminos",
+      "label": "✅ Acepto términos (checkbox default true)",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "name": "biografia",
+      "label": "📄 Biografía (textarea con texto)",
+      "type": "textarea",
+      "defaultValue": "Escribe aquí tu biografía profesional...",
+      "rows": 3
+    },
+    {
+      "type": "group",
+      "label": "⚡ Valores Especiales (Tokens)",
+      "fields": [
+        {
+          "name": "codigo_unico",
+          "label": "🔑 Código Único - {hash:10}",
+          "type": "text",
+          "defaultValue": "{hash:10}",
+          "readonly": true,
+          "help": "Genera un hash aleatorio de 10 caracteres"
+        },
+        {
+          "name": "codigo_corto",
+          "label": "🎫 Código Corto - {hash:6}",
+          "type": "text",
+          "defaultValue": "CODE-{hash:6}",
+          "readonly": true,
+          "help": "Combina texto fijo con hash: CODE-abc123"
+        },
+        {
+          "name": "uuid",
+          "label": "🆔 UUID Completo - {uuid}",
+          "type": "text",
+          "defaultValue": "{uuid}",
+          "readonly": true,
+          "help": "UUID v4: 550e8400-e29b-41d4-a716-446655440000"
+        },
+        {
+          "name": "timestamp",
+          "label": "⏱️ Timestamp - {timestamp}",
+          "type": "text",
+          "defaultValue": "{timestamp}",
+          "readonly": true,
+          "help": "Milisegundos desde epoch: 1671321600000"
+        },
+        {
+          "name": "fecha_actual",
+          "label": "📅 Fecha Actual - {date}",
+          "type": "text",
+          "defaultValue": "{date}",
+          "readonly": true,
+          "help": "Formato: YYYY-MM-DD"
+        },
+        {
+          "name": "hora_actual",
+          "label": "🕐 Hora Actual - {time}",
+          "type": "text",
+          "defaultValue": "{time}",
+          "readonly": true,
+          "help": "Formato: HH:MM:SS"
+        },
+        {
+          "name": "numero_aleatorio",
+          "label": "🎲 Número Aleatorio - {random:1:100}",
+          "type": "number",
+          "defaultValue": "{random:1:100}",
+          "readonly": true,
+          "help": "Número entre 1 y 100"
+        },
+        {
+          "name": "combinado",
+          "label": "🎨 Token Combinado",
+          "type": "text",
+          "defaultValue": "REF-{date}-{hash:8}",
+          "readonly": true,
+          "help": "Combina múltiples tokens: REF-2024-12-15-a7f3k9m2"
+        }
+      ]
+    },
+    {
+      "name": "tareas",
+      "label": "📋 Tareas (Repeatable con Defaults)",
+      "type": "repeatable",
+      "addText": "➕ Agregar Tarea",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "name": "tarea_id",
+          "label": "🔑 ID de Tarea (auto)",
+          "type": "text",
+          "defaultValue": "TASK-{hash:8}",
+          "readonly": true,
+          "help": "Se genera automáticamente al agregar"
+        },
+        {
+          "name": "titulo",
+          "label": "📝 Título",
+          "type": "text",
+          "placeholder": "Nombre de la tarea",
+          "defaultValue": "Nueva tarea"
+        },
+        {
+          "name": "prioridad",
+          "label": "⭐ Prioridad",
+          "type": "select",
+          "defaultValue": "media",
+          "options": [
+            { "value": "baja", "label": "🟢 Baja" },
+            { "value": "media", "label": "🟡 Media" },
+            { "value": "alta", "label": "🔴 Alta" }
+          ]
+        },
+        {
+          "name": "fecha_creacion",
+          "label": "📅 Fecha de Creación",
+          "type": "text",
+          "defaultValue": "{date}",
+          "readonly": true
+        },
+        {
+          "name": "numero_orden",
+          "label": "🔢 Orden",
+          "type": "number",
+          "defaultValue": "{random:1:999}",
+          "readonly": true,
+          "help": "Número aleatorio de orden"
+        },
+        {
+          "name": "completada",
+          "label": "✅ Completada",
+          "type": "checkbox",
+          "defaultValue": false
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "info",
+      "type": "button",
+      "label": "💡 Cómo funciona",
+      "onclick": "event.preventDefault(); alert('🎯 VALORES POR DEFECTO:\\n\\n📝 NORMALES:\\n  • Valores fijos que aparecen al cargar\\n  • Ej: defaultValue: \"Juan Pérez\"\\n\\n⚡ TOKENS ESPECIALES:\\n  • {hash:n} - Hash aleatorio\\n  • {uuid} - UUID completo\\n  • {timestamp} - Milisegundos\\n  • {date} - Fecha (YYYY-MM-DD)\\n  • {time} - Hora (HH:MM:SS)\\n  • {random:min:max} - Número aleatorio\\n\\n🔁 EN REPEATABLES:\\n  • Se generan valores únicos por cada item\\n  • Útil para IDs, códigos, referencias');"
+    },
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar",
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); toast.success('✅ Datos guardados');"
+    }
+  ]
+}

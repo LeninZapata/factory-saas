@@ -1,10 +1,20 @@
 class tabs {
   static tabCache = new Map();
+  static extensionContextMap = new Map(); // Guardar contexto por ID de tabs
 
   static async render(tabsData, container) {
     this.tabCache.clear();
 
     if (!tabsData || !tabsData.tabs || !container) return;
+
+    // Obtener el contexto de extensión del contenedor padre para preservarlo
+    const viewContainer = container.closest('[data-extension-context]');
+    const extensionContext = viewContainer?.getAttribute('data-extension-context') || null;
+    
+    // Guardar el contexto para este tabs específico
+    this.extensionContextMap.set(tabsData.id, extensionContext);
+
+    logger.debug('com:tabs', `[render] ID: ${tabsData.id}, Preservando extensionContext: "${extensionContext}"`);
 
     const tabsHTML = `
       <div class="tabs-component">
@@ -166,7 +176,7 @@ class tabs {
       const tempContainer = document.createElement('div');
       tempContainer.innerHTML = renderedContent;
 
-      await this.loadDynamicComponents(tempContainer);
+      await this.loadDynamicComponents(tabsData.id, tempContainer);
 
       this.tabCache.set(cacheKey, tempContainer);
 
@@ -215,13 +225,28 @@ class tabs {
     return '';
   }
 
-  static async loadDynamicComponents(container) {
+  static async loadDynamicComponents(tabsId, container) {
+    // Obtener el contexto guardado para este tabs específico
+    const extensionContext = this.extensionContextMap.get(tabsId) || null;
+
+    logger.debug('com:tabs', `[loadDynamicComponents] ID: ${tabsId}, extensionContext: "${extensionContext}"`);
+
     const formContainers = container.querySelectorAll('.dynamic-form[data-form-json]');
 
     for (const formContainer of formContainers) {
       const formJson = formContainer.dataset.formJson;
+      
+      logger.debug('com:tabs', `[loadDynamicComponents] formJson original: "${formJson}"`);
+      
       try {
-        await form.load(formJson, formContainer);
+        // Si hay contexto de extensión y el formJson no incluye '|', agregarlo
+        const formPath = (extensionContext && !formJson.includes('|')) 
+          ? `${extensionContext}|forms/${formJson}` 
+          : formJson;
+        
+        logger.debug('com:tabs', `[loadDynamicComponents] formPath construido: "${formPath}"`);
+        
+        await form.load(formPath, formContainer);
       } catch (error) {
         logger.error('com:tabs', 'Error cargando formulario:', error);
         formContainer.innerHTML = `<div class="error">${__('com.tabs.error_form', { form: formJson })}</div>`;

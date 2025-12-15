@@ -3,7 +3,7 @@
   "title": "Ejemplos de Formularios",
   "type": "tabs",
   "scripts": [
-    "extensions/ejemplos/assets/js/ejemplos.js"
+    "ejemplos/assets/js/ejemplos.js"
   ],
   "tabs": [
     {
@@ -26,7 +26,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-inputs-normales"
+                    "form_json": "ejemplos|forms/formularios/form-inputs-normales"
                   }
                 ]
               },
@@ -40,7 +40,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-grouped-fields"
+                    "form_json": "ejemplos|forms/formularios/form-grouped-fields"
                   }
                 ]
               },
@@ -54,7 +54,21 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-grouped-fields-column-overflow"
+                    "form_json": "ejemplos|forms/formularios/form-grouped-fields-column-overflow"
+                  }
+                ]
+              },
+              {
+                "id": "defaults",
+                "title": "Valores por Defecto",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>⭐ Valores por Defecto</h3><p>Campos con valores iniciales normales y tokens especiales que generan valores únicos.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos|forms/formularios/form-inputs-defaults"
                   }
                 ]
               }
@@ -83,7 +97,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-repetibles-demo"
+                    "form_json": "ejemplos|forms/formularios/form-repetibles-demo"
                   }
                 ]
               },
@@ -97,7 +111,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-repeatable-grouped-opt1"
+                    "form_json": "ejemplos|forms/formularios/form-repeatable-grouped-opt1"
                   },
                   {
                     "type": "html",
@@ -105,7 +119,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-repeatable-grouped-opt2"
+                    "form_json": "ejemplos|forms/formularios/form-repeatable-grouped-opt2"
                   }
                 ]
               },
@@ -119,7 +133,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/form-repetibles-anidados"
+                    "form_json": "ejemplos|forms/formularios/form-repetibles-anidados"
                   }
                 ]
               }
@@ -158,7 +172,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/conditions-simple"
+                    "form_json": "ejemplos|forms/formularios/conditions-simple"
                   }
                 ]
               },
@@ -172,7 +186,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/conditions-multiple"
+                    "form_json": "ejemplos|forms/formularios/conditions-multiple"
                   }
                 ]
               },
@@ -186,7 +200,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/conditions-advanced"
+                    "form_json": "ejemplos|forms/formularios/conditions-advanced"
                   }
                 ]
               },
@@ -200,7 +214,7 @@
                   },
                   {
                     "type": "form",
-                    "form_json": "ejemplos/formularios/conditions-repeatable"
+                    "form_json": "ejemplos|forms/formularios/conditions-repeatable"
                   }
                 ]
               }
