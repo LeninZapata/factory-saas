@@ -3,7 +3,8 @@ por donde me quede:
 ☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
 en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
 SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
-
+☐ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice
+un cambio y se viio el cambio entonces no estaba en cache el idioma supongo, revisa eso
 Despues:
 ☐ Focus al momento de abrir un modal, debes hacer que el modal luego que cargue apunte a un focus
 y tambien el form si este tiene la opcion de focus pues entonces este debe ejecutar el focus
