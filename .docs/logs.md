@@ -25,9 +25,9 @@
 
 ### Ejemplo Real
 ```
-[2025-12-10 15:30:00]	INFO	auth	Login exitoso	{"user":"admin44"}	userHandlers.php:142	3	auth,login
+[2025-12-10 15:30:00]	INFO	auth	Login exitoso	{"user":"admin44"}	UserHandler.php:142	3	auth,login
 [2025-12-10 15:35:42]	ERROR	integrations/whatsapp	Error al enviar	{"number":"593987654321","bot_id":10}	whatsapp.php:87	5	whatsapp,error
-[2025-12-10 15:40:00]	INFO	user	Usuario actualizado	{"user_id":5}	userController.php:160	3	-
+[2025-12-10 15:40:00]	INFO	user	Usuario actualizado	{"user_id":5}	UserController.php:160	3	-
 [2025-12-10 15:45:00]	INFO	worker	Proceso completado	-	worker.php:50	-	-
 ```
 

@@ -1,5 +1,6 @@
 <?php
-class userController extends controller {
+class UserController extends controller {
+  use ValidatesUnique;
 
   function __construct() {
     parent::__construct('user');
@@ -11,22 +12,16 @@ class userController extends controller {
 
     // Validar campos requeridos
     if (!isset($data['user']) || !isset($data['pass']) || !isset($data['role'])) {
-      log::error('UserController - Campos faltantes', $data, ['module' => 'user']);
-      response::json([
-        'success' => false,
-        'error' => __('user.fields_required')
-      ], 200);
+      response::error(__('user.fields_required'), 400);
     }
 
-    // Validar email si existe
+    // Validar email (formato + unicidad)
     if (isset($data['email']) && !empty($data['email'])) {
-      if (!validation::email($data['email'])) {
-        response::json([
-          'success' => false,
-          'error' => __('user.email_invalid')
-        ], 200);
-      }
+      $this->validateEmail($data['email'], 'user');
     }
+
+    // Validar user único
+    $this->validateUnique('user', 'user', $data['user'], 'user.already_exists');
 
     // Hashear contraseña
     $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
@@ -40,32 +35,12 @@ class userController extends controller {
     $data['dc'] = date('Y-m-d H:i:s');
     $data['tc'] = time();
 
-    // Validar user único
-    if (db::table('user')->where('user', $data['user'])->exists()) {
-      log::warning('UserController - Usuario ya existe', ['user' => $data['user']], ['module' => 'user']);
-      response::json([
-        'success' => false,
-        'error' => __('user.already_exists')
-      ], 200);
-    }
-
-    // Validar email único si se proporciona
-    if (isset($data['email']) && !empty($data['email'])) {
-      if (db::table('user')->where('email', $data['email'])->exists()) {
-        log::warning('UserController - Email ya existe', ['email' => $data['email']], ['module' => 'user']);
-        response::json([
-          'success' => false,
-          'error' => __('user.email_exists')
-        ], 200);
-      }
-    }
-
     try {
       $id = db::table('user')->insert($data);
-      log::info('UserController - Usuario creado', ['id' => $id], ['module' => 'user']);
+      log::info('Usuario creado', ['id' => $id], ['module' => 'user']);
       response::success(['id' => $id], __('user.create.success'), 201);
     } catch (Exception $e) {
-      log::error('UserController - Error SQL', ['message' => $e->getMessage()], ['module' => 'user']);
+      log::error('Error al crear usuario', ['error' => $e->getMessage()], ['module' => 'user']);
       response::serverError(__('user.create.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
@@ -84,41 +59,19 @@ class userController extends controller {
       unset($data['pass']);
     }
 
-    // Validar email si existe
+    // Validar email (formato + unicidad)
     if (isset($data['email']) && !empty($data['email'])) {
-      if (!validation::email($data['email'])) {
-        response::json([
-          'success' => false,
-          'error' => __('user.email_invalid')
-        ], 200);
-      }
+      $this->validateEmail($data['email'], 'user', $id);
+    }
+
+    // Validar user único (excepto el actual)
+    if (isset($data['user'])) {
+      $this->validateUniqueExcept('user', 'user', $data['user'], $id, 'user.already_exists');
     }
 
     // Convertir config a JSON si es array
     if (isset($data['config']) && is_array($data['config'])) {
       $data['config'] = json_encode($data['config'], JSON_UNESCAPED_UNICODE);
-    }
-
-    // Validar user único (excepto el actual)
-    if (isset($data['user'])) {
-      $query = db::table('user')->where('user', $data['user'])->where('id', '!=', $id);
-      if ($query->exists()) {
-        response::json([
-          'success' => false,
-          'error' => __('user.already_exists')
-        ], 200);
-      }
-    }
-
-    // Validar email único (excepto el actual)
-    if (isset($data['email']) && !empty($data['email'])) {
-      $query = db::table('user')->where('email', $data['email'])->where('id', '!=', $id);
-      if ($query->exists()) {
-        response::json([
-          'success' => false,
-          'error' => __('user.email_exists')
-        ], 200);
-      }
     }
 
     // Timestamps

@@ -1,0 +1,6 @@
+/docs/
+├── FRAMEWORK.md              ← General (mostrar siempre)
+├── BLUEPRINT.md              ← Proyectos nuevos
+├── BUSINESS-LOGIC-MAP.md     ← Planificación
+├── plantilla_crud.md         ← Templates CRUD
+└── backend.md                ← Referencia profunda (opcional)

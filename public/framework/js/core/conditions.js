@@ -287,16 +287,24 @@ class conditions {
         let targetField = item.querySelector(`[name*=".${fieldName}"]`);
         
         // Si no se encuentra por name, buscar por data-field-path (repeatables anidados)
-        // Solo buscar hijos directos, no nietos
         if (!targetField) {
-          const allFieldPaths = item.querySelectorAll(':scope > .form-repeatable[data-field-path]');
-          targetField = Array.from(allFieldPaths).find(el => {
+          const allFieldPaths = item.querySelectorAll('.form-repeatable[data-field-path]');
+          const candidates = Array.from(allFieldPaths).filter(el => {
             const fieldPath = el.getAttribute('data-field-path');
             // Eliminar índices para comparar: proyectos[0].fases -> proyectos.fases
             const normalizedFieldPath = fieldPath.replace(/\[\d+\]/g, '');
             // Comparar si termina con el fieldName: proyectos.fases termina con "fases"
             return normalizedFieldPath.endsWith(`.${fieldName}`) || normalizedFieldPath === fieldName;
           });
+          
+          // Si hay múltiples candidatos, tomar el de path más corto (el más cercano al nivel actual)
+          if (candidates.length > 0) {
+            targetField = candidates.reduce((shortest, current) => {
+              const shortestPath = shortest.getAttribute('data-field-path');
+              const currentPath = current.getAttribute('data-field-path');
+              return currentPath.length < shortestPath.length ? current : shortest;
+            });
+          }
         }
         
         if (targetField) {
@@ -572,7 +580,7 @@ class conditions {
   static findFieldElement(formEl, fieldPath) {
     // Intentar encontrar por name exacto
     let field = formEl.querySelector(`[name="${fieldPath}"]`);
-    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper');
+    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
 
     // Buscar wrapper HTML por data-field-name
     let htmlWrapper = formEl.querySelector(`.form-html-wrapper[data-field-name="${fieldPath}"]`);
@@ -588,13 +596,13 @@ class conditions {
       const fields = formEl.querySelectorAll(`[name*=".${baseField}"]`);
       if (fields.length > 0) {
         // Si hay múltiples, devolver el contenedor del primero
-        return fields[0].closest('.form-group, .form-checkbox, .form-html-wrapper');
+        return fields[0].closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
       }
     }
 
     // Buscar por name parcial (fallback)
     field = formEl.querySelector(`[name*="${fieldPath}"]`);
-    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper');
+    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
 
     return null;
   }

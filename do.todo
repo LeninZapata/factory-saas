@@ -40,3 +40,5 @@ que desde alli los tome y asi evitar repetir codigo @OJO revisar como lo hace lo
 osea revisar componente por componente y parte del core JS para que revise esto.
 ☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe 
 quedar en el primer campo obligatorio que falte por llenar
+☐ El APP osea el sistema debe tener su propia constantes de i18n y rutas para que asi
+no se repitan en cada modulo, por ejemplo las rutas basicas como dashboard, login,

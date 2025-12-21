@@ -6,11 +6,12 @@ Esta plantilla permite crear un CRUD completo (backend PHP + frontend JS) de for
 
 ### Convenciones Generales
 - **Tabulación**: 2 espacios
-- **Nombres compuestos**: Primera palabra minúscula → `holaService`
+- **Nombres compuestos**: camelCase → `holaService`
 - **Archivos JSON**: `hola-service.json`
-- **Archivos código**: `holaService.php`, `holaService.js`
-- **Comentarios**: Máximo 1 línea, solo si es importante
-- **Logs**: Solo en errores, formato `'ext:xxx'`, `'core:xxx'`, `'com:xxx'`
+- **Archivos PHP**: PascalCase para Controllers/Handlers → `HolaController.php`, `HolaHandler.php`
+- **Archivos JS**: camelCase → `holaService.js`
+- **Comentarios**: Máximo 1 línea, solo si es importante (2-3 si es complejo)
+- **Logs**: Solo en errores, formato `'ext:xxx'` (extensión), `'core:xxx'` (core), `'com:xxx'` (componente)
 - **CSS**: Código anidado para reducir tokens
 
 ---
@@ -18,53 +19,124 @@ Esta plantilla permite crear un CRUD completo (backend PHP + frontend JS) de for
 ## BACKEND
 
 ### 1. Tabla SQL
+
 ```sql
-CREATE TABLE IF NOT EXISTS `{miExtension}s` (
+CREATE TABLE IF NOT EXISTS `{miRecurso}` (
   `id` int NOT NULL AUTO_INCREMENT,
   {campos_personalizados}
-  `dc` datetime NOT NULL COMMENT 'Fecha de creación',
-  `da` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de actualización',
-  `ta` int NOT NULL COMMENT 'Timestamp de creación',
-  `tu` int DEFAULT NULL COMMENT 'Timestamp de actualización',
+  `dc` datetime NOT NULL COMMENT 'Date Created - Fecha de creación',
+  `du` datetime DEFAULT NULL COMMENT 'Date Updated - Fecha de actualización',
+  `tc` int NOT NULL COMMENT 'Timestamp Created - Unix timestamp creación',
+  `tu` int DEFAULT NULL COMMENT 'Timestamp Updated - Unix timestamp actualización',
   PRIMARY KEY (`id`),
   KEY `idx_dc` (`dc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='{Descripción}';
 ```
 
-### 2. Resource JSON: `/app/resources/{miExtension}.json`
+**Convenciones de Timestamps:**
+- `dc` = Date Created (Y-m-d H:i:s)
+- `du` = Date Updated (Y-m-d H:i:s)
+- `tc` = Timestamp Created (unix timestamp)
+- `tu` = Timestamp Updated (unix timestamp)
+
+---
+
+### 2. Schema JSON: `/app/resources/schemas/{miRecurso}.json`
+
 ```json
 {
-  "resource": "{miExtension}",
-  "table": "{miExtension}s",
+  "resource": "{miRecurso}",
+  "table": "{miRecurso}",
   "timestamps": true,
   "middleware": ["throttle:100,1"],
+
   "routes": {
-    "list": {"method": "GET", "path": "/api/{miExtension}", "middleware": ["auth"]},
-    "show": {"method": "GET", "path": "/api/{miExtension}/{id}", "middleware": ["auth"]},
-    "create": {"method": "POST", "path": "/api/{miExtension}", "middleware": ["auth", "json"]},
-    "update": {"method": "PUT", "path": "/api/{miExtension}/{id}", "middleware": ["auth", "json"]},
-    "delete": {"method": "DELETE", "path": "/api/{miExtension}/{id}", "middleware": ["auth"]}
+    "list": {
+      "method": "GET",
+      "path": "/api/{miRecurso}",
+      "middleware": ["auth"]
+    },
+    "show": {
+      "method": "GET",
+      "path": "/api/{miRecurso}/{id}",
+      "middleware": ["auth"]
+    },
+    "create": {
+      "method": "POST",
+      "path": "/api/{miRecurso}",
+      "middleware": ["auth", "json"]
+    },
+    "update": {
+      "method": "PUT",
+      "path": "/api/{miRecurso}/{id}",
+      "middleware": ["auth", "json"]
+    },
+    "delete": {
+      "method": "DELETE",
+      "path": "/api/{miRecurso}/{id}",
+      "middleware": ["auth"]
+    }
   },
+
   "fields": [
-    {campos_definicion}
+    {
+      "name": "{campo1}",
+      "type": "string",
+      "required": true,
+      "unique": false,
+      "maxLength": 100
+    },
+    {
+      "name": "{campo2}",
+      "type": "text"
+    },
+    {
+      "name": "config",
+      "type": "json"
+    }
   ]
 }
 ```
 
-### 3. Controller: `/app/resources/controllers/{miExtension}Controller.php`
+**Tipos de campos soportados:**
+- `string` - VARCHAR (con maxLength)
+- `text` - TEXT largo
+- `int` - Entero
+- `float` - Decimal
+- `boolean` - Booleano
+- `json` - Objeto JSON
+- `datetime` - Fecha y hora
+- `date` - Solo fecha
+
+---
+
+### 3. Controller (Opcional): `/app/resources/controllers/{MiRecurso}Controller.php`
+
+**Nota:** Solo crear si necesitas lógica personalizada. Si no, el controller base maneja todo automáticamente.
+
+**Convención de nombres:** PascalCase (primera letra mayúscula)
+
 ```php
 <?php
-class {miExtension}Controller extends controller {
+class {MiRecurso}Controller extends controller {
+  use ValidatesUnique;  // Trait para validaciones de unicidad
 
   function __construct() {
-    parent::__construct('{miExtension}');
+    parent::__construct('{miRecurso}');
   }
 
+  // Override create solo si necesitas lógica custom
   function create() {
     $data = request::data();
     
+    // Validar campos requeridos
     if (!isset($data['{campo_requerido}']) || empty($data['{campo_requerido}'])) {
-      response::json(['success' => false, 'error' => __('{miExtension}.{campo_requerido}_required')], 200);
+      response::error(__('{miRecurso}.{campo_requerido}_required'), 400);
+    }
+
+    // Validar unicidad (si aplica)
+    if (isset($data['{campo_unico}'])) {
+      $this->validateUnique('{miRecurso}', '{campo_unico}', $data['{campo_unico}'], '{miRecurso}.{campo_unico}_exists');
     }
 
     // Convertir JSON si aplica
@@ -72,42 +144,57 @@ class {miExtension}Controller extends controller {
       $data['config'] = json_encode($data['config'], JSON_UNESCAPED_UNICODE);
     }
 
+    // Timestamps automáticos
     $data['dc'] = date('Y-m-d H:i:s');
-    $data['ta'] = time();
+    $data['tc'] = time();
 
     try {
-      $id = db::table('{miExtension}s')->insert($data);
-      response::success(['id' => $id], __('{miExtension}.create.success'), 201);
+      $id = db::table('{miRecurso}')->insert($data);
+      log::info('{MiRecurso} creado', ['id' => $id], ['module' => '{miRecurso}']);
+      response::success(['id' => $id], __('{miRecurso}.create.success'), 201);
     } catch (Exception $e) {
-      response::serverError(__('{miExtension}.create.error'), IS_DEV ? $e->getMessage() : null);
+      log::error('Error al crear {miRecurso}', ['error' => $e->getMessage()], ['module' => '{miRecurso}']);
+      response::serverError(__('{miRecurso}.create.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
 
+  // Override update solo si necesitas lógica custom
   function update($id) {
-    $exists = db::table('{miExtension}s')->find($id);
-    if (!$exists) response::notFound(__('{miExtension}.not_found'));
+    $exists = db::table('{miRecurso}')->find($id);
+    if (!$exists) response::notFound(__('{miRecurso}.not_found'));
 
     $data = request::data();
     
+    // Validar unicidad excluyendo el registro actual
+    if (isset($data['{campo_unico}'])) {
+      $this->validateUniqueExcept('{miRecurso}', '{campo_unico}', $data['{campo_unico}'], $id, '{miRecurso}.{campo_unico}_exists');
+    }
+
+    // Convertir JSON si aplica
     if (isset($data['config']) && is_array($data['config'])) {
       $data['config'] = json_encode($data['config'], JSON_UNESCAPED_UNICODE);
     }
 
-    $data['da'] = date('Y-m-d H:i:s');
+    // Timestamps de actualización
+    $data['du'] = date('Y-m-d H:i:s');
     $data['tu'] = time();
 
     try {
-      $affected = db::table('{miExtension}s')->where('id', $id)->update($data);
-      response::success(['affected' => $affected], __('{miExtension}.update.success'));
+      $affected = db::table('{miRecurso}')->where('id', $id)->update($data);
+      log::info('{MiRecurso} actualizado', ['id' => $id], ['module' => '{miRecurso}']);
+      response::success(['affected' => $affected], __('{miRecurso}.update.success'));
     } catch (Exception $e) {
-      response::serverError(__('{miExtension}.update.error'), IS_DEV ? $e->getMessage() : null);
+      log::error('Error al actualizar {miRecurso}', ['error' => $e->getMessage()], ['module' => '{miRecurso}']);
+      response::serverError(__('{miRecurso}.update.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
 
+  // Override show para parsear JSON
   function show($id) {
-    $data = db::table('{miExtension}s')->find($id);
-    if (!$data) response::notFound(__('{miExtension}.not_found'));
+    $data = db::table('{miRecurso}')->find($id);
+    if (!$data) response::notFound(__('{miRecurso}.not_found'));
     
+    // Parsear config si es JSON string
     if (isset($data['config']) && is_string($data['config'])) {
       $data['config'] = json_decode($data['config'], true);
     }
@@ -115,24 +202,27 @@ class {miExtension}Controller extends controller {
     response::success($data);
   }
 
+  // Override list para parsear JSON
   function list() {
-    $query = db::table('{miExtension}s');
+    $query = db::table('{miRecurso}');
     
+    // Filtros dinámicos desde query params
     foreach ($_GET as $key => $value) {
       if (in_array($key, ['page', 'per_page', 'sort', 'order'])) continue;
       $query = $query->where($key, $value);
     }
 
+    // Ordenamiento
     $sort = request::query('sort', 'id');
     $order = request::query('order', 'DESC');
     $query = $query->orderBy($sort, $order);
 
+    // Paginación
     $page = request::query('page', 1);
     $perPage = request::query('per_page', 50);
     $data = $query->paginate($page, $perPage)->get();
 
-    if (!is_array($data)) $data = [];
-    
+    // Parsear config JSON
     foreach ($data as &$item) {
       if (isset($item['config']) && is_string($item['config'])) {
         $item['config'] = json_decode($item['config'], true);
@@ -142,50 +232,79 @@ class {miExtension}Controller extends controller {
     response::success($data);
   }
 
+  // Override delete si necesitas lógica custom
   function delete($id) {
-    $item = db::table('{miExtension}s')->find($id);
-    if (!$item) response::notFound(__('{miExtension}.not_found'));
+    $item = db::table('{miRecurso}')->find($id);
+    if (!$item) response::notFound(__('{miRecurso}.not_found'));
 
     try {
-      $affected = db::table('{miExtension}s')->where('id', $id)->delete();
-      response::success(['affected' => $affected], __('{miExtension}.delete.success'));
+      $affected = db::table('{miRecurso}')->where('id', $id)->delete();
+      log::info('{MiRecurso} eliminado', ['id' => $id], ['module' => '{miRecurso}']);
+      response::success(['affected' => $affected], __('{miRecurso}.delete.success'));
     } catch (Exception $e) {
-      response::serverError(__('{miExtension}.delete.error'), IS_DEV ? $e->getMessage() : null);
+      log::error('Error al eliminar {miRecurso}', ['error' => $e->getMessage()], ['module' => '{miRecurso}']);
+      response::serverError(__('{miRecurso}.delete.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
 }
 ```
 
-### 4. Routes: `/app/routes/apis/{miExtension}.php`
+**Trait ValidatesUnique** (ya disponible en `/framework/traits/ValidatesUnique.php`):
+- `validateUnique($table, $field, $value, $errorKey)` - Validar campo único
+- `validateUniqueExcept($table, $field, $value, $excludeId, $errorKey)` - Validar único excepto ID
+- `validateEmail($email, $table, $excludeId)` - Validar email (formato + unicidad)
+
+---
+
+### 4. Routes (Opcional): `/app/routes/apis/{miRecurso}.php`
+
+**Nota:** Las rutas CRUD se auto-registran desde el JSON. Solo crear este archivo si necesitas rutas adicionales.
+
 ```php
 <?php
-// Las rutas CRUD se auto-registran desde {miExtension}.json
+// Las rutas CRUD se auto-registran desde {miRecurso}.json
+// Este archivo es para rutas custom adicionales
 
-$router->group('/api/{miExtension}', function($router) {
-  // Rutas personalizadas adicionales aquí
+$router->group('/api/{miRecurso}', function($router) {
+  
+  // Ejemplo: Ruta custom adicional
+  $router->get('/stats', function() {
+    // Lógica custom
+    $stats = db::table('{miRecurso}')->count();
+    response::success(['total' => $stats]);
+  })->middleware('auth');
+
 });
 ```
 
-### 5. Traducciones: `/app/lang/es/{miExtension}.php`
+---
+
+### 5. Traducciones: `/app/lang/es/{miRecurso}.php`
+
 ```php
 <?php
 return [
   '{campo_requerido}_required' => 'El campo {campo_requerido} es requerido',
-  'not_found' => '{MiExtension} no encontrado',
-  'create.success' => '{MiExtension} creado correctamente',
-  'create.error' => 'Error al crear {miExtension}',
-  'update.success' => '{MiExtension} actualizado correctamente',
-  'update.error' => 'Error al actualizar {miExtension}',
-  'delete.success' => '{MiExtension} eliminado correctamente',
-  'delete.error' => 'Error al eliminar {miExtension}'
+  '{campo_unico}_exists' => 'El {campo_unico} ya existe',
+  'not_found' => '{MiRecurso} no encontrado',
+  
+  'create.success' => '{MiRecurso} creado correctamente',
+  'create.error' => 'Error al crear {miRecurso}',
+  
+  'update.success' => '{MiRecurso} actualizado correctamente',
+  'update.error' => 'Error al actualizar {miRecurso}',
+  
+  'delete.success' => '{MiRecurso} eliminado correctamente',
+  'delete.error' => 'Error al eliminar {miRecurso}'
 ];
 ```
 
 ---
 
-## FRONTEND
+## FRONTEND (Extensiones)
 
-### 1. Index extensión: `/public/extensions/{miExtension}/index.json`
+### 1. Index de extensión: `/public/extensions/{miExtension}/index.json`
+
 ```json
 {
   "name": "{miExtension}",
@@ -211,7 +330,10 @@ return [
 }
 ```
 
+---
+
 ### 2. Listado: `/public/extensions/{miExtension}/views/sections/{miExtension}-listado.json`
+
 ```json
 {
   "id": "{miExtension}Listado",
@@ -234,10 +356,11 @@ return [
       "component": "datatable",
       "order": 2,
       "config": {
-        "source": "api/{miExtension}",
+        "source": "api/{miRecurso}",
         "columns": [
           {"id": {"name": "i18n:{miExtension}.column.id", "width": "80px", "align": "center", "sortable": true}},
-          {columnas_personalizadas}
+          {"{campo1}": {"name": "i18n:{miExtension}.column.{campo1}", "width": "auto", "sortable": true}},
+          {"{campo2}": {"name": "i18n:{miExtension}.column.{campo2}", "width": "auto"}},
           {"dc": {"name": "i18n:{miExtension}.column.created", "format": "datetime", "width": "180px", "align": "center"}}
         ],
         "actions": {
@@ -256,14 +379,31 @@ return [
 }
 ```
 
+---
+
 ### 3. Formulario: `/public/extensions/{miExtension}/views/forms/{miExtension}-form.json`
+
 ```json
 {
   "id": "{miExtension}-form",
   "title": "i18n:{miExtension}.form.title",
   "description": "i18n:{miExtension}.form.description",
   "fields": [
-    {campos_formulario}
+    {
+      "name": "{campo1}",
+      "type": "text",
+      "label": "i18n:{miExtension}.field.{campo1}",
+      "placeholder": "i18n:{miExtension}.placeholder.{campo1}",
+      "required": true,
+      "validation": "required|min:3|max:100"
+    },
+    {
+      "name": "{campo2}",
+      "type": "textarea",
+      "label": "i18n:{miExtension}.field.{campo2}",
+      "placeholder": "i18n:{miExtension}.placeholder.{campo2}",
+      "rows": 4
+    }
   ],
   "statusbar": [
     {"name": "cancel", "type": "button", "label": "i18n:core.cancel", "action": "call:modal.closeAll", "style": "secondary"},
@@ -272,11 +412,35 @@ return [
 }
 ```
 
+**Tipos de campos frontend:**
+- `text` - Input texto
+- `textarea` - Área de texto
+- `number` - Input numérico
+- `email` - Input email
+- `password` - Input contraseña
+- `select` - Dropdown
+- `checkbox` - Casilla de verificación
+- `radio` - Botones radio
+- `date` - Selector de fecha
+- `datetime` - Selector de fecha/hora
+
+**Validaciones:**
+- `required` - Campo obligatorio
+- `min:N` - Mínimo N caracteres
+- `max:N` - Máximo N caracteres
+- `email` - Email válido
+- `numeric` - Solo números
+- `alpha` - Solo letras
+- `alphanumeric` - Letras y números
+
+---
+
 ### 4. JavaScript: `/public/extensions/{miExtension}/assets/js/{miExtension}.js`
+
 ```javascript
 class {miExtension} {
   static apis = {
-    {miExtension}: '/api/{miExtension}'
+    {miRecurso}: '/api/{miRecurso}'
   };
 
   static currentId = null;
@@ -302,7 +466,8 @@ class {miExtension} {
 
   static fillForm(formId, data) {
     form.fill(formId, {
-      {mapeo_campos_formulario}
+      '{campo1}': data.{campo1} || '',
+      '{campo2}': data.{campo2} || ''
     });
   }
 
@@ -329,13 +494,14 @@ class {miExtension} {
 
   static buildBody(formData) {
     return {
-      {mapeo_body_api}
+      '{campo1}': formData.{campo1},
+      '{campo2}': formData.{campo2}
     };
   }
 
   static async create(data) {
     try {
-      const res = await api.post(this.apis.{miExtension}, data);
+      const res = await api.post(this.apis.{miRecurso}, data);
       return res.success === false ? null : (res.data || res);
     } catch (error) {
       logger.error('ext:{miExtension}', error);
@@ -346,7 +512,7 @@ class {miExtension} {
 
   static async get(id) {
     try {
-      const res = await api.get(`${this.apis.{miExtension}}/${id}`);
+      const res = await api.get(`${this.apis.{miRecurso}}/${id}`);
       return res.success === false ? null : (res.data || res);
     } catch (error) {
       logger.error('ext:{miExtension}', error);
@@ -357,7 +523,7 @@ class {miExtension} {
 
   static async update(id, data) {
     try {
-      const res = await api.put(`${this.apis.{miExtension}}/${id}`, {...data, id});
+      const res = await api.put(`${this.apis.{miRecurso}}/${id}`, {...data, id});
       return res.success === false ? null : (res.data || res);
     } catch (error) {
       logger.error('ext:{miExtension}', error);
@@ -368,7 +534,7 @@ class {miExtension} {
 
   static async delete(id) {
     try {
-      const res = await api.delete(`${this.apis.{miExtension}}/${id}`);
+      const res = await api.delete(`${this.apis.{miRecurso}}/${id}`);
       if (res.success === false) {
         toast.error(__('{miExtension}.error.delete_failed'));
         return null;
@@ -385,7 +551,7 @@ class {miExtension} {
 
   static async list() {
     try {
-      const res = await api.get(this.apis.{miExtension});
+      const res = await api.get(this.apis.{miRecurso});
       return res.success === false ? null : (res.data || res);
     } catch (error) {
       logger.error('ext:{miExtension}', error);
@@ -401,73 +567,116 @@ class {miExtension} {
 window.{miExtension} = {miExtension};
 ```
 
-### 5. Traducciones: `/public/extensions/{miExtension}/lang/es.json`
+---
+
+### 5. Traducciones Frontend: `/public/extensions/{miExtension}/lang/es.json`
+
 ```json
 {
   "{miExtension}.listado.title": "{Emoji} Listado de {Título}",
   "{miExtension}.listado.header.title": "{Emoji} {Título Completo}",
-  "{miExtension}.listado.header.description": "{Descripción breve}",
+  "{miExtension}.listado.header.description": "{Descripción breve del módulo}",
+  
   "{miExtension}.column.id": "ID",
-  {traducciones_columnas}
+  "{miExtension}.column.{campo1}": "{Título Campo 1}",
+  "{miExtension}.column.{campo2}": "{Título Campo 2}",
   "{miExtension}.column.created": "Fecha de Creación",
+  
   "{miExtension}.form.title": "Formulario de {Título}",
-  "{miExtension}.form.description": "{Descripción formulario}",
-  {traducciones_campos}
+  "{miExtension}.form.description": "{Descripción del formulario}",
+  
+  "{miExtension}.field.{campo1}": "{Título Campo 1}",
+  "{miExtension}.field.{campo2}": "{Título Campo 2}",
+  "{miExtension}.placeholder.{campo1}": "Ingrese {campo1}...",
+  "{miExtension}.placeholder.{campo2}": "Ingrese {campo2}...",
+  
   "{miExtension}.modal.new.title": "{Emoji} Nuevo {Título}",
   "{miExtension}.modal.edit.title": "✏️ Editar {Título}",
-  "{miExtension}.confirm.delete": "¿Eliminar {título}?",
+  
+  "{miExtension}.confirm.delete": "¿Está seguro de eliminar este {título}?",
+  
   "{miExtension}.success.created": "{Título} creado correctamente",
   "{miExtension}.success.updated": "{Título} actualizado correctamente",
   "{miExtension}.success.deleted": "{Título} eliminado correctamente",
+  
   "{miExtension}.error.create_failed": "Error al crear {título}",
   "{miExtension}.error.update_failed": "Error al actualizar {título}",
   "{miExtension}.error.delete_failed": "Error al eliminar {título}",
   "{miExtension}.error.load_failed": "Error al cargar {título}",
+  
   "{miExtension}.refresh.success": "Lista actualizada"
 }
 ```
 
+---
+
 ### 6. Registrar extensión: `/public/extensions/index.json`
+
 ```json
 {
   "extensions": [
     {"name": "admin", "description": "Administración del sistema"},
-    {"name": "{miExtension}", "description": "{Descripción}"}
+    {"name": "{miExtension}", "description": "{Descripción de la extensión}"}
   ]
 }
 ```
 
 ---
 
-## TIPOS DE CAMPOS SOPORTADOS
+## CHECKLIST DE IMPLEMENTACIÓN
 
-### Backend (Resource JSON)
-- `string` - Texto (con maxLength)
-- `text` - Texto largo
-- `int` - Entero
-- `float` - Decimal
-- `boolean` - Booleano
-- `json` - Objeto JSON
-- `datetime` - Fecha/hora
-- `date` - Solo fecha
+### Backend
+- [ ] Crear tabla SQL con timestamps (dc, du, tc, tu)
+- [ ] Crear schema JSON en `/app/resources/schemas/{miRecurso}.json`
+- [ ] (Opcional) Crear controller personalizado si necesitas lógica custom
+- [ ] (Opcional) Crear archivo de rutas custom en `/app/routes/apis/{miRecurso}.php`
+- [ ] Crear archivo de traducciones en `/app/lang/es/{miRecurso}.php`
+- [ ] Probar endpoints CRUD con Postman/curl
 
-### Frontend (Formulario)
-- `text` - Input texto
-- `textarea` - Área texto
-- `number` - Input numérico
-- `email` - Input email
-- `password` - Input contraseña
-- `select` - Dropdown
-- `checkbox` - Casilla verificación
-- `radio` - Botones radio
-- `date` - Selector fecha
-- `datetime` - Selector fecha/hora
+### Frontend
+- [ ] Crear index.json de la extensión
+- [ ] Crear vista de listado (datatable)
+- [ ] Crear formulario JSON
+- [ ] Crear clase JavaScript
+- [ ] Crear traducciones frontend
+- [ ] Registrar extensión en `/public/extensions/index.json`
+- [ ] Probar en navegador
 
-### Validaciones
-- `required` - Campo obligatorio
-- `min:N` - Mínimo N caracteres
-- `max:N` - Máximo N caracteres
-- `email` - Email válido
-- `numeric` - Solo números
-- `alpha` - Solo letras
-- `alphanumeric` - Letras y números
+---
+
+## MEJORAS RECIENTES (2025)
+
+✅ **Convenciones actualizadas:**
+- PascalCase para Controllers/Handlers (UserController, AuthHandler)
+- camelCase para helpers y compound classes (logReader, sessionCleanup)
+
+✅ **Trait ValidatesUnique:**
+- Validaciones reutilizables de unicidad
+- Métodos: validateUnique(), validateUniqueExcept(), validateEmail()
+
+✅ **Lang.php con lazy loading:**
+- Solo carga módulos que se usan
+- Cache en memoria
+- Mejor rendimiento
+
+✅ **Response.php corregido:**
+- Ahora permite arrays vacíos correctamente
+- Fix: `if ($data !== null)` en lugar de `if ($data)`
+
+✅ **Timestamps estandarizados:**
+- dc/du = Date Created/Updated (datetime)
+- tc/tu = Timestamp Created/Updated (unix)
+
+---
+
+## RECURSOS ADICIONALES
+
+- **FRAMEWORK.md** - Documentación completa del núcleo
+- **BLUEPRINT.md** - Guía para crear proyectos nuevos
+- **backend.md** - Documentación detallada del backend
+- `/framework/docs/` - Mini-documentación de componentes
+
+---
+
+**Versión:** 1.3  
+**Última actualización:** Diciembre 2025

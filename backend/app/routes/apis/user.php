@@ -5,13 +5,13 @@ $router->group('/api/user', function($router) {
 
   // Profile - GET /api/user/profile
   $router->get('/profile', function() {
-    $result = userHandlers::profile([]);
+    $result = UserHandler::profile([]);
     response::json($result);
   })->middleware('auth');
 
   // Update Config - PUT /api/user/{id}/config
   $router->put('/{id}/config', function($id) {
-    $result = userHandlers::updateConfig(['id' => $id]);
+    $result = UserHandler::updateConfig(['id' => $id]);
     response::json($result);
   })->middleware(['auth', 'json']);
 

@@ -156,11 +156,8 @@ class sessionCleanup {
     return $cleaned;
   }
 
-  /**
-   * Obtener sesiones activas de un usuario (NUEVO)
-   * 
-   * Devuelve información básica sin leer todo el contenido
-   */
+  // Obtener sesiones activas de un usuario (NUEVO)
+  // Devuelve información básica sin leer todo el contenido
   static function getUserSessions($userId) {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -200,7 +197,7 @@ class sessionCleanup {
 
   /**
    * Limpiar sesiones expiradas de forma automática (CRON)
-   * 
+   *
    * Ejecutar cada hora mediante cron:
    * 0 * * * * curl http://tu-dominio.com/api/system/cleanup-sessions
    */

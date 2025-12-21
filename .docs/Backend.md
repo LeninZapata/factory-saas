@@ -1,412 +1,849 @@
-# Backend PHP - Documentación
+# Backend PHP - Documentación Completa
 
-## api.php
+Documentación del framework PHP minimalista orientado a alto rendimiento y desarrollo rápido de SaaS.
 
-**Propósito:** Entry point del API REST con manejo de CORS y errores.
+---
 
-### Configuración inicial
+## 📁 Estructura del Backend
 
-**CORS headers:**
-- `Access-Control-Allow-Origin: *`
-- Métodos: GET, POST, PUT, DELETE, OPTIONS
-- Headers: Content-Type, Authorization
+```
+backend/
+├── api.php                 # Entry point del API REST
+├── .htaccess              # Rewrite rules
+├── framework/             # Núcleo portable (NO modificar)
+│   ├── config/
+│   │   └── init.php       # Inicialización del framework
+│   ├── core/
+│   │   ├── Application.php    # Ciclo de vida del request
+│   │   ├── autoload.php       # Autoloader inteligente
+│   │   ├── controller.php     # Controlador base CRUD
+│   │   ├── router.php         # Sistema de rutas
+│   │   ├── service.php        # Orquestador de servicios
+│   │   └── resource.php       # Helper fluido (alternativa)
+│   ├── helpers/
+│   │   ├── db.php            # Query builder
+│   │   ├── request.php       # Manejo de peticiones
+│   │   ├── response.php      # Respuestas JSON
+│   │   ├── log.php           # Sistema de logging
+│   │   ├── logReader.php     # Lectura de logs
+│   │   ├── lang.php          # Internacionalización (lazy)
+│   │   ├── validation.php    # Validación de datos
+│   │   ├── http.php          # Cliente HTTP
+│   │   ├── file.php          # Manejo de archivos
+│   │   ├── utils.php         # Utilidades generales
+│   │   ├── str.php           # Manipulación strings
+│   │   ├── url.php           # Manejo URLs
+│   │   ├── country.php       # Info de países
+│   │   ├── sessionCleanup.php # Limpieza sesiones
+│   │   └── routeDiscovery.php # Descubrimiento rutas
+│   ├── middleware/
+│   │   ├── authMiddleware.php    # Autenticación
+│   │   ├── jsonMiddleware.php    # Validación JSON
+│   │   └── throttleMiddleware.php # Rate limiting
+│   ├── traits/
+│   │   └── ValidatesUnique.php   # Validaciones reutilizables
+│   ├── services/              # Servicios de integración
+│   │   ├── ai.php            # AI (DeepSeek, OpenAI)
+│   │   ├── chatapi.php       # WhatsApp (Evolution)
+│   │   ├── email.php         # Email
+│   │   └── storage.php       # Storage
+│   ├── lang/                  # Traducciones framework
+│   │   └── es/
+│   │       ├── api.php
+│   │       ├── auth.php
+│   │       ├── core.php
+│   │       ├── validation.php
+│   │       └── services/
+│   └── docs/                  # Mini-documentación
+│       ├── db.md
+│       ├── router.md
+│       ├── controller.md
+│       └── ...
+└── app/                       # Lógica específica del proyecto
+    ├── config/
+    │   ├── init.php          # Inicialización del app
+    │   ├── consts.php        # Constantes del app
+    │   └── database.php      # Configuración BD
+    ├── routes/
+    │   ├── api.php           # Router principal
+    │   └── apis/             # Rutas manuales por módulo
+    │       ├── auth.php
+    │       ├── user.php
+    │       └── client.php
+    ├── resources/
+    │   ├── schemas/          # Schemas JSON (auto-CRUD)
+    │   │   ├── user.json
+    │   │   └── client.json
+    │   ├── controllers/      # Controllers personalizados
+    │   │   └── UserController.php
+    │   └── handlers/         # Handlers custom
+    │       ├── AuthHandler.php
+    │       └── ClientHandler.php
+    ├── storage/
+    │   ├── logs/             # Logs del sistema
+    │   └── sessions/         # Sesiones (archivos)
+    └── lang/                 # Traducciones del app
+        └── es/
+            ├── user.php
+            └── client.php
+```
 
-**Manejo de preflight:**
+---
+
+## 🚀 api.php - Entry Point
+
+**Propósito:** Entry point del API REST con manejo de CORS, errores y validación de respuestas.
+
+### Configuración Inicial
+
+**CORS Headers:**
+```php
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization
+```
+
+**Manejo de Preflight:**
 - OPTIONS request → 200 y exit
 
-### Flujo de ejecución
+### Flujo de Ejecución
 
-1. **Output buffering:** Inicia `ob_start()` para capturar output no deseado
-2. **Carga configuración:** `config/consts.php` (define IS_DEV)
-3. **Error handling:**
-   - IS_DEV: muestra todos los errores
-   - Producción: oculta errores
-4. **Carga core:**
-   - `core/autoload.php` - Autoloader de clases
-   - `core/router.php` - Router principal
-5. **Carga rutas:** `routes/api.php`
-6. **Dispatch:** `$router->dispatch()`
-7. **Manejo de excepciones:**
-   - Captura errores globales
-   - IS_DEV: retorna detalles (mensaje, archivo, línea, trace)
-   - Producción: retorna mensaje genérico
-8. **Validación de respuesta:**
-   - Valida que sea JSON válido
-   - Si inválido: retorna error con debug
+```
+1. Output buffering (ob_start)
+   └─ Captura warnings/notices no deseados
 
-### Respuestas
+2. Carga configuración
+   └─ app/config/init.php
+      └─ Define constantes (BASE_PATH, IS_DEV, DB_*, etc.)
 
-**Success:**
-```json
-{
-  "success": true,
-  "data": {}
-}
+3. Error handling
+   ├─ IS_DEV: muestra todos los errores
+   └─ Producción: oculta errores
+
+4. Carga Application
+   └─ new Application()
+      ├─ Carga autoload
+      ├─ Carga router
+      └─ Carga rutas (app/routes/api.php)
+
+5. Ejecuta request
+   └─ $app->run()
+      ├─ Captura segundo buffer
+      ├─ $router->dispatch()
+      ├─ Ejecuta middlewares
+      ├─ Ejecuta controller/handler
+      └─ Maneja excepciones
+
+6. Validación de respuesta
+   ├─ Valida JSON
+   ├─ Si inválido → Error con debug
+   └─ Envía respuesta
 ```
 
-**Error (dev):**
-```json
-{
-  "success": false,
-  "error": "mensaje",
-  "file": "ruta/archivo.php",
-  "line": 123,
-  "trace": ["...", "..."]
-}
-```
+### Características Clave
 
-**Error (prod):**
-```json
-{
-  "success": false,
-  "error": "Internal Server Error"
-}
-```
-
-### Output buffering
-
-**Primer buffer:**
-- Captura warnings/notices antes de dispatch
-- Log en desarrollo si hay output
-
-**Segundo buffer:**
-- Captura respuesta del controller
-- Valida JSON antes de enviar
-- Limpia si hay error
-
-### Características clave
-
-- **Zero output antes de JSON:** Previene headers corrupted
-- **Validación de JSON:** No envía respuestas malformadas
-- **Debug condicional:** Info detallada solo en desarrollo
-- **CORS automático:** Sin configuración adicional
+✅ **Zero output antes de JSON** - Previene headers corrupted  
+✅ **Validación de JSON** - No envía respuestas malformadas  
+✅ **Debug condicional** - Info detallada solo en desarrollo  
+✅ **CORS automático** - Sin configuración adicional  
 
 ---
 
-## config/consts.php
+## ⚙️ config/ - Configuración
 
-**Propósito:** Constantes globales del sistema.
+### app/config/init.php
 
-**Constantes clave:**
-- `IS_DEV` - Modo desarrollo (true/false)
-- `TIMEZONE` - America/Guayaquil
-- `TIME_*` - Constantes de tiempo (SECOND, MINUTE, HOUR, DAY, etc.)
-- `SESSION_TTL` - 1 día en segundos
-- `SESSION_TTL_MS` - En milisegundos para frontend
-- `DB_*` - Configuración de base de datos
-- `*_PATH` - Rutas del sistema (BASE, BACKEND, FRONTEND, STORAGE, LOG)
-- `API_BASE_URL` - /api
+**Propósito:** Punto de entrada de configuración del app.
+
+```php
+<?php
+// Rutas base
+define('BASE_PATH', dirname(dirname(__DIR__)));
+define('BACKEND_PATH', BASE_PATH . '/backend');
+define('FRAMEWORK_PATH', BACKEND_PATH . '/framework');
+define('APP_PATH', BACKEND_PATH . '/app');
+
+// Cargar framework
+require_once FRAMEWORK_PATH . '/config/init.php';
+
+// Cargar constantes del app
+require_once __DIR__ . '/consts.php';
+```
+
+### app/config/database.php
+
+**Propósito:** Configuración de base de datos con auto-detección.
+
+```php
+<?php
+return [
+  'host' => isLocalhost() ? 'localhost' : 'produccion.com',
+  'name' => isLocalhost() ? 'mi_proyecto' : 'db_prod',
+  'user' => isLocalhost() ? 'root' : 'user_prod',
+  'pass' => isLocalhost() ? '' : 'pass_prod',
+  'charset' => 'utf8mb4'
+];
+```
+
+### app/config/consts.php
+
+**Propósito:** Constantes específicas del proyecto.
+
+```php
+<?php
+$dbConfig = require __DIR__ . '/database.php';
+
+define('DB_HOST', $dbConfig['host']);
+define('DB_NAME', $dbConfig['name']);
+define('DB_USER', $dbConfig['user']);
+define('DB_PASS', $dbConfig['pass']);
+define('DB_CHARSET', $dbConfig['charset']);
+
+define('SESSION_TTL', TIME_MONTH);
+define('SESSION_TTL_MS', TIME_MONTH * 1000);
+```
+
+### framework/config/init.php
+
+**Propósito:** Inicialización del framework (NO modificar).
+
+**Define:**
+- Constantes de tiempo (TIME_SECOND, TIME_MINUTE, etc.)
+- Rutas del framework (SERVICES_PATH, etc.)
+- Carga helpers críticos (system, lang, log)
+- Configura timezone, error_reporting
+- lang::load('es') - Solo guarda locale
 
 ---
 
-## core/
+## 🎯 core/ - Clases Principales
+
+### Application.php
+
+**Propósito:** Maneja el ciclo de vida completo de cada request.
+
+**Responsabilidades:**
+1. Cargar autoloader
+2. Inicializar router
+3. Cargar rutas del app
+4. Ejecutar dispatch
+5. Capturar excepciones
+6. Validar JSON de salida
+7. Manejar errores (detallado en dev, genérico en prod)
+
+**Uso:**
+```php
+$app = new Application();
+$app->run();
+```
 
 ### autoload.php
 
-**Propósito:** SPL autoloader con orden de prioridad.
+**Propósito:** SPL autoloader inteligente con mapa estático + lazy loading.
 
-**Orden de búsqueda:**
-1. `helpers/{class}.php` - Helpers (primera prioridad)
-2. `core/{class}.php` - Core
-3. `resources/controllers/{class}.php` - Controllers personalizados
-4. `resources/handlers/{class}.php` - Handlers personalizados
-5. `middleware/{class}.php` - Middleware
-6. `services/{class}.php` - Services principales
-7. `services/integrations/{category}/{class}/{class}.php` - Integraciones (ai, email, etc.)
+**Orden de Búsqueda (lazy loading):**
+```
+1. Helpers      → /framework/helpers/{class}.php
+2. Core         → /framework/core/{class}.php
+3. Middleware   → /framework/middleware/{class}.php
+4. Controllers  → /app/resources/controllers/{class}.php
+5. Handlers     → /app/resources/handlers/{class}.php
+6. Traits       → /framework/traits/{class}.php
+7. Services     → Auto-discovery por categoría
+```
 
-**Nota:** Busca por categorías en integrations: ai/deepseek, email/plusemail, etc.
+**Mapa Estático (pre-cargados):**
+- controller, router, resource, service
+- request, response, db
+
+**Auto-discovery de Services:**
+Busca por categorías: `ai/deepseek`, `email/plusemail`, etc.
 
 ### controller.php
 
-**Propósito:** Controller basado en schemas JSON con CRUD automático.
+**Propósito:** Controller base con CRUD automático desde schemas JSON.
 
-**Constructor:** Recibe `resourceName`, carga `resources/{name}.json`
+**Constructor:**
+```php
+function __construct($resourceName) {
+  // Carga resources/{resourceName}.json
+}
+```
 
-**Métodos CRUD:**
-- `list()` - GET all con filtros, ordenamiento y paginación
-- `show($id)` - GET one por ID
-- `create()` - POST con validación de required y unique
-- `update($id)` - PUT con validación y timestamps
-- `delete($id)` - DELETE por ID
+**Métodos CRUD Automáticos:**
+
+1. **list()** - GET all
+   - Filtros dinámicos desde query params
+   - Paginación: `?page=1&per_page=50`
+   - Ordenamiento: `?sort=name&order=ASC`
+
+2. **show($id)** - GET one
+   - Busca por ID
+   - 404 si no existe
+
+3. **create()** - POST
+   - Validación de campos `required` desde schema
+   - Validación de campos `unique` desde schema
+   - Timestamps automáticos si `timestamps: true`
+
+4. **update($id)** - PUT
+   - Validación de existencia
+   - Timestamps de actualización
+   - Validación de unique (excluyendo ID actual)
+
+5. **delete($id)** - DELETE
+   - Validación de existencia
+   - Eliminación física
 
 **Características:**
-- Validación automática de campos `required` y `unique` desde schema
-- Timestamps automáticos (created_at, updated_at) si está habilitado
-- Filtros dinámicos desde query params
-- Paginación: `?page=1&per_page=50`
-- Ordenamiento: `?sort=name&order=ASC`
+✅ Validación automática desde schema  
+✅ Timestamps automáticos (dc, du, tc, tu)  
+✅ Filtros dinámicos desde URL  
+✅ Override de métodos para lógica custom  
 
-**handleCustomAction(actionName, params):**
-Ejecuta acciones custom definidas en `routes.custom` del schema, llama handlers personalizados.
-
-### pluginLoader.php
-
-**Propósito:** Carga dinámica de plugins bajo demanda.
-
-**Métodos:**
-- `load($pluginName, $router)` - Carga UN plugin específico
-- `loadAll($router)` - Carga TODOS (solo para admin)
-- `isLoaded($pluginName)` - Verifica si está cargado
-- `getAvailable()` - Lista plugins sin cargarlos
-- `getConfig($pluginName)` - Lee config sin cargar
-
-**Validaciones:**
-- Plugin existe (`plugin.json`)
-- Plugin habilitado (`enabled: true`)
-- Plugin tiene backend (`backend: true`)
-
-**Autoload de plugin:**
-Registra autoloader para `controllers/`, `services/`, `models/` del plugin.
-
-**Carga de rutas:**
-Carga `routes/routes.php` con prefix `routes_prefix` del config.
-
-### resource.php
-
-**Propósito:** Helper fluido para trabajar con recursos (alternativa a controller).
-
-**Métodos:**
-- `get($idOrConditions)` - Obtener por ID o condiciones
-- `first($conditions)` - Primer registro
-- `where($field, $op, $val)` - Query builder fluido
-- `insert($data)` - Crear con timestamps auto
-- `update($idOrConditions, $data)` - Actualizar
-- `delete($idOrConditions)` - Eliminar
-- `count($conditions)` - Contar
-- `exists($conditions)` - Verificar existencia
-
-**Helper global:**
+**Ejemplo de Override:**
 ```php
-$user = resource('user')->where('email', $email)->first();
+class UserController extends controller {
+  use ValidatesUnique;
+
+  function __construct() {
+    parent::__construct('user');
+  }
+
+  function create() {
+    $data = request::data();
+    
+    // Validaciones custom
+    $this->validateUnique('user', 'user', $data['user'], 'user.already_exists');
+    
+    // Hash de password
+    $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
+    
+    // Llamar al padre para insertar
+    parent::create();
+  }
+}
 ```
 
 ### router.php
 
-**Propósito:** Router minimalista con middleware y rutas dinámicas.
+**Propósito:** Router minimalista con middleware, grupos y rutas dinámicas.
 
-**Métodos de registro:**
-- `get($path, $handler)`, `post()`, `put()`, `delete()`
-- `group($prefix, $callback)` - Agrupación con prefix
-- `middleware($mw)` - Middleware de grupo
-
-**Handler formats:**
+**Métodos de Registro:**
 ```php
-$router->get('/user', function() {...});
+$router->get($path, $handler);
+$router->post($path, $handler);
+$router->put($path, $handler);
+$router->delete($path, $handler);
+```
+
+**Formatos de Handler:**
+```php
+// Closure
+$router->get('/hello', function() {
+  response::json(['message' => 'Hello']);
+});
+
+// Array [Class, method]
 $router->get('/user', [UserController::class, 'list']);
+
+// String "Class@method"
 $router->get('/user', 'UserController@list');
 ```
 
-**Rutas dinámicas:**
+**Rutas Dinámicas:**
 ```php
-$router->get('/user/{id}', function($id) {...});
+$router->get('/user/{id}', function($id) {
+  $user = db::table('user')->find($id);
+  response::success($user);
+});
 ```
 
 **Middleware:**
 ```php
-$router->middleware('auth')->get('/admin', ...);
-$router->get('/login', ...)->middleware(['json', 'throttle:5,1']);
+// Individual
+$router->post('/user', [UserController::class, 'create'])
+  ->middleware(['auth', 'json']);
+
+// Grupo
+$router->group('/api/admin', function($r) {
+  $r->get('/stats', 'AdminController@stats');
+})->middleware('auth');
 ```
 
 **dispatch():**
-Ejecuta ruta según método HTTP y path, normaliza URL (sin trailing slash, sin slashes duplicados).
+- Normaliza URL (sin trailing slash, sin slashes duplicados)
+- Ejecuta middlewares en orden
+- Ejecuta handler
+- Maneja errores
+
+### service.php
+
+**Propósito:** Orquestador de servicios de integración.
+
+**Uso:**
+```php
+// Acceder a servicio
+$ai = service::integration('ai');
+$response = $ai->getChatCompletion($prompt, $bot);
+
+// Detectar provider automáticamente
+$provider = service::detect('chatapi', $webhookData);
+```
+
+**Servicios Disponibles:**
+- `ai` - DeepSeek, OpenAI
+- `chatapi` - Evolution API
+- `email` - PlusEmail
+- `storage` - Local storage
 
 ---
 
-## helpers/
+## 🛠️ helpers/ - Utilidades
 
-### db.php
+### db.php - Query Builder
 
-**Propósito:** Query builder fluido estilo Laravel.
+**Propósito:** Query builder fluido estilo Laravel con soporte completo.
 
-**Uso básico:**
+**Uso Básico:**
 ```php
-db::table('users')->where('email', $email)->first();
-db::table('users')->insert(['name' => 'Juan']);
-db::table('users')->where('id', 1)->update(['status' => 'active']);
-db::table('users')->where('id', 1)->delete();
+// Select
+$users = db::table('user')->where('role', 'admin')->get();
+$user = db::table('user')->find(1);
+
+// Insert
+$id = db::table('user')->insert(['user' => 'john', 'pass' => '...']);
+
+// Update
+db::table('user')->where('id', 1)->update(['email' => 'new@mail.com']);
+
+// Delete
+db::table('user')->where('id', 1)->delete();
 ```
 
-**Métodos principales:**
-- `where($col, $op, $val)` - Condición WHERE
-- `orWhere()`, `whereIn()`, `whereNull()`, `whereBetween()`
-- `whereFilters($filters)` - Filtros dinámicos avanzados
-- `join()`, `leftJoin()`, `rightJoin()`
-- `orderBy()`, `groupBy()`, `having()`
-- `limit()`, `offset()`, `paginate($page, $perPage)`
-- `get()`, `first()`, `find($id)`, `count()`, `exists()`
-- `pluck($col)`, `value($col)`, `chunk($size, $callback)`
-- `insert()`, `update()`, `delete()`
-- `transaction($callback)`
+**Métodos Avanzados:**
+```php
+// WhereIn
+$users = db::table('user')->whereIn('id', [1, 5, 10])->get();
+
+// WhereFilters (★ MUY ÚTIL)
+$filters = [
+  ['status', '=', 'active'],
+  ['age', '>=', 18],
+  ['name', 'LIKE', '%john%'],
+  ['role', 'IN', ['admin', 'editor']],
+  ['deleted_at', 'NULL'],
+  ['price', 'BETWEEN', [100, 500]]
+];
+$users = db::table('user')->whereFilters($filters)->get();
+
+// Joins
+db::table('user')
+  ->join('client', 'user.id', '=', 'client.user_id')
+  ->where('user.status', 'active')
+  ->get();
+
+// Paginación
+$users = db::table('user')->paginate(1, 20)->get();
+```
+
+**Métodos Útiles (Shortcuts):**
+```php
+$user = db::table('user')->first();              // Primer resultado
+$count = db::table('user')->count();             // Contar registros
+$exists = db::table('user')->exists();           // true/false
+$emails = db::table('user')->pluck('email');     // Array de columna
+$name = db::table('user')->value('name');        // Un solo valor
+$users = db::table('user')->skip(10)->take(5);  // Offset/Limit
+```
 
 **Debug:**
 ```php
-$query->toSql(); // SQL con placeholders
-$query->getSql(); // SQL con valores interpolados
+$sql = db::table('user')->where('id', 1)->getSql();  // SQL con valores
+$sql = db::table('user')->where('id', 1)->toSql();   // SQL con placeholders
 ```
 
-### log.php
+### request.php - Peticiones HTTP
 
-**Propósito:** Sistema de logging con niveles.
+**Propósito:** Helpers para acceder a datos del request.
 
-**Métodos:**
-- `debug($msg, $ctx)` - Solo en desarrollo
-- `info($msg, $ctx)` - Info general
-- `warning($msg, $ctx)` - Advertencias
-- `error($msg, $ctx)` - Errores
-- `sql($sql, $bindings)` - Log de queries SQL (solo dev)
+```php
+$data = request::data();              // Body JSON o form
+$page = request::query('page', 1);    // Query params con default
+$token = request::bearerToken();      // Bearer token
+$method = request::method();          // GET, POST, etc.
+$ip = request::ip();                  // IP del cliente
+$path = request::path();              // /api/user
+$isAjax = request::isAjax();          // true/false
+```
+
+### response.php - Respuestas JSON
+
+**Propósito:** Helpers para enviar respuestas HTTP/JSON estandarizadas.
+
+```php
+// Éxito
+response::success(['user' => $user], 'Usuario creado', 201);
+// Output: {"success":true, "message":"Usuario creado", "data":{...}}
+
+// Error
+response::error('Usuario no encontrado', 404);
+// Output: {"success":false, "error":"Usuario no encontrado"}
+
+// Validación
+response::validation(['email' => 'Email inválido']);
+
+// Shortcuts
+response::notFound();
+response::unauthorized();
+response::forbidden();
+response::serverError('Error interno', $debug);
+```
+
+**Fix implementado:**
+```php
+// ✅ Ahora permite arrays vacíos
+response::success([]);  // {"success":true, "data":[]}
+response::success(0);   // {"success":true, "data":0}
+```
+
+### log.php - Sistema de Logging
+
+**Propósito:** Logging estructurado con niveles, módulos, tags y rotación.
+
+```php
+log::debug('Debug info', $ctx, ['module' => 'auth']);
+log::info('Usuario logueado', ['user_id' => 1], ['module' => 'auth']);
+log::warning('Sesión expirada', [], ['module' => 'session']);
+log::error('Error en DB', ['error' => $e], ['module' => 'database']);
+
+// Con tags
+log::info('Mensaje enviado', $data, [
+  'module' => 'whatsapp',
+  'tags' => ['message', 'sent']
+]);
+
+// Con custom vars
+log::info('Pago procesado', [], [
+  'module' => 'payment',
+  'custom' => ['user_id' => 5, 'amount' => 100]
+]);
+```
+
+**Formato:**
+```
+[timestamp] [level] [module] [message] [context_json] [file:line] [user_id] [tags]
+```
 
 **Archivo:** `storage/logs/api_{fecha}.log`
 
-### request.php
+### lang.php - Internacionalización (Lazy Loading)
 
-**Propósito:** Helpers para datos de request.
+**Propósito:** Traducciones multi-idioma con carga bajo demanda y cache.
 
-**Métodos:**
-- `data()` - Body JSON o form
-- `method()` - HTTP method
-- `isAjax()` - Verifica si es AJAX
-- `ip()` - IP real del cliente (maneja proxies)
-- `userAgent()` - User agent
-- `query($key, $default)` - Query param
-- `post($key, $default)` - POST data
-- `path()` - Path actual
+**Características:**
+✅ **Lazy loading** - Solo carga módulos que usas  
+✅ **Cache en memoria** - No requiere dos veces  
+✅ **Merge automático** - Framework + App  
 
-### response.php
+```php
+// Cargar idioma (solo guarda locale, NO carga archivos)
+lang::load('es');
 
-**Propósito:** Helpers para respuestas JSON.
+// Obtener traducción (carga módulo bajo demanda)
+__('auth.login.success');          // Carga SOLO auth.php
+__('core.error');                  // Carga SOLO core.php
+__('services.ai.no_services');     // Carga SOLO services/
 
-**Métodos:**
-- `json($data, $code)` - Respuesta JSON raw
-- `success($data, $msg, $code)` - Respuesta exitosa
-- `error($error, $code, $details)` - Respuesta de error
-- `validation($errors, $code)` - Errores de validación
-- `notFound($msg)` - 404
-- `unauthorized($msg)` - 401
-- `forbidden($msg)` - 403
-- `serverError($msg, $debug)` - 500
+// Con variables
+__('user.created', ['name' => 'Juan']);
+// Output: "Usuario Juan creado exitosamente"
+```
 
-**Auto-exit:** Todos terminan la ejecución.
+**Flujo interno:**
+```
+1. __('core.autoload.class_not_found')
+   └─ Extrae módulo: 'core'
+   └─ ¿En cache? NO
+   └─ loadModule('core')
+      ├─ require /framework/lang/es/core.php
+      ├─ require /app/lang/es/core.php (si existe)
+      └─ array_merge() y guardar en cache
+   └─ Retorna traducción
 
-### sessionCleanup.php
+2. __('core.router.not_found')
+   └─ Extrae módulo: 'core'
+   └─ ¿En cache? SÍ ✅
+   └─ Retorna traducción (sin require)
+```
 
-**Propósito:** Limpieza de sesiones expiradas.
+**Debug:**
+```php
+lang::getLoadedModules();  // ['core', 'auth', 'middleware']
+lang::getCacheStats();     // Estadísticas completas
+```
 
-**Métodos:**
-- `clean()` - Elimina sesiones expiradas
-- `stats()` - Estadísticas (total, active, expired)
-- `cleanByUserId($userId)` - Limpia todas las sesiones de un usuario
+### validation.php - Validación de Datos
 
-**Storage:** `storage/sessions/{token}.json`
+```php
+validation::email('user@example.com');  // true/false
+validation::phone('+593987654321');
+validation::url('https://example.com');
+validation::numeric('123');
+validation::range(50, 1, 100);
 
-### utils.php
+$result = validation::required($data, ['user', 'pass', 'email']);
+// Returns: ['valid' => bool, 'errors' => [...]]
+```
 
-**Propósito:** Utilidades generales.
+### Otros Helpers Útiles
 
-**Métodos:**
-- `get($arr, $key, $default)` - Array access seguro
-- `uuid()` - UUID v4
-- `token($length)` - Token random hex
-- `money($amount, $currency)` - Formatear moneda
-- `timeAgo($datetime)` - "hace X minutos"
-- `slug($text)` - URL-friendly slug
-- `truncate($text, $len, $suffix)` - Truncar texto
-- `bytes($bytes)` - Formatear bytes (KB, MB, etc.)
+**logReader.php** - Leer y filtrar logs
+```php
+$logs = logReader::today(100);
+$logs = logReader::filter($logs, ['level' => 'ERROR', 'module' => 'auth']);
+```
 
-### validation.php
+**sessionCleanup.php** - Limpieza optimizada de sesiones
+```php
+sessionCleanup::clean();
+sessionCleanup::cleanByUserId($userId);
+$stats = sessionCleanup::stats();
+```
 
-**Propósito:** Validación de datos.
+**routeDiscovery.php** - Descubrir endpoints
+```php
+$routes = routeDiscovery::getAllRoutes();
+$stats = routeDiscovery::getStats($routes);
+```
 
-**Métodos:**
-- `email($email)` - Email válido
-- `phone($phone)` - Teléfono válido
-- `url($url)` - URL válida
-- `numeric($val)` - Es numérico
-- `range($val, $min, $max)` - En rango
-- `sanitizeText($text)` - Sanitizar HTML
-- `sanitizeEmail($email)` - Sanitizar email
-- `required($data, $required)` - Validar campos requeridos
+**utils.php** - Utilidades generales
+```php
+utils::uuid();
+utils::token(64);
+utils::slug('Hello World');
+utils::timeAgo($datetime);
+```
+
+**str.php** - Manipulación de strings
+```php
+str::normalize('Café');  // 'cafe'
+str::containsAllWords('hola mundo', 'este es un hola mundo');
+str::isJson($string);
+```
+
+**file.php** - Manejo de archivos
+```php
+file::saveJson($path, $data, 'module');
+file::getJson($path);
+file::delete($path);
+```
+
+**country.php** - Información de países
+```php
+country::get('EC');  // ['name' => 'Ecuador', 'timezone' => 'America/Guayaquil']
+country::now('EC');  // Hora actual en Ecuador
+country::convert($datetime, 'EC', 'ES');
+```
 
 ---
 
-## middleware/
+## 🎭 traits/ - Código Reutilizable
+
+### ValidatesUnique.php
+
+**Propósito:** Validaciones de unicidad para controllers.
+
+**Uso:**
+```php
+class UserController extends controller {
+  use ValidatesUnique;
+  
+  function create() {
+    $data = request::data();
+    
+    // Validar email (formato + unicidad)
+    $this->validateEmail($data['email'], 'user');
+    
+    // Validar campo único
+    $this->validateUnique('user', 'user', $data['user'], 'user.already_exists');
+    
+    // ...
+  }
+  
+  function update($id) {
+    $data = request::data();
+    
+    // Validar único excepto ID actual
+    $this->validateUniqueExcept('user', 'email', $data['email'], $id);
+    
+    // ...
+  }
+}
+```
+
+**Métodos:**
+- `validateUnique($table, $field, $value, $errorKey)`
+- `validateUniqueExcept($table, $field, $value, $excludeId, $errorKey)`
+- `validateEmail($email, $table, $excludeId)`
+
+---
+
+## 🔐 middleware/ - Interceptores
 
 ### authMiddleware.php
 
-**Propósito:** Verificar autenticación usando sesiones en archivos.
+**Propósito:** Validar token de autenticación usando sesiones en archivos.
 
 **Flujo:**
-1. Extrae token del header `Authorization: Bearer {token}`
-2. Busca archivo `storage/sessions/{token}.json`
-3. Verifica que no esté expirado
-4. Guarda user_id y user en `$GLOBALS` para controllers
+```
+1. Extrae token: Authorization: Bearer {token}
+2. Busca archivo optimizado: {timestamp}_{user_id}_{token_short}.json
+3. Verifica expiración
+4. Carga user en $GLOBALS['auth_user']
+5. Guarda user_id en $GLOBALS['auth_user_id']
+```
 
 **Respuestas:**
 - Sin token → 401 "Token no proporcionado"
 - Token inválido → 401 "Token inválido"
 - Token expirado → 401 "Token expirado" (elimina archivo)
 
+**Uso:**
+```php
+$router->get('/api/user/profile', 'UserHandler@profile')
+  ->middleware('auth');
+```
+
 ### jsonMiddleware.php
 
-**Propósito:** Validar que Content-Type sea JSON y el body sea JSON válido.
+**Propósito:** Validar que Content-Type sea JSON y body sea válido.
 
 **Validaciones:**
 - Content-Type debe incluir `application/json`
 - Body debe ser JSON válido
 
-**Respuestas:**
-- Content-Type inválido → 400
-- JSON malformado → 400 con error específico
+**Uso:**
+```php
+$router->post('/api/user', [UserController::class, 'create'])
+  ->middleware(['json', 'auth']);
+```
 
 ### throttleMiddleware.php
 
 **Propósito:** Rate limiting por IP.
 
 **Parámetros:** `throttle:maxRequests,minutes`
-- Ejemplo: `throttle:60,1` = 60 requests por minuto
 
-**Headers de respuesta:**
+```php
+->middleware('throttle:60,1')   // 60 requests por minuto
+->middleware('throttle:10,1')   // 10 requests por minuto
+```
+
+**Headers de Respuesta:**
 - `X-RateLimit-Limit` - Límite total
 - `X-RateLimit-Remaining` - Requests restantes
 - `X-RateLimit-Reset` - Timestamp de reset
 - `Retry-After` - Segundos para retry (si bloqueado)
 
-**Storage:** `sys_get_temp_dir()/throttle_data.json`
-
-**Respuesta al bloquear:** 429 "Demasiadas peticiones"
+**Respuesta:** 429 "Demasiadas peticiones"
 
 ---
 
-## resources/
+## 🌐 services/ - Servicios de Integración
 
-### Estructura de resource JSON
+### ai.php - Servicio de IA
 
-**Ejemplo: user.json**
+**Providers:** DeepSeek, OpenAI
+
+**Funciones:**
+```php
+$ai = new ai();
+
+// Chat completion con fallback
+$response = $ai->getChatCompletion($prompt, $bot, [
+  'model' => 'deepseek-chat'
+]);
+
+// Transcripción de audio
+$text = $ai->transcribeAudio($audioUrl, $bot);
+
+// Análisis de imágenes
+$result = $ai->analyzeImage($imageDataUri, $instruction, $bot);
+```
+
+### chatapi.php - WhatsApp
+
+**Providers:** Evolution API
+
+**Funciones:**
+```php
+chatapi::setConfig($botData, $provider);
+
+// Enviar mensaje con fallback
+chatapi::send($number, 'Hola mundo', $mediaUrl);
+
+// Enviar "escribiendo..."
+chatapi::sendPresence($number, 'composing', 5000);
+
+// Archivar chat
+chatapi::sendArchive($chatNumber, $lastMessageId, true);
+
+// Detectar provider y normalizar
+$normalized = chatapi::detectAndNormalize($rawWebhookData);
+```
+
+### email.php - Email
+
+**Providers:** PlusEmail (extensible)
+
+```php
+email::provider('plusemail')->send($to, $subject, $body);
+```
+
+---
+
+## 📝 resources/ - Schemas y Controllers
+
+### Estructura de Schema JSON
+
+**Ubicación:** `/app/resources/schemas/{resource}.json`
+
 ```json
 {
   "resource": "user",
   "table": "user",
   "timestamps": true,
   "middleware": ["throttle:100,1"],
+  
   "routes": {
     "list": {
       "method": "GET",
       "path": "/api/user",
       "middleware": ["auth"]
     },
-    "show": {...},
-    "create": {...},
-    "update": {...},
-    "delete": {...},
-    "custom": [
-      {
-        "name": "actionName",
-        "method": "POST",
-        "path": "/api/user/custom",
-        "handler": "methodName",
-        "middleware": []
-      }
-    ]
+    "show": {
+      "method": "GET",
+      "path": "/api/user/{id}",
+      "middleware": ["auth"]
+    },
+    "create": {
+      "method": "POST",
+      "path": "/api/user",
+      "middleware": ["auth", "json"]
+    },
+    "update": {
+      "method": "PUT",
+      "path": "/api/user/{id}",
+      "middleware": ["auth", "json"]
+    },
+    "delete": {
+      "method": "DELETE",
+      "path": "/api/user/{id}",
+      "middleware": ["auth"]
+    }
   },
+  
   "fields": [
     {
       "name": "user",
@@ -414,184 +851,620 @@ $query->getSql(); // SQL con valores interpolados
       "required": true,
       "unique": true,
       "maxLength": 50
+    },
+    {
+      "name": "pass",
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    {
+      "name": "email",
+      "type": "string",
+      "unique": true,
+      "maxLength": 150
+    },
+    {
+      "name": "config",
+      "type": "json"
+    },
+    {
+      "name": "role",
+      "type": "string",
+      "maxLength": 50
     }
   ]
 }
 ```
 
-**Campos del schema:**
+**Campos del Schema:**
 - `resource` - Nombre del recurso
-- `table` - Tabla de BD
-- `timestamps` - Auto-manejo de created_at/updated_at
+- `table` - Nombre de la tabla en BD
+- `timestamps` - Auto-manejo de dc, du, tc, tu
 - `middleware` - Middleware global del recurso
-- `routes` - Configuración de rutas CRUD y custom
-- `fields` - Schema de validación
+- `routes` - Configuración de rutas CRUD
+- `fields` - Definición y validación de campos
 
-### controllers/userController.php
+**Tipos de Campos:**
+- `string` - VARCHAR con maxLength
+- `text` - TEXT
+- `int` - INT
+- `float` - DECIMAL
+- `boolean` - TINYINT(1)
+- `json` - JSON
+- `datetime` - DATETIME
+- `date` - DATE
 
-**Propósito:** Controller personalizado que extiende controller base.
+### Controllers Personalizados
 
-**Características:**
-- Extiende `controller` base
-- Override de métodos CRUD para lógica específica
-- `create()` - Hashea password con bcrypt, valida unique
-- `update()` - Hashea password solo si se provee, invalida sesiones si cambia config
-- `show()` y `list()` - Ocultan password, parsean config JSON
+**Ubicación:** `/app/resources/controllers/{Resource}Controller.php`
 
-**Invalidación de sesiones:**
-Si se actualiza `config` (permisos), elimina sesiones del usuario excepto la del admin que está editando.
+**Convención:** PascalCase (UserController, ClientController)
 
-### handlers/userHandlers.php
+```php
+<?php
+class UserController extends controller {
+  use ValidatesUnique;
 
-**Propósito:** Handlers de autenticación y sesiones basadas en archivos.
+  function __construct() {
+    parent::__construct('user');
+  }
 
-**Métodos:**
-- `login($params)` - Valida credenciales, genera token, guarda sesión
-- `logout($params)` - Elimina archivo de sesión
-- `profile($params)` - Retorna user desde sesión (SIN consultar BD)
-- `updateConfig($params)` - Actualiza config y sincroniza con sesión activa
+  // Override create para hashear password
+  function create() {
+    $data = request::data();
 
-**Sesión en archivo:**
-```json
-{
-  "user_id": 1,
-  "user": {...},
-  "token": "...",
-  "expires_at": "2025-01-01 12:00:00",
-  "ip_address": "...",
-  "user_agent": "...",
-  "created_at": "..."
-}
-```
+    if (!isset($data['user']) || !isset($data['pass'])) {
+      response::error(__('user.fields_required'), 400);
+    }
 
-**Login response:**
-```json
-{
-  "success": true,
-  "data": {
-    "user": {...},
-    "token": "...",
-    "expires_at": "...",
-    "ttl": 86400,
-    "ttl_ms": 86400000
+    // Validaciones
+    $this->validateUnique('user', 'user', $data['user'], 'user.already_exists');
+    
+    if (isset($data['email']) && !empty($data['email'])) {
+      $this->validateEmail($data['email'], 'user');
+    }
+
+    // Hash password
+    $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
+
+    // Convertir config a JSON
+    if (isset($data['config']) && is_array($data['config'])) {
+      $data['config'] = json_encode($data['config'], JSON_UNESCAPED_UNICODE);
+    }
+
+    // Timestamps
+    $data['dc'] = date('Y-m-d H:i:s');
+    $data['tc'] = time();
+
+    try {
+      $id = db::table('user')->insert($data);
+      log::info('Usuario creado', ['id' => $id], ['module' => 'user']);
+      response::success(['id' => $id], __('user.create.success'), 201);
+    } catch (Exception $e) {
+      log::error('Error al crear usuario', ['error' => $e->getMessage()], ['module' => 'user']);
+      response::serverError(__('user.create.error'), IS_DEV ? $e->getMessage() : null);
+    }
+  }
+
+  // Override update
+  function update($id) {
+    $exists = db::table('user')->find($id);
+    if (!$exists) response::notFound(__('user.not_found'));
+
+    $data = request::data();
+
+    // Hash password solo si se proporciona
+    if (isset($data['pass']) && !empty($data['pass'])) {
+      $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
+    } else {
+      unset($data['pass']);
+    }
+
+    // Validaciones
+    if (isset($data['email']) && !empty($data['email'])) {
+      $this->validateEmail($data['email'], 'user', $id);
+    }
+
+    if (isset($data['user'])) {
+      $this->validateUniqueExcept('user', 'user', $data['user'], $id, 'user.already_exists');
+    }
+
+    // Convertir config
+    if (isset($data['config']) && is_array($data['config'])) {
+      $data['config'] = json_encode($data['config'], JSON_UNESCAPED_UNICODE);
+    }
+
+    // Timestamps
+    $data['du'] = date('Y-m-d H:i:s');
+    $data['tu'] = time();
+
+    $affected = db::table('user')->where('id', $id)->update($data);
+
+    // Invalidar sesiones si se modificó config
+    $cleaned = 0;
+    if (isset($data['config'])) {
+      $currentUserId = $GLOBALS['auth_user_id'] ?? null;
+
+      if ($currentUserId && $currentUserId == $id) {
+        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión", null, ['module' => 'user']);
+      } else {
+        $cleaned = sessionCleanup::cleanByUserId($id);
+        log::info("Sesiones invalidadas para user_id={$id}: {$cleaned}", null, ['module' => 'user']);
+      }
+    }
+
+    response::success([
+      'affected' => $affected,
+      'sessions_invalidated' => $cleaned
+    ], __('user.update.success'));
+  }
+
+  // Override show para ocultar password
+  function show($id) {
+    $data = db::table('user')->find($id);
+    if (!$data) response::notFound(__('user.not_found'));
+
+    if (isset($data['config']) && is_string($data['config'])) {
+      $data['config'] = json_decode($data['config'], true);
+    }
+
+    unset($data['pass']);
+    response::success($data);
+  }
+
+  // Override list para ocultar passwords
+  function list() {
+    $query = db::table('user');
+
+    foreach ($_GET as $key => $value) {
+      if (in_array($key, ['page', 'per_page', 'sort', 'order'])) continue;
+      if ($key === 'pass') continue;
+      $query = $query->where($key, $value);
+    }
+
+    $sort = request::query('sort', 'id');
+    $order = request::query('order', 'ASC');
+    $query = $query->orderBy($sort, $order);
+
+    $page = request::query('page', 1);
+    $perPage = request::query('per_page', 50);
+    $data = $query->paginate($page, $perPage)->get();
+
+    foreach ($data as &$user) {
+      unset($user['pass']);
+      if (isset($user['config']) && is_string($user['config'])) {
+        $user['config'] = json_decode($user['config'], true);
+      }
+    }
+
+    response::success($data);
   }
 }
 ```
 
-### handlers/clientHandlers.php
+### Handlers Personalizados
 
-**Propósito:** Handlers custom para resource client.
+**Ubicación:** `/app/resources/handlers/{Resource}Handler.php`
 
-**Métodos:**
-- `deleteAllData($params)` - Elimina cliente y datos relacionados en cascada
-- `getByNumber($params)` - Busca cliente por número
-- `topClients($params)` - Top clientes por amount_spent
+**Convención:** PascalCase (AuthHandler, ClientHandler)
+
+**Ejemplo: AuthHandler.php**
+
+```php
+<?php
+class AuthHandler {
+
+  static function login($params) {
+    $data = request::data();
+
+    if (!isset($data['user']) || !isset($data['pass'])) {
+      return ['success' => false, 'error' => __('auth.credentials.required')];
+    }
+
+    // Buscar usuario
+    $user = db::table('user')
+      ->where('user', $data['user'])
+      ->orWhere('email', $data['user'])
+      ->first();
+
+    if (!$user || !password_verify($data['pass'], $user['pass'])) {
+      log::warning('Login fallido', ['user' => $data['user']], ['module' => 'auth']);
+      return ['success' => false, 'error' => __('auth.credentials.invalid')];
+    }
+
+    // Generar token
+    $token = utils::token(64);
+    $expiresAt = time() + SESSION_TTL;
+
+    // Parsear config
+    if (isset($user['config']) && is_string($user['config'])) {
+      $user['config'] = json_decode($user['config'], true);
+    }
+
+    unset($user['pass']);
+
+    // Guardar sesión con nombre optimizado
+    self::saveSession($user, $token, $expiresAt);
+
+    log::info('Login exitoso', ['user_id' => $user['id']], ['module' => 'auth']);
+
+    return [
+      'success' => true,
+      'message' => __('auth.login.success'),
+      'data' => [
+        'user' => $user,
+        'token' => $token,
+        'expires_at' => date('Y-m-d H:i:s', $expiresAt)
+      ]
+    ];
+  }
+
+  static function logout($params) {
+    $token = request::bearerToken();
+    if (!$token) {
+      return ['success' => false, 'error' => __('auth.token.missing')];
+    }
+
+    self::deleteSessionByToken($token);
+    return ['success' => true, 'message' => __('auth.logout.success')];
+  }
+
+  // Guardar sesión con nombre optimizado: {timestamp}_{user_id}_{token_short}.json
+  private static function saveSession($user, $token, $expiresAt) {
+    $sessionsDir = STORAGE_PATH . '/sessions/';
+    if (!is_dir($sessionsDir)) mkdir($sessionsDir, 0755, true);
+
+    $tokenShort = substr($token, 0, 16);
+    $filename = "{$expiresAt}_{$user['id']}_{$tokenShort}.json";
+
+    file_put_contents($sessionsDir . $filename, json_encode([
+      'user_id' => $user['id'],
+      'user' => $user,
+      'token' => $token,
+      'expires_at' => date('Y-m-d H:i:s', $expiresAt),
+      'expires_timestamp' => $expiresAt,
+      'created_at' => date('Y-m-d H:i:s')
+    ], JSON_UNESCAPED_UNICODE));
+  }
+
+  private static function deleteSessionByToken($token) {
+    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $tokenShort = substr($token, 0, 16);
+    $files = glob($sessionsDir . "*_*_{$tokenShort}.json");
+
+    foreach ($files as $file) {
+      $session = json_decode(file_get_contents($file), true);
+      if ($session && $session['token'] === $token) {
+        unlink($file);
+        return true;
+      }
+    }
+    return false;
+  }
+}
+```
 
 ---
 
-## routes/
+## 🛣️ routes/ - Sistema de Rutas
 
-### api.php
+### app/routes/api.php - Router Principal
 
-**Propósito:** Router híbrido - Rutas manuales + Auto-registro CRUD.
+**Propósito:** Router híbrido con auto-registro CRUD + rutas manuales.
 
 **Flujo:**
-1. Extrae módulo del path (`/api/user` → `user`)
-2. Carga rutas manuales de `routes/apis/{module}.php` si existe
-3. Auto-registra rutas CRUD desde `resources/{module}.json`
-4. Auto-registra rutas custom desde `routes.custom` del JSON
+```
+1. Extrae módulo del path (/api/user → user)
 
-**Auto-registro CRUD:**
-- `GET /api/{resource}` → list()
-- `GET /api/{resource}/{id}` → show()
-- `POST /api/{resource}` → create()
-- `PUT /api/{resource}/{id}` → update()
-- `DELETE /api/{resource}/{id}` → delete()
+2. Auto-registra CRUD desde /app/resources/schemas/{module}.json
+   ├─ GET /api/{module}      → list()
+   ├─ GET /api/{module}/{id} → show()
+   ├─ POST /api/{module}     → create()
+   ├─ PUT /api/{module}/{id} → update()
+   └─ DELETE /api/{module}/{id} → delete()
 
-**Auto-registro custom:**
-Lee `routes.custom` del JSON y registra handlers personalizados.
+3. Carga rutas manuales de /app/routes/apis/{module}.php
+```
 
-**Ventaja:** No duplica rutas si ya están definidas manualmente.
+**Ejemplo:**
+```php
+<?php
+$requestUri = $_SERVER['REQUEST_URI'];
+$path = parse_url($requestUri, PHP_URL_PATH);
 
-### apis/user.php
+// Normalizar path
+$path = preg_replace('#/+#', '/', $path);
+if (preg_match('#(/api/.*)$#', $path, $matches)) {
+  $path = $matches[1];
+}
+$path = rtrim($path, '/');
 
-**Propósito:** Rutas manuales de autenticación (no CRUD).
+// Extraer módulo
+$module = null;
+if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
+  $module = $matches[1];
+}
 
-**Rutas:**
-- `POST /api/user/login` - Login con throttle (10 requests/min)
-- `POST /api/user/logout` - Logout (requiere auth)
-- `GET /api/user/profile` - Perfil (requiere auth)
-- `PUT /api/user/{id}/config` - Actualizar config (requiere auth + json)
-- `GET /api/user/generatepass/{key}` - Generar hash de password (solo dev)
+// Auto-registrar CRUD desde JSON
+if ($module) {
+  $resourceFile = APP_PATH . "/resources/schemas/{$module}.json";
 
-**Nota:** Las rutas CRUD se auto-registran desde `user.json`
+  if (file_exists($resourceFile)) {
+    $config = json_decode(file_get_contents($resourceFile), true);
 
-### apis/system.php
+    // Verificar controller personalizado
+    $controllerClass = ucfirst($module) . 'Controller';
+    $ctrl = class_exists($controllerClass)
+      ? new $controllerClass()
+      : new controller($module);
 
-**Propósito:** Rutas de administración del sistema.
+    $globalMw = $config['middleware'] ?? [];
 
-**Rutas:**
-- `GET /api/system/cleanup-sessions` - Limpia sesiones expiradas (auth)
-- `GET /api/system/sessions-stats` - Estadísticas de sesiones (auth)
-- `GET /api/system/info` - Info del sistema (auth)
-- `GET /api/system/health` - Health check (sin auth)
+    // Rutas CRUD
+    $crudRoutes = [
+      'list'   => ['get',    "/api/{$module}",      'list'],
+      'show'   => ['get',    "/api/{$module}/{id}", 'show'],
+      'create' => ['post',   "/api/{$module}",      'create'],
+      'update' => ['put',    "/api/{$module}/{id}", 'update'],
+      'delete' => ['delete', "/api/{$module}/{id}", 'delete']
+    ];
+
+    foreach ($crudRoutes as $key => $routeData) {
+      list($method, $routePath, $action) = $routeData;
+
+      $routeConfig = $config['routes'][$key] ?? [];
+
+      if (isset($routeConfig['enabled']) && $routeConfig['enabled'] === false) {
+        continue;
+      }
+
+      $routeMw = array_merge($globalMw, $routeConfig['middleware'] ?? []);
+
+      $route = $router->$method($routePath, [$ctrl, $action]);
+
+      if (!empty($routeMw)) {
+        $route->middleware($routeMw);
+      }
+    }
+  }
+}
+
+// Cargar rutas manuales
+$manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
+if ($module && file_exists($manualRoutes)) {
+  require_once $manualRoutes;
+}
+```
+
+### app/routes/apis/auth.php - Rutas de Autenticación
+
+```php
+<?php
+$router->group('/api/auth', function($router) {
+
+  // Login
+  $router->post('/login', function() {
+    $result = AuthHandler::login([]);
+    response::json($result);
+  })->middleware(['json', 'throttle:10,1']);
+
+  // Logout
+  $router->post('/logout', function() {
+    $result = AuthHandler::logout([]);
+    response::json($result);
+  })->middleware('auth');
+
+});
+```
+
+### app/routes/apis/user.php - Rutas Custom de User
+
+```php
+<?php
+// Las rutas CRUD se auto-registran desde user.json
+
+$router->group('/api/user', function($router) {
+
+  // Profile
+  $router->get('/profile', function() {
+    UserHandler::profile([]);
+  })->middleware('auth');
+
+  // Update config
+  $router->put('/{id}/config', function($id) {
+    UserHandler::updateConfig(['id' => $id]);
+  })->middleware(['auth', 'json']);
+
+});
+```
 
 ---
 
-## Flujo completo de un request
+## 🌍 lang/ - Sistema de Traducciones
 
-**Ejemplo: POST /api/user/login**
+### Estructura
 
-1. **api.php** - Entry point, inicia output buffering
-2. **router.php** - Match ruta con middleware
-3. **throttleMiddleware** - Verifica rate limit
-4. **jsonMiddleware** - Valida JSON body
-5. **routes/apis/user.php** - Ejecuta handler
-6. **userHandlers::login()** - Lógica de login
-7. **db.php** - Consulta usuario
-8. **password_verify()** - Valida password
-9. **utils::token()** - Genera token
-10. **Guarda sesión** en `storage/sessions/{token}.json`
-11. **response::json()** - Retorna respuesta
-12. **api.php** - Valida JSON output y envía
+```
+framework/lang/
+└── es/
+    ├── api.php
+    ├── auth.php
+    ├── core.php
+    ├── middleware.php
+    ├── validation.php
+    └── services/
+        ├── ai.php
+        ├── chatapi.php
+        └── email.php
 
-**Ejemplo: GET /api/user (CRUD auto)**
+app/lang/
+└── es/
+    ├── user.php
+    ├── client.php
+    └── product.php
+```
 
-1. **api.php** - Entry point
-2. **routes/api.php** - Auto-registra desde `user.json`
-3. **authMiddleware** - Valida token
-4. **userController::list()** - Ejecuta query
-5. **db.php** - Query con filtros y paginación
-6. **response::success()** - Retorna datos
+### Convenciones de Campos de BD
+
+**dc** = Date Created (Y-m-d H:i:s)  
+**du** = Date Updated (Y-m-d H:i:s)  
+**tc** = Timestamp Created (unix)  
+**tu** = Timestamp Updated (unix)  
+
+Ver: `/framework/docs/schema-conventions.md`
+
+### Convenciones de Nombres
+
+**Clases Framework:**
+- lowercase → Helpers: `db`, `log`, `request`, `response`
+- camelCase → Compound: `logReader`, `sessionCleanup`
+
+**Clases App:**
+- PascalCase → Controllers/Handlers: `UserController`, `AuthHandler`
+
+Ver: `/framework/docs/naming-conventions.md`
 
 ---
 
-## Características clave del backend
+## 🔄 Flujo Completo de un Request
 
-**1. CRUD automático desde JSON:**
-Define schema una vez, obtén API REST completa con validación.
+### Ejemplo: POST /api/auth/login
 
-**2. Controllers personalizados:**
-Override métodos CRUD para lógica específica (ej: hash passwords).
+```
+1. api.php
+   └─ Entry point, inicia output buffering
 
-**3. Handlers para custom actions:**
-Rutas personalizadas sin modificar controller base.
+2. app/config/init.php
+   └─ Define constantes (IS_DEV, DB_*, paths)
 
-**4. Sesiones basadas en archivos:**
-- Sin consultas a BD en cada request
-- Token como nombre de archivo
-- TTL automático con limpieza programada
+3. new Application()
+   ├─ Carga autoload.php
+   ├─ Carga router.php
+   └─ Carga app/routes/api.php
 
-**5. Middleware composable:**
-- Global (resource-level)
-- Por ruta (route-level)
-- Con parámetros: `throttle:60,1`
+4. $app->run()
+   └─ $router->dispatch()
+      ├─ Match ruta: POST /api/auth/login
+      ├─ Ejecuta middleware: throttle:10,1
+      ├─ Ejecuta middleware: json
+      └─ Ejecuta handler: AuthHandler::login()
 
-**6. Query builder fluido:**
-Chainable, prepared statements, soporte completo de WHERE/JOIN/ORDER.
+5. AuthHandler::login()
+   ├─ request::data() → Body JSON
+   ├─ db::table('user')->where() → Busca usuario
+   ├─ password_verify() → Valida password
+   ├─ utils::token(64) → Genera token
+   ├─ Guarda sesión en archivo
+   └─ return respuesta
 
-**7. Auto-carga inteligente:**
-Autoloader con 7 niveles de prioridad.
+6. response::json()
+   └─ Envía JSON al cliente
 
-**8. Validación automática:**
-Required, unique, timestamps desde schema JSON.
+7. api.php
+   └─ Valida JSON output y finaliza
+```
+
+### Ejemplo: GET /api/user (CRUD auto)
+
+```
+1. api.php
+
+2. app/routes/api.php
+   └─ Auto-registra desde user.json
+      ├─ Carga UserController (si existe)
+      ├─ Registra rutas CRUD
+      └─ Aplica middleware: ['auth']
+
+3. authMiddleware
+   ├─ Extrae Bearer token
+   ├─ Busca sesión en archivo
+   ├─ Valida expiración
+   └─ Carga user en $GLOBALS
+
+4. UserController::list()
+   ├─ db::table('user')->get()
+   ├─ Oculta passwords
+   ├─ Parsea config JSON
+   └─ response::success($data)
+
+5. Respuesta JSON al cliente
+```
+
+---
+
+## ✅ Características Clave del Backend
+
+1. **CRUD automático desde JSON**
+   - Define schema una vez
+   - Obtén API REST completa con validación
+
+2. **Controllers personalizados**
+   - Override métodos CRUD para lógica específica
+   - Usa traits para código reutilizable
+
+3. **Handlers para custom actions**
+   - Rutas personalizadas sin modificar controller base
+
+4. **Sesiones basadas en archivos**
+   - Sin consultas a BD en cada request
+   - Token como parte del nombre de archivo
+   - TTL automático con limpieza programada
+   - Nombres optimizados: `{timestamp}_{user_id}_{token_short}.json`
+
+5. **Middleware composable**
+   - Global (resource-level)
+   - Por ruta (route-level)
+   - Con parámetros: `throttle:60,1`
+
+6. **Query builder fluido**
+   - Chainable methods
+   - Prepared statements automáticos
+   - whereFilters dinámico
+   - Soporte completo de JOIN/ORDER/GROUP
+
+7. **Auto-carga inteligente**
+   - Mapa estático para críticos
+   - Lazy loading para el resto
+   - Auto-discovery de services
+
+8. **Validación automática**
+   - Required, unique desde schema
+   - Timestamps automáticos
+   - Traits reutilizables
+
+9. **Lazy loading de traducciones**
+   - Solo carga módulos usados
+   - Cache en memoria
+   - Merge framework + app
+
+10. **Sistema de logging estructurado**
+    - Niveles (debug, info, warning, error)
+    - Módulos y tags
+    - Rotación automática
+
+---
+
+## 📚 Documentación Adicional
+
+- **FRAMEWORK.md** - Documentación completa del núcleo
+- **BLUEPRINT.md** - Guía para crear proyectos nuevos
+- **BUSINESS-LOGIC-MAP.md** - Template para mapear lógica
+- `/framework/docs/` - Mini-docs de cada componente
+
+---
+
+## 🎯 Mejoras Implementadas (2025)
+
+✅ Estandarización PascalCase para handlers/controllers  
+✅ Trait ValidatesUnique para validaciones reutilizables  
+✅ response.php corregido (if $data !== null)  
+✅ lang.php con lazy loading + cache en memoria  
+✅ Mini-documentación de 12 componentes  
+✅ Convenciones documentadas (nombres, schemas BD)  
+✅ autoload.php con soporte de traits  
+
+---
+
+**Versión:** 1.3  
+**Última actualización:** Diciembre 2025
