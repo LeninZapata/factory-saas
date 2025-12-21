@@ -35,12 +35,12 @@ window.appConfig = {
   },
 
   cache: {
-    modals: !IS_DEV,
-    forms: !IS_DEV,
-    views: !IS_DEV,
-    viewNavigation: !!IS_DEV, // creo que es view tabs
-    validation: !IS_DEV,
-    ttl: 60 * 60 * 1000
+    modals: !IS_DEV, // Cachea configuraciones de modales (loader.loadJson)
+    forms: !IS_DEV, // Cachea JSON de formularios (form.load)
+    views: !IS_DEV, // Cachea JSON de vistas del sidebar (view.loadView)
+    viewNavigation: !IS_DEV, // Cachea HTML renderizado de vistas del sidebar (viewNavigationCache)
+    validation: !IS_DEV, // Cachea esquemas de validación (validator.loadSchema)
+    ttl: 60 * 60 * 1000 // Tiempo de vida del caché: 1 hora
   }
 };
 

@@ -357,7 +357,8 @@ class sidebar {
           return item.items.length > 0;
         }
         return true;
-      });
+      })
+      .sort((a, b) => (a.order || 999) - (b.order || 999)); // ✅ Ordenar por order
   }
 }
 

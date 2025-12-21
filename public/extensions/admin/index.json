@@ -23,13 +23,20 @@
         "id": "admin-users",
         "title": "Gestión de Usuarios",
         "view": "sections/users",
+        "order": 3,
+        "role": "admin"
+      },
+      {
+        "id": "admin-endpoints",
+        "title": "Endpoints",
+        "view": "sections/endpoints",
         "order": 2,
         "role": "admin"
       },
       {
         "id": "admin-settings",
         "title": "Configuración",
-        "order": 3,
+        "order": 4,
         "items": [
           {
             "id": "admin-settings-general",

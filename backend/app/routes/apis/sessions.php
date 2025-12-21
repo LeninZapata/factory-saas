@@ -6,7 +6,7 @@ $router->group('/api/sessions', function($router) {
   $middleware = IS_DEV ? [] : ['auth'];
   $logMeta = ['module' => 'session', 'layer' => 'app'];
 
-  // GET /api/sessions - Listar todas las sesiones
+  // Listar todas las sesiones activas y expiradas
   $router->get(['/',''], function() {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -57,7 +57,7 @@ $router->group('/api/sessions', function($router) {
     ]);
   })->middleware($middleware);
 
-  // GET /api/sessions/stats - Estadísticas rápidas
+  // Obtener estadísticas de sesiones
   $router->get('/stats', function() use ($logMeta) {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -109,7 +109,7 @@ $router->group('/api/sessions', function($router) {
     ]);
   })->middleware($middleware);
 
-  // GET /api/sessions/user/{user_id} - Sesiones de un usuario
+  // Listar sesiones de un usuario específico
   $router->get('/user/{user_id}', function($userId) use ($logMeta) {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -156,7 +156,7 @@ $router->group('/api/sessions', function($router) {
     ]);
   })->middleware($middleware);
 
-  // DELETE /api/sessions/cleanup - Limpiar expiradas
+  // Limpiar sesiones expiradas del sistema
   $router->delete('/cleanup', function() use ($logMeta) {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -202,7 +202,7 @@ $router->group('/api/sessions', function($router) {
     response::success(['cleaned' => $cleaned, 'errors' => $errors], __('api.session.cleanup.success'));
   })->middleware($middleware);
 
-  // DELETE /api/sessions/user/{user_id} - Invalidar sesiones de usuario
+  // Invalidar todas las sesiones de un usuario
   $router->delete('/user/{user_id}', function($userId) use ($logMeta) {
     $sessionsDir = STORAGE_PATH . '/sessions/';
 
@@ -210,7 +210,7 @@ $router->group('/api/sessions', function($router) {
       response::success([
         'user_id' => (int)$userId,
         'cleaned' => 0
-      ], __('session.invalidated', ['count' => 0]));
+      ], __('api.session.invalidated', ['count' => 0]));
       return;
     }
 

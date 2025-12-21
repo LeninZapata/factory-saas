@@ -5,7 +5,7 @@ $router->group('/api/cleanup', function($router) {
 
   $logMeta = ['module' => 'cleanup', 'layer' => 'app'];
 
-  // GET /api/cleanup/{path} - Eliminar carpeta
+  // Eliminar carpeta del sistema
   $router->get('/{path:.*}', function($path) use ($logMeta) {
     // Validación de seguridad: no permitir ..
     if (strpos($path, '..') !== false) {

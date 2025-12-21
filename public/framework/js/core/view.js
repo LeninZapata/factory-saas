@@ -17,6 +17,7 @@ class view {
 
     if (!container && window.appConfig?.cache?.viewNavigation) {
       if (this.viewNavigationCache.has(navCacheKey)) {
+        logger.info('core:view', `✅ Cache viewNavigation: usando HTML cacheado para "${viewName}"`);
         const cachedData = this.viewNavigationCache.get(navCacheKey);
         const content = document.getElementById('content');
         if (content) {
@@ -49,12 +50,12 @@ class view {
 
     if (extensionContext) {
       basePath = `extensions/${extensionContext}/views`;
-      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
     }
     else if (viewName.startsWith('core:')) {
       viewName = viewName.replace('core:', '');
       basePath = `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
     }
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
@@ -64,20 +65,25 @@ class view {
         basePath = `extensions/${firstPart}/views`;
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
-        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
+        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
         extensionContext = firstPart;
       } else {
         basePath = `${frameworkPath}/js/views`;
-        cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+        cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
       }
     }
     else {
       basePath = `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
     }
 
     try {
-      let viewData = cache.get(cacheKey);
+      // Solo leer del caché si está habilitado
+      let viewData = window.appConfig?.cache?.views ? cache.get(cacheKey) : null;
+
+      if (viewData) {
+        logger.info('core:view', `✅ Cache views: usando caché para "${viewName}"`);
+      }
 
       if (!viewData) {
         const cacheBuster = `?t=${window.VERSION}`;
@@ -99,6 +105,9 @@ class view {
 
         if (window.appConfig?.cache?.views) {
           cache.set(cacheKey, viewData);
+          logger.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
+        } else {
+          logger.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
         }
       }
 
@@ -135,7 +144,10 @@ class view {
             layout: combinedData.layout,
             viewData: combinedData
           });
+          logger.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
         }
+      } else if (!container) {
+        logger.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
       }
 
     } catch (error) {

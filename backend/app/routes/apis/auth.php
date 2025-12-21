@@ -4,13 +4,13 @@ $router->group('/api/auth', function($router) {
 
   // RUTAS ESPECIALES DE AUTENTICACIÓN
 
-  // Login - POST /api/auth/login
+  // Autenticar usuario en el sistema
   $router->post('/login', function() {
     $result = AuthHandler::login([]);
     response::json($result);
   })->middleware(['json', 'throttle:10,1']);
 
-  // Logout - POST /api/auth/logout
+  // Cerrar sesión del usuario
   $router->post('/logout', function() {
     $result = AuthHandler::logout([]);
     response::json($result);

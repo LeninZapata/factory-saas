@@ -1,4 +1,11 @@
 Backend (Framework):
+☐ en los /api/system/routes no se ve los middleware, esto hay varias formas de buscarlos una es en
+scheme, otra por la variable que valida si es DEV o no dnetro de cada uno osea middleware.
+NO se que hace la columan SOURCE, no me sirve creo...
+☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
+de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
+que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
+
 
 Frontend (Framework):
 ✔ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice @done(21-12-2025 16:29)
@@ -6,7 +13,7 @@ un cambio y se viio el cambio entonces no estaba en cache el idioma supongo, rev
 ✔ Focus al momento de abrir un modal, debes hacer que el modal luego que cargue apunte a un focus @done(21-12-2025 16:37)
 y tambien el form si este tiene la opcion de focus pues entonces este debe ejecutar el focus
 en el primer elemento que tenga el atributo data-focus="true"
-☐ crear la vista de endpoints para que se pueda ver los endpoints creadosn el sistema
+✔ crear la vista de endpoints para que se pueda ver los endpoints creadosn el sistema @done(21-12-2025 17:54)
 ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
 y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
 ☐ crear la vista de logs en el sistema, debe tener filtros por usuario, fecha, modulo, accion
