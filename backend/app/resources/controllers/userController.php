@@ -2,6 +2,8 @@
 class UserController extends controller {
   use ValidatesUnique;
 
+  private static $logMeta = ['module' => 'user', 'layer' => 'app'];
+
   function __construct() {
     parent::__construct('user');
   }
@@ -37,10 +39,10 @@ class UserController extends controller {
 
     try {
       $id = db::table('user')->insert($data);
-      log::info('Usuario creado', ['id' => $id], ['module' => 'user']);
+      log::info('Usuario creado', ['id' => $id], self::$logMeta);
       response::success(['id' => $id], __('user.create.success'), 201);
     } catch (Exception $e) {
-      log::error('Error al crear usuario', ['error' => $e->getMessage()], ['module' => 'user']);
+      log::error('Error al crear usuario', ['error' => $e->getMessage()], self::$logMeta);
       response::serverError(__('user.create.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
@@ -88,11 +90,11 @@ class UserController extends controller {
 
       if ($currentUserId && $currentUserId == $id) {
         // Si el admin se está editando a sí mismo, NO invalidar su sesión
-        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión", null, ['module' => 'user']);
+        log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión", null, self::$logMeta);
       } else {
         // Invalidar todas las sesiones del usuario editado
         $cleaned = sessionCleanup::cleanByUserId($id);
-        log::info("Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", null, ['module' => 'user']);
+        log::info("Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", null, self::$logMeta);
       }
     }
 

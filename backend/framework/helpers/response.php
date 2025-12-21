@@ -4,7 +4,7 @@ class response {
   // Respuesta JSON
   static function json($data, $code = 200) {
     if ($code !== 200) {
-      log::error('Response Error', ['code' => $code, 'data' => $data], ['module' => 'response']);
+      log::error('Response Error', ['code' => $code, 'data' => $data], ['module' => 'response', 'layer' => 'framework']);
     }
     http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');

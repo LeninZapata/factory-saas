@@ -24,7 +24,7 @@ class Application {
     // Capturar output previo
     $captured = ob_get_clean();
     if (!empty($captured) && IS_DEV) {
-      error_log("⚠️ API Warning: Output captured before routing: " . substr($captured, 0, 200));
+      log::warning('Output capturado antes del routing', ['output' => substr($captured, 0, 200)], ['module' => 'application', 'layer' => 'framework']);
     }
 
     // Reiniciar buffer para la respuesta

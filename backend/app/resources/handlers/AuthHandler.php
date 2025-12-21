@@ -2,6 +2,8 @@
 // AuthHandler - Handlers de autenticación
 class AuthHandler {
 
+  private static $logMeta = ['module' => 'auth', 'layer' => 'app'];
+
   // Login
   static function login($params) {
     $data = request::data();
@@ -17,7 +19,7 @@ class AuthHandler {
       ->first();
 
     if (!$user || !password_verify($data['pass'], $user['pass'])) {
-      log::warning('Login fallido', ['user' => $data['user']], ['module' => 'auth']);
+      log::warning('Login fallido', ['user' => $data['user']], self::$logMeta);
       return ['success' => false, 'error' => __('auth.credentials.invalid')];
     }
 
@@ -61,7 +63,7 @@ class AuthHandler {
       'tu' => time()
     ]);
 
-    log::info('Login exitoso', ['user' => $user['user'], 'id' => $user['id']], ['module' => 'auth']);
+    log::info('Login exitoso', ['user' => $user['user'], 'id' => $user['id']], self::$logMeta);
 
     return [
       'success' => true,
@@ -92,7 +94,7 @@ class AuthHandler {
     $deleted = self::deleteSessionByToken($token);
 
     if ($deleted) {
-      log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...'], ['module' => 'auth']);
+      log::info('Logout exitoso', ['token' => substr($token, 0, 10) . '...'], self::$logMeta);
     }
 
     return ['success' => true, 'message' => __('auth.logout.success')];

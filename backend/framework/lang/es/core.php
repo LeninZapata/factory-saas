@@ -40,4 +40,10 @@ return [
     'not_found' => 'Recurso no encontrado',
     'config_missing' => 'Configuración de recurso faltante',
   ],
+
+  'service' => [
+    'not_found' => 'Servicio no encontrado: {category}',
+    'class_not_found' => 'Clase no existe: {class}',
+    'method_not_found' => 'Método no existe: {class}::{method}',
+  ],
 ];

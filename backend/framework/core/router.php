@@ -45,6 +45,7 @@ class router {
       $route = new route($method, $fullPath, $handler);
       if ($this->groupMiddleware) $route->middleware($this->groupMiddleware);
       $this->routes[$method][$fullPath] = $route;
+      log::debug("Ruta registrada: [{$method}] {$fullPath}", null, ['module' => 'router', 'layer' => 'framework']);
     }
 
     return $route;
@@ -97,16 +98,25 @@ class router {
       return;
     }
 
-    log::debug("router:: Intentando match dinámico para {$method} {$path}", $this->routes[$method]);
+    log::debug("Intentando match dinámico", ['method' => $method, 'path' => $path, 'routes_registered' => array_keys($this->routes[$method])], ['module' => 'router', 'layer' => 'framework']);
+
     foreach ($this->routes[$method] as $route => $routeObj) {
-      $pattern = preg_replace('/\{[^}]+\}/', '([^/]+)', $route);
+      // Soportar {param:.*} para capturar todo incluyendo /
+      $pattern = preg_replace('/\{([^:}]+):\.\*\}/', '(.*)', $route);
+      // Reemplazar {param} normales (sin /)
+      $pattern = preg_replace('/\{[^}]+\}/', '([^/]+)', $pattern);
       $pattern = '#^' . $pattern . '$#';
+      
+      log::debug("Intentando match", ['route' => $route, 'pattern' => $pattern, 'path' => $path], ['module' => 'router', 'layer' => 'framework']);
+      
       if (preg_match($pattern, $path, $matches)) {
         array_shift($matches);
+        log::debug("Match encontrado!", ['route' => $route, 'params' => $matches], ['module' => 'router', 'layer' => 'framework']);
         $this->exec($routeObj, $matches);
         return;
       }
     }
+    log::debug("Ruta no encontrada: [{$method}] {$path}", null, ['module' => 'router']);
     $this->notFound();
   }
 

@@ -69,5 +69,12 @@ if ($module) {
 // PASO 2: Cargar rutas manuales (custom routes)
 $manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
+  log::debug("Cargando rutas manuales: {$manualRoutes}", ['module' => $module], ['module' => 'api', 'layer' => 'app']);
   require_once $manualRoutes;
+}
+
+// Cargar ruta de cleanup (siempre disponible)
+if ($module === 'cleanup') {
+  log::debug("Cargando cleanup.php", ['module' => $module], ['module' => 'api', 'layer' => 'app']);
+  require_once ROUTES_PATH . '/apis/cleanup.php';
 }
