@@ -1,30 +1,75 @@
-por donde me quede:
-☐ Validar que si es php 8.1 o superior para las apis porque sino no funciona inteernamente
+
+Backend (Framework):
+☐ Ver cada posible error en lineas de validacion y forzarlo al error para ver
+que mensaje te da como por ejemplo apis incorrecta, con esto puedes tener una mejor
+forma de tener que mismo paso con ese error
+☐ crear los endpoint de limpieza en este caso deben limíar los archivos de shared/
+☐ Los throws deben tener keys, y debe ser lanzados en el return porque sino no hay error y te dice 
+siempre que el webhook es correcto.
+☐ en una conversion con la IA me dice que si puedo lanzar el throw con el log de una forma asi
+URGENTE: cuando hagas esto internamente debes enviarte un mensaje porque puede que esto sea un problema que corregir!
+o poner un parametro si es necesario que yo lo resuelva manualmente porque es de caracter URGENTE.
+URENTE2: hay que crear un sistema de notificaciones internas para el admin que le avise de estos errores
+y que pueda verlos en un panel de notificaciones, ademas de enviarsele un correo. Es una clase interna que 
+debe  hacerse para el manejo de errores fatales.
+<?php
+// En framework/helpers/log.php
+static function throwError($msg, $ctx = [], $meta = []) {
+  self::error($msg, $ctx, $meta);
+  throw new Exception($msg);
+}
+
+// Uso en message.php
+log::throwError('Archivo de prompt no encontrado', ['file' => $promcptFile], ['module' => 'conversation']);
+☐ Es una idea vaga pero la generacion de JSON de todos los lados tuvo que podria ser un archivo handler aparte
+cosa que asi no tenia responsivlidad del CRUD de cada entidad, sino que todo lo de JSON lo hacia un handler aparte
+y los controllers solo se encargaban de recibir y enviar los datos.
+Es decir para no mezclar responsabilidades.
+☐ Log deben saber aparte del modulo tambien sobre sobre si es del FRAMEWORK o de la APLICACION
+☐ Manejo de errores FATALES
+if (!file_exists($promptFile)) {
+      log::error('Archivo de prompt no encontrado', ['file' => $promptFile], ['module' => 'conversation']);
+      throw new Exception("Archivo de prompt no encontrado: {$promptFile}"); // hay que usar throw para que el workflow capture el error
+    } $instruction = file_get_contents($promptFile) ?? 'Describe brevemente esta imagen';
+--
+sino encuentra aqui el archivo practicamente se cae todo el flujo de trabajo y esto es un error
+fatal que debe ser notificado al admin POR MEDio de un mensaje interno y un correo electronico
+ademas de quedar registrado en los logs. Esto es importante porque si no existe el archivo
+PIENSO QUE DEBES MANEJARTE con niveles de error fatales y no fatales. es decir
+'normal', 'warning', 'error', 'fatal'. El 'error' es una aviso NARAJAN pero el 'fatal' es ROJO
+y debe ser notificado al admin.
+
+
+Frontend (Framework):
+☐ Agregar que tu puedes tener un campo que solo sea visible para el admin
+esto va permitir listar todos los usuarios cosa que por FORM tu puedes poner
+a quien le pertenece ese registro, por defecto estara el user logeado pero el admin puede cambiarlo
+y poner otro usuario. Con esto podemos rapidamente crear registros para otros usuarios.
+Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todos los usuarios
+actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
+☐ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice
+un cambio y se viio el cambio entonces no estaba en cache el idioma supongo, revisa eso
 ☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
 en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
 SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
-☐ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice
-un cambio y se viio el cambio entonces no estaba en cache el idioma supongo, revisa eso
-Despues:
 ☐ Focus al momento de abrir un modal, debes hacer que el modal luego que cargue apunte a un focus
 y tambien el form si este tiene la opcion de focus pues entonces este debe ejecutar el focus
 en el primer elemento que tenga el atributo data-focus="true"
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
-o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no
-☐ crear la vista de endpoints para que se pueda ver los  eendpoints creadosn el sistema
+o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no}
+☐ crear la vista de endpoints para que se pueda ver los endpoints creadosn el sistema
 ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
 y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
 ☐ crear la vista de logs en el sistema, debe tener filtros por usuario, fecha, modulo, accion
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
-☐ agrega las reglas de copiloto para la AI en el proyecto
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
 ☐ persistencia en widgets posicion
-☐ grouper tabs no se ve los estilos de degradados como lo hace tabs
+☐ grouper tabs no se ve los estilos de degradados como lo hace tabs en responsive scroll horizontal
 ☐ El type submit el label de json debe ser su value para que cambie el txto del boton
 actualmente si pones un type : "submit" crea un boton con el texto "enviar" y label se coloca
 en una extraña posicion en si.
@@ -35,10 +80,5 @@ link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
 almenos en el login hay que preguntar si esto va duplicar al resto deformularios
 ☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
 esto sirve para ponerlo en los activadores de bienvenida del infoproducto
-☐ El meotod processI18nInString parece que estaen varios componentes, hay que ponerlos en i18n para
-que desde alli los tome y asi evitar repetir codigo @OJO revisar como lo hace los otros para usar este mismo
-osea revisar componente por componente y parte del core JS para que revise esto.
 ☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe 
 quedar en el primer campo obligatorio que falte por llenar
-☐ El APP osea el sistema debe tener su propia constantes de i18n y rutas para que asi
-no se repitan en cada modulo, por ejemplo las rutas basicas como dashboard, login,

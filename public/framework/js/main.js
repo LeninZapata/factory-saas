@@ -17,7 +17,7 @@ window.appConfig = {
     redirectAfterLogin: 'dashboard/dashboard',
     storageKey: 'factory_auth',
     tokenTTL: 24 * 60 * 60 * 1000,
-    sessionCheckInterval: 2*60*1000, // 2 minutos
+    sessionCheckInterval: 1*60*1000, // 1 minutos
     api: {
       login: '/api/auth/login',
       logout: '/api/auth/logout',
@@ -69,7 +69,7 @@ const SCRIPTS_TO_LOAD = [
   // Components
   'js/components/langSelector.js',
   'js/components/toast.js',
-  'js/components/grouper.js',
+  // 'js/components/grouper.js',
   'js/components/modal.js',
   'js/components/tabs.js',
   'js/components/widget.js',

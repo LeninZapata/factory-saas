@@ -22,7 +22,7 @@
         "view": "sections/script-bajo-demanda",
         "order": 2,
         "styles": [
-          "extensions/ejemplos/assets/css/chart.css"
+          "ejemplos/assets/css/chart.css"
         ]
       },
       {

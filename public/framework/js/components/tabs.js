@@ -14,8 +14,6 @@ class tabs {
     // Guardar el contexto para este tabs específico
     this.extensionContextMap.set(tabsData.id, extensionContext);
 
-    logger.debug('com:tabs', `[render] ID: ${tabsData.id}, Preservando extensionContext: "${extensionContext}"`);
-
     const tabsHTML = `
       <div class="tabs-component">
         <div class="tabs-header">
@@ -121,7 +119,7 @@ class tabs {
       const tempContainer = document.createElement('div');
       tempContainer.innerHTML = renderedContent;
 
-      await this.loadDynamicComponents(tempContainer);
+      await this.loadDynamicComponents(tabsData.id, tempContainer);
       this.tabCache.set(cacheKey, tempContainer);
     } catch (error) {
       logger.error('com:tabs', `Error cargando tab ${tabId}:`, error);
@@ -229,22 +227,23 @@ class tabs {
     // Obtener el contexto guardado para este tabs específico
     const extensionContext = this.extensionContextMap.get(tabsId) || null;
 
-    logger.debug('com:tabs', `[loadDynamicComponents] ID: ${tabsId}, extensionContext: "${extensionContext}"`);
-
     const formContainers = container.querySelectorAll('.dynamic-form[data-form-json]');
 
     for (const formContainer of formContainers) {
       const formJson = formContainer.dataset.formJson;
       
-      logger.debug('com:tabs', `[loadDynamicComponents] formJson original: "${formJson}"`);
-      
       try {
-        // Si hay contexto de extensión y el formJson no incluye '|', agregarlo
-        const formPath = (extensionContext && !formJson.includes('|')) 
-          ? `${extensionContext}|forms/${formJson}` 
-          : formJson;
-        
-        logger.debug('com:tabs', `[loadDynamicComponents] formPath construido: "${formPath}"`);
+        let formPath = formJson;
+
+        // Si hay contexto de extensión y el formJson no incluye '|'
+        if (extensionContext && !formJson.includes('|')) {
+          // Remover el prefijo de extensión si ya está presente
+          const cleanFormJson = formJson.startsWith(`${extensionContext}/`) 
+            ? formJson.substring(extensionContext.length + 1) 
+            : formJson;
+          
+          formPath = `${extensionContext}|forms/${cleanFormJson}`;
+        }
         
         await form.load(formPath, formContainer);
       } catch (error) {

@@ -11,9 +11,14 @@ return [
     'token_missing' => 'Token de autenticación no proporcionado',
     'token_invalid' => 'Token de autenticación inválido',
     'token_expired' => 'Token de autenticación expirado',
+    'token_not_found' => 'Token no encontrado',
+    'session_corrupted' => 'Sesión corrupta',
+    'token_mismatch' => 'Token no coincide',
+    'token_expired_deleted' => 'Token expirado eliminado',
     'unauthorized' => 'No autorizado',
     'session_required' => 'Sesión requerida',
     'session_expired' => 'Sesión expirada',
+    'php_version_required' => 'Se requiere PHP :required o superior. Versión actual: :current',
   ],
   
   'json' => [
