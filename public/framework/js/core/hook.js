@@ -128,7 +128,7 @@ class hook {
         i18n.exntesionTranslations.set(extensionName, new Map());
       }
       i18n.exntesionTranslations.get(extensionName).set(lang, translations);
-      cache.set(`i18n_extension_${extensionName}_${lang}`, translations, 60 * 60 * 1000);
+      cache.set(`i18n_extension_${extensionName}_${lang}_v${window.VERSION}`, translations, 60 * 60 * 1000);
 
       logger.success('core:hook', `✅ Idioma ${lang} cargado para ${extensionName}`);
       return true;

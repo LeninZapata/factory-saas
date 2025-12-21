@@ -1,28 +1,24 @@
 Backend (Framework):
 
 Frontend (Framework):
-☐ Agregar que tu puedes tener un campo que solo sea visible para el admin
-esto va permitir listar todos los usuarios cosa que por FORM tu puedes poner
-a quien le pertenece ese registro, por defecto estara el user logeado pero el admin puede cambiarlo
-y poner otro usuario. Con esto podemos rapidamente crear registros para otros usuarios.
-Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todos los usuarios
-actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
-☐ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice
+✔ Verifica si el idioma lo esta tomando del cache de idioma o del json directo porque en un form yo hice @done(21-12-2025 16:29)
 un cambio y se viio el cambio entonces no estaba en cache el idioma supongo, revisa eso
-☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
-en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
-SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
-☐ Focus al momento de abrir un modal, debes hacer que el modal luego que cargue apunte a un focus
+✔ Focus al momento de abrir un modal, debes hacer que el modal luego que cargue apunte a un focus @done(21-12-2025 16:37)
 y tambien el form si este tiene la opcion de focus pues entonces este debe ejecutar el focus
 en el primer elemento que tenga el atributo data-focus="true"
-☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
-☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
-debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
-o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no}
 ☐ crear la vista de endpoints para que se pueda ver los endpoints creadosn el sistema
 ademas debe haber una ofrma para que se pueda agregar mas descripcion de cada endpoint
 y que se pueda ver en el frontend o backend. y que se pueda copiar rapidamente el endpoint
 ☐ crear la vista de logs en el sistema, debe tener filtros por usuario, fecha, modulo, accion
+☐ limpia todos los logs de los archivos js para que no escriba algo en consola a que no sea errores
+en este caso hay que poner el user_id ya que basado en esto se pueden hacer auditorias
+SOLUCION, se agrego un nuevo parametro en el log que es user_id y se obtiene del contexto actual
+---------
+
+☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
+☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
+debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
+o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
@@ -40,5 +36,13 @@ link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
 almenos en el login hay que preguntar si esto va duplicar al resto deformularios
 ☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
 esto sirve para ponerlo en los activadores de bienvenida del infoproducto
+☐ Agregar que tu puedes tener un campo que solo sea visible para el admin
+esto va permitir listar todos los usuarios cosa que por FORM tu puedes poner
+a quien le pertenece ese registro, por defecto estara el user logeado pero el admin puede cambiarlo
+y poner otro usuario. Con esto podemos rapidamente crear registros para otros usuarios.
+Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todos los usuarios
+actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
+(PARECE QUE ESTO YA EXISTE CON ROLE ADMIN EL CAMPO SE MUESTRA O NO, SOLO FALTARIA LLENARLO CON UN ENDPOINT
+Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
 ☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe 
 quedar en el primer campo obligatorio que falte por llenar

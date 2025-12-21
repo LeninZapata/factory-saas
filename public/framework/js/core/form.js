@@ -197,6 +197,8 @@ class form {
           conditions.init(instanceId);
         }
 
+        // Aplicar autofocus si algún campo tiene focus: true
+        this.applyAutoFocus(instanceSchema, formEl);
         if (typeof afterRender === 'function') {
           try {
             afterRender(instanceId, formEl);
@@ -208,6 +210,53 @@ class form {
     }, 10);
 
     return instanceId;
+  }
+
+  // Aplicar autofocus al primer campo con focus: true
+  static applyAutoFocus(schema, formEl) {
+    const findFieldWithFocus = (fields) => {
+      if (!fields) return null;
+      
+      for (const field of fields) {
+        // Si el campo tiene focus: true, retornarlo
+        if (field.focus === true && field.name) {
+          return field.name;
+        }
+        
+        // Buscar recursivamente en grouper tabs
+        if (field.type === 'grouper' && field.groups) {
+          for (const group of field.groups) {
+            if (group.fields) {
+              const found = findFieldWithFocus(group.fields);
+              if (found) return found;
+            }
+          }
+        }
+        
+        // Buscar recursivamente en groups
+        if (field.type === 'group' && field.fields) {
+          const found = findFieldWithFocus(field.fields);
+          if (found) return found;
+        }
+      }
+      
+      return null;
+    };
+    
+    const fieldName = findFieldWithFocus(schema.fields);
+    
+    if (fieldName) {
+      const input = formEl.querySelector(`[name="${fieldName}"]`);
+      if (input) {
+        setTimeout(() => {
+          input.focus();
+          // Si es un input de texto, mover cursor al final
+          if (input.setSelectionRange && input.value) {
+            input.setSelectionRange(input.value.length, input.value.length);
+          }
+        }, 50);
+      }
+    }
   }
 
   static render(schema) {
