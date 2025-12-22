@@ -488,10 +488,8 @@ class form {
             // Re-evaluar condiciones al abrir sección
             if (window.conditions) {
               const formId = container.closest('form')?.id;
-              logger.debug('core:form', `[Linear] Sección abierta, re-evaluando condiciones. FormID: ${formId}`);
               if (formId) {
                 setTimeout(() => {
-                  logger.debug('core:form', `[Linear] Ejecutando conditions.evaluate(${formId})`);
                   conditions.evaluate(formId);
                 }, 50);
               } else {
@@ -509,14 +507,10 @@ class form {
       const tabButtons = container.querySelectorAll(':scope > .grouper-tabs-header > .grouper-tab-btn');
       const tabPanels = container.querySelectorAll(':scope > .grouper-tabs-content > .grouper-tab-panel');
 
-      logger.debug('core:form', `[Tabs] Grouper ${container.id} - ${tabButtons.length} tabs encontrados`);
-
       tabButtons.forEach(button => {
         button.addEventListener('click', () => {
           const index = parseInt(button.dataset.tabIndex);
           
-          logger.debug('core:form', `[Tabs] Click en tab ${index}`);
-
           // Remover active de todos los botones de ESTE grouper
           tabButtons.forEach(btn => btn.classList.remove('active'));
           tabPanels.forEach(panel => panel.classList.remove('active'));
@@ -530,10 +524,8 @@ class form {
             // ✅ Re-evaluar condiciones al cambiar de tab
             if (window.conditions) {
               const formId = container.closest('form')?.id;
-              logger.debug('core:form', `[Tabs] Tab ${index} activado, re-evaluando condiciones. FormID: ${formId}`);
               if (formId) {
                 setTimeout(() => {
-                  logger.debug('core:form', `[Tabs] Ejecutando conditions.evaluate(${formId})`);
                   conditions.evaluate(formId);
                 }, 50);
               } else {
@@ -585,12 +577,11 @@ class form {
    * o min="8" max="20" (para number)
    */
   static getValidationAttributes(field) {
-    const attrs = [];
-    
     if (!field.validation) return '';
 
     const rules = field.validation.split('|');
     const isNumberType = field.type === 'number' || field.type === 'range';
+    const attrs = [];
 
     rules.forEach(rule => {
       const [ruleName, ruleValue] = rule.split(':');
@@ -881,10 +872,6 @@ class form {
       }
     }
   }
-
-  // ============================================================================
-  // PROCESAR VALORES POR DEFECTO ESPECIALES
-  // ============================================================================
 
   // ============================================================================
   // APLICAR VALORES POR DEFECTO
@@ -1271,8 +1258,6 @@ class form {
       return;
     }
 
-    logger.debug('core:form', `📝 Llenando formulario ${formId}${skipRepeatables ? ' (solo selects)' : ''}`);
-
     // ✅ Guardar data en el formulario para reutilizar después
     if (!formEl.dataset.formData) {
       formEl.dataset.formData = JSON.stringify(data);
@@ -1356,7 +1341,6 @@ class form {
       
       formEl.addEventListener('select:afterLoad', (e) => {
         selectLoadCount++;
-        logger.debug('core:form', `🔄 Select #${selectLoadCount} cargado (${e.detail.fromCache ? 'cache' : 'API'}): ${e.detail.selectId}`);
         
         // Solo reintentar seleccionar valores en selects, NO recrear repeatables
         const savedData = JSON.parse(formEl.dataset.formData || '{}');
@@ -1364,7 +1348,6 @@ class form {
       });
       
       formEl.dataset.fillListenerRegistered = 'true';
-      logger.debug('core:form', `✅ Listener registrado para ${formId}`);
     }
   }
 
@@ -1374,7 +1357,6 @@ class form {
     const items = data[fieldName];
 
     if (!Array.isArray(items) || items.length === 0) {
-      logger.debug('core:form', `No hay datos para: ${fieldName}`);
       return;
     }
 
@@ -1383,7 +1365,6 @@ class form {
 
     // Pausar evaluaciones de condiciones durante el llenado masivo
     if (window.conditions && items.length >= 1) {
-      logger.debug('core:form', `⏸️ Pausando evaluaciones durante llenado de ${items.length} items`);
       conditions.pauseEvaluations();
     }
 
@@ -1415,8 +1396,6 @@ class form {
     // Agregar items uno por uno
     items.forEach((itemData, index) => {
       setTimeout(() => {
-        logger.debug('core:form', `Agregando item ${index + 1}/${items.length} de ${fullPath}`);
-
         // Click en "Agregar"
         addButton.click();
 
@@ -1432,13 +1411,10 @@ class form {
 
   // Llenar un item específico del repeatable (RECURSIVO)
   static fillRepeatableItem(container, fieldName, index, itemData, fieldSchema, parentPath, isLastItem = false) {
-    logger.debug('core:form', `Llenando item [${index}] de ${parentPath || fieldName}:`, itemData);
-
     // Reanudar evaluaciones si es el último item
     if (isLastItem && window.conditions) {
       const formEl = container.closest('form');
       setTimeout(() => {
-        logger.debug('core:form', `✅ Último item de ${parentPath}, reanudando evaluaciones`);
         conditions.resumeEvaluations(formEl?.id);
       }, 200);
     }
@@ -1458,14 +1434,10 @@ class form {
     // Calcular path del item usando el índice del DOM
     const itemPath = parentPath ? `${parentPath}[${domIndex}]` : `${fieldName}[${domIndex}]`;
 
-    logger.debug('core:form', `Llenando item [${index}] de ${parentPath || fieldName}:`, itemData);
-
     // Iterar sobre cada campo del schema
     fieldSchema.forEach(subField => {
       if (subField.type === 'repeatable') {
         // ✅ RECURSIÓN: Llenar repeatable anidado
-        logger.debug('core:form', `🔄 Procesando repeatable anidado: ${subField.name}`);
-
         // Llamar recursivamente pasando el item actual como contenedor
         this.fillRepeatable(currentItem, subField, itemData, itemPath);
 
@@ -1483,7 +1455,6 @@ class form {
 
         if (input) {
           this.setInputValue(input, value, true);
-          logger.debug('core:form', `✓ ${inputName} = ${value}`);
         } else {
           logger.warn('core:form', `Campo no encontrado: ${inputName}`);
         }
@@ -1495,7 +1466,6 @@ class form {
       const formEl = container.closest('form');
       if (formEl?.dataset.formData) {
         const originalData = JSON.parse(formEl.dataset.formData);
-        logger.debug('core:form', '🔄 Último item procesado, re-ejecutando fill() para selects');
         this.fill(formEl.id, originalData, null, true); // skipRepeatables=true
       }
     }
@@ -1533,7 +1503,6 @@ class form {
           const input = item.querySelector(`[name="${inputName}"]`);
           if (input) {
             this.setInputValue(input, value, true);
-            logger.debug('core:form', `🔄 Campo actualizado: ${inputName} = ${value} (${input.tagName})`);
           } else {
             logger.warn('core:form', `Campo no encontrado: ${inputName}`);
           }
@@ -1901,7 +1870,6 @@ class form {
     // ✅ Verificar cache primero
     const cacheKey = `${source}|${valueField}|${labelField}`;
     if (this.selectCache.has(cacheKey)) {
-      logger.debug('core:form', `📦 Usando cache para ${selectId} desde ${source}`);
       const cachedData = this.selectCache.get(cacheKey);
       this.populateSelect(selectEl, cachedData, valueField, labelField, placeholder);
       
@@ -1916,7 +1884,6 @@ class form {
     try {
       selectEl.disabled = true;
       
-      logger.debug('core:form', `🌐 Cargando ${selectId} desde API: ${source}`);
       const data = await api.get(source);
       const items = Array.isArray(data) ? data : (data.data || []);
 
@@ -1926,7 +1893,6 @@ class form {
       this.populateSelect(selectEl, items, valueField, labelField, placeholder);
 
       selectEl.disabled = false;
-      logger.debug('core:form', `Select ${selectId} cargado con ${items.length} items desde ${source}`);
       
       // ✅ Disparar evento afterLoad para que se intente seleccionar el valor
       selectEl.dispatchEvent(new CustomEvent('select:afterLoad', {

@@ -172,14 +172,12 @@ class view {
     }
 
     if (!extensionPerms.menus || extensionPerms.menus === '*') {
-      logger.debug('core:view', `Extension ${extensionName} con acceso total`);
       return tabs;
     }
 
     const menuPerms = extensionPerms.menus[menuId];
 
     if (menuPerms === true) {
-      logger.debug('core:view', `Menú ${menuId} con acceso total`);
       return tabs;
     }
 
@@ -194,7 +192,6 @@ class view {
     }
 
     if (menuPerms.tabs === '*') {
-      logger.debug('core:view', `Todas las tabs permitidas para ${menuId}`);
       return tabs;
     }
 
@@ -476,25 +473,16 @@ class view {
     const viewContainer = container.closest('[data-extension-context]');
     const extensionContext = viewContainer?.getAttribute('data-extension-context') || null;
 
-    logger.debug('core:view', `[loadDynamicComponents] Container:`, container);
-    logger.debug('core:view', `[loadDynamicComponents] viewContainer:`, viewContainer);
-    logger.debug('core:view', `[loadDynamicComponents] extensionContext: "${extensionContext}"`);
-
     const dynamicForms = container.querySelectorAll('.dynamic-form');
-    logger.debug('core:view', `[loadDynamicComponents] dynamicForms encontrados: ${dynamicForms.length}`);
     
     dynamicForms.forEach(async el => {
       const formJson = el.getAttribute('data-form-json');
-      logger.debug('core:view', `[loadDynamicComponents] formJson original: "${formJson}"`);
       
       if (formJson && window.form) {
         // Si hay contexto de extensión y el formJson no incluye '|', agregarlo
         const formPath = (extensionContext && !formJson.includes('|')) 
           ? `${extensionContext}|forms/${formJson}` 
           : formJson;
-        
-        logger.debug('core:view', `[loadDynamicComponents] formPath construido: "${formPath}"`);
-        logger.debug('core:view', `[loadDynamicComponents] Llamando form.load con: "${formPath}"`);
         
         await form.load(formPath, el);
       }
@@ -556,8 +544,6 @@ class view {
     const allHooks = hook.execute(`hook_${viewData.id}`, []);
     if (allHooks.length === 0) return null;
 
-    logger.debug('core:view', `Procesando ${allHooks.length} hooks para ${viewData.id}`);
-
     const hooksBeforeView = allHooks.filter(h => h.context === 'view' && h.position === 'before');
     const hooksAfterView = allHooks.filter(h => h.context === 'view' && h.position === 'after');
     const hooksForTabs = allHooks.filter(h => h.context === 'tab');
@@ -597,8 +583,6 @@ class view {
     const componentHooks = viewContainer.querySelectorAll('.hook-component[data-component]');
     if (componentHooks.length === 0) return;
 
-    logger.debug('core:view', `Renderizando ${componentHooks.length} componentes de hooks`);
-
     for (const hookElement of componentHooks) {
       const componentName = hookElement.dataset.component;
       const configStr = hookElement.dataset.config || '{}';
@@ -608,7 +592,6 @@ class view {
 
         if (window[componentName]?.render) {
           await window[componentName].render(config, hookElement);
-          logger.debug('core:view', `Componente hook renderizado: ${componentName}`);
         } else {
           logger.warn('core:view', `Componente ${componentName} no encontrado`);
           hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
@@ -642,18 +625,14 @@ class view {
         const newHooks = tabHooks.filter(hook => {
           if (!hook.id) return true;
           if (existingIds.has(hook.id)) {
-            logger.debug('core:view', `Hook "${hook.id}" ya existe en tab "${tab.id}", ignorando duplicado`);
             return false;
           }
           return true;
         });
 
         if (newHooks.length === 0) {
-          logger.debug('core:view', `Todos los hooks ya están en tab "${tab.id}", no se agrega nada`);
           return tab;
         }
-
-        logger.debug('core:view', `Mezclando ${newHooks.length} hooks en tab "${tab.id}" (${tabHooks.length - newHooks.length} duplicados ignorados)`);
 
         const existingContent = tab.content.map(item => ({ order: item.order || 999, ...item }));
         const hooksWithOrder = newHooks.map(hook => ({ order: hook.order || 999, ...hook }));
@@ -676,14 +655,12 @@ class view {
     const newHooks = hooks.filter(hook => {
       if (!hook.id) return true; // Si no tiene ID, agregarlo
       if (existingIds.has(hook.id)) {
-        logger.debug('core:view', `Hook "${hook.id}" ya existe en content, ignorando duplicado`);
         return false;
       }
       return true;
     });
 
     if (newHooks.length === 0) {
-      logger.debug('core:view', 'Todos los hooks ya están en content, no se agrega nada');
       return;
     }
 
@@ -694,7 +671,6 @@ class view {
     mixedContent.sort((a, b) => (a.order || 999) - (b.order || 999));
 
     viewData.content = mixedContent;
-    logger.debug('core:view', `${newHooks.length} hooks mezclados en content (${hooks.length - newHooks.length} duplicados ignorados)`);
   }
 }
 

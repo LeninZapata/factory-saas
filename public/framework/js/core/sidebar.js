@@ -39,7 +39,6 @@ class sidebar {
 
         this.menuData.menu = filteredMenuItems;
 
-        logger.debug('core:sidebar', `Menús después de filtrar por role: ${filteredMenuItems.length}`);
       } else {
         logger.warn('core:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
         this.menuData.menu = [
@@ -198,7 +197,6 @@ class sidebar {
     });
 
     if (preloadCount > 0) {
-      logger.debug('core:sidebar', `Precargadas ${preloadCount} vistas hermanas`);
     }
   }
 

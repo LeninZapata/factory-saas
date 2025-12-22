@@ -23,37 +23,26 @@ class i18n {
     await this.loadCoreLang(this.currentLang);
 
     const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
-    logger.debug('core:i18n', `Idioma '${this.currentLang}' desde ${source}`);
-    logger.debug('core:i18n', `Modo ${this.config.refreshOnChange ? 'REFRESH' : 'DINÁMICO'}`);
+    logger.info('core:i18n', `Idioma '${this.currentLang}' desde ${source}`);
   }
 
   static cleanupOldVersionCache() {
     const currentVersion = window.VERSION;
     let cleaned = 0;
 
-    logger.debug('core:i18n', `Limpieza iniciada - Versión actual: ${currentVersion}`);
-
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('cache_i18n_core_') || key.startsWith('cache_i18n_extension_')) {
         const hasCurrentVersion = key.includes(`_v${currentVersion}`);
         
-        logger.debug('core:i18n', `Evaluando: ${key}`);
-        logger.debug('core:i18n', `  - ¿Tiene versión actual (v${currentVersion})? ${hasCurrentVersion}`);
-        
         if (!hasCurrentVersion) {
-          logger.debug('core:i18n', `  - ❌ ELIMINANDO (versión antigua)`);
           localStorage.removeItem(key);
           cleaned++;
-        } else {
-          logger.debug('core:i18n', `  - ✓ CONSERVANDO (versión actual)`);
         }
       }
     });
 
     if (cleaned > 0) {
       logger.info('core:i18n', `Limpiados ${cleaned} archivos de idioma de versiones antiguas`);
-    } else {
-      logger.debug('core:i18n', `No hay archivos antiguos para limpiar`);
     }
   }
 
@@ -76,7 +65,6 @@ class i18n {
 
           logger.success('core:i18n', `✅ Idioma ${lang} cargado exitosamente`);
           logger.info('core:i18n', `📊 Total de keys cargadas: ${Object.keys(data).length}`);
-          logger.debug('core:i18n', `🔑 Primeras 10 keys:`, Object.keys(data).slice(0, 10));
 
           cache.set(cacheKey, data, 60 * 60 * 1000);
         } else {
@@ -89,7 +77,6 @@ class i18n {
       }
     } else {
       logger.info('core:i18n', `♻️ Idioma ${lang} cargado desde caché`);
-      logger.debug('core:i18n', `📊 Keys en caché: ${Object.keys(data).length}`);
     }
 
     this.translations.set(lang, data);
@@ -147,7 +134,6 @@ class i18n {
       // Log de debug cuando se busca una key
       if (!translation && !key.startsWith('i18n:')) {
         logger.warn('core:i18n', `❌ Key no encontrada: "${key}" (idioma: ${lang})`);
-        logger.debug('core:i18n', `📋 Keys disponibles en core:`, coreData ? Object.keys(coreData).length : 0);
       }
     }
 

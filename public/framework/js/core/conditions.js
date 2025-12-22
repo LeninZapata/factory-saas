@@ -159,7 +159,6 @@ class conditions {
       (e) => {
         // ⚠️ No evaluar si se está llenando el formulario
         if (this.isFillingForm) {
-          // logger.debug('core:conditions', '[watcher] Evento ignorado - formulario en llenado');
           return;
         }
 
@@ -206,8 +205,6 @@ class conditions {
     const rulesMap = this.rules.get(formId);
     if (!rulesMap) return;
 
-    // logger.debug('core:conditions', `[evaluate] Evaluando ${rulesMap.size} reglas para ${formId}`);
-
     rulesMap.forEach((rule, targetFieldPath) => {
       const { context } = rule;
 
@@ -225,18 +222,15 @@ class conditions {
   // Método auxiliar para pausar evaluaciones durante llenado masivo
   static pauseEvaluations() {
     this.isFillingForm = true;
-    // logger.debug('core:conditions', '[pauseEvaluations] Evaluaciones pausadas');
   }
 
   // Método auxiliar para reanudar y ejecutar evaluación final
   static resumeEvaluations(formId) {
     this.isFillingForm = false;
-    // logger.debug('core:conditions', '[resumeEvaluations] Reanudando evaluaciones');
     
     // Ejecutar evaluación final después de un pequeño delay
     setTimeout(() => {
       if (formId) {
-        // logger.debug('core:conditions', '[resumeEvaluations] Ejecutando evaluación final');
         this.evaluate(formId);
       }
     }, 200);
@@ -261,11 +255,8 @@ class conditions {
     });
     
     if (repeatableContainers.length === 0) {
-      // logger.debug('core:conditions', `[evaluateRepeatable] No se encontró contenedor para: ${repeatablePath}`);
       return;
     }
-
-    // logger.debug('core:conditions', `[evaluateRepeatable] Field: ${targetFieldPath}, Path: ${repeatablePath}, Containers: ${repeatableContainers.length}`);
 
     // Iterar sobre cada contenedor (uno por cada item del repeatable padre)
     repeatableContainers.forEach((repeatableContainer) => {
@@ -279,8 +270,6 @@ class conditions {
       // Evaluar cada item individualmente
       repeatableItems.forEach((item, idx) => {
         const shouldShow = this.checkConditions(item, rule, targetFieldPath);
-
-        // logger.debug('core:conditions', `[evaluateRepeatable] Item ${idx}, shouldShow: ${shouldShow}`);
 
         // Buscar el campo target dentro de este item específico
         // Puede ser un input/select (con name) o un repeatable anidado (con data-field-path)
@@ -318,7 +307,6 @@ class conditions {
               if (targetField.tagName === 'INPUT' || targetField.tagName === 'SELECT' || targetField.tagName === 'TEXTAREA') {
                 targetField.disabled = false;
               }
-              // logger.debug('core:conditions', `[evaluateRepeatable] ✅ Mostrando ${targetField.name || targetField.dataset.fieldPath}`);
             } else {
               fieldElement.style.display = 'none';
               fieldElement.classList.add('wpfw-depend-on');
@@ -326,7 +314,6 @@ class conditions {
               if (targetField.tagName === 'INPUT' || targetField.tagName === 'SELECT' || targetField.tagName === 'TEXTAREA') {
                 targetField.disabled = true;
               }
-              // logger.debug('core:conditions', `[evaluateRepeatable] ❌ Ocultando ${targetField.name || targetField.dataset.fieldPath}`);
             }
           }
         }
@@ -402,30 +389,22 @@ class conditions {
   static checkCondition(context, condition) {
     const { field, operator, value } = condition;
 
-    // logger.debug('core:conditions', `[checkCondition] Buscando campo: "${field}", operator: "${operator}", value: "${value}"`);
-
     // Buscar el campo en el contexto
     let fieldEl = null;
 
     // Si el contexto es un repeatable-item, buscar solo dentro de él
     if (context.classList && context.classList.contains('repeatable-item')) {
-      // logger.debug('core:conditions', `[checkCondition] Contexto es repeatable-item`);
       // Buscar por el nombre del campo sin índices
       const fields = context.querySelectorAll(`[name*=".${field}"]`);
       fieldEl = fields.length > 0 ? fields[0] : null;
 
-      // logger.debug('core:conditions', `[checkCondition] Búsqueda [name*=".${field}"], encontrados: ${fields.length}`);
-
       // Si no se encuentra, intentar con el nombre exacto
       if (!fieldEl) {
         fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
-        // logger.debug('core:conditions', `[checkCondition] Búsqueda alternativa [name="${field}"], encontrado: ${!!fieldEl}`);
       }
     } else {
-      // logger.debug('core:conditions', `[checkCondition] Contexto es form/view`);
       // Búsqueda normal en form/view
       fieldEl = context.querySelector(`[name="${field}"], [name*="${field}"]`);
-      // logger.debug('core:conditions', `[checkCondition] Búsqueda [name="${field}"], encontrado: ${!!fieldEl}`);
     }
 
     if (!fieldEl) {
@@ -434,10 +413,8 @@ class conditions {
     }
 
     const fieldValue = this.getFieldValue(fieldEl);
-    // logger.debug('core:conditions', `[checkCondition] Campo encontrado: ${fieldEl.name}, valor: "${fieldValue}"`);
 
     const result = this.evalOperator(operator, fieldValue, value);
-    // logger.debug('core:conditions', `[checkCondition] Resultado: ${result} (${fieldValue} ${operator} ${value})`);
 
     return result;
   }
@@ -633,15 +610,15 @@ class conditions {
   }
 
   static debug(formId) {
-    logger.debug('core:conditions', `Debug: ${formId}`);
+    logger.info('core:conditions', `Debug: ${formId}`);
 
     const rules = this.rules.get(formId);
     if (!rules) {
-      logger.debug('core:conditions', 'No hay reglas registradas para este formulario');
+      logger.info('core:conditions', 'No hay reglas registradas para este formulario');
       return;
     }
 
-    logger.debug('core:conditions', `Reglas activas: ${rules.size}`);
+    logger.info('core:conditions', `Reglas activas: ${rules.size}`);
   }
 }
 

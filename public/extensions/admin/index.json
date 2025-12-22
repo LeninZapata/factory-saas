@@ -20,39 +20,18 @@
         "role": "admin"
       },
       {
-        "id": "admin-users",
-        "title": "Gestión de Usuarios",
-        "view": "sections/users",
-        "order": 3,
-        "role": "admin"
-      },
-      {
         "id": "admin-endpoints",
         "title": "Endpoints",
         "view": "sections/endpoints",
-        "order": 2,
+        "order": 4,
         "role": "admin"
       },
       {
-        "id": "admin-settings",
-        "title": "Configuración",
-        "order": 4,
-        "items": [
-          {
-            "id": "admin-settings-general",
-            "title": "General",
-            "view": "sections/settings-general",
-            "order": 1,
-            "role": "admin"
-          },
-          {
-            "id": "admin-settings-security",
-            "title": "Seguridad",
-            "view": "sections/settings-security",
-            "order": 2,
-            "role": "admin"
-          }
-        ]
+        "id": "admin-logs",
+        "title": "Logs del Sistema",
+        "view": "sections/logs",
+        "order": 3,
+        "role": "admin"
       }
     ]
   }

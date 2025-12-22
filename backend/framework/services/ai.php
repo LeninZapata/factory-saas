@@ -27,7 +27,6 @@ class ai {
 
         } catch (Exception $e) {
           $lastError = $e->getMessage();
-          log::debug("[" . $provider->getProviderName() . "] Error en chat completion", ['error' => $lastError], self::$logMeta);
           if ($attemptNumber < count($aiServices)) continue;
         }
       }
