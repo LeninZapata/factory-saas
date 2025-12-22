@@ -8,7 +8,8 @@
       "label": "Correo Electrónico..",
       "type": "email",
       "required": true,
-      "placeholder": "tu@email.com"
+      "placeholder": "tu@email.com",
+      "focus": true
     },
     {
       "name": "password",

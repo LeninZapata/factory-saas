@@ -4,21 +4,21 @@ class endpoints {
 
   // ✅ Método que view.js ejecuta automáticamente después del render
   static async init() {
-    console.log('🚀 endpoints.init() ejecutado automáticamente por view.js');
+    logger.info('🚀 endpoints.init() ejecutado automáticamente por view.js');
 
     if (this.initialized) {
-      console.log('⚠️ endpoints ya estaba inicializado, reiniciando...');
+      logger.info('⚠️ endpoints ya estaba inicializado, reiniciando...');
     }
 
     // Verificar que el container exista
     const container = document.getElementById('endpoints-container');
 
     if (!container) {
-      console.warn('⚠️ Container endpoints-container no encontrado');
+      logger.warn('⚠️ Container endpoints-container no encontrado');
       return;
     }
 
-    console.log('✅ Container encontrado, cargando endpoints...');
+    logger.info('✅ Container encontrado, cargando endpoints...');
 
     // Cargar endpoints de forma asíncrona
     await this.loadEndpoints(container);
@@ -43,10 +43,10 @@ class endpoints {
       let data = cache.get(cacheKey);
 
       if (data) {
-        console.log('✅ Endpoints obtenidos desde caché');
+        logger.info('✅ Endpoints obtenidos desde caché');
         this.endpointsData = data;
       } else {
-        console.log('📡 Cargando endpoints desde API...');
+        logger.info('📡 Cargando endpoints desde API...');
         
         // Hacer petición al endpoint
         const response = await api.get('/api/system/routes');
@@ -59,7 +59,7 @@ class endpoints {
         
         // Guardar en caché
         cache.set(cacheKey, response.data, cacheTTL);
-        console.log('✅ Endpoints guardados en caché por 1 hora');
+        logger.info('✅ Endpoints guardados en caché por 1 hora');
       }
 
       // Renderizar la lista con el modo guardado o por defecto 'method'
@@ -67,7 +67,7 @@ class endpoints {
       this.renderEndpoints(container, savedViewMode);
 
     } catch (error) {
-      console.error('❌ Error cargando endpoints:', error);
+      logger.error('❌ Error cargando endpoints:', error);
       container.innerHTML = `
         <div style="background: #fee; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #c00;">
           <h4 style="margin: 0 0 0.5rem; color: #c00;">❌ Error al cargar endpoints</h4>
@@ -203,7 +203,7 @@ class endpoints {
     `;
 
     container.innerHTML = html;
-    console.log('✅ Endpoints renderizados en el container');
+    logger.info('✅ Endpoints renderizados en el container');
   }
 
   static groupByMethod(routes) {
@@ -259,11 +259,11 @@ class endpoints {
   }
 
   static changeView(mode) {
-    console.log(`🔄 Cambiando vista a: ${mode}`);
+    logger.info(`🔄 Cambiando vista a: ${mode}`);
     
     const container = document.getElementById('endpoints-container');
     if (!container) {
-      console.warn('⚠️ Container endpoints-container no encontrado');
+      logger.warn('⚠️ Container endpoints-container no encontrado');
       return;
     }
 
@@ -286,17 +286,17 @@ class endpoints {
 
   // Forzar recarga sin caché
   static async forceReload() {
-    console.log('🔄 Forzando recarga sin caché...');
+    logger.info('🔄 Forzando recarga sin caché...');
     
     const container = document.getElementById('endpoints-container');
     if (!container) {
-      console.warn('⚠️ Container endpoints-container no encontrado');
+      logger.warn('⚠️ Container endpoints-container no encontrado');
       return;
     }
 
     // Eliminar del caché
     cache.delete('endpoints_routes_list');
-    console.log('✅ Caché eliminado');
+    logger.info('✅ Caché eliminado');
 
     // Recargar datos
     await this.loadEndpoints(container);
@@ -311,12 +311,12 @@ class endpoints {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(fullUrl)
         .then(() => {
-          console.log('✅ URL copiada:', fullUrl);
+          logger.info('✅ URL copiada:', fullUrl);
           // Mostrar notificación temporal (opcional)
           this.showCopyNotification();
         })
         .catch(err => {
-          console.error('❌ Error al copiar:', err);
+          logger.error('❌ Error al copiar:', err);
           // Fallback: método antiguo
           this.fallbackCopyToClipboard(fullUrl);
         });
@@ -337,10 +337,10 @@ class endpoints {
     
     try {
       document.execCommand('copy');
-      console.log('✅ Ruta copiada (fallback):', text);
+      logger.info('✅ Ruta copiada (fallback):', text);
       this.showCopyNotification();
     } catch (err) {
-      console.error('❌ Error al copiar (fallback):', err);
+      logger.error('❌ Error al copiar (fallback):', err);
     }
     
     document.body.removeChild(textArea);

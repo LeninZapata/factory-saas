@@ -1,6 +1,8 @@
 <?php
 // AuthHandler - Handlers de autenticación
 class AuthHandler {
+  // Nombre de la tabla asociada a este handler
+  protected static $table = DB_TABLES['users'];
 
   private static $logMeta = ['module' => 'auth', 'layer' => 'app'];
 
@@ -13,7 +15,7 @@ class AuthHandler {
     }
 
     // Buscar usuario por username o email
-    $user = db::table('user')
+    $user = db::table(self::$table)
       ->where('user', $data['user'])
       ->orWhere('email', $data['user'])
       ->first();
@@ -58,7 +60,7 @@ class AuthHandler {
     cache::set($cacheKey, $sessionData);
 
     // Actualizar último acceso
-    db::table('user')->where('id', $user['id'])->update([
+    db::table(self::$table)->where('id', $user['id'])->update([
       'du' => date('Y-m-d H:i:s'),
       'tu' => time()
     ]);

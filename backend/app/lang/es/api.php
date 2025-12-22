@@ -16,15 +16,6 @@ return [
   'updated' => 'Recurso actualizado exitosamente',
   'deleted' => 'Recurso eliminado exitosamente',
   'invalid_parameters' => 'Parámetros inválidos',
-  'session' => [
-    'cleanup' => [
-      'success' => 'Sesiones limpiadas correctamente'
-    ],
-    'cleanup_completed' => 'Limpieza completada: {cleaned} sesiones eliminadas',
-    'cleaned_user' => 'Limpiadas {cleaned} sesiones del usuario {userId}',
-    'cleanup_error' => 'Error limpiando sesión',
-    'invalidated' => '{count} sesiones invalidadas'
-  ],
   'cleanup' => [
     'path_invalid' => 'Path no válido',
     'only_storage_shared' => 'Solo se permiten rutas storage/ o shared/',

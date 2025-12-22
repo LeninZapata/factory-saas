@@ -56,6 +56,20 @@
       ]
     },
     {
+      "id": "grouper-condicional",
+      "title": "🎯 Condicionales",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h3>Groupers con Condiciones</h3><p>Los groupers pueden tener condiciones como cualquier otro campo. Esto permite:</p><ul><li>✅ Mostrar/ocultar grupos enteros según valores de otros campos</li><li>✅ Usar groupers dentro de repetables con <code>conditionContext: 'repeatable'</code></li><li>✅ Combinar modo linear y tabs con condiciones</li><li>✅ Crear formularios dinámicos complejos</li></ul><div style='background: #e0f2fe; border-left: 4px solid #0284c7; padding: 1rem; margin: 1.5rem 0; border-radius: 4px;'><strong>💡 Ejemplos incluidos:</strong><ul style='margin: 0.5rem 0 0;'><li>Grouper linear con checkbox trigger</li><li>Grouper tabs que aparece según select</li><li>Groupers diferentes según tipo de usuario</li><li>Groupers dentro de repetables con condiciones</li></ul></div>"
+        },
+        {
+          "type": "form",
+          "form_json": "ejemplos/form-grouper-condicionales"
+        }
+      ]
+    },
+    {
       "id": "grouper-json",
       "title": "💻 Código JSON",
       "content": [

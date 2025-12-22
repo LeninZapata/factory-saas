@@ -1,5 +1,29 @@
 <?php
+
 class UserController extends controller {
+  // Nombre de la tabla asociada a este controlador
+  protected static $table = DB_TABLES['users'];
+
+    // Elimina todas las sesiones de un usuario por archivos en /sessions
+    static function invalidateSessions($userId) {
+      $sessionsDir = STORAGE_PATH . '/sessions/';
+      if (!is_dir($sessionsDir)) return 0;
+      $pattern = $sessionsDir . "*_{$userId}_*.json";
+      $files = glob($pattern);
+      $cleaned = 0;
+      foreach ($files as $file) {
+        try {
+          unlink($file);
+          $cleaned++;
+        } catch (Exception $e) {
+          log::error(__('user.session.cleanup_error'), $e->getMessage(), self::$logMeta);
+        }
+      }
+      if ($cleaned > 0) {
+        log::info(__('user.session.cleaned_user', ['cleaned' => $cleaned, 'userId' => $userId]), null, self::$logMeta);
+      }
+      return $cleaned;
+    }
   use ValidatesUnique;
 
   private static $logMeta = ['module' => 'user', 'layer' => 'app'];
@@ -19,11 +43,11 @@ class UserController extends controller {
 
     // Validar email (formato + unicidad)
     if (isset($data['email']) && !empty($data['email'])) {
-      $this->validateEmail($data['email'], 'user');
+      $this->validateEmail($data['email'], self::$table);
     }
 
     // Validar user único
-    $this->validateUnique('user', 'user', $data['user'], 'user.already_exists');
+    $this->validateUnique(self::$table, 'user', $data['user'], 'user.already_exists');
 
     // Hashear contraseña
     $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
@@ -38,7 +62,7 @@ class UserController extends controller {
     $data['tc'] = time();
 
     try {
-      $id = db::table('user')->insert($data);
+      $id = db::table(self::$table)->insert($data);
       log::info('Usuario creado', ['id' => $id], self::$logMeta);
       response::success(['id' => $id], __('user.create.success'), 201);
     } catch (Exception $e) {
@@ -49,7 +73,7 @@ class UserController extends controller {
 
   // Override update para hashear contraseña si se proporciona
   function update($id) {
-    $exists = db::table('user')->find($id);
+    $exists = db::table(self::$table)->find($id);
     if (!$exists) response::notFound(__('user.not_found'));
 
     $data = request::data();
@@ -63,12 +87,12 @@ class UserController extends controller {
 
     // Validar email (formato + unicidad)
     if (isset($data['email']) && !empty($data['email'])) {
-      $this->validateEmail($data['email'], 'user', $id);
+      $this->validateEmail($data['email'], self::$table, $id);
     }
 
     // Validar user único (excepto el actual)
     if (isset($data['user'])) {
-      $this->validateUniqueExcept('user', 'user', $data['user'], $id, 'user.already_exists');
+      $this->validateUniqueExcept(self::$table, 'user', $data['user'], $id, 'user.already_exists');
     }
 
     // Convertir config a JSON si es array
@@ -80,21 +104,17 @@ class UserController extends controller {
     $data['du'] = date('Y-m-d H:i:s');
     $data['tu'] = time();
 
-    $affected = db::table('user')->where('id', $id)->update($data);
+    $affected = db::table(self::$table)->where('id', $id)->update($data);
 
     // INVALIDAR SESIONES si se modificó el config (permisos)
     $cleaned = 0;
     if (isset($data['config'])) {
       // ⚠️ NO invalidar sesión del usuario autenticado actual (quien está editando)
       $currentUserId = $GLOBALS['auth_user_id'] ?? null;
-
       if ($currentUserId && $currentUserId == $id) {
-        // Si el admin se está editando a sí mismo, NO invalidar su sesión
         log::info("Usuario {$id} se editó a sí mismo, no se invalida su sesión", null, self::$logMeta);
       } else {
-        // Invalidar todas las sesiones del usuario editado
-        $cleaned = sessionCleanup::cleanByUserId($id);
-        log::info("Sesiones invalidadas para user_id={$id}: {$cleaned} sesiones eliminadas", null, self::$logMeta);
+        $cleaned = self::invalidateSessions($id);
       }
     }
 
@@ -106,7 +126,7 @@ class UserController extends controller {
 
   // Override show para no devolver la contraseña
   function show($id) {
-    $data = db::table('user')->find($id);
+    $data = db::table(self::$table)->find($id);
     if (!$data) response::notFound(__('user.not_found'));
 
     // Parsear config si es string JSON
@@ -120,7 +140,7 @@ class UserController extends controller {
 
   // Override list para no devolver contraseñas
   function list() {
-    $query = db::table('user');
+    $query = db::table(self::$table);
 
     // Filtros dinámicos
     foreach ($_GET as $key => $value) {

@@ -7,21 +7,18 @@ class logs {
 
   // Método que view.js ejecuta automáticamente después del render
   static async init() {
-    console.log('🚀 logs.init() ejecutado automáticamente por view.js');
 
     if (this.initialized) {
-      console.log('⚠️ logs ya estaba inicializado, reiniciando...');
+      logger.info('⚠️ logs ya estaba inicializado, reiniciando...');
     }
 
     // Verificar que el container exista
     const container = document.getElementById('logs-container');
 
     if (!container) {
-      console.warn('⚠️ Container logs-container no encontrado');
+      logger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
-
-    console.log('✅ Container encontrado, cargando logs...');
 
     // Cargar logs de forma asíncrona (por defecto: hoy)
     await this.loadLogs(container, 0);
@@ -31,11 +28,11 @@ class logs {
 
   // Filtrar por fecha
   static async filterByDate(daysAgo) {
-    console.log(`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
-    
+    logger.info(`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
+
     const container = document.getElementById('logs-container');
     if (!container) {
-      console.warn('⚠️ Container logs-container no encontrado');
+      logger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
 
@@ -80,13 +77,12 @@ class logs {
       let data = cache.get(cacheKey);
 
       if (data) {
-        console.log(`✅ Logs obtenidos desde caché (${filterKey})`);
+        logger.info(`✅ Logs obtenidos desde caché (${filterKey})`);
         this.logsData = data;
       } else {
-        console.log(`📡 Cargando logs desde API (${filterKey})...`);
-        
+
         let endpoint = '/api/logs';
-        
+
         // Determinar endpoint según filtro
         if (daysAgo === 0) {
           // Hoy
@@ -104,10 +100,10 @@ class logs {
           const today = new Date();
           const fromDate = new Date();
           fromDate.setDate(today.getDate() - daysAgo);
-          
+
           const toStr = today.toISOString().split('T')[0];
           const fromStr = fromDate.toISOString().split('T')[0];
-          
+
           endpoint = `/api/logs/search?from=${fromStr}&to=${toStr}&limit=1000`;
         }
 
@@ -119,17 +115,16 @@ class logs {
         }
 
         this.logsData = response.data;
-        
+
         // Guardar en caché
         cache.set(cacheKey, response.data, cacheTTL);
-        console.log(`✅ Logs guardados en caché (${filterKey}) por 5 minutos`);
       }
 
       // Renderizar los logs con el filtro de layer actual
       this.renderLogs(container);
 
     } catch (error) {
-      console.error('❌ Error cargando logs:', error);
+      logger.error('❌ Error cargando logs:', error);
       container.innerHTML = `
         <div style="background: #7f1d1d; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ef4444;">
           <h4 style="margin: 0 0 0.5rem; color: #fca5a5;">❌ Error al cargar logs</h4>
@@ -188,7 +183,6 @@ class logs {
     `;
 
     container.innerHTML = html;
-    console.log('✅ Logs renderizados en el container');
     this.updateLayerToolbar();
     this.updateLevelToolbar();
   }
@@ -251,8 +245,8 @@ class logs {
 
     // Renderiza la fila de log con la columna de línea al final
     return `
-      <div style="padding: 0.75rem 1rem; border-bottom: 1px solid #1e293b; background: ${color.bg}; transition: background 0.2s;" 
-           onmouseover="this.style.background='#1e293b'" 
+      <div style="padding: 0.75rem 1rem; border-bottom: 1px solid #1e293b; background: ${color.bg}; transition: background 0.2s;"
+           onmouseover="this.style.background='#1e293b'"
            onmouseout="this.style.background='${color.bg}'">
         <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
           <span style="background: ${color.badge}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; min-width: 70px; text-align: center;">
@@ -283,11 +277,11 @@ class logs {
 
   // Forzar recarga sin caché
   static async forceReload() {
-    console.log('🔄 Forzando recarga sin caché...');
-    
+    logger.info('🔄 Forzando recarga sin caché...');
+
     const container = document.getElementById('logs-container');
     if (!container) {
-      console.warn('⚠️ Container logs-container no encontrado');
+      logger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
 
@@ -297,12 +291,12 @@ class logs {
     cache.delete('system_logs_7days');
     cache.delete('system_logs_15days');
     cache.delete('system_logs_30days');
-    console.log('✅ Caché eliminado');
+    logger.info('✅ Caché eliminado');
 
     // Determinar cuál filtro está activo
     const activeBtn = document.querySelector('[data-filter][style*="rgb(59, 130, 246)"]');
     let daysAgo = 0;
-    
+
     if (activeBtn) {
       const filter = activeBtn.getAttribute('data-filter');
       if (filter === 'yesterday') daysAgo = 1;

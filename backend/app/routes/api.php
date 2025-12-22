@@ -71,8 +71,3 @@ $manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
 if ($module && file_exists($manualRoutes)) {
   require_once $manualRoutes;
 }
-
-// Cargar ruta de cleanup (siempre disponible)
-if ($module === 'cleanup') {
-  require_once ROUTES_PATH . '/apis/cleanup.php';
-}

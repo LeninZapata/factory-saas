@@ -1,0 +1,381 @@
+{
+  "id": "form-grouper-condicionales",
+  "title": "Grouper con Condiciones",
+  "description": "Ejemplos de groupers que aparecen/desaparecen según condiciones",
+  "fields": [
+    {
+      "type": "html",
+      "content": "<div style='background: #e0f2fe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #0284c7;'><h3 style='margin: 0 0 1rem;'>🎯 Groupers Condicionales</h3><p style='margin: 0;'>Los groupers pueden tener condiciones como cualquier otro campo. Esto permite mostrar/ocultar grupos enteros de campos basándose en valores de otros campos.</p></div>"
+    },
+    {
+      "name": "mostrar_grouper_simple",
+      "label": "✅ Mostrar Configuración Básica (activa para ver grouper linear)",
+      "type": "checkbox"
+    },
+    {
+      "type": "grouper",
+      "name": "grouper_config_basica",
+      "mode": "linear",
+      "collapsible": true,
+      "openFirst": true,
+      "condition": [
+        { "field": "mostrar_grouper_simple", "operator": "==", "value": true }
+      ],
+      "groups": [
+        {
+          "title": "⚙️ Configuración General",
+          "fields": [
+            {
+              "type": "html",
+              "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a;'><strong>✅ Este grouper apareció porque activaste el checkbox</strong></div>"
+            },
+            {
+              "name": "nombre_config",
+              "label": "Nombre de Configuración",
+              "type": "text",
+              "placeholder": "Mi Configuración"
+            },
+            {
+              "name": "activo",
+              "label": "Activo",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "title": "🎨 Opciones de Diseño",
+          "fields": [
+            {
+              "name": "tema",
+              "label": "Tema",
+              "type": "select",
+              "options": [
+                { "value": "light", "label": "☀️ Claro" },
+                { "value": "dark", "label": "🌙 Oscuro" }
+              ]
+            },
+            {
+              "name": "color_principal",
+              "label": "Color Principal",
+              "type": "color",
+              "value": "#667eea"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 2rem 0; border: none; border-top: 2px dashed #e5e7eb;'>"
+    },
+    {
+      "name": "tipo_usuario",
+      "label": "⭐ Tipo de Usuario",
+      "type": "select",
+      "options": [
+        { "value": "", "label": "-- Seleccionar --" },
+        { "value": "basico", "label": "👤 Básico" },
+        { "value": "premium", "label": "⭐ Premium" },
+        { "value": "empresa", "label": "🏢 Empresa" }
+      ]
+    },
+    {
+      "type": "grouper",
+      "name": "grouper_premium",
+      "mode": "tabs",
+      "activeIndex": 0,
+      "condition": [
+        { "field": "tipo_usuario", "operator": "==", "value": "premium" }
+      ],
+      "groups": [
+        {
+          "title": "🌟 Características Premium",
+          "fields": [
+            {
+              "type": "html",
+              "content": "<div style='background: #fef3c7; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><strong>⭐ Grouper TABS visible solo para usuarios Premium</strong></div>"
+            },
+            {
+              "name": "almacenamiento_adicional",
+              "label": "Almacenamiento Adicional (GB)",
+              "type": "number",
+              "min": 0,
+              "max": 1000,
+              "value": 100
+            },
+            {
+              "name": "usuarios_adicionales",
+              "label": "Usuarios Adicionales",
+              "type": "number",
+              "min": 0,
+              "max": 50,
+              "value": 5
+            }
+          ]
+        },
+        {
+          "title": "🎁 Beneficios",
+          "fields": [
+            {
+              "name": "soporte_prioritario",
+              "label": "Soporte Prioritario 24/7",
+              "type": "checkbox"
+            },
+            {
+              "name": "backups_automaticos",
+              "label": "Backups Automáticos Diarios",
+              "type": "checkbox"
+            },
+            {
+              "name": "api_avanzada",
+              "label": "Acceso a API Avanzada",
+              "type": "checkbox"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "grouper",
+      "name": "grouper_empresa",
+      "mode": "linear",
+      "collapsible": false,
+      "condition": [
+        { "field": "tipo_usuario", "operator": "==", "value": "empresa" }
+      ],
+      "groups": [
+        {
+          "title": "🏢 Configuración Empresarial",
+          "fields": [
+            {
+              "type": "html",
+              "content": "<div style='background: #e0f2fe; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7;'><strong>🏢 Grouper LINEAR visible solo para tipo Empresa</strong></div>"
+            },
+            {
+              "name": "nombre_empresa",
+              "label": "Nombre de la Empresa",
+              "type": "text",
+              "placeholder": "Mi Empresa S.A."
+            },
+            {
+              "type": "group",
+              "columns": 2,
+              "gap": "normal",
+              "fields": [
+                {
+                  "name": "ruc",
+                  "label": "RUC",
+                  "type": "text",
+                  "placeholder": "0123456789001"
+                },
+                {
+                  "name": "numero_empleados",
+                  "label": "Número de Empleados",
+                  "type": "number",
+                  "min": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "👥 Gestión de Usuarios",
+          "fields": [
+            {
+              "name": "sso_enabled",
+              "label": "Habilitar Single Sign-On (SSO)",
+              "type": "checkbox"
+            },
+            {
+              "name": "ldap_integration",
+              "label": "Integración con LDAP/Active Directory",
+              "type": "checkbox"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 2rem 0; border: none; border-top: 2px dashed #e5e7eb;'><h3>🔁 Groupers en Repetables con Condiciones</h3>"
+    },
+    {
+      "name": "productos",
+      "label": "📦 Productos",
+      "type": "repeatable",
+      "addText": "➕ Agregar Producto",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "name": "nombre_producto",
+          "label": "Nombre del Producto",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej: Laptop HP"
+        },
+        {
+          "name": "tipo_producto",
+          "label": "⭐ Tipo de Producto (cambia para ver grouper)",
+          "type": "select",
+          "options": [
+            { "value": "fisico", "label": "📦 Físico" },
+            { "value": "digital", "label": "💾 Digital" },
+            { "value": "servicio", "label": "🔧 Servicio" }
+          ]
+        },
+        {
+          "type": "grouper",
+          "name": "grouper_envio_fisico",
+          "mode": "linear",
+          "collapsible": true,
+          "openFirst": true,
+          "condition": [
+            { "field": "tipo_producto", "operator": "==", "value": "fisico" }
+          ],
+          "conditionContext": "repeatable",
+          "groups": [
+            {
+              "title": "📦 Detalles de Envío",
+              "fields": [
+                {
+                  "type": "html",
+                  "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>✅ Grouper dentro de REPEATABLE con condición</strong><br>Solo aparece si tipo = Físico</div>"
+                },
+                {
+                  "type": "group",
+                  "columns": 3,
+                  "gap": "normal",
+                  "fields": [
+                    {
+                      "name": "peso",
+                      "label": "Peso (kg)",
+                      "type": "number",
+                      "min": 0,
+                      "step": 0.01,
+                      "placeholder": "0.00"
+                    },
+                    {
+                      "name": "largo",
+                      "label": "Largo (cm)",
+                      "type": "number",
+                      "min": 0,
+                      "placeholder": "0"
+                    },
+                    {
+                      "name": "ancho",
+                      "label": "Ancho (cm)",
+                      "type": "number",
+                      "min": 0,
+                      "placeholder": "0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "🚚 Opciones de Entrega",
+              "fields": [
+                {
+                  "name": "envio_express",
+                  "label": "Envío Express disponible",
+                  "type": "checkbox"
+                },
+                {
+                  "name": "envio_internacional",
+                  "label": "Envío Internacional disponible",
+                  "type": "checkbox"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grouper",
+          "name": "grouper_archivo_digital",
+          "mode": "tabs",
+          "activeIndex": 0,
+          "condition": [
+            { "field": "tipo_producto", "operator": "==", "value": "digital" }
+          ],
+          "conditionContext": "repeatable",
+          "groups": [
+            {
+              "title": "💾 Archivo Digital",
+              "fields": [
+                {
+                  "type": "html",
+                  "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💾 Grouper TABS en REPEATABLE</strong><br>Solo aparece si tipo = Digital</div>"
+                },
+                {
+                  "name": "formato_archivo",
+                  "label": "Formato",
+                  "type": "select",
+                  "options": [
+                    { "value": "pdf", "label": "PDF" },
+                    { "value": "video", "label": "Video (MP4)" },
+                    { "value": "audio", "label": "Audio (MP3)" },
+                    { "value": "software", "label": "Software (ZIP)" }
+                  ]
+                },
+                {
+                  "name": "tamano_mb",
+                  "label": "Tamaño (MB)",
+                  "type": "number",
+                  "min": 0,
+                  "step": 0.1,
+                  "placeholder": "0.0"
+                }
+              ]
+            },
+            {
+              "title": "🔐 Licencia",
+              "fields": [
+                {
+                  "name": "tipo_licencia",
+                  "label": "Tipo de Licencia",
+                  "type": "select",
+                  "options": [
+                    { "value": "unica", "label": "Única" },
+                    { "value": "multiple", "label": "Múltiple" },
+                    { "value": "ilimitada", "label": "Ilimitada" }
+                  ]
+                },
+                {
+                  "name": "descargas_maximas",
+                  "label": "Descargas Máximas",
+                  "type": "number",
+                  "min": 1,
+                  "value": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "precio",
+          "label": "Precio",
+          "type": "number",
+          "min": 0,
+          "step": 0.01,
+          "placeholder": "0.00"
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar",
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); toast.success('✅ Configuración guardada');"
+    },
+    {
+      "name": "reset",
+      "type": "button",
+      "label": "🔄 Limpiar",
+      "style": "secondary",
+      "onclick": "event.preventDefault(); this.closest('form').reset(); toast.info('Formulario limpiado');"
+    }
+  ]
+}

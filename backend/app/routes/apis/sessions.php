@@ -204,34 +204,8 @@ $router->group('/api/sessions', function($router) {
 
   // Invalidar todas las sesiones de un usuario
   $router->delete('/user/{user_id}', function($userId) use ($logMeta) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
-
-    if (!is_dir($sessionsDir)) {
-      response::success([
-        'user_id' => (int)$userId,
-        'cleaned' => 0
-      ], __('api.session.invalidated', ['count' => 0]));
-      return;
-    }
-
-    $pattern = $sessionsDir . "*_{$userId}_*.json";
-    $files = glob($pattern);
-
-    $cleaned = 0;
-
-    foreach ($files as $file) {
-      try {
-        unlink($file);
-        $cleaned++;
-      } catch (Exception $e) {
-        log::error(__('api.session.cleanup_error'), $e->getMessage(), $logMeta);
-      }
-    }
-
-    if ($cleaned > 0) {
-      log::info(__('api.session.cleaned_user', ['cleaned' => $cleaned, 'userId' => $userId]), null, $logMeta);
-    }
-
+    // Usar UserController::invalidateSessions para centralizar la lógica
+    $cleaned = UserController::invalidateSessions($userId);
     response::success([
       'user_id' => (int)$userId,
       'cleaned' => $cleaned
