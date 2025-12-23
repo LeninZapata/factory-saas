@@ -2,6 +2,12 @@
 class authMiddleware {
 
   function handle() {
+    // Validar versión PHP (solo 1 vez por sesión)
+    // Solo validar versión PHP en desarrollo
+    /*if (IS_DEV && !$this->validatePhpVersion()) {
+      return false;
+    }*/
+
     $token = $this->getToken();
 
     if (!$token) {
@@ -9,6 +15,7 @@ class authMiddleware {
       return false;
     }
 
+    // Leer archivo de sesión directamente (sin cache intermedio)
     $session = $this->getSessionFromToken($token);
 
     if (!$session) {
@@ -19,18 +26,8 @@ class authMiddleware {
     // Verificar expiración
     if ($session['expires_timestamp'] < time()) {
       $this->deleteSession($token);
-      $this->cleanupExpiredSessions(10);
       response::unauthorized(__('middleware.auth.token_expired'));
       return false;
-    }
-
-    // Limpieza oportunista
-    $cleaned = $this->cleanupExpiredSessions(10);
-    
-    if ($cleaned > 0) {
-      log::info('Sesión verificada - Sesiones caducadas eliminadas', [
-        'sessiones_eliminadas' => $cleaned
-      ], ['module' => 'auth', 'layer' => 'middleware']);
     }
 
     $GLOBALS['auth_user_id'] = $session['user_id'];
@@ -39,6 +36,30 @@ class authMiddleware {
     return true;
   }
 
+  // Validar versión PHP usando cache
+  private function validatePhpVersion() {
+    $required = defined('PHP_MIN_VERSION') ? PHP_MIN_VERSION : '8.1.0';
+    
+    // Cache GLOBAL (en $_SESSION porque no depende del usuario)
+    $isValid = cache::remember('global_php_version_valid', function() use ($required) {
+      return version_compare(PHP_VERSION, $required, '>=');
+    });
+
+    if (!$isValid) {
+      response::error(
+        __('middleware.auth.php_version_required', [
+          'required' => $required,
+          'current' => PHP_VERSION
+        ]),
+        500
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  // Obtener token del header Authorization
   private function getToken() {
     if (function_exists('getallheaders')) {
       $headers = getallheaders();
@@ -82,15 +103,13 @@ class authMiddleware {
       return null;
     }
 
-    foreach ($files as $file) {
-      $session = json_decode(file_get_contents($file), true);
+    $session = json_decode(file_get_contents($files[0]), true);
 
-      if ($session && isset($session['token']) && $session['token'] === $token) {
-        return $session;
-      }
+    if (!$session || !isset($session['user_id']) || $session['token'] !== $token) {
+      return null;
     }
 
-    return null;
+    return $session;
   }
 
   private function deleteSession($token) {
@@ -101,61 +120,10 @@ class authMiddleware {
 
     foreach ($files as $file) {
       $session = json_decode(file_get_contents($file), true);
-      
-      if ($session && isset($session['token']) && $session['token'] === $token) {
+      if ($session && $session['token'] === $token) {
         unlink($file);
         return;
       }
     }
-  }
-
-  private function cleanupExpiredSessions($maxFiles = 10) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
-    
-    if (!is_dir($sessionsDir)) {
-      return 0;
-    }
-
-    $now = time();
-    $cleaned = 0;
-    $files = scandir($sessionsDir);
-    
-    foreach ($files as $file) {
-      // Saltar . y ..
-      if ($file === '.' || $file === '..') {
-        continue;
-      }
-
-      // Si ya limpiamos suficientes, salir
-      if ($cleaned >= $maxFiles) {
-        break;
-      }
-
-      $filePath = $sessionsDir . $file;
-      
-      // Solo archivos .json
-      if (!is_file($filePath) || !str_ends_with($file, '.json')) {
-        continue;
-      }
-
-      // Extraer timestamp del nombre
-      $parts = explode('_', $file);
-      
-      if (count($parts) >= 3) {
-        $expiresTimestamp = (int)$parts[0];
-        
-        // Si expiró, eliminar
-        if ($expiresTimestamp < $now) {
-          try {
-            unlink($filePath);
-            $cleaned++;
-          } catch (Exception $e) {
-            // Continuar si hay error
-          }
-        }
-      }
-    }
-
-    return $cleaned;
   }
 }

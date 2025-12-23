@@ -9,7 +9,7 @@ class logs {
   static async init() {
 
     if (this.initialized) {
-      logger.info('⚠️ logs ya estaba inicializado, reiniciando...');
+      logger.info('ext:admin:logs','⚠️ logs ya estaba inicializado, reiniciando...');
     }
 
     // Verificar que el container exista
@@ -28,7 +28,7 @@ class logs {
 
   // Filtrar por fecha
   static async filterByDate(daysAgo) {
-    logger.info(`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
+    logger.info('ext:admin:logs',`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
 
     const container = document.getElementById('logs-container');
     if (!container) {
@@ -77,7 +77,7 @@ class logs {
       let data = cache.get(cacheKey);
 
       if (data) {
-        logger.info(`✅ Logs obtenidos desde caché (${filterKey})`);
+        logger.info('ext:admin:logs',`✅ Logs obtenidos desde caché (${filterKey})`);
         this.logsData = data;
       } else {
 
@@ -234,10 +234,10 @@ class logs {
   static renderLogLine(log) {
     const levelColors = {
       'DEBUG': { bg: '#1e293b', text: '#94a3b8', badge: '#475569' },
-      'INFO': { bg: '#0c4a6e', text: '#7dd3fc', badge: '#0284c7' },
+      'INFO': { bg: '#0c4a6e36', text: '#7dd3fc', badge: '#0d567c' },
       'SUCCESS': { bg: '#064e3b', text: '#6ee7b7', badge: '#059669' },
       'WARNING': { bg: '#78350f', text: '#fbbf24', badge: '#d97706' },
-      'ERROR': { bg: '#7f1d1d', text: '#fca5a5', badge: '#dc2626' }
+      'ERROR': { bg: '#7f1d1d33', text: '#fca5a5', badge: '#4b2020' }
     };
 
     const color = levelColors[log.level] || levelColors['DEBUG'];
@@ -245,7 +245,7 @@ class logs {
 
     // Renderiza la fila de log con la columna de línea al final
     return `
-      <div style="padding: 0.75rem 1rem; border-bottom: 1px solid #1e293b; background: ${color.bg}; transition: background 0.2s;"
+      <div style="padding: 0.75rem 1rem; border-bottom: 1px solid #292020ff; background: ${color.bg}; transition: background 0.2s;"
            onmouseover="this.style.background='#1e293b'"
            onmouseout="this.style.background='${color.bg}'">
         <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
@@ -277,7 +277,7 @@ class logs {
 
   // Forzar recarga sin caché
   static async forceReload() {
-    logger.info('🔄 Forzando recarga sin caché...');
+    logger.info('ext:admin:logs','🔄 Forzando recarga sin caché...');
 
     const container = document.getElementById('logs-container');
     if (!container) {
@@ -291,7 +291,7 @@ class logs {
     cache.delete('system_logs_7days');
     cache.delete('system_logs_15days');
     cache.delete('system_logs_30days');
-    logger.info('✅ Caché eliminado');
+    logger.info('ext:admin:logs','✅ Caché eliminado');
 
     // Determinar cuál filtro está activo
     const activeBtn = document.querySelector('[data-filter][style*="rgb(59, 130, 246)"]');
