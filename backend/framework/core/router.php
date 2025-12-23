@@ -72,12 +72,10 @@ class router {
 
     $path = parse_url($uri, PHP_URL_PATH);
 
-    // Remover slashes duplicados: //api/user -> /api/user
+    // Remover slashes duplicados
     $path = preg_replace('#/+#', '/', $path);
 
     // Remover el prefijo de la carpeta del proyecto si existe
-    // /factory-saas/api/system -> /api/system
-    // /blacksystem/blacksystem/api/auth/login -> /api/auth/login
     if (preg_match('#(/api/.*)$#', $path, $matches)) {
       $path = $matches[1];
     }
