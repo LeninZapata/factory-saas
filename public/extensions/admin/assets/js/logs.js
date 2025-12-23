@@ -184,8 +184,10 @@ class logs {
 
       <!-- Logs Container -->
       <div style="background: #0f172a; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-height: 800px; overflow-y: auto;">
-        <div style="padding: 1rem; border-bottom: 1px solid #334155; background: #1e293b;">
+        <div style="padding: 1rem; border-bottom: 1px solid #334155; background: #1e293b; display: flex; align-items: center; justify-content: space-between;">
           <h4 style="margin: 0; color: #e2e8f0; font-size: 1rem;">📜 Registros del Sistema</h4>
+          <button id="logs-reload-btn" style="margin-left: auto; padding: 0.4rem 1.2rem; border-radius: 6px; background: #3b82f6; color: white; border: none; font-weight: 500; cursor: pointer; font-size: 0.95rem;">🔄 Recargar Logs</button>
+          <button id="logs-delete-btn" style="margin-left: 0.5rem; padding: 0.4rem 1.2rem; border-radius: 6px; background: transparent; color: white; border: 1px dashed #ef4444; font-weight: 500; cursor: pointer; font-size: 0.95rem;">🗑️ Eliminar Log</button>
         </div>
         <div style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 0.875rem;" id="logs-list-container">
           ${logs.map(log => this.renderLogLine(log)).join('')}
@@ -212,6 +214,34 @@ class logs {
       };
       tagInput.onkeydown = (e) => {
         if (e.key === 'Enter') tagBtn.click();
+      };
+    }
+
+    // Botón Recargar Logs
+    const reloadBtn = document.getElementById('logs-reload-btn');
+    if (reloadBtn) {
+      reloadBtn.onclick = () => this.forceReload();
+    }
+
+    // Botón Eliminar Log
+    const deleteBtn = document.getElementById('logs-delete-btn');
+    if (deleteBtn) {
+      deleteBtn.onclick = async () => {
+        deleteBtn.disabled = true;
+        deleteBtn.innerText = 'Eliminando...';
+        try {
+          const res = await api.get('/api/cleanup/storage/logs');
+          if (res.success) {
+            toast.success('Logs eliminados correctamente');
+            await this.forceReload();
+          } else {
+            toast.error(res.error || 'Error al eliminar logs');
+          }
+        } catch (err) {
+          toast.error('Error al eliminar logs');
+        }
+        deleteBtn.disabled = false;
+        deleteBtn.innerText = '🗑️ Eliminar Log';
       };
     }
   }
