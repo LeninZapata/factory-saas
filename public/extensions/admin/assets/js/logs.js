@@ -169,6 +169,17 @@ class logs {
           <div style="font-size: 1.5rem; font-weight: bold; color: #f87171;">${logs.filter(l => l.level === 'ERROR').length}</div>
           <div style="color: #94a3b8; font-size: 0.85rem;">ERROR</div>
         </div>
+        <div style="background: #1e293b; padding: 1rem; border-radius: 8px; border-left: 4px solid #475569;">
+          <div style="font-size: 1.5rem; font-weight: bold; color: #94a3b8;">${logs.filter(l => l.level === 'DEBUG').length}</div>
+          <div style="color: #94a3b8; font-size: 0.85rem;">DEBUG</div>
+        </div>
+      </div>
+
+      <!-- Filtro por tag -->
+      <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <label style="color: #e2e8f0; font-size: 0.95rem; font-weight: 500;">🏷️ Tag:</label>
+        <input id="logs-tag-input" type="text" placeholder="Escribe el tag..." style="padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-size: 0.9rem;" />
+        <button id="logs-tag-btn" style="padding: 0.4rem 1.2rem; border-radius: 6px; background: #3b82f6; color: white; border: none; font-weight: 500; cursor: pointer;">Buscar</button>
       </div>
 
       <!-- Logs Container -->
@@ -176,7 +187,7 @@ class logs {
         <div style="padding: 1rem; border-bottom: 1px solid #334155; background: #1e293b;">
           <h4 style="margin: 0; color: #e2e8f0; font-size: 1rem;">📜 Registros del Sistema</h4>
         </div>
-        <div style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 0.875rem;">
+        <div style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 0.875rem;" id="logs-list-container">
           ${logs.map(log => this.renderLogLine(log)).join('')}
         </div>
       </div>
@@ -185,6 +196,24 @@ class logs {
     container.innerHTML = html;
     this.updateLayerToolbar();
     this.updateLevelToolbar();
+
+    // Filtro por tag
+    const tagInput = document.getElementById('logs-tag-input');
+    const tagBtn = document.getElementById('logs-tag-btn');
+    const logsListContainer = document.getElementById('logs-list-container');
+    if (tagBtn && tagInput && logsListContainer) {
+      tagBtn.onclick = () => {
+        const tagValue = tagInput.value.trim().toLowerCase();
+        let filteredLogs = logs;
+        if (tagValue) {
+          filteredLogs = logs.filter(l => Array.isArray(l.tags) && l.tags.some(t => t.toLowerCase() === tagValue));
+        }
+        logsListContainer.innerHTML = filteredLogs.map(log => this.renderLogLine(log)).join('');
+      };
+      tagInput.onkeydown = (e) => {
+        if (e.key === 'Enter') tagBtn.click();
+      };
+    }
   }
 
   // Actualiza el estado visual de los botones de nivel
@@ -243,7 +272,7 @@ class logs {
     const color = levelColors[log.level] || levelColors['DEBUG'];
     const contextStr = log.context ? JSON.stringify(log.context, null, 2) : '';
 
-    // Renderiza la fila de log con la columna de línea al final
+    // Renderiza la fila de log con la columna de línea al final y badges de tags
     return `
       <div style="padding: 0.75rem 1rem; border-bottom: 1px solid #292020ff; background: ${color.bg}; transition: background 0.2s;"
            onmouseover="this.style.background='#1e293b'"
@@ -261,8 +290,15 @@ class logs {
           <span style="color: #8b5cf6; min-width: 120px; font-size: 0.8rem;">
             ${log.module}
           </span>
-          <span style="color: ${color.text}; flex: 1;">
-            ${log.message}
+          <span style="color: ${color.text}; flex: 1; display: flex; align-items: center; gap: 0.5rem;">
+            <span>${log.message}</span>
+            ${Array.isArray(log.tags) && log.tags.length > 0 ? `
+              <span style="display: flex; gap: 0.25rem; align-items: center;">
+                ${log.tags.map(tag => `
+                  <span style="background: rgba(0,0,0,0.1); color: #ffffff42; font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 6px; font-weight: 500;">${tag}</span>
+                `).join('')}
+              </span>
+            ` : ''}
           </span>
           ${log.location ? `<span style=\"color: #475569; min-width: 90px; font-size: 0.75rem; text-align: right;\"> ${log.location}</span>` : ''}
         </div>
