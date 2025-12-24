@@ -189,12 +189,19 @@ class form {
       if (formEl) {
         this.initRepeatables(instanceId, target);
         this.bindTransforms(instanceId, target);
-        
+
         // Aplicar valores por defecto ANTES de conditions
         this.applyDefaultValues(instanceId, target);
-        
+
         if (window.conditions) {
           conditions.init(instanceId);
+        }
+
+        // Enviar focus al campo que lo requiera
+        const focusField = instanceSchema.fields?.find(f => f.focus === true);
+        if (focusField) {
+          const input = formEl.querySelector(`[name="${focusField.name}"]`);
+          if (input) input.focus();
         }
 
         if (typeof afterRender === 'function') {
@@ -322,7 +329,7 @@ class form {
   static renderGrouper(field, parentPath, index = 0) {
     const mode = field.mode || 'linear';
     const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Generar fieldPath: usar name si existe, sino usar índice
     let fieldPath;
     if (field.name) {
@@ -442,7 +449,7 @@ class form {
           } else {
             section.classList.add('open');
             content.style.display = 'block';
-            
+
             // Re-evaluar condiciones al abrir sección
             if (window.conditions) {
               const formId = container.closest('form')?.id;
@@ -472,7 +479,7 @@ class form {
       tabButtons.forEach(button => {
         button.addEventListener('click', () => {
           const index = parseInt(button.dataset.tabIndex);
-          
+
           logger.debug('core:form', `[Tabs] Click en tab ${index}`);
 
           // Remover active de todos los botones de ESTE grouper
@@ -484,7 +491,7 @@ class form {
           // Activar el panel correspondiente de ESTE grouper
           if (tabPanels[index]) {
             tabPanels[index].classList.add('active');
-            
+
             // ✅ Re-evaluar condiciones al cambiar de tab
             if (window.conditions) {
               const formId = container.closest('form')?.id;
@@ -544,7 +551,7 @@ class form {
    */
   static getValidationAttributes(field) {
     const attrs = [];
-    
+
     if (!field.validation) return '';
 
     const rules = field.validation.split('|');
@@ -621,7 +628,7 @@ class form {
     switch(field.type) {
       case 'button':
         const buttonI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
-        
+
         // Extraer y remover type de props si existe (solo para buttons)
         let btnPropsAttr = propsAttr;
         let extractedType = null;
@@ -631,7 +638,7 @@ class form {
           delete propsWithoutType.type;
           btnPropsAttr = this.buildPropsAttr(propsWithoutType);
         }
-        
+
         // Determinar el click handler
         let clickHandler = '';
 
@@ -664,7 +671,7 @@ class form {
         const sourceValue = field.sourceValue || 'value';
         const sourceLabel = field.sourceLabel || 'label';
         const sourceData = hasSource ? `data-source-value="${sourceValue}" data-source-label="${sourceLabel}"` : '';
-        
+
         const staticOptions = field.options?.map(opt => {
           const optI18n = opt.label?.startsWith('i18n:') ? `data-i18n="${opt.label.replace('i18n:', '')}"` : '';
           return `<option value="${opt.value}" ${optI18n}>${this.t(opt.label)}</option>`;
@@ -852,10 +859,10 @@ class form {
     const schema = this.schemas.get(formId);
     if (!schema || !schema.fields) return;
 
-    const formEl = container 
+    const formEl = container
       ? container.querySelector(`#${formId}`)
       : document.getElementById(formId);
-    
+
     if (!formEl) return;
 
     // Recorrer todos los campos y aplicar defaults
@@ -883,10 +890,10 @@ class form {
       } else if (field.defaultValue !== undefined && field.defaultValue !== null && field.name) {
         // Aplicar default al campo
         const fieldEl = formEl.querySelector(`[name="${fieldPath}"]`);
-        
+
         if (fieldEl) {
           const processedValue = this.processDefaultValue(field.defaultValue);
-          
+
           if (fieldEl.type === 'checkbox' || fieldEl.type === 'radio') {
             fieldEl.checked = !!processedValue;
           } else {
@@ -1057,11 +1064,11 @@ class form {
         if (field.defaultValue !== undefined && field.defaultValue !== null) {
           const fieldPath = `${itemPath}.${field.name}`;
           const fieldEl = addedItem.querySelector(`[name="${fieldPath}"]`);
-          
+
           if (fieldEl) {
             // Procesar valor por defecto especial (tokens como {hash:10})
             const processedValue = this.processDefaultValue(field.defaultValue);
-            
+
             if (fieldEl.type === 'checkbox' || fieldEl.type === 'radio') {
               fieldEl.checked = !!processedValue;
             } else {
@@ -1199,14 +1206,14 @@ class form {
 
         if (originalValue !== value) {
           e.target.value = value;
-          
+
           // Ajustar cursor: si el valor cambió de longitud o caracteres, mantener posición relativa
           const lengthDiff = value.length - originalValue.length;
           let newCursorPos = cursorPos + lengthDiff;
-          
+
           // Asegurar que el cursor no se salga del rango
           newCursorPos = Math.max(0, Math.min(newCursorPos, value.length));
-          
+
           e.target.setSelectionRange(newCursorPos, newCursorPos);
         }
       });
@@ -1308,20 +1315,20 @@ class form {
     } else {
       processAllFields(schema.fields);
     }
-    
+
     // ✅ Registrar listener SOLO UNA VEZ para reintentar seleccionar valores cuando selects carguen
     if (!formEl.dataset.fillListenerRegistered) {
       let selectLoadCount = 0;
-      
+
       formEl.addEventListener('select:afterLoad', (e) => {
         selectLoadCount++;
         logger.debug('core:form', `🔄 Select #${selectLoadCount} cargado (${e.detail.fromCache ? 'cache' : 'API'}): ${e.detail.selectId}`);
-        
+
         // Solo reintentar seleccionar valores en selects, NO recrear repeatables
         const savedData = JSON.parse(formEl.dataset.formData || '{}');
         processFieldsForSelects(schema.fields);
       });
-      
+
       formEl.dataset.fillListenerRegistered = 'true';
       logger.debug('core:form', `✅ Listener registrado para ${formId}`);
     }
@@ -1413,7 +1420,7 @@ class form {
 
     // ✅ Obtener el índice REAL del DOM (no del array)
     const domIndex = parseInt(currentItem.dataset.index || index);
-    
+
     // Calcular path del item usando el índice del DOM
     const itemPath = parentPath ? `${parentPath}[${domIndex}]` : `${fieldName}[${domIndex}]`;
 
@@ -1465,7 +1472,7 @@ class form {
     // ✅ Obtener el índice REAL del DOM
     const domIndex = parseInt(item.dataset.index || index);
     const itemPath = parentPath ? `${parentPath}[${domIndex}]` : `${fieldName}[${domIndex}]`;
-    
+
     fieldSchema.forEach(subField => {
       if (subField.type === 'repeatable') {
         // Recursivo: procesar repeatables anidados
@@ -1557,10 +1564,10 @@ class form {
       const input = formEl.querySelector(`[name="${fieldPath}"]`);
       if (input) {
         const fieldContainer = input.closest('.form-group, .form-checkbox, .form-html-wrapper');
-        
+
         // Si el campo está oculto (por condiciones o cualquier otro motivo), no validar
         if (fieldContainer && (
-          fieldContainer.classList.contains('wpfw-depend-on') || 
+          fieldContainer.classList.contains('wpfw-depend-on') ||
           fieldContainer.style.display === 'none' ||
           window.getComputedStyle(fieldContainer).display === 'none'
         )) {
@@ -1675,12 +1682,12 @@ class form {
         else if (field.type === 'repeatable' && field.fields) {
           const repeatableFieldPath = basePath ? `${basePath}.${field.name}` : field.name;
           const repeatableData = getValueByPath(formData, repeatableFieldPath);
-          
+
           // Si hay datos en el repeatable (array de items)
           if (Array.isArray(repeatableData) && repeatableData.length > 0) {
             repeatableData.forEach((itemData, index) => {
               const itemPath = `${repeatableFieldPath}[${index}]`;
-              
+
               // Validar cada campo dentro del item
               field.fields.forEach(subField => {
                 if (subField.type === 'repeatable' && subField.fields) {
@@ -1863,7 +1870,7 @@ class form {
       logger.debug('core:form', `📦 Usando cache para ${selectId} desde ${source}`);
       const cachedData = this.selectCache.get(cacheKey);
       this.populateSelect(selectEl, cachedData, valueField, labelField, placeholder);
-      
+
       // Disparar evento
       selectEl.dispatchEvent(new CustomEvent('select:afterLoad', {
         bubbles: true,
@@ -1874,7 +1881,7 @@ class form {
 
     try {
       selectEl.disabled = true;
-      
+
       logger.debug('core:form', `🌐 Cargando ${selectId} desde API: ${source}`);
       const data = await api.get(source);
       const items = Array.isArray(data) ? data : (data.data || []);
@@ -1886,13 +1893,13 @@ class form {
 
       selectEl.disabled = false;
       logger.debug('core:form', `Select ${selectId} cargado con ${items.length} items desde ${source}`);
-      
+
       // ✅ Disparar evento afterLoad para que se intente seleccionar el valor
       selectEl.dispatchEvent(new CustomEvent('select:afterLoad', {
         bubbles: true,
         detail: { selectId, source, itemCount: items.length, fromCache: false }
       }));
-      
+
     } catch (error) {
       logger.error('core:form', `Error cargando select ${selectId} desde ${source}:`, error);
       selectEl.disabled = false;
@@ -1902,7 +1909,7 @@ class form {
   // ✅ Método helper para poblar select
   static populateSelect(selectEl, items, valueField, labelField, placeholder = null) {
     selectEl.innerHTML = '';
-    
+
     // ✅ Agregar placeholder primero si existe
     if (placeholder) {
       selectEl.appendChild(placeholder);

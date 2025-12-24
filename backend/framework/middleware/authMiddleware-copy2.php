@@ -1,6 +1,12 @@
 <?php
 class authMiddleware {
 
+  // Validar versión PHP (solo 1 vez por sesión)
+  // Solo validar versión PHP en desarrollo
+  if (IS_DEV && !$this->validatePhpVersion()) {
+    return false;
+  }
+
   function handle() {
     $token = $this->getToken();
 

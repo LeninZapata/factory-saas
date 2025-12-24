@@ -2,6 +2,13 @@
 class authMiddleware {
 
   function handle() {
+
+    // Validar versión PHP (solo 1 vez por sesión)
+    // Solo validar versión PHP en desarrollo
+    if (IS_DEV && !$this->validatePhpVersion()) {
+      return false;
+    }
+
     $token = $this->getToken();
 
     if (!$token) {
@@ -186,5 +193,28 @@ class authMiddleware {
     }
 
     return $cleaned;
+  }
+
+  // Validar versión PHP usando cache
+  private function validatePhpVersion() {
+    $required = defined('PHP_MIN_VERSION') ? PHP_MIN_VERSION : '8.1.0';
+
+    // Cache GLOBAL (en $_SESSION porque no depende del usuario)
+    $isValid = cache::remember('global_php_version_valid', function() use ($required) {
+      return version_compare(PHP_VERSION, $required, '>=');
+    });
+
+    if (!$isValid) {
+      response::error(
+        __('middleware.auth.php_version_required', [
+          'required' => $required,
+          'current' => PHP_VERSION
+        ]),
+        500
+      );
+      return false;
+    }
+
+    return true;
   }
 }

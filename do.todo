@@ -5,6 +5,7 @@ que muestre un ejemplo del body, el body debe estar comentado para poder obtener
 
 
 Frontend (Framework):
+✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
