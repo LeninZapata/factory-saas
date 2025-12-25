@@ -295,7 +295,7 @@ class logs {
       'DEBUG': { bg: '#1e293b', text: '#94a3b8', badge: '#475569' },
       'INFO': { bg: '#0c4a6e36', text: '#7dd3fc', badge: '#0d567c' },
       'SUCCESS': { bg: '#064e3b', text: '#6ee7b7', badge: '#059669' },
-      'WARNING': { bg: '#78350f', text: '#fbbf24', badge: '#d97706' },
+      'WARNING': { bg: '#78350f36', text: '#fbbf24', badge: '#9b5300' },
       'ERROR': { bg: '#7f1d1d33', text: '#fca5a5', badge: '#4b2020' }
     };
 

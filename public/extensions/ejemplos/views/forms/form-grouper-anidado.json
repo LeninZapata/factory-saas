@@ -343,6 +343,182 @@
               "placeholder": "email1@ejemplo.com, email2@ejemplo.com"
             }
           ]
+        },
+        {
+          "title": "🔄 Repeater dentro de Grouper",
+          "fields": [
+            {
+              "type": "html",
+              "content": "<div style='background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #22c55e;'><strong>💡 Este tab contiene un GROUPER LINEAR con REPEATER dentro</strong><br>Cada grupo del grouper tiene un campo de texto + un repeater con varios campos</div>"
+            },
+            {
+              "type": "grouper",
+              "mode": "linear",
+              "collapsible": true,
+              "openFirst": true,
+              "groups": [
+                {
+                  "title": "🏢 Departamentos",
+                  "fields": [
+                    {
+                      "name": "dept_description",
+                      "label": "Descripción del Departamento",
+                      "type": "textarea",
+                      "placeholder": "Describe el propósito y objetivos del departamento..."
+                    },
+                    {
+                      "name": "dept_employees",
+                      "label": "👥 Empleados",
+                      "type": "repeatable",
+                      "buttonPosition": "top",
+                      "addText": "➕ Agregar Empleado",
+                      "removeText": "🗑️ Eliminar",
+                      "fields": [
+                        {
+                          "name": "employee_name",
+                          "label": "Nombre Completo",
+                          "type": "text",
+                          "required": true,
+                          "placeholder": "Juan Pérez"
+                        },
+                        {
+                          "type": "group",
+                          "columns": 2,
+                          "gap": "normal",
+                          "fields": [
+                            {
+                              "name": "employee_position",
+                              "label": "Cargo",
+                              "type": "text",
+                              "placeholder": "Desarrollador"
+                            },
+                            {
+                              "name": "employee_email",
+                              "label": "Email",
+                              "type": "email",
+                              "placeholder": "juan@empresa.com"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "📦 Proyectos",
+                  "fields": [
+                    {
+                      "name": "project_overview",
+                      "label": "Descripción General",
+                      "type": "text",
+                      "placeholder": "Resumen de los proyectos activos..."
+                    },
+                    {
+                      "name": "active_projects",
+                      "label": "🎯 Lista de Proyectos",
+                      "type": "repeatable",
+                      "buttonPosition": "top",
+                      "addText": "➕ Agregar Proyecto",
+                      "removeText": "❌ Quitar",
+                      "fields": [
+                        {
+                          "name": "project_name",
+                          "label": "Nombre del Proyecto",
+                          "type": "text",
+                          "required": true,
+                          "placeholder": "Sistema de Gestión"
+                        },
+                        {
+                          "name": "project_status",
+                          "label": "Estado",
+                          "type": "select",
+                          "options": [
+                            { "value": "planning", "label": "Planificación" },
+                            { "value": "in_progress", "label": "En Progreso" },
+                            { "value": "testing", "label": "Testing" },
+                            { "value": "completed", "label": "Completado" }
+                          ]
+                        },
+                        {
+                          "type": "group",
+                          "columns": 2,
+                          "gap": "normal",
+                          "fields": [
+                            {
+                              "name": "project_start",
+                              "label": "Fecha Inicio",
+                              "type": "date"
+                            },
+                            {
+                              "name": "project_end",
+                              "label": "Fecha Fin",
+                              "type": "date"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "🛠️ Recursos",
+                  "fields": [
+                    {
+                      "name": "resources_notes",
+                      "label": "Notas sobre Recursos",
+                      "type": "text",
+                      "placeholder": "Información adicional sobre recursos disponibles..."
+                    },
+                    {
+                      "name": "available_resources",
+                      "label": "💻 Equipos y Herramientas",
+                      "type": "repeatable",
+                      "buttonPosition": "middle",
+                      "addText": "➕ Agregar Recurso",
+                      "removeText": "🗑️ Eliminar",
+                      "fields": [
+                        {
+                          "name": "resource_name",
+                          "label": "Nombre del Recurso",
+                          "type": "text",
+                          "placeholder": "Laptop Dell XPS 15"
+                        },
+                        {
+                          "type": "group",
+                          "columns": 3,
+                          "gap": "normal",
+                          "fields": [
+                            {
+                              "name": "resource_type",
+                              "label": "Tipo",
+                              "type": "select",
+                              "options": [
+                                { "value": "hardware", "label": "Hardware" },
+                                { "value": "software", "label": "Software" },
+                                { "value": "license", "label": "Licencia" }
+                              ]
+                            },
+                            {
+                              "name": "resource_quantity",
+                              "label": "Cantidad",
+                              "type": "number",
+                              "min": 1,
+                              "value": 1
+                            },
+                            {
+                              "name": "resource_available",
+                              "label": "Disponible",
+                              "type": "checkbox"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }

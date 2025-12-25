@@ -2,15 +2,25 @@ Backend (Framework):
 ☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-
+☐ Hay que separar el framework completamente de APP, hablo por los reouters, controllers, models
+que estan medios mezclado, cuando quiero reeamplzar el framework por otro es un lio porque debo
+hacerlo por archivos y esto quita tiempo, cuando solo deberia ser 1 sola carpeta y ya
 
 Frontend (Framework):
 ✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)
+☐ En el visor de los logs agregar un copy para copiar el contenido del log rapidamente
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
-o que tipo de permiso es ese booton o elemento y debe consultar alli si el usuario tiene permiso o no}
+o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
+☐ Visualmetne que se puedan ver los los de forma cruda por orden de llegada aunq como esta en archivos separados no se como
+hacerlo ya que todos se ejecutan en el mismo momento..... tendrias que preguntar a la IA como es que mismo lo esta ordenando
+lo otro seria que los ordene mediante una secuencia de ejecion como todos llamana la log:: entonces debe internamente tener una secuencia
+entonces es por hora y secuencia de ejecucion, pienso no se como mismo sabe el orden ahroia que me pongo a pensar
+☐ la variable storageKey: 'sb_auth', ahy que llevarla a nivel de index.html porque sino cada vez
+que reemaplzas la carpeta pues se pierde esa configuracion y toca ponerla en cada proyecto y es para nombre
+de cache de session entonces es un relajo, esto debe estar a nivel global en el index.html
 ☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
@@ -37,3 +47,24 @@ actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
 Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
 ☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe 
 quedar en el primer campo obligatorio que falte por llenar
+☐ Parte los JSON por ejemplo existe JSON muy extensos entonces puede que se partan en viaras partes
+y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
+y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento 
+michos tokens.
+☐ otro archivo que esta consumiento muchos tokens son los arhcivos de idioma
+se repiten muchas veces los key padre por ejemplp
+"infoproduct.products.list.title": "Gestión de Infoproductos",
+"infoproduct.products.list.header.title": "Infoproductos Digitales",
+el "infoproduct.products" se repite muchas veces podriamos hacer algo como
+"infoproduct": {
+  "products": {
+    "list": {
+      "title": "Gestión de Infoproductos",
+      "header": {
+        "title": "Infoproductos Digitales"
+      }
+    }
+  }
+}
+esto ayudaria a reducir tokens en los archivos de idioma
+MIDE EL PESO COMO QUEDA ANTES Y DESPUES PARA VER SI REALMENTE AYUDA
