@@ -52,7 +52,7 @@ class evolutionProvider extends baseChatApiProvider {
     }
 
     try {
-      $response = http::post($this->baseUrl . $endpoint . '/' . $this->instance, $payload, [
+      $response = ogHttp::post($this->baseUrl . $endpoint . '/' . $this->instance, $payload, [
         'headers' => [
           'apikey: ' . $this->apiKey,
           'Content-Type: application/json'
@@ -95,7 +95,7 @@ class evolutionProvider extends baseChatApiProvider {
     ];
 
     try {
-      $response = http::post($this->baseUrl . '/chat/sendPresence/' . $this->instance, $payload, [
+      $response = ogHttp::post($this->baseUrl . '/chat/sendPresence/' . $this->instance, $payload, [
         'headers' => [
           'apikey: ' . $this->apiKey,
           'Content-Type: application/json'
@@ -134,7 +134,7 @@ class evolutionProvider extends baseChatApiProvider {
     ];
 
     try {
-      $response = http::post($this->baseUrl . '/chat/archiveChat/' . $this->instance, $payload, [
+      $response = ogHttp::post($this->baseUrl . '/chat/archiveChat/' . $this->instance, $payload, [
         'headers' => [
           'apikey: ' . $this->apiKey,
           'Content-Type: application/json'

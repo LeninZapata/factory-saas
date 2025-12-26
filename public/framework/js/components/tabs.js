@@ -282,4 +282,7 @@ class tabs {
   }
 }
 
-window.tabs = tabs;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.components.tabs = tabs;
+}

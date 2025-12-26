@@ -1,14 +1,14 @@
 <?php
 // Inicializar idioma
-lang::load(DEFAULT_LANG);
+ogLang::load(DEFAULT_LANG);
 
 // Opción 2: Detectar desde header HTTP (descomenta para usar)
 // $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'es', 0, 2);
-// lang::load($lang);
+// ogLang::load($lang);
 
 // Opción 3: Desde query param (descomenta para usar)
 // $lang = $_GET['lang'] ?? DEFAULT_LANG;
-// lang::load($lang);
+// ogLang::load($lang);
 
 // Configurar error reporting según entorno
 if (IS_DEV) {
@@ -22,7 +22,7 @@ if (IS_DEV) {
 }
 
 // Configurar logs
-log::setConfig([
+ogLog::setConfig([
   'format' => 'custom',
   'template' => '{year}/{month}/{day}/{module}.log',
   'level' => IS_DEV ? 'debug' : 'info',

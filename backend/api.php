@@ -14,5 +14,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/app/config/init.php';
 
-$app = new Application();
+$app = new ogApplication();
 $app->run();

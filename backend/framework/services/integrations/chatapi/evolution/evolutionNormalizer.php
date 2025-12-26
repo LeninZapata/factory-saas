@@ -67,6 +67,17 @@ class evolutionNormalizer {
     // Extraer número de la persona (remoteJid)
     $personNumber = self::extractPersonNumber($key);
 
+    // Construir context
+    $context = [
+      'type' => $contextType,
+      'source' => $contextInfo['conversionSource'] ?? null,
+      'source_app' => $contextInfo['entryPointConversionApp'] ?? $contextInfo['sourceApp'] ?? $contextInfo['externalAdReply']['sourceApp'] ?? null,
+      'source_url' => $contextInfo['externalAdReply']['sourceUrl'] ?? null,
+      'is_fb_ads' => $contextType === 'conversion' && !empty($contextInfo['conversionSource']) && $contextInfo['conversionSource'] === 'FB_Ads',
+      'ad_data' => self::extractAdData($contextInfo),
+      'raw' => $contextInfo
+    ];
+
     // Formato estándar universal (mismo para todos los providers)
     return [
       // Metadata del webhook
@@ -107,15 +118,7 @@ class evolutionNormalizer {
       ],
 
       // Contexto (context)
-      'context' => [
-        'type' => $contextType,
-        'source' => $contextInfo['conversionSource'] ?? null,
-        'source_app' => $contextInfo['entryPointConversionApp'] ?? $contextInfo['sourceApp'] ?? $contextInfo['externalAdReply']['sourceApp'] ?? null,
-        'source_url' => $contextInfo['externalAdReply']['sourceUrl'] ?? null,
-        'is_fb_ads' => $contextType === 'conversion' && !empty($contextInfo['conversionSource']) && $contextInfo['conversionSource'] === 'FB_Ads',
-        'ad_data' => self::extractAdData($contextInfo),
-        'raw' => $contextInfo
-      ],
+      'context' => $context,
 
       // Datos crudos originales
       'raw' => $normalizedData
@@ -170,7 +173,6 @@ class evolutionNormalizer {
 
     if (empty($sender)) return null;
 
-    // Convertir a string y remover @s.whatsapp.net si existe
     $sender = (string)$sender;
 
     if (stripos($sender, '@s.whatsapp.net') !== false) {
@@ -182,7 +184,6 @@ class evolutionNormalizer {
 
   // Extraer número de la persona (remoteJid) desde key
   private static function extractPersonNumber($key) {
-    // Campos posibles donde puede estar el número (orden de prioridad)
     $fields = ['remoteJid', 'senderPn', 'senderLid'];
 
     foreach ($fields as $field) {
@@ -190,7 +191,6 @@ class evolutionNormalizer {
 
       if (empty($value)) continue;
 
-      // Convertir a string y verificar si contiene @s.whatsapp.net
       $value = (string)$value;
 
       if (stripos($value, '@s.whatsapp.net') !== false) {
@@ -198,7 +198,6 @@ class evolutionNormalizer {
       }
     }
 
-    // Si no se encuentra en ningún campo válido, retornar null
     return null;
   }
 
@@ -235,7 +234,12 @@ class evolutionNormalizer {
 
   // Extraer texto del mensaje
   private static function extractText($message) {
-    // Orden de prioridad para extraer texto
+    // Prioridad 1: Reacciones
+    if (isset($message['reactionMessage']['text'])) {
+      return $message['reactionMessage']['text'];
+    }
+
+    // Prioridad 2: Conversación directa
     if (isset($message['conversation'])) {
       return $message['conversation'];
     }

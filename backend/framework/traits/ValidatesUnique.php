@@ -3,22 +3,22 @@ trait ValidatesUnique {
 
   // Validar campo único (para create)
   protected function validateUnique($table, $field, $value, $errorKey = null) {
-    if (db::table($table)->where($field, $value)->exists()) {
+    if (ogDb::table($table)->where($field, $value)->exists()) {
       $error = $errorKey ?? "validation.field_exists";
-      response::error(__($error, ['field' => $field]), 400);
+      ogResponse::error(__($error, ['field' => $field]), 400);
     }
   }
 
   // Validar campo único excepto ID actual (para update)
   protected function validateUniqueExcept($table, $field, $value, $excludeId, $errorKey = null) {
-    $exists = db::table($table)
+    $exists = ogDb::table($table)
       ->where($field, $value)
       ->where('id', '!=', $excludeId)
       ->exists();
 
     if ($exists) {
       $error = $errorKey ?? "validation.field_exists";
-      response::error(__($error, ['field' => $field]), 400);
+      ogResponse::error(__($error, ['field' => $field]), 400);
     }
   }
 
@@ -27,8 +27,8 @@ trait ValidatesUnique {
     if (empty($email)) return;
 
     // Validar formato
-    if (!validation::email($email)) {
-      response::error(__('validation.invalid_email'), 400);
+    if (!ogValidation::email($email)) {
+      ogResponse::error(__('validation.invalid_email'), 400);
     }
 
     // Validar unicidad si se especifica tabla

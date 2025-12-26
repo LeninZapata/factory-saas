@@ -1,5 +1,5 @@
 Backend (Framework):
-☐ @URGENTE no esta en orden parece los logs, como se generan muchos archivos y como el tiempo de ejecucion
+✔ @URGENTE no esta en orden parece los logs, como se generan muchos archivos y como el tiempo de ejecucion @done(26-12-2025 10:37)
 no es exacto pues los logs se ven desordenados, hay que hacer que se vean en orden de ejecucion.
 Mi propuesta es que cada log tenga un numero de secuencia o algo asi para que se ordenen
 ademas de timestamp, entonces ordenar por timestamp y por secuencia de ejecucion dentro de ese mismo timestamp
@@ -13,7 +13,12 @@ hacerlo por archivos1 y esto quita tiempo, cuando solo deberia ser 1 sola carpet
 
 Frontend (Framework):
 ✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)
+☐ en WP aun no se como pasar los datos de JS hacia el global de framework ya que esto puede variar
+pero el core por ejemplo cache.js esta que tom valores de window.config pero eso es global y yo necesio
+versatilidad ya usare varios plugins.
 ☐ En el visor de los logs agregar un copy para copiar el contenido del log rapidamente
+☐ Separdor, si existe una scuencia de log entonces tambien si empieza de 1 es porque debe haber un separador
+esto creo que se lo puede hacer visualmente si sequence == 1 entonces poner una linea o algo asi para separar
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
@@ -21,7 +26,7 @@ o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuari
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
 ☐ Visualmetne que se puedan ver los los de forma cruda por orden de llegada aunq como esta en archivos separados no se como
 hacerlo ya que todos se ejecutan en el mismo momento..... tendrias que preguntar a la IA como es que mismo lo esta ordenando
-lo otro seria que los ordene mediante una secuencia de ejecion como todos llamana la log:: entonces debe internamente tener una secuencia
+lo otro seria que los ordene mediante una secuencia de ejecion como todos llamana la ogLog:: entonces debe internamente tener una secuencia
 entonces es por hora y secuencia de ejecucion, pienso no se como mismo sabe el orden ahroia que me pongo a pensar
 ☐ la variable storageKey: 'sb_auth', ahy que llevarla a nivel de index.html porque sino cada vez
 que reemaplzas la carpeta pues se pierde esa configuracion y toca ponerla en cada proyecto y es para nombre

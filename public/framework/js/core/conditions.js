@@ -3,12 +3,20 @@ class conditions {
   static watchers = new Map();
   static initialized = false;
   static evaluateTimeout = null;
-  static isFillingForm = false; // Flag para indicar si se está llenando el formulario
+  static isFillingForm = false;
+
+  static getModules() {
+    return {
+      form: window.ogFramework?.core?.form || window.form,
+      logger: window.ogFramework?.core?.logger || window.logger
+    };
+  }
 
   static init(formId) {
     if (!formId) return;
 
-    const schema = window.form?.schemas?.get(formId);
+    const { form } = this.getModules();
+    const schema = form?.schemas?.get(formId);
     if (!schema || !schema.fields) return;
 
     // Limpiar reglas anteriores de este formulario
@@ -359,10 +367,11 @@ class conditions {
   }
 
   static applyVisibilitySimple(formEl, fieldPath, shouldShow) {
+    const { logger } = this.getModules();
     const fieldElement = this.findFieldElement(formEl, fieldPath);
 
     if (!fieldElement) {
-      logger.warn('core:conditions', `No se encontró el elemento para "${fieldPath}"`);
+      logger?.warn('core:conditions', `No se encontró el elemento para "${fieldPath}"`);
       return;
     }
 
@@ -401,6 +410,7 @@ class conditions {
   }
 
   static checkCondition(context, condition) {
+    const { logger } = this.getModules();
     const { field, operator, value } = condition;
 
     // Buscar el campo en el contexto
@@ -422,7 +432,7 @@ class conditions {
     }
 
     if (!fieldEl) {
-      logger.warn('core:conditions', `[checkCondition] ❌ Campo "${field}" no encontrado en contexto`);
+      logger?.warn('core:conditions', `[checkCondition] ❌ Campo "${field}" no encontrado en contexto`);
       return false;
     }
 
@@ -488,7 +498,8 @@ class conditions {
         return !String(fieldValue).toLowerCase().includes(String(targetValue).toLowerCase());
 
       default:
-        logger.warn('core:conditions', `Operador desconocido "${operator}"`);
+        const { logger } = this.getModules();
+        logger?.warn('core:conditions', `Operador desconocido "${operator}"`);
         return false;
     }
   }
@@ -628,16 +639,21 @@ class conditions {
   }
 
   static debug(formId) {
-    logger.info('core:conditions', `Debug: ${formId}`);
+    const { logger } = this.getModules();
+    
+    logger?.info('core:conditions', `Debug: ${formId}`);
 
     const rules = this.rules.get(formId);
     if (!rules) {
-      logger.info('core:conditions', 'No hay reglas registradas para este formulario');
+      logger?.info('core:conditions', 'No hay reglas registradas para este formulario');
       return;
     }
 
-    logger.info('core:conditions', `Reglas activas: ${rules.size}`);
+    logger?.info('core:conditions', `Reglas activas: ${rules.size}`);
   }
 }
 
-window.conditions = conditions;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.core.conditions = conditions;
+}

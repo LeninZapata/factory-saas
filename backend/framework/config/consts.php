@@ -25,7 +25,7 @@ if (!defined('BASE_PATH')) {
 
 // Rutas complementarias
 define('FRONTEND_PATH', BASE_PATH . '/public');
-define('EXTENSIONS_PATH', BACKEND_PATH . '/extensions');
+define('EXTENSIONS_PATH', APP_PATH . '/extensions');  // ← CAMBIADO: ahora en app/
 define('ROUTES_PATH', APP_PATH . '/routes');
 define('STORAGE_PATH', APP_PATH . '/storage');
 define('LOG_PATH', STORAGE_PATH . '/logs');

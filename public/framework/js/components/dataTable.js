@@ -327,7 +327,7 @@ class datatable {
     const key = label.replace('i18n:', '');
 
     // Si usa el nuevo formato i18n:extension.key
-    if (window.i18n && typeof i18n.t === 'function') {
+    if (window.ogFramework?.core?.i18n && typeof i18n.t === 'function') {
       const translation = i18n.t(key);
       if (translation !== key) return translation;
     }
@@ -612,4 +612,7 @@ class datatable {
   }
 }
 
-window.datatable = datatable;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.components.datatable = datatable;
+}

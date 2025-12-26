@@ -1,13 +1,13 @@
 <?php
 class ai {
 
-  private static $logMeta = ['module' => 'ai', 'layer' => 'service'];
+  private static $logMeta = ['module' => 'ai', 'layer' => 'framework'];
 
   // Chat completion con fallback automático
   public function getChatCompletion($prompt, $bot, $options = []) {
     try {
       $aiServices = $this->getServicesForTask($bot, 'conversation');
-      if (empty($aiServices)) throw new Exception(__('services.ai.no_services_available'));
+      if (empty($aiServices)) ogLog::throwError(__('services.ai.no_services_available'), [], self::$logMeta);
 
       $attemptNumber = 0;
       $lastError = null;
@@ -31,10 +31,10 @@ class ai {
         }
       }
 
-      log::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber], self::$logMeta);
+      ogLog::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber], self::$logMeta);
 
     } catch (Exception $e) {
-      log::error('Error en chat completion', ['error' => $e->getMessage()], self::$logMeta);
+      ogLog::error('Error en chat completion', ['error' => $e->getMessage()], self::$logMeta);
       return ['success' => false, 'error' => $e->getMessage(), 'services_tried' => $attemptNumber ?? 0];
     }
   }
@@ -43,7 +43,7 @@ class ai {
   public function transcribeAudio($audioUrl, $bot) {
     try {
       $aiServices = $this->getServicesForTask($bot, 'audio');
-      if (empty($aiServices)) throw new Exception(__('services.ai.no_services_for_task', ['task' => 'audio']));
+      if (empty($aiServices)) ogLog::throwError(__('services.ai.no_services_for_task', ['task' => 'audio']), [], self::$logMeta);
 
       $attemptNumber = 0;
       $lastError = null;
@@ -61,10 +61,10 @@ class ai {
         }
       }
 
-      log::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber, 'task' => 'audio'], self::$logMeta);
+      ogLog::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber, 'task' => 'audio'], self::$logMeta);
 
     } catch (Exception $e) {
-      log::error('Error transcribiendo audio', ['error' => $e->getMessage()], self::$logMeta);
+      ogLog::error('Error transcribiendo audio', ['error' => $e->getMessage()], self::$logMeta);
       return ['success' => false, 'error' => $e->getMessage()];
     }
   }
@@ -73,7 +73,7 @@ class ai {
   public function analyzeImage($imageDataUri, $instruction, $bot) {
     try {
       $aiServices = $this->getServicesForTask($bot, 'image');
-      if (empty($aiServices)) throw new Exception(__('services.ai.no_services_for_task', ['task' => 'image']));
+      if (empty($aiServices)) ogLog::throwError(__('services.ai.no_services_for_task', ['task' => 'image']), [], self::$logMeta);
 
       $attemptNumber = 0;
       $lastError = null;
@@ -91,10 +91,10 @@ class ai {
         }
       }
 
-      log::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber, 'task' => 'image'], self::$logMeta);
+      ogLog::throwError(__('services.ai.all_services_failed', ['error' => $lastError]), ['services_tried' => $attemptNumber, 'task' => 'image'], self::$logMeta);
 
     } catch (Exception $e) {
-      log::error('Error analizando imagen', ['error' => $e->getMessage()], self::$logMeta);
+      ogLog::error('Error analizando imagen', ['error' => $e->getMessage()], self::$logMeta);
       return ['success' => false, 'error' => $e->getMessage()];
     }
   }
@@ -111,11 +111,11 @@ class ai {
     ];
 
     $providerClass = $providerMap[$slug] ?? null;
-    if (!$providerClass) throw new Exception(__('services.ai.provider_not_supported', ['provider' => $slug]));
+    if (!$providerClass) ogLog::throwError(__('services.ai.provider_not_supported', ['provider' => $slug]), [], self::$logMeta);
 
     // Autoload carga la clase automáticamente
     if (!class_exists($providerClass)) {
-      throw new Exception(__('services.ai.class_not_found', ['class' => $providerClass]));
+      ogLog::throwError(__('services.ai.class_not_found', ['class' => $providerClass]), [], self::$logMeta);
     }
 
     return new $providerClass($config);
@@ -124,7 +124,7 @@ class ai {
   // Obtener servicios para una tarea
   private function getServicesForTask($bot, $task) {
     $services = $bot['config']['apis']['ai'][$task] ?? [];
-    if (empty($services)) log::warning("No hay servicios para: {$task}", [], self::$logMeta);
+    if (empty($services)) ogLog::warning("No hay servicios para: {$task}", [], self::$logMeta);
     return $services;
   }
 

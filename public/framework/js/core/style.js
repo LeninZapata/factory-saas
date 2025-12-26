@@ -155,4 +155,7 @@ class styleHandler {
   }
 }
 
-window.styleHandler = styleHandler;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.core.styleHandler = styleHandler;
+}

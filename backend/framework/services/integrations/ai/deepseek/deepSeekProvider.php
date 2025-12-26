@@ -16,19 +16,19 @@ class deepSeekProvider extends baseAIProvider {
 
       $payload = ['model' => $model, 'messages' => $messages, 'temperature' => $temperature, 'max_tokens' => $maxTokens, 'stream' => false];
 
-      $response = http::post($this->baseUrl . '/chat/completions', $payload, [
+      $response = ogHttp::post($this->baseUrl . '/chat/completions', $payload, [
         'headers' => ['Content-Type: application/json', 'Authorization: Bearer ' . $this->apiKey],
         'timeout' => 60
       ]);
 
       if (!$response['success']){
-        log::error('Error HTTP en chat completion', $response, self::$logMeta);
+        ogLog::error('Error HTTP en chat completion', $response, self::$logMeta);
         throw new Exception(__('services.ai.http_error') . ' (HTTP ' . ($response['httpCode'] ?? '500') . ')');
       }
 
       $data = $response['data'];
       if (!isset($data['choices'][0]['message']['content'])){
-        log::error('Respuesta con formato inválido', ['response_data' => $data], self::$logMeta);
+        ogLog::error('Respuesta con formato inválido', ['response_data' => $data], self::$logMeta);
         throw new Exception(__('services.ai.invalid_response'));
       }
 
@@ -69,7 +69,7 @@ class deepSeekProvider extends baseAIProvider {
 
       $payload = ['model' => 'deepseek-vision', 'messages' => $messages, 'temperature' => 0.7, 'max_tokens' => 1500];
 
-      $response = http::post($this->baseUrl . '/chat/completions', $payload, [
+      $response = ogHttp::post($this->baseUrl . '/chat/completions', $payload, [
         'headers' => ['Content-Type: application/json', 'Authorization: Bearer ' . $this->apiKey],
         'timeout' => 60
       ]);

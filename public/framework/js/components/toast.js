@@ -124,4 +124,7 @@ class toast {
   }
 }
 
-window.toast = toast;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.components.toast = toast;
+}

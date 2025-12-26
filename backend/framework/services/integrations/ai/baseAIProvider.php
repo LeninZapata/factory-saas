@@ -12,7 +12,7 @@ abstract class baseAIProvider implements aiProviderInterface {
 
   public function validateConfig(): bool {
     if (empty($this->apiKey)) {
-      log::error('API key no configurada para ' . $this->getProviderName(), [], self::$logMeta);
+      ogLog::error('API key no configurada para ' . $this->getProviderName(), [], self::$logMeta);
       throw new Exception(__('services.ai.api_key_missing', ['provider' => $this->getProviderName()]));
     }
     return true;
@@ -29,7 +29,7 @@ abstract class baseAIProvider implements aiProviderInterface {
   }
 
   protected function log($message, $data = []): void {
-    log::debug(sprintf('[%s] %s', $this->getProviderName(), $message), $data, self::$logMeta);
+    ogLog::debug(sprintf('[%s] %s', $this->getProviderName(), $message), $data, self::$logMeta);
   }
 
   protected function buildMessages($prompt): array {

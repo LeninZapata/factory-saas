@@ -209,7 +209,7 @@ class modal {
 
         if (!formElement) {
           logger.error('com:modal', 'No se encontró ningún formulario en el modal');
-          if (window.toast) {
+          if (window.ogFramework?.components?.toast) {
             toast.error(__('com.modal.form_not_found'));
           }
           return modalId;
@@ -223,7 +223,7 @@ class modal {
 
       } catch (error) {
         logger.error('com:modal', 'Error cargando datos', error);
-        if (window.toast) {
+        if (window.ogFramework?.components?.toast) {
           toast.error(__('com.modal.error_loading_data'));
         }
       }
@@ -258,11 +258,14 @@ class modal {
 
   // Procesar cadenas i18n en contenido (usa i18n.processString)
   static processI18nInString(str) {
-    return window.i18n ? i18n.processString(str) : str;
+    return window.ogFramework?.core?.i18n ? i18n.processString(str) : str;
   }
 }
 
-window.modal = modal;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.components.modal = modal;
+}
 
 // Cerrar modal al hacer clic en el overlay
 document.addEventListener('click', (e) => {

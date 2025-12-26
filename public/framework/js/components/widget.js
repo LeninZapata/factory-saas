@@ -144,4 +144,7 @@ class widget {
   }
 }
 
-window.widget = widget;
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.components.widget = widget;
+}

@@ -1,12 +1,11 @@
 <?php
-// routes/api.php - Router híbrido: Rutas manuales + Auto-registro CRUD
+// routes/api.php - Router híbrido: Framework + App
 
 $requestUri = $_SERVER['REQUEST_URI'];
 $path = parse_url($requestUri, PHP_URL_PATH);
 
 // Normalizar path: remover slashes duplicados y prefijos
 $path = preg_replace('#/+#', '/', $path);
-// Soportar múltiples niveles de carpetas: /blacksystem/blacksystem/api/auth -> /api/auth
 if (preg_match('#(/api/.*)$#', $path, $matches)) {
   $path = $matches[1];
 }
@@ -18,19 +17,24 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
   $module = $matches[1];
 }
 
-// PASO 1: Auto-registrar rutas CRUD desde JSON
+// PASO 1: Auto-registrar rutas CRUD desde JSON (buscar en framework primero, luego app)
 if ($module) {
-  $resourceFile = APP_PATH . "/resources/schemas/{$module}.json";  // ✅ CORREGIDO
+  // Buscar schema en framework primero
+  $resourceFile = FRAMEWORK_PATH . "/resources/schemas/{$module}.json";
+  
+  // Si no existe en framework, buscar en app
+  if (!file_exists($resourceFile)) {
+    $resourceFile = APP_PATH . "/resources/schemas/{$module}.json";
+  }
 
   if (file_exists($resourceFile)) {
-
     $config = json_decode(file_get_contents($resourceFile), true);
 
     // Verificar si existe controller personalizado
-    $controllerClass = ucfirst($module) . 'Controller';  // ✅ CORREGIDO: PascalCase
+    $controllerClass = ucfirst($module) . 'Controller';
     $ctrl = class_exists($controllerClass)
-    ? new $controllerClass()
-    : new controller($module);
+      ? new $controllerClass()
+      : new ogController($module);
 
     $globalMw = $config['middleware'] ?? [];
 
@@ -46,7 +50,6 @@ if ($module) {
     foreach ($crudRoutes as $key => $routeData) {
       list($method, $routePath, $action) = $routeData;
 
-      // Obtener configuración de la ruta desde JSON
       $routeConfig = $config['routes'][$key] ?? [];
 
       // Si la ruta no está habilitada en JSON, saltarla
@@ -66,8 +69,14 @@ if ($module) {
   }
 }
 
-// PASO 2: Cargar rutas manuales (custom routes)
-$manualRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
-if ($module && file_exists($manualRoutes)) {
-  require_once $manualRoutes;
+// PASO 2: Cargar rutas manuales del FRAMEWORK primero
+$frameworkRoutes = FRAMEWORK_PATH . '/routes/apis/' . $module . '.php';
+if ($module && file_exists($frameworkRoutes)) {
+  require_once $frameworkRoutes;
+}
+
+// PASO 3: Cargar rutas manuales de APP (pueden sobrescribir o extender)
+$appRoutes = ROUTES_PATH . '/apis/' . $module . '.php';
+if ($module && file_exists($appRoutes)) {
+  require_once $appRoutes;
 }

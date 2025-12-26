@@ -259,7 +259,7 @@ class routeDiscovery {
     // 1. Buscar middleware directo (array o string)
     $patternDirect = '/' . $escapedPath . '[^;]+->middleware\((\[.*?\]|[\'\"][^\'\"]+[\'\"])/s';
     if (stripos($path, 'user') !== false) {
-      log::debug('extractMiddleware: [USER] debug antes de patrón directo', [
+      ogLog::debug('extractMiddleware: [USER] debug antes de patrón directo', [
         'content' => $content,
         'escapedPath' => $escapedPath,
         'path' => $path,
@@ -268,7 +268,7 @@ class routeDiscovery {
     }
     $matched = preg_match($patternDirect, $content, $match);
     if (stripos($path, 'user') !== false) {
-      log::debug('extractMiddleware: [USER] resultado preg_match', [
+      ogLog::debug('extractMiddleware: [USER] resultado preg_match', [
         'matched' => $matched,
         'match' => $match ?? null,
         'path' => $path
@@ -277,7 +277,7 @@ class routeDiscovery {
     if ($matched) {
       $mwRaw = $match[1];
       if (stripos($path, 'user') !== false) {
-        log::debug('extractMiddleware: [USER] valor extraído', [
+        ogLog::debug('extractMiddleware: [USER] valor extraído', [
           'mwRaw' => $mwRaw,
           'path' => $path
         ], ['module' => 'routeDiscovery']);
@@ -286,7 +286,7 @@ class routeDiscovery {
       if (preg_match('/^\[.*\]$/s', $mwRaw)) {
         preg_match_all('/[\'\"]([^\'\"]+)[\'\"]/',$mwRaw, $allMatches);
         if (stripos($path, 'user') !== false) {
-          log::debug('extractMiddleware: [USER] array extraído', [
+          ogLog::debug('extractMiddleware: [USER] array extraído', [
             'allMatches' => $allMatches[1],
             'path' => $path
           ], ['module' => 'routeDiscovery']);
@@ -296,7 +296,7 @@ class routeDiscovery {
       // Si es string: 'auth' o "auth"
       $mw = trim($mwRaw, "'\" ");
       if (stripos($path, 'user') !== false) {
-        log::debug('extractMiddleware: [USER] string extraído', [
+        ogLog::debug('extractMiddleware: [USER] string extraído', [
           'mw' => $mw,
           'path' => $path
         ], ['module' => 'routeDiscovery']);
@@ -308,12 +308,12 @@ class routeDiscovery {
     $patternVar = '/' . $escapedPath . '[^;]+->middleware\((\$[a-zA-Z0-9_]+)\)/s';
     if (preg_match($patternVar, $content, $matchVar)) {
       $varName = $matchVar[1];
-      log::debug('extractMiddleware: patrón variable', ['pattern' => $patternVar, 'match' => $matchVar, 'varName' => $varName, 'path' => $path], ['module' => 'routeDiscovery']);
+      ogLog::debug('extractMiddleware: patrón variable', ['pattern' => $patternVar, 'match' => $matchVar, 'varName' => $varName, 'path' => $path], ['module' => 'routeDiscovery']);
       // Buscar definición de la variable (ej: $middleware = ...;)
       $varPattern = '/'.preg_quote($varName, '/').'\s*=\s*([^;]+);/';
       if (preg_match($varPattern, $content, $varMatch)) {
         $value = trim($varMatch[1]);
-        log::debug('extractMiddleware: valor de variable', ['varPattern' => $varPattern, 'varMatch' => $varMatch, 'value' => $value], ['module' => 'routeDiscovery']);
+        ogLog::debug('extractMiddleware: valor de variable', ['varPattern' => $varPattern, 'varMatch' => $varMatch, 'value' => $value], ['module' => 'routeDiscovery']);
         // Si es array: ['auth'] o ["auth"]
         if (preg_match('/\[(.*?)\]/', $value, $arrMatch)) {
           $arr = explode(',', $arrMatch[1]);
@@ -326,10 +326,10 @@ class routeDiscovery {
           return [$strMatch[1]];
         }
       } else {
-        log::debug('extractMiddleware: variable no encontrada', ['varPattern' => $varPattern, 'varName' => $varName], ['module' => 'routeDiscovery']);
+        ogLog::debug('extractMiddleware: variable no encontrada', ['varPattern' => $varPattern, 'varName' => $varName], ['module' => 'routeDiscovery']);
       }
     }
-    log::debug('extractMiddleware: sin middleware', ['path' => $path], ['module' => 'routeDiscovery']);
+    ogLog::debug('extractMiddleware: sin middleware', ['path' => $path], ['module' => 'routeDiscovery']);
     return [];
   }
 

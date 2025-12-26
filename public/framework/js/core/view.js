@@ -5,7 +5,27 @@ class view {
   static lastSessionCheck = 0;
   static SESSION_CHECK_INTERVAL = 30000;
 
+  static getModules() {
+    return {
+      logger: window.ogFramework?.core?.logger || window.logger,
+      hook: window.ogFramework?.core?.hook || window.hook,
+      form: window.ogFramework?.core?.form || window.form,
+      cache: window.ogFramework?.core?.cache || window.cache,
+      loader: window.ogFramework?.core?.loader || window.loader,
+      i18n: window.ogFramework?.core?.i18n || window.i18n,
+      conditions: window.ogFramework?.core?.conditions || window.conditions,
+      events: window.ogFramework?.core?.events || window.events
+    };
+  }
+
+  static getConfig() {
+    return window.ogFramework?.activeConfig || config || {};
+  }
+
   static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
+    const { logger, cache } = this.getModules();
+    const config = this.getConfig();
+    
     // Manejar notación extension|path (ej: botws|sections/botws-listado)
     if (viewName.includes('|')) {
       const [targetExtension, targetPath] = viewName.split('|');
@@ -15,9 +35,9 @@ class view {
 
     const navCacheKey = `nav_${extensionContext || 'core'}_${viewName}`;
 
-    if (!container && window.appConfig?.cache?.viewNavigation) {
+    if (!container && config.cache?.viewNavigation) {
       if (this.viewNavigationCache.has(navCacheKey)) {
-        logger.info('core:view', `✅ Cache viewNavigation: usando HTML cacheado para "${viewName}"`);
+        logger?.info('core:view', `✅ Cache viewNavigation: usando HTML cacheado para "${viewName}"`);
         const cachedData = this.viewNavigationCache.get(navCacheKey);
         const content = document.getElementById('content');
         if (content) {
@@ -35,7 +55,7 @@ class view {
             try {
               afterRender(cachedData.viewId, content);
             } catch (error) {
-              logger.error('core:view', 'Error en afterRender:', error);
+              this.getModules().logger?.error('core:view', 'Error en afterRender:', error);
             }
           }
           return;
@@ -46,16 +66,16 @@ class view {
     let basePath;
     let cacheKey;
 
-    const frameworkPath = window.appConfig?.frameworkPath || 'framework';
+    const frameworkPath = config?.frameworkPath || 'framework';
 
     if (extensionContext) {
       basePath = `extensions/${extensionContext}/views`;
-      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
+      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}_v${config.version || window.VERSION}`;
     }
     else if (viewName.startsWith('core:')) {
       viewName = viewName.replace('core:', '');
       basePath = `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || window.VERSION}`;
     }
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
@@ -65,29 +85,29 @@ class view {
         basePath = `extensions/${firstPart}/views`;
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
-        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
+        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}_v${config.version || window.VERSION}`;
         extensionContext = firstPart;
       } else {
         basePath = `${frameworkPath}/js/views`;
-        cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
+        cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || window.VERSION}`;
       }
     }
     else {
       basePath = `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${window.VERSION}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || window.VERSION}`;
     }
 
     try {
       // Solo leer del caché si está habilitado
-      let viewData = window.appConfig?.cache?.views ? cache.get(cacheKey) : null;
+      let viewData = config?.cache?.views ? cache.get(cacheKey) : null;
 
       if (viewData) {
-        logger.info('core:view', `✅ Cache views: usando caché para "${viewName}"`);
+        this.getModules().logger?.info('core:view', `✅ Cache views: usando caché para "${viewName}"`);
       }
 
       if (!viewData) {
-        const cacheBuster = `?t=${window.VERSION}`;
-        const url = `${window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
+        const cacheBuster = `?t=${config.version || window.VERSION}`;
+        const url = `${config.baseUrl || window.BASE_URL}${basePath}/${viewName}.json${cacheBuster}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -103,11 +123,11 @@ class view {
 
         viewData = await response.json();
 
-        if (window.appConfig?.cache?.views) {
+        if (config?.cache?.views) {
           cache.set(cacheKey, viewData);
-          logger.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
+          this.getModules().logger?.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
         } else {
-          logger.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
+          this.getModules().logger?.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
         }
       }
 
@@ -131,11 +151,11 @@ class view {
         try {
           afterRender(combinedData.id, content);
         } catch (error) {
-          logger.error('core:view', 'Error en afterRender:', error);
+          this.getModules().logger?.error('core:view', 'Error en afterRender:', error);
         }
       }
 
-      if (!container && window.appConfig?.cache?.viewNavigation) {
+      if (!container && config?.cache?.viewNavigation) {
         const content = document.getElementById('content');
         if (content) {
           this.viewNavigationCache.set(navCacheKey, {
@@ -144,14 +164,14 @@ class view {
             layout: combinedData.layout,
             viewData: combinedData
           });
-          logger.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
+          this.getModules().logger?.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
         }
       } else if (!container) {
-        logger.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
+        this.getModules().logger?.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
       }
 
     } catch (error) {
-      logger.error('core:view', `Error cargando vista ${viewName}:`, error);
+      this.getModules().logger?.error('core:view', `Error cargando vista ${viewName}:`, error);
       this.renderError(viewName, container);
     }
   }
@@ -160,14 +180,14 @@ class view {
     if (window.auth?.user?.role === 'admin') return tabs;
 
     if (!window.auth?.userPermissions?.extensions) {
-      logger.warn('core:view', 'Usuario sin permisos - ocultando tabs');
+      this.getModules().logger?.warn('core:view', 'Usuario sin permisos - ocultando tabs');
       return [];
     }
 
     const extensionPerms = window.auth.userPermissions.extensions[extensionName];
 
     if (!extensionPerms || extensionPerms.enabled === false) {
-      logger.warn('core:view', `Extension ${extensionName} sin permisos`);
+      this.getModules().logger?.warn('core:view', `Extension ${extensionName} sin permisos`);
       return [];
     }
 
@@ -182,12 +202,12 @@ class view {
     }
 
     if (!menuPerms || typeof menuPerms !== 'object') {
-      logger.warn('core:view', `Sin permisos para menú ${menuId}`);
+      this.getModules().logger?.warn('core:view', `Sin permisos para menú ${menuId}`);
       return [];
     }
 
     if (menuPerms.enabled === false) {
-      logger.warn('core:view', `Menú ${menuId} deshabilitado`);
+      this.getModules().logger?.warn('core:view', `Menú ${menuId} deshabilitado`);
       return [];
     }
 
@@ -196,22 +216,22 @@ class view {
     }
 
     if (!menuPerms.tabs || (Array.isArray(menuPerms.tabs) && menuPerms.tabs.length === 0)) {
-      logger.warn('core:view', `Sin permisos de tabs para ${menuId}`);
+      this.getModules().logger?.warn('core:view', `Sin permisos de tabs para ${menuId}`);
       return [];
     }
 
     if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
       const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
-      logger.info('core:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
+      this.getModules().logger?.info('core:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
 
       if (filteredTabs.length === 0) {
-        logger.warn('core:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
+        this.getModules().logger?.warn('core:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
       }
 
       return filteredTabs;
     }
 
-    logger.warn('core:view', `Configuración de tabs no válida para ${menuId}`);
+    this.getModules().logger?.warn('core:view', `Configuración de tabs no válida para ${menuId}`);
     return [];
   }
 
@@ -246,6 +266,8 @@ class view {
   }
 
   static async loadViewResources(viewData) {
+    const { loader } = this.getModules();
+    
     if (viewData.scripts || viewData.styles) {
       try {
         // Normalizar rutas agregando 'extensions/' si no lo tienen
@@ -264,7 +286,7 @@ class view {
 
         await loader.loadResources(normalizedScripts, normalizedStyles);
       } catch (error) {
-        logger.error('core:view', 'Error cargando recursos:', error);
+        this.getModules().logger?.error('core:view', 'Error cargando recursos:', error);
       }
     }
   }
@@ -273,7 +295,7 @@ class view {
     const extensions = Object.keys(window.hook?.extensions || {});
     for (const extensionName of extensions) {
       try {
-        const url = `${window.BASE_URL}extensions/${extensionName}/views/${viewName}.json?t=${window.VERSION}`;
+        const url = `${config.baseUrl || window.BASE_URL}extensions/${extensionName}/views/${viewName}.json?t=${config.version || window.VERSION}`;
         const response = await fetch(url);
         if (response.ok) {
           const viewData = await response.json();
@@ -374,7 +396,7 @@ class view {
           try {
             window[componentName].init();
           } catch (error) {
-            logger.error('core:view', `Error ejecutando ${componentName}.init():`, error);
+            this.getModules().logger?.error('core:view', `Error ejecutando ${componentName}.init():`, error);
           }
         }
       }
@@ -432,6 +454,8 @@ class view {
 
   // Procesar cadenas i18n en contenido HTML
   static processI18nInString(str) {
+    const { i18n } = this.getModules();
+    
     if (!str || typeof str !== 'string') return str;
     
     // Reemplazar {i18n:key} o {i18n:key|param1:value1|param2:value2}
@@ -448,7 +472,7 @@ class view {
         }
       }
       
-      return window.i18n ? i18n.t(key, params) : key;
+      return i18n ? i18n.t(key, params) : key;
     });
   }
 
@@ -469,6 +493,8 @@ class view {
   }
 
   static async loadDynamicComponents(container) {
+    const { form } = this.getModules();
+    
     // Obtener el contexto de extensión del contenedor padre
     const viewContainer = container.closest('[data-extension-context]');
     const extensionContext = viewContainer?.getAttribute('data-extension-context') || null;
@@ -478,7 +504,7 @@ class view {
     dynamicForms.forEach(async el => {
       const formJson = el.getAttribute('data-form-json');
       
-      if (formJson && window.form) {
+      if (formJson && form) {
         // Si hay contexto de extensión y el formJson no incluye '|', agregarlo
         const formPath = (extensionContext && !formJson.includes('|')) 
           ? `${extensionContext}|forms/${formJson}` 
@@ -505,9 +531,11 @@ class view {
   }
 
   static initFormValidation() {
+    const { form } = this.getModules();
     const formElements = document.querySelectorAll('form[data-validation]');
+    
     formElements.forEach(formEl => {
-      if (window.form && typeof form.validate === 'function') {
+      if (form && typeof form.validate === 'function') {
         const formId = formEl.id;
         if (formId) {
           form.initValidation?.(formId);
@@ -539,7 +567,9 @@ class view {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   static processHooksForHTML(viewData) {
-    if (!viewData.id || !window.hook) return null;
+    const { hook } = this.getModules();
+    
+    if (!viewData.id || !hook) return null;
 
     const allHooks = hook.execute(`hook_${viewData.id}`, []);
     if (allHooks.length === 0) return null;
@@ -593,11 +623,11 @@ class view {
         if (window[componentName]?.render) {
           await window[componentName].render(config, hookElement);
         } else {
-          logger.warn('core:view', `Componente ${componentName} no encontrado`);
+          this.getModules().logger?.warn('core:view', `Componente ${componentName} no encontrado`);
           hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
         }
       } catch (error) {
-        logger.error('core:view', `Error renderizando hook component ${componentName}:`, error);
+        this.getModules().logger?.error('core:view', `Error renderizando hook component ${componentName}:`, error);
         hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
       }
     }
@@ -674,4 +704,11 @@ class view {
   }
 }
 
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.core.view = view;
+}
+
+// Mantener en window para compatibilidad (temporal)
+// TODO: Eliminar cuando toda la app use ogFramework.core.view
 window.view = view;

@@ -1,7 +1,18 @@
 class loader {
   static loaded = new Set();
 
+  static getConfig() {
+    return window.ogFramework?.activeConfig || window.appConfig || {};
+  }
+
+  static getModules() {
+    return {
+      logger: window.ogFramework?.core?.logger || window.logger
+    };
+  }
+
   static async loadScript(url, options = {}) {
+    const { logger } = this.getModules();
     const normalizedUrl = this.normalizeUrl(url);
 
     if (this.loaded.has(normalizedUrl)) {
@@ -13,14 +24,14 @@ class loader {
       script.src = normalizedUrl;
       script.onload = () => {
         this.loaded.add(normalizedUrl);
-        logger.success('core:loader', `✅ Script cargado: ${normalizedUrl}`);
+        logger?.success('core:loader', `✅ Script cargado: ${normalizedUrl}`);
         resolve(true);
       };
       script.onerror = () => {
         if (options.optional) {
           resolve(false);
         } else {
-          logger.error('core:loader', `❌ Error cargando script: ${normalizedUrl}`);
+          logger?.error('core:loader', `❌ Error cargando script: ${normalizedUrl}`);
           reject(new Error(`Failed to load: ${normalizedUrl}`));
         }
       };
@@ -29,6 +40,7 @@ class loader {
   }
 
   static async loadStyle(url, options = {}) {
+    const { logger } = this.getModules();
     const normalizedUrl = this.normalizeUrl(url);
 
     if (this.loaded.has(normalizedUrl)) {
@@ -41,14 +53,14 @@ class loader {
       link.href = normalizedUrl;
       link.onload = () => {
         this.loaded.add(normalizedUrl);
-        logger.success('core:loader', `✅ Style cargado: ${normalizedUrl}`);
+        logger?.success('core:loader', `✅ Style cargado: ${normalizedUrl}`);
         resolve(true);
       };
       link.onerror = () => {
         if (options.optional) {
           resolve(false);
         } else {
-          logger.error('core:loader', `❌ Error cargando style: ${normalizedUrl}`);
+          logger?.error('core:loader', `❌ Error cargando style: ${normalizedUrl}`);
           reject(new Error(`Failed to load: ${normalizedUrl}`));
         }
       };
@@ -57,19 +69,21 @@ class loader {
   }
 
   static async loadResources(scripts = [], styles = []) {
+    const { logger } = this.getModules();
+    
     if (!Array.isArray(scripts)) {
-      logger.error('core:loader', '❌ scripts no es un array:', scripts);
+      logger?.error('core:loader', '❌ scripts no es un array:', scripts);
       scripts = [];
     }
 
     if (!Array.isArray(styles)) {
-      logger.error('core:loader', '❌ styles no es un array:', styles);
+      logger?.error('core:loader', '❌ styles no es un array:', styles);
       styles = [];
     }
 
     const validScripts = scripts.filter(url => {
       if (!url || typeof url !== 'string') {
-        logger.warn('core:loader', '⚠️ Script inválido encontrado:', url);
+        logger?.warn('core:loader', '⚠️ Script inválido encontrado:', url);
         return false;
       }
       return true;
@@ -77,7 +91,7 @@ class loader {
 
     const validStyles = styles.filter(url => {
       if (!url || typeof url !== 'string') {
-        logger.warn('core:loader', '⚠️ Style inválido encontrado:', url);
+        logger?.warn('core:loader', '⚠️ Style inválido encontrado:', url);
         return false;
       }
       return true;
@@ -99,36 +113,39 @@ class loader {
       return url;
     }
 
-    if (url.startsWith(window.BASE_URL)) {
+    const config = this.getConfig();
+    const BASE_URL = config.baseUrl || window.BASE_URL || '/';
+
+    if (url.startsWith(BASE_URL)) {
       return url;
     }
 
     if (url.startsWith('/')) {
-      const baseWithoutSlash = window.BASE_URL.slice(0, -1);
+      const baseWithoutSlash = BASE_URL.slice(0, -1);
       if (url.startsWith(baseWithoutSlash)) {
         return url;
       }
-      return window.BASE_URL + url.substring(1);
+      return BASE_URL + url.substring(1);
     }
 
-    return window.BASE_URL + url;
+    return BASE_URL + url;
   }
 
   static async loadJson(url, options = {}) {
+    const { logger } = this.getModules();
+    
     try {
       const normalizedUrl = this.normalizeUrl(url);
 
       const response = await fetch(normalizedUrl);
 
-      // Si es opcional, cualquier error se trata como "no disponible"
       if (!response.ok) {
         if (options.optional) {
           return null;
         }
 
-        // Si no es opcional, es un error real
         const errorMsg = `HTTP ${response.status}: ${response.statusText}`;
-        logger.error('core:loader', `❌ Error cargando JSON: ${normalizedUrl} - ${errorMsg}`);
+        logger?.error('core:loader', `❌ Error cargando JSON: ${normalizedUrl} - ${errorMsg}`);
         throw new Error(errorMsg);
       }
 
@@ -137,16 +154,21 @@ class loader {
       return data;
 
     } catch (error) {
-      // Si es opcional, capturar CUALQUIER error y retornar null
       if (options.optional) {
         return null;
       }
 
-      // Si no es opcional, propagar el error
-      logger.error('core:loader', `❌ Error cargando JSON: ${url}`, error);
+      logger?.error('core:loader', `❌ Error cargando JSON: ${url}`, error);
       throw error;
     }
   }
 }
 
+// Registrar en ogFramework (preferido)
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.core.loader = loader;
+}
+
+// Mantener en window para compatibilidad (temporal)
+// TODO: Eliminar cuando toda la app use ogFramework.core.loader
 window.loader = loader;
