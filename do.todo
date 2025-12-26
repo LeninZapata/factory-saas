@@ -1,10 +1,15 @@
 Backend (Framework):
+☐ @URGENTE no esta en orden parece los logs, como se generan muchos archivos y como el tiempo de ejecucion
+no es exacto pues los logs se ven desordenados, hay que hacer que se vean en orden de ejecucion.
+Mi propuesta es que cada log tenga un numero de secuencia o algo asi para que se ordenen
+ademas de timestamp, entonces ordenar por timestamp y por secuencia de ejecucion dentro de ese mismo timestamp
+Con esto el endpoint puede traer los logs en orden correcto.
 ☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
 ☐ Hay que separar el framework completamente de APP, hablo por los reouters, controllers, models
 que estan medios mezclado, cuando quiero reeamplzar el framework por otro es un lio porque debo
-hacerlo por archivos y esto quita tiempo, cuando solo deberia ser 1 sola carpeta y ya
+hacerlo por archivos1 y esto quita tiempo, cuando solo deberia ser 1 sola carpeta y ya
 
 Frontend (Framework):
 ✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)

@@ -7,6 +7,7 @@
       "name": "contactos",
       "label": "📞 Lista de Contactos",
       "type": "repeatable",
+      "description": "Agrega todos los contactos de emergencia o referencias personales que necesites registrar",
       "buttonPosition": "top",
       "addText": "➕ Agregar Contacto",
       "removeText": "🗑️ Eliminar",
@@ -40,6 +41,7 @@
       "name": "direcciones",
       "label": "🏠 Direcciones",
       "type": "repeatable",
+      "description": "Registra todas las direcciones donde puedes recibir correspondencia o paquetes",
       "buttonPosition": "bottom",
       "addText": "➕ Agregar Dirección",
       "removeText": "❌ Quitar",
@@ -137,6 +139,7 @@
       "name": "credenciales",
       "label": "🔑 Credenciales API",
       "type": "repeatable",
+      "description": "Configura las credenciales de APIs externas que utilizarás en tu aplicación. Cada credencial debe tener un servicio y su API Key correspondiente.",
       "buttonPosition": "top",
       "addText": "➕ Agregar Credencial",
       "removeText": "🗑️ Eliminar",
@@ -165,6 +168,56 @@
           "label": "API Key",
           "type": "text",
           "placeholder": "sk-..."
+        }
+      ]
+    },
+    {
+      "name": "habilidades",
+      "label": "🎯 Habilidades Profesionales",
+      "type": "repeatable",
+      "description": "Lista tus principales habilidades técnicas y blandas. Incluye el nivel de dominio para cada una (Básico, Intermedio, Avanzado, Experto).",
+      "buttonPosition": "top",
+      "addText": "➕ Agregar Habilidad",
+      "removeText": "🗑️ Eliminar",
+      "fields": [
+        {
+          "name": "nombre_habilidad",
+          "label": "Nombre de la Habilidad",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ej: JavaScript, Liderazgo, Excel"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "nivel",
+              "label": "Nivel de Dominio",
+              "type": "select",
+              "options": [
+                { "value": "basico", "label": "Básico" },
+                { "value": "intermedio", "label": "Intermedio" },
+                { "value": "avanzado", "label": "Avanzado" },
+                { "value": "experto", "label": "Experto" }
+              ]
+            },
+            {
+              "name": "anios_experiencia",
+              "label": "Años de Experiencia",
+              "type": "number",
+              "placeholder": "Ej: 3",
+              "min": 0,
+              "max": 50
+            }
+          ]
+        },
+        {
+          "name": "certificaciones",
+          "label": "Certificaciones (opcional)",
+          "type": "text",
+          "placeholder": "Ej: AWS Certified Developer"
         }
       ]
     }
