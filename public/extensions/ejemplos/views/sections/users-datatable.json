@@ -65,15 +65,15 @@
             "actions": {
               "view": {
                 "name": "👁️ Ver",
-                "onclick": "toast.info('Ver usuario: {name} (ID: {id})')"
+                "onclick": "ogToast.info('Ver usuario: {name} (ID: {id})')"
               },
               "edit": {
                 "name": "✏️ Editar",
-                "onclick": "toast.success('Editar usuario {id}')"
+                "onclick": "ogToast.success('Editar usuario {id}')"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar a {name}?')) toast.warning('Usuario {id} eliminado')"
+                "onclick": "if(confirm('¿Eliminar a {name}?')) ogToast.warning('Usuario {id} eliminado')"
               }
             }
           }
@@ -137,11 +137,11 @@
             "actions": {
               "edit": {
                 "name": "✏️ Editar",
-                "onclick": "toast.info('Editar usuario API: {user} (ID: {id})')"
+                "onclick": "ogToast.info('Editar usuario API: {user} (ID: {id})')"
               },
               "delete": {
                 "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar usuario {user}?')) toast.warning('Eliminar ID: {id}')"
+                "onclick": "if(confirm('¿Eliminar usuario {user}?')) ogToast.warning('Eliminar ID: {id}')"
               }
             }
           }
@@ -215,7 +215,7 @@
             "actions": {
               "details": {
                 "name": "📋 Detalles",
-                "onclick": "toast.info('Producto: {nombre} - Precio: ${precio}')"
+                "onclick": "ogToast.info('Producto: {nombre} - Precio: ${precio}')"
               }
             }
           }
@@ -313,11 +313,11 @@
             "actions": {
               "edit": {
                 "name": "i18n:ejemplos.action.edit",
-                "onclick": "toast.info('Edit: {id}')"
+                "onclick": "ogToast.info('Edit: {id}')"
               },
               "delete": {
                 "name": "i18n:ejemplos.action.delete",
-                "onclick": "toast.warning('Delete: {id}')"
+                "onclick": "ogToast.warning('Delete: {id}')"
               }
             }
           }

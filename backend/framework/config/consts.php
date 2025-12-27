@@ -30,7 +30,7 @@ define('ROUTES_PATH', APP_PATH . '/routes');
 define('STORAGE_PATH', APP_PATH . '/storage');
 define('LOG_PATH', STORAGE_PATH . '/logs');
 define('SHARED_PATH', BASE_PATH . '/shared');
-define('SERVICES_PATH', FRAMEWORK_PATH . '/services');
+define('SERVICES_PATH', OG_FRAMEWORK_PATH . '/services');
 define('API_URL', '/api');
 
 // Configuración de la API

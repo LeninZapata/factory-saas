@@ -3,7 +3,7 @@
 // desde CROM curl http://yourdomain.com/api/sessions/cleanup para eliminar session caducadas
 $router->group('/api/sessions', function($router) {
 
-  $middleware = IS_DEV ? [] : ['auth'];
+  $middleware = OG_IS_DEV ? [] : ['auth'];
   $logMeta = ['module' => 'session', 'layer' => 'app'];
 
   // Listar todas las sesiones activas y expiradas

@@ -7,7 +7,6 @@ class hook {
 
   static getModules() {
     return {
-      logger: window.ogFramework?.core?.logger || window.logger,
       loader: window.ogFramework?.core?.loader || window.loader,
       i18n: window.ogFramework?.core?.i18n || window.i18n,
       cache: window.ogFramework?.core?.cache || window.cache,
@@ -20,7 +19,7 @@ class hook {
   }
 
   static async loadPluginHooks() {
-    const { logger, api } = this.getModules();
+    const {  api } = this.getModules();
     const config = this.getConfig();
     const startTime = performance.now();
     this.menuItems = [];
@@ -30,7 +29,7 @@ class hook {
       const response = await api.get('extensions/index.json' + cacheBuster);
 
       if (!response?.extensions || !Array.isArray(response.extensions)) {
-        logger?.warn('core:hook', 'extensions/index.json vacío o mal formado');
+        ogLogger?.warn('core:hook', 'extensions/index.json vacío o mal formado');
         return;
       }
 
@@ -106,11 +105,12 @@ class hook {
       this.menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
 
     } catch (error) {
-      this.getModules().logger?.error('core:hook', 'Error cargando extensions:', error);
+      this.getModules().ogLogger?.error('core:hook', 'Error cargando extensions:', error);
     }
   }
 
   static async loadPluginLanguages(extensionName) {
+    const { i18n } = this.getModules();
     if (!window.ogFramework?.core?.i18n) return;
     const currentLang = i18n.getLang();
     const loaded = await this.tryLoadPluginLang(extensionName, currentLang);
@@ -146,7 +146,7 @@ class hook {
       i18n.exntesionTranslations.get(extensionName).set(lang, translations);
       cache.set(`i18n_extension_${extensionName}_${lang}_v${config.version || window.VERSION}`, translations, 60 * 60 * 1000);
 
-      this.getModules().logger?.success('core:hook', `✅ Idioma ${lang} cargado para ${extensionName}`);
+      this.getModules().ogLogger?.success('core:hook', `✅ Idioma ${lang} cargado para ${extensionName}`);
       return true;
     } catch (error) {
       return false;
@@ -193,7 +193,7 @@ class hook {
       const scriptContent = await response.text();
       new Function(scriptContent)();
     } catch (error) {
-      this.getModules().logger?.error('core:hook', `Error cargando autoload ${extensionName}:`, error.message);
+      this.getModules().ogLogger?.error('core:hook', `Error cargando autoload ${extensionName}:`, error.message);
     }
   }
 
@@ -301,7 +301,7 @@ class hook {
     return menuItems;
   }
 
-  // ✅ NUEVO: Obtener TODOS los extensions (sin filtrar por permisos)
+  // Obtener TODOS los extensions (sin filtrar por permisos)
   static getAllExtensionsForPermissions() {
     const extensions = [];
 
@@ -413,10 +413,10 @@ class hook {
             }));
             results = [...results, ...itemsWithOrder];
           } else {
-            this.getModules().logger?.warn('core:hook', `${extensionName}.${finalHookName}() no retornó un array`);
+            this.getModules().ogLogger?.warn('core:hook', `${extensionName}.${finalHookName}() no retornó un array`);
           }
         } catch (error) {
-          this.getModules().logger?.error('core:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
+          this.getModules().ogLogger?.error('core:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
         }
       }
     }
@@ -450,11 +450,11 @@ class hook {
         try {
           await window[componentName].render(hookResult.config, wrapper);
         } catch (error) {
-          this.getModules().logger?.error('core:hook', `Error renderizando componente "${componentName}":`, error);
+          this.getModules().ogLogger?.error('core:hook', `Error renderizando componente "${componentName}":`, error);
           wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">${__('core.hook.error.loading_component', { component: componentName })}</div>`;
         }
       } else {
-        this.getModules().logger?.error('core:hook', `Componente "${componentName}" no encontrado`);
+        this.getModules().ogLogger?.error('core:hook', `Componente "${componentName}" no encontrado`);
         wrapper.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">${__('core.hook.error.component_not_available', { component: componentName })}</div>`;
       }
     }
@@ -464,7 +464,7 @@ class hook {
   static async renderHooks(hookName, containerId, defaultData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
-      this.getModules().logger?.error('core:hook', `Container "${containerId}" no encontrado`);
+      this.getModules().ogLogger?.error('core:hook', `Container "${containerId}" no encontrado`);
       return;
     }
 

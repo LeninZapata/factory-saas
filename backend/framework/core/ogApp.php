@@ -28,7 +28,7 @@ class ogFramework {
     }
 
     // Buscar en framework primero, luego en app
-    $helperFile = FRAMEWORK_PATH . "/helpers/og{$name}.php";
+    $helperFile = OG_FRAMEWORK_PATH . "/helpers/og{$name}.php";
     if (!file_exists($helperFile)) {
       $helperFile = $this->pluginPath . "/helpers/og{$name}.php";
     }
@@ -56,7 +56,7 @@ class ogFramework {
       return $this->loaded[$key];
     }
 
-    $serviceFile = FRAMEWORK_PATH . "/services/og{$name}Service.php";
+    $serviceFile = OG_FRAMEWORK_PATH . "/services/og{$name}Service.php";
     if (!file_exists($serviceFile)) {
       $serviceFile = $this->pluginPath . "/services/og{$name}Service.php";
     }
@@ -84,7 +84,7 @@ class ogFramework {
       return $this->loaded[$key];
     }
 
-    $coreFile = FRAMEWORK_PATH . "/core/og{$name}.php";
+    $coreFile = OG_FRAMEWORK_PATH . "/core/og{$name}.php";
 
     if (!file_exists($coreFile)) {
       throw new Exception("Core class not found: {$name}");
@@ -104,7 +104,7 @@ class ogFramework {
   // Cargar controller bajo demanda (sin instanciar)
   function loadController($name) {
     // Buscar en framework primero, luego en app
-    $controllerFile = FRAMEWORK_PATH . "/controllers/{$name}.php";
+    $controllerFile = OG_FRAMEWORK_PATH . "/controllers/{$name}.php";
     if (!file_exists($controllerFile)) {
       $controllerFile = $this->pluginPath . "/resources/controllers/{$name}.php";
     }
@@ -125,7 +125,7 @@ class ogFramework {
   // Cargar handler bajo demanda (sin instanciar)
   function loadHandler($name) {
     // Buscar en framework primero, luego en app
-    $handlerFile = FRAMEWORK_PATH . "/handlers/{$name}.php";
+    $handlerFile = OG_FRAMEWORK_PATH . "/handlers/{$name}.php";
     if (!file_exists($handlerFile)) {
       $handlerFile = $this->pluginPath . "/resources/handlers/{$name}.php";
     }
@@ -146,7 +146,7 @@ class ogFramework {
   // Cargar middleware bajo demanda (sin instanciar)
   function loadMiddleware($name) {
     // Buscar en framework primero, luego en app
-    $mwFile = FRAMEWORK_PATH . "/middleware/{$name}.php";
+    $mwFile = OG_FRAMEWORK_PATH . "/middleware/{$name}.php";
     if (!file_exists($mwFile)) {
       $mwFile = $this->pluginPath . "/middleware/{$name}.php";
     }
@@ -167,7 +167,7 @@ class ogFramework {
   // Acceso rápido a DB
   function db() {
     if (!class_exists('ogDb')) {
-      require_once FRAMEWORK_PATH . '/helpers/ogDb.php';
+      require_once OG_FRAMEWORK_PATH . '/helpers/ogDb.php';
     }
     return ogDb::table(...func_get_args());
   }
@@ -225,7 +225,7 @@ class ogFramework {
   // Obtener instancia de ogApplication para ejecutar el framework
   function getApplication() {
     if (!class_exists('ogApplication')) {
-      require_once FRAMEWORK_PATH . '/core/ogApplication.php';
+      require_once OG_FRAMEWORK_PATH . '/core/ogApplication.php';
     }
     return new ogApplication();
   }

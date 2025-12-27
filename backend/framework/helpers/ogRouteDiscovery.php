@@ -1,6 +1,6 @@
 <?php
 // routeDiscovery - Descubrir todos los endpoints del sistema
-class routeDiscovery {
+class ogRouteDiscovery {
 
   // Obtener todos los endpoints del sistema
   static function getAllRoutes() {
@@ -24,59 +24,61 @@ class routeDiscovery {
   }
 
   // Obtener rutas desde archivos JSON
+  // Obtener rutas desde archivos JSON
   private static function getResourceRoutes() {
     $routes = [];
-    $resourcesDir = APP_PATH . '/resources/schemas';
+    
+    // Buscar en framework primero, luego en app
+    $resourceDirs = [
+      OG_FRAMEWORK_PATH . '/resources/schemas',
+      APP_PATH . '/resources/schemas'
+    ];
 
-    if (!is_dir($resourcesDir)) return $routes;
+    foreach ($resourceDirs as $resourcesDir) {
+      if (!is_dir($resourcesDir)) continue;
 
-    foreach (scandir($resourcesDir) as $file) {
-      if ($file === '.' || $file === '..' || !str_ends_with($file, '.json')) continue;
+      foreach (scandir($resourcesDir) as $file) {
+        if ($file === '.' || $file === '..' || !str_ends_with($file, '.json')) continue;
 
-      $resourceName = str_replace('.json', '', $file);
-      $configFile = $resourcesDir . '/' . $file;
-      $config = json_decode(file_get_contents($configFile), true);
+        $resourceName = str_replace('.json', '', $file);
+        $configFile = $resourcesDir . '/' . $file;
+        $config = json_decode(file_get_contents($configFile), true);
 
-      if (!$config) continue;
+        if (!$config) continue;
 
-        // Middleware eliminado
-        // $globalMw = $config['middleware'] ?? [];
-
-      // Rutas CRUD estándar
-      $crudRoutes = [
-        'list'   => ['GET',    "/api/{$resourceName}",      'List all'],
-        'show'   => ['GET',    "/api/{$resourceName}/{id}", 'Get by ID'],
-        'create' => ['POST',   "/api/{$resourceName}",      'Create new'],
-        'update' => ['PUT',    "/api/{$resourceName}/{id}", 'Update by ID'],
-        'delete' => ['DELETE', "/api/{$resourceName}/{id}", 'Delete by ID']
-      ];
-
-      foreach ($crudRoutes as $key => $routeData) {
-        list($method, $path, $description) = $routeData;
-
-        $routeConfig = $config['routes'][$key] ?? [];
-
-        // Si está deshabilitada, saltarla
-        if (isset($routeConfig['enabled']) && $routeConfig['enabled'] === false) {
-          continue;
-        }
-
-        // Middleware eliminado, no se usa $globalMw ni $routeMw
-
-        $routes[] = [
-          'method' => $method,
-          'path' => $path,
-          'description' => $description,
-          'middleware' => self::resolveMiddlewareForResourceRoute($resourceName, $key),
-          'source' => "resource:{$resourceName}",
-          'type' => 'crud'
+        // Rutas CRUD estándar
+        $crudRoutes = [
+          'list'   => ['GET',    "/api/{$resourceName}",      'List all'],
+          'show'   => ['GET',    "/api/{$resourceName}/{id}", 'Get by ID'],
+          'create' => ['POST',   "/api/{$resourceName}",      'Create new'],
+          'update' => ['PUT',    "/api/{$resourceName}/{id}", 'Update by ID'],
+          'delete' => ['DELETE', "/api/{$resourceName}/{id}", 'Delete by ID']
         ];
+
+        foreach ($crudRoutes as $key => $routeData) {
+          list($method, $path, $description) = $routeData;
+
+          $routeConfig = $config['routes'][$key] ?? [];
+
+          // Si está deshabilitada, saltarla
+          if (isset($routeConfig['enabled']) && $routeConfig['enabled'] === false) {
+            continue;
+          }
+
+          $routes[] = [
+            'method' => $method,
+            'path' => $path,
+            'description' => $description,
+            'middleware' => self::resolveMiddlewareForResourceRoute($resourceName, $key),
+            'source' => "resource:{$resourceName}",
+            'type' => 'crud'
+          ];
+        }
       }
     }
 
     return $routes;
   }
-
   // Obtener rutas manuales de routes/apis/
   private static function getManualRoutes() {
     $routes = [];
@@ -96,11 +98,35 @@ class routeDiscovery {
       $parsedRoutes = self::parsePhpRoutes($content, $module);
 
       $routes = array_merge($routes, $parsedRoutes);
+      return $routes;
+    }
+
+    // Buscar en framework primero, luego en app
+    $apisDirs = [
+      OG_FRAMEWORK_PATH . '/routes/apis',
+      ROUTES_PATH . '/apis'
+    ];
+
+    foreach ($apisDirs as $apisDir) {
+      if (!is_dir($apisDir)) continue;
+
+      foreach (scandir($apisDir) as $file) {
+        if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) continue;
+
+        $module = str_replace('.php', '', $file);
+        $filePath = $apisDir . '/' . $file;
+
+        // Parsear el archivo PHP para extraer rutas
+        $content = file_get_contents($filePath);
+        $GLOBALS['__routeDiscovery_content'] = $content;
+        $parsedRoutes = self::parsePhpRoutes($content, $module);
+
+        $routes = array_merge($routes, $parsedRoutes);
+      }
     }
 
     return $routes;
   }
-
   // Parsear archivo PHP para extraer rutas
   private static function parsePhpRoutes($content, $module) {
     $routes = [];
@@ -585,7 +611,7 @@ class routeDiscovery {
     $varPattern = '/\$' . preg_quote($varName, '/') . '\s*=\s*([^;]+);/';
     if (preg_match($varPattern, $content, $match)) {
       $value = trim($match[1]);
-      // Si es expresión ternaria: IS_DEV ? [] : ['auth','other']
+      // Si es expresión ternaria: OG_IS_DEV ? [] : ['auth','other']
       if (preg_match('/\?\s*\[.*?\]\s*:\s*(\[.*?\])/', $value, $ternaryMatch)) {
         $arrayPart = $ternaryMatch[1];
         return self::parsePhpArrayString($arrayPart);

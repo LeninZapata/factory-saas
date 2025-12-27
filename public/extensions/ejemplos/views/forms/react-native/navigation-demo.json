@@ -71,11 +71,11 @@
       "fields": [
         {
           "type": "html",
-          "content": "<button type='button' class='btn btn-secondary' onclick=\"if(navigation.goBack()){toast.success('Volviendo atrás')}else{toast.warning('No hay historial')}\">◀️ Atrás</button>"
+          "content": "<button type='button' class='btn btn-secondary' onclick=\"if(navigation.goBack()){ogToast.success('Volviendo atrás')}else{ogToast.warning('No hay historial')}\">◀️ Atrás</button>"
         },
         {
           "type": "html",
-          "content": "<button type='button' class='btn btn-secondary' onclick=\"toast.info('Historial: ' + navigation.history.length + ' páginas')\">📋 Ver Historial</button>"
+          "content": "<button type='button' class='btn btn-secondary' onclick=\"ogToast.info('Historial: ' + navigation.history.length + ' páginas')\">📋 Ver Historial</button>"
         },
         {
           "type": "html",
@@ -93,11 +93,11 @@
       "fields": [
         {
           "type": "html",
-          "content": "<button type='button' class='btn btn-warning' onclick=\"navigation.replace('dashboard/dashboard'); toast.info('Dashboard (sin historial)')\">🔄 Replace Dashboard</button>"
+          "content": "<button type='button' class='btn btn-warning' onclick=\"navigation.replace('dashboard/dashboard'); ogToast.info('Dashboard (sin historial)')\">🔄 Replace Dashboard</button>"
         },
         {
           "type": "html",
-          "content": "<button type='button' class='btn btn-danger' onclick=\"navigation.reset('dashboard/dashboard'); toast.success('Navegación reseteada')\">🔥 Reset (Logout)</button>"
+          "content": "<button type='button' class='btn btn-danger' onclick=\"navigation.reset('dashboard/dashboard'); ogToast.success('Navegación reseteada')\">🔥 Reset (Logout)</button>"
         }
       ]
     },
@@ -139,7 +139,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='background:#f8fafc;padding:1rem;border-radius:8px;border:2px solid #e2e8f0;'><strong>Paso 2:</strong> Vuelve atrás<br><button type='button' class='btn btn-sm btn-secondary' style='margin-top:0.5rem;' onclick=\"if(navigation.goBack()){toast.success('Volviendo')}else{toast.warning('No hay historial')}\">◀️ Atrás</button> <button type='button' class='btn btn-sm btn-secondary' style='margin-top:0.5rem;' onclick=\"console.log(navigation.getHistory())\">Ver Historial</button></div>"
+          "content": "<div style='background:#f8fafc;padding:1rem;border-radius:8px;border:2px solid #e2e8f0;'><strong>Paso 2:</strong> Vuelve atrás<br><button type='button' class='btn btn-sm btn-secondary' style='margin-top:0.5rem;' onclick=\"if(navigation.goBack()){ogToast.success('Volviendo')}else{ogToast.warning('No hay historial')}\">◀️ Atrás</button> <button type='button' class='btn btn-sm btn-secondary' style='margin-top:0.5rem;' onclick=\"console.log(navigation.getHistory())\">Ver Historial</button></div>"
         }
       ]
     }

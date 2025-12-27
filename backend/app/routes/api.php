@@ -20,7 +20,7 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
 // PASO 1: Auto-registrar rutas CRUD desde JSON (buscar en framework primero, luego app)
 if ($module) {
   // Buscar schema en framework primero
-  $resourceFile = FRAMEWORK_PATH . "/resources/schemas/{$module}.json";
+  $resourceFile = OG_FRAMEWORK_PATH . "/resources/schemas/{$module}.json";
   
   // Si no existe en framework, buscar en app
   if (!file_exists($resourceFile)) {
@@ -70,7 +70,7 @@ if ($module) {
 }
 
 // PASO 2: Cargar rutas manuales del FRAMEWORK primero
-$frameworkRoutes = FRAMEWORK_PATH . '/routes/apis/' . $module . '.php';
+$frameworkRoutes = OG_FRAMEWORK_PATH . '/routes/apis/' . $module . '.php';
 if ($module && file_exists($frameworkRoutes)) {
   require_once $frameworkRoutes;
 }

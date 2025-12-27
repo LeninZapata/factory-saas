@@ -28,10 +28,10 @@
   var FRAMEWORK_URL = BASE_URL + 'framework/';
   var PUBLIC_URL = window.location.origin + pathname;
 
-  var IS_DEV = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|.*\.local|192\.168\.|10\.)/.test(window.location.hostname) || 
+  var OG_IS_DEV = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|.*\.local|192\.168\.|10\.)/.test(window.location.hostname) || 
               ['3000', '5173', '8080'].includes(window.location.port);
 
-  var VERSION = IS_DEV ? `dev-${Date.now()}` : version;
+  var VERSION = OG_IS_DEV ? `dev-${Date.now()}` : version;
   console.log(`App Version: ${VERSION}`);
 
   // ==========================================
@@ -46,8 +46,8 @@
     
     // Versión y entorno
     version: VERSION,
-    environment: IS_DEV ? 'development' : 'production',
-    isDevelopment: IS_DEV,
+    environment: OG_IS_DEV ? 'development' : 'production',
+    isDevelopment: OG_IS_DEV,
     
     // Paths y URLs
     baseUrl: BASE_URL,
@@ -91,11 +91,11 @@
 
     // Caché
     cache: {
-      modals: !IS_DEV,
-      forms: !IS_DEV,
-      views: !IS_DEV,
-      viewNavigation: !IS_DEV,
-      validation: !IS_DEV,
+      modals: !OG_IS_DEV,
+      forms: !OG_IS_DEV,
+      views: !OG_IS_DEV,
+      viewNavigation: !OG_IS_DEV,
+      validation: !OG_IS_DEV,
       ttl: 60 * 60 * 1000
     }
   };

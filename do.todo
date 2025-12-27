@@ -1,21 +1,18 @@
 Backend (Framework):
-✔ @URGENTE no esta en orden parece los logs, como se generan muchos archivos y como el tiempo de ejecucion @done(26-12-2025 10:37)
-no es exacto pues los logs se ven desordenados, hay que hacer que se vean en orden de ejecucion.
-Mi propuesta es que cada log tenga un numero de secuencia o algo asi para que se ordenen
-ademas de timestamp, entonces ordenar por timestamp y por secuencia de ejecucion dentro de ese mismo timestamp
-Con esto el endpoint puede traer los logs en orden correcto.
 ☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-☐ Hay que separar el framework completamente de APP, hablo por los reouters, controllers, models
-que estan medios mezclado, cuando quiero reeamplzar el framework por otro es un lio porque debo
-hacerlo por archivos1 y esto quita tiempo, cuando solo deberia ser 1 sola carpeta y ya
+☐ Constantes por ejemplo IS_DEV es muy generico debe ser OG_IS_DEV o algo asi para evitar conflictos con otros plugins
+APP_PATH | FRAMEWORK_PATH | DB_TABLES otros ejemplos de constantes que pueden chocar con otros plugins
 
 Frontend (Framework):
 ✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)
+☐ Hay constante muy generica que tambien estan en los componentes por ejempl BASE_URL
+los componentes deben usar la configuracion del framework y no tener sus propias constantes
 ☐ en WP aun no se como pasar los datos de JS hacia el global de framework ya que esto puede variar
 pero el core por ejemplo cache.js esta que tom valores de window.config pero eso es global y yo necesio
 versatilidad ya usare varios plugins.
+☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ En el visor de los logs agregar un copy para copiar el contenido del log rapidamente
 ☐ Separdor, si existe una scuencia de log entonces tambien si empieza de 1 es porque debe haber un separador
 esto creo que se lo puede hacer visualmente si sequence == 1 entonces poner una linea o algo asi para separar

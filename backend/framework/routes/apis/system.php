@@ -21,7 +21,7 @@ $router->group('/api/system', function($router) {
 
     ogResponse::success([
       'php_version' => PHP_VERSION,
-      'environment' => IS_DEV ? 'development' : 'production',
+      'environment' => OG_IS_DEV ? 'development' : 'production',
       'storage_path' => STORAGE_PATH,
       'sessions_active' => $activeCount
     ]);
@@ -37,8 +37,8 @@ $router->group('/api/system', function($router) {
 
   // Listar todos los endpoints del sistema
   $router->get('/routes', function() {
-    $routes = routeDiscovery::getAllRoutes();
-    $stats = routeDiscovery::getStats($routes);
+    $routes = ogApp()->helper('routeDiscovery')->getAllRoutes();
+    $stats = ogApp()->helper('routeDiscovery')->getStats($routes);
 
     // Filtrar por método
     $method = ogRequest::query('method');
@@ -57,7 +57,7 @@ $router->group('/api/system', function($router) {
     // Agrupar por recurso
     $grouped = ogRequest::query('grouped');
     if ($grouped === 'true') {
-      $routes = routeDiscovery::groupByResource($routes);
+      $routes = ogApp()->helper('routeDiscovery')->groupByResource($routes);
     }
 
     ogResponse::success([

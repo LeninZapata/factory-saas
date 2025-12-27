@@ -81,7 +81,7 @@
     {
       "type": "button",
       "label": "✅ Test",
-      "action": "call:toast.success:Estilos funcionando"
+      "action": "call:ogToast.success:Estilos funcionando"
     }
   ]
 }

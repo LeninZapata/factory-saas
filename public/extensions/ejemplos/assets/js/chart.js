@@ -5,7 +5,7 @@ class ejemploChart {
 
   static init() {
     if (this.initialized) {
-      logger.debug('p:chart', 'Gráficos ya inicializados, recreando...');
+      ogLogger.debug('p:chart', 'Gráficos ya inicializados, recreando...');
     }
 
     // Verificar que los containers existan
@@ -13,7 +13,7 @@ class ejemploChart {
     const chart2 = document.getElementById('chart2');
 
     if (!chart1 && !chart2) {
-      logger.warn('p:chart', 'Containers de gráficos no encontrados');
+      ogLogger.warn('p:chart', 'Containers de gráficos no encontrados');
       return;
     }
 
@@ -46,7 +46,7 @@ class ejemploChart {
   static createChart(containerId, config) {
     const container = document.getElementById(containerId);
     if (!container) {
-      logger.warn('p:chart', `Container ${containerId} no encontrado`);
+      ogLogger.warn('p:chart', `Container ${containerId} no encontrado`);
       return;
     }
 

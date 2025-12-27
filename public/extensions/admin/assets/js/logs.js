@@ -9,14 +9,14 @@ class logs {
   static async init() {
 
     if (this.initialized) {
-      logger.info('ext:admin:logs','⚠️ logs ya estaba inicializado, reiniciando...');
+      ogLogger.info('ext:admin:logs','⚠️ logs ya estaba inicializado, reiniciando...');
     }
 
     // Verificar que el container exista
     const container = document.getElementById('logs-container');
 
     if (!container) {
-      logger:warn('⚠️ Container logs-container no encontrado');
+      ogLogger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
 
@@ -28,11 +28,11 @@ class logs {
 
   // Filtrar por fecha
   static async filterByDate(daysAgo) {
-    logger.info('ext:admin:logs',`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
+    ogLogger.info('ext:admin:logs',`📅 Filtrando logs: ${daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo} días`}`);
 
     const container = document.getElementById('logs-container');
     if (!container) {
-      logger:warn('⚠️ Container logs-container no encontrado');
+      ogLogger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
 
@@ -78,7 +78,7 @@ class logs {
       let data = cache.get(cacheKey);
 
       if (data) {
-        logger.info('ext:admin:logs',`✅ Logs obtenidos desde caché (${filterKey})`);
+        ogLogger.info('ext:admin:logs',`✅ Logs obtenidos desde caché (${filterKey})`);
         this.logsData = data;
       } else {
         let endpoint = '/api/logs';
@@ -124,7 +124,7 @@ class logs {
       this.renderLogs(container);
 
     } catch (error) {
-      logger.error('❌ Error cargando logs:', error);
+      ogLogger.error('❌ Error cargando logs:', error);
       container.innerHTML = `
         <div style="background: #7f1d1d; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ef4444;">
           <h4 style="margin: 0 0 0.5rem; color: #fca5a5;">❌ Error al cargar logs</h4>
@@ -232,13 +232,13 @@ class logs {
         try {
           const res = await api.get('/api/cleanup/storage/logs');
           if (res.success) {
-            toast.success('Logs eliminados correctamente');
+            ogToast.success('Logs eliminados correctamente');
             await this.forceReload();
           } else {
-            toast.error(res.error || 'Error al eliminar logs');
+            ogToast.error(res.error || 'Error al eliminar logs');
           }
         } catch (err) {
-          toast.error('Error al eliminar logs');
+          ogToast.error('Error al eliminar logs');
         }
         deleteBtn.disabled = false;
         deleteBtn.innerText = '🗑️ Eliminar Log';
@@ -346,11 +346,11 @@ class logs {
 
   // Forzar recarga sin caché
   static async forceReload() {
-    logger.info('ext:admin:logs','🔄 Forzando recarga sin caché...');
+    ogLogger.info('ext:admin:logs','🔄 Forzando recarga sin caché...');
 
     const container = document.getElementById('logs-container');
     if (!container) {
-      logger:warn('⚠️ Container logs-container no encontrado');
+      ogLogger:warn('⚠️ Container logs-container no encontrado');
       return;
     }
 
@@ -361,7 +361,7 @@ class logs {
     cache.delete(PROYECT_SLUG + '_logs_7days');
     cache.delete(PROYECT_SLUG + '_logs_15days');
     cache.delete(PROYECT_SLUG + '_logs_30days');
-    logger.info('ext:admin:logs','✅ Caché eliminado');
+    ogLogger.info('ext:admin:logs','✅ Caché eliminado');
 
     // Determinar cuál filtro está activo
     const activeBtn = document.querySelector('[data-filter][style*="rgb(59, 130, 246)"]');

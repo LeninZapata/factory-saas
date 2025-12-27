@@ -1,4 +1,4 @@
-class logger {
+class ogLogger {
   static isDev = window.appConfig?.isDevelopment || false;
 
   static styles = {
@@ -31,5 +31,6 @@ class logger {
 
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.logger = logger;
+  window.ogFramework.core.ogLogger = ogLogger;
+  window.ogLogger = ogLogger;
 }

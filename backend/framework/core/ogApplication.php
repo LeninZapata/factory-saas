@@ -5,15 +5,15 @@ class ogApplication {
 
   public function __construct() {
     // Cargar ogRouter
-    require_once FRAMEWORK_PATH . '/core/ogRouter.php';
+    require_once OG_FRAMEWORK_PATH . '/core/ogRouter.php';
     $this->router = new ogRouter();
 
     // Hace $router accesible en el scope de routes/api.php
     $router = $this->router;
 
     // Cargar rutas del framework primero
-    if (file_exists(FRAMEWORK_PATH . '/routes/api.php')) {
-      require_once FRAMEWORK_PATH . '/routes/api.php';
+    if (file_exists(OG_FRAMEWORK_PATH . '/routes/api.php')) {
+      require_once OG_FRAMEWORK_PATH . '/routes/api.php';
     }
 
     // Cargar rutas de la aplicación
@@ -25,7 +25,7 @@ class ogApplication {
   public function run() {
     // Capturar output previo
     $captured = ob_get_clean();
-    if (!empty($captured) && IS_DEV) {
+    if (!empty($captured) && OG_IS_DEV) {
       ogLog::warning('Output capturado antes del routing', ['output' => substr($captured, 0, 200)], ['module' => 'application', 'layer' => 'framework']);
     }
 
@@ -46,7 +46,7 @@ class ogApplication {
     if (ob_get_length()) ob_get_clean();
     http_response_code(500);
 
-    if (IS_DEV) {
+    if (OG_IS_DEV) {
       echo json_encode([
         'success' => false,
         'error' => $e->getMessage(),
@@ -87,7 +87,7 @@ class ogApplication {
         'success' => false,
         'error' => __('api.invalid_json_response'),
         'json_error' => json_last_error_msg(),
-        'debug' => IS_DEV ? substr($trimmed, 0, 500) : null
+        'debug' => OG_IS_DEV ? substr($trimmed, 0, 500) : null
       ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     } else {
       echo $trimmed;
@@ -97,7 +97,7 @@ class ogApplication {
   private function handlePhpWarning($output) {
     http_response_code(500);
 
-    if (IS_DEV) {
+    if (OG_IS_DEV) {
       echo json_encode([
         'success' => false,
         'error' => __('api.php_warning_detected'),

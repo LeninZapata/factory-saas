@@ -529,14 +529,14 @@
       "type": "button",
       "label": "💾 Guardar Todo",
       "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); toast.success('✅ Configuración guardada');"
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Configuración guardada');"
     },
     {
       "name": "reset",
       "type": "button",
       "label": "🔄 Restablecer",
       "style": "secondary",
-      "onclick": "event.preventDefault(); this.closest('form').reset(); toast.info('Formulario restablecido');"
+      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario restablecido');"
     }
   ]
 }

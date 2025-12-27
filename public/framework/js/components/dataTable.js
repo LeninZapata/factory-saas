@@ -2,6 +2,27 @@ class datatable {
   static tables = new Map();
   static counter = 0;
 
+  static getModules() {
+    return {
+      hook: window.ogFramework?.core?.hook,
+      view: window.ogFramework?.core?.view,
+      auth: window.ogFramework?.core?.auth,
+      api: window.ogFramework?.core?.api,
+      dataLoader: window.ogFramework?.core?.dataLoader,
+      i18n: window.ogFramework?.core?.i18n,
+    };
+  }
+
+  static getComponent(){
+    return {
+    
+    }
+  }
+
+  static getConfig() {
+    return window.ogFramework?.activeConfig || window.appConfig || {};
+  }
+
   static async render(config, container) {
     // IMPORTANTE: view.js pasa (elemento, config) pero tabs.js pasa (config, elemento)
     // Detectar cuál es cuál y corregir automáticamente
@@ -14,7 +35,7 @@ class datatable {
       actualConfig = container || {};
     }
 
-    // ✅ NUEVO: Normalizar alias (list, FlatList → datatable)
+    // Normalizar alias (list, FlatList → datatable)
     if (actualConfig && actualConfig.type) {
       const typeAliases = {
         'list': 'datatable',
@@ -46,7 +67,7 @@ class datatable {
     }
 
     if (!actualContainer || typeof actualContainer.appendChild !== 'function') {
-      logger.error('com:datatable', 'Container inválido - debe ser un elemento DOM', actualContainer);
+      ogLogger.error('com:datatable', 'Container inválido - debe ser un elemento DOM', actualContainer);
       return;
     }
 
@@ -63,8 +84,10 @@ class datatable {
   }
 
   static detectPluginName(container) {
+    const { hook, view } = this.getModules();
+    
     if (!container || typeof container.closest !== 'function') {
-      logger.warn('com:datatable', 'Container inválido en detectPluginName');
+      ogLogger.warn('com:datatable', 'Container inválido en detectPluginName');
       return null;
     }
 
@@ -75,12 +98,12 @@ class datatable {
     if (activeView?.dataset.view) {
       const viewPath = activeView.dataset.view;
       const parts = viewPath.split('/');
-      if (parts.length > 1 && window.hook?.isExtensionEnabled(parts[0])) {
+      if (parts.length > 1 && hook?.isExtensionEnabled(parts[0])) {
         return parts[0];
       }
     }
 
-    if (window.view?.currentPlugin) return window.view.currentPlugin;
+    if (view?.currentPlugin) return view.currentPlugin;
 
     const pluginClass = Array.from(container.classList || [])
       .find(cls => cls.startsWith('extension-'));
@@ -93,7 +116,7 @@ class datatable {
     const source = config.source;
 
     if (!source) {
-      logger.warn('com:datatable', 'No source specified');
+      ogLogger.warn('com:datatable', 'No source specified');
       return [];
     }
 
@@ -125,20 +148,24 @@ class datatable {
 
       } else if (isAbsolute) {
         // Ruta absoluta → usar tal cual
-        finalUrl = `${window.BASE_URL}${source.substring(1)}`;
+        const config = this.getConfig();
+        finalUrl = `${config.baseUrl || window.BASE_URL}${source.substring(1)}`;
 
       } else if (hasExtensions) {
         // Ya tiene "extensions/" → usar tal cual
-        finalUrl = `${window.BASE_URL}${source}`;
+        const config = this.getConfig();
+        finalUrl = `${config.baseUrl || window.BASE_URL}${source}`;
 
       } else {
         // Ruta relativa → agregar "extensions/" automáticamente
-        finalUrl = `${window.BASE_URL}extensions/${source}`;
+        const config = this.getConfig();
+        finalUrl = `${config.baseUrl || window.BASE_URL}extensions/${source}`;
       }
 
       // Para archivos JSON (no APIs)
       if (finalUrl) {
-        const cacheBuster = `?v=${window.VERSION}`;
+        const config = this.getConfig();
+        const cacheBuster = `?v=${config.version || window.VERSION}`;
         const response = await fetch(finalUrl + cacheBuster);
 
         if (!response.ok) {
@@ -155,12 +182,12 @@ class datatable {
       return data;
 
     } catch (error) {
-      logger.error('com:datatable', `Error cargando datos desde ${source}:`, error);
+      ogLogger.error('com:datatable', `Error cargando datos desde ${source}:`, error);
 
       // Intentar obtener del caché si falla la petición
       const cachedData = cache.get(cacheKey);
       if (cachedData) {
-        logger.warn('com:datatable', `Usando datos cacheados debido a error: ${cacheKey}`);
+        ogLogger.warn('com:datatable', `Usando datos cacheados debido a error: ${cacheKey}`);
         return cachedData;
       }
 
@@ -185,7 +212,7 @@ class datatable {
         return response.data;
       }
       // Si response.data existe pero NO es array, retornar vacío
-      logger.warn('com:datatable', 'response.data exists but is not an array', response.data);
+      ogLogger.warn('com:datatable', 'response.data exists but is not an array', response.data);
       return [];
     }
 
@@ -194,7 +221,7 @@ class datatable {
       if (Array.isArray(response.results)) {
         return response.results;
       }
-      logger.warn('com:datatable', 'response.results exists but is not an array', response.results);
+      ogLogger.warn('com:datatable', 'response.results exists but is not an array', response.results);
       return [];
     }
 
@@ -203,13 +230,13 @@ class datatable {
       if (Array.isArray(response.items)) {
         return response.items;
       }
-      logger.warn('com:datatable', 'response.items exists but is not an array', response.items);
+      ogLogger.warn('com:datatable', 'response.items exists but is not an array', response.items);
       return [];
     }
 
     // ✅ NUEVO: Si es un objeto con solo 'success' (sin data), retornar vacío
     if (typeof response === 'object' && response.success !== undefined && !response.data) {
-      logger.warn('com:datatable', 'Response has success but no data property - returning empty array', response);
+      ogLogger.warn('com:datatable', 'Response has success but no data property - returning empty array', response);
       return [];
     }
 
@@ -226,7 +253,7 @@ class datatable {
     }
 
     // Cualquier otra cosa, retornar array vacío
-    logger.warn('com:datatable', 'Unexpected response format - returning empty array', response);
+    ogLogger.warn('com:datatable', 'Unexpected response format - returning empty array', response);
     return [];
   }
 
@@ -320,6 +347,7 @@ class datatable {
   }
 
   static translateLabel(label) {
+    const { i18n } = this.getModules();
     if (!label || typeof label !== 'string') return '';
 
     if (!label.startsWith('i18n:')) return label;
@@ -332,7 +360,7 @@ class datatable {
       if (translation !== key) return translation;
     }
 
-    logger.warn('com:datatable', `Traducción no encontrada: ${key}`);
+    ogLogger.warn('com:datatable', `Traducción no encontrada: ${key}`);
     return this.formatHeader(key.split('.').pop());
   }
 
@@ -467,7 +495,7 @@ class datatable {
   static replaceVars(str, row) {
     return str.replace(/\{(\w+)\}/g, (match, key) => {
       if (row[key] === undefined) {
-        logger.warn('com:datatable', `Key "${key}" no encontrada en row`);
+        ogLogger.warn('com:datatable', `Key "${key}" no encontrada en row`);
         return match;
       }
 
@@ -527,7 +555,7 @@ class datatable {
   static async refresh(tableId) {
     const table = this.tables.get(tableId);
     if (!table) {
-      logger.warn('com:datatable', `Tabla ${tableId} no encontrada`);
+      ogLogger.warn('com:datatable', `Tabla ${tableId} no encontrada`);
       return;
     }
 
@@ -545,7 +573,7 @@ class datatable {
   static async refreshFirst() {
     const firstTable = document.querySelector('[data-datatable]');
     if (!firstTable) {
-      logger.warn('com:datatable', 'No se encontró ninguna tabla');
+      ogLogger.warn('com:datatable', 'No se encontró ninguna tabla');
       return;
     }
 
@@ -554,11 +582,13 @@ class datatable {
   }
 
   static hasRoleAccess(action) {
+    const { auth } = this.getModules();
+    
     // Si la acción no tiene restricción de role, permitir acceso
     if (!action.role) return true;
 
     // Obtener role del usuario actual
-    const userRole = window.auth?.user?.role;
+    const userRole = auth?.user?.role;
 
     // Si no hay usuario autenticado, denegar acceso
     if (!userRole) return false;

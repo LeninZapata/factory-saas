@@ -16,13 +16,10 @@ class i18n {
   static getModules() {
     return {
       cache: window.ogFramework?.core?.cache || window.cache,
-      logger: window.ogFramework?.core?.logger || window.logger
     };
   }
 
   static async init(config = {}) {
-    const { logger } = this.getModules();
-    
     this.config = {
       refreshOnChange: true,
       ...config
@@ -38,11 +35,10 @@ class i18n {
     await this.loadCoreLang(this.currentLang);
 
     const source = storedLang ? 'localStorage' : (config.defaultLang ? 'config' : 'default');
-    logger?.info('core:i18n', `Idioma '${this.currentLang}' desde ${source}`);
+    ogLogger?.info('core:i18n', `Idioma '${this.currentLang}' desde ${source}`);
   }
 
   static cleanupOldVersionCache() {
-    const { logger } = this.getModules();
     const globalConfig = this.getConfig();
     const currentVersion = globalConfig.version || window.VERSION;
     const slug = globalConfig.slug || 'default';
@@ -60,12 +56,12 @@ class i18n {
     });
 
     if (cleaned > 0) {
-      logger?.info('core:i18n', `Limpiados ${cleaned} archivos de idioma de versiones antiguas`);
+      ogLogger?.info('core:i18n', `Limpiados ${cleaned} archivos de idioma de versiones antiguas`);
     }
   }
 
   static async loadCoreLang(lang) {
-    const { cache, logger } = this.getModules();
+    const { cache } = this.getModules();
     const globalConfig = this.getConfig();
     const version = globalConfig.version || window.VERSION || Date.now();
 
@@ -79,31 +75,31 @@ class i18n {
         const cacheBuster = `?v=${version}`;
         const url = `${baseUrl}${frameworkPath}/js/lang/${lang}.json${cacheBuster}`;
 
-        logger?.info('core:i18n', `📥 Cargando idioma desde: ${url}`);
+        ogLogger?.info('core:i18n', `📥 Cargando idioma desde: ${url}`);
 
         const response = await fetch(url);
 
         if (response.ok) {
           data = await response.json();
 
-          logger?.success('core:i18n', `✅ Idioma ${lang} cargado exitosamente`);
-          logger?.info('core:i18n', `📊 Total de keys cargadas: ${Object.keys(data).length}`);
+          ogLogger?.success('core:i18n', `✅ Idioma ${lang} cargado exitosamente`);
+          ogLogger?.info('core:i18n', `📊 Total de keys cargadas: ${Object.keys(data).length}`);
 
           cache?.set(cacheKey, data, 60 * 60 * 1000);
         } else {
-          logger?.warn('core:i18n', `Idioma ${lang} no encontrado`);
+          ogLogger?.warn('core:i18n', `Idioma ${lang} no encontrado`);
           return;
         }
       } catch (error) {
-        logger?.error('core:i18n', 'Error cargando idioma core:', error);
+        ogLogger?.error('core:i18n', 'Error cargando idioma core:', error);
         return;
       }
     } else {
-      logger?.info('core:i18n', `♻️ Idioma ${lang} cargado desde caché`);
+      ogLogger?.info('core:i18n', `♻️ Idioma ${lang} cargado desde caché`);
     }
 
     this.translations.set(lang, data);
-    logger?.success('core:i18n', `✓ Idioma ${lang} disponible para uso`);
+    ogLogger?.success('core:i18n', `✓ Idioma ${lang} disponible para uso`);
   }
 
   static async loadExtensionLang(extensionName, lang) {
@@ -139,7 +135,6 @@ class i18n {
   }
 
   static t(key, params = {}) {
-    const { logger } = this.getModules();
     const lang = this.currentLang;
     const [prefix, ...rest] = key.split('.');
 
@@ -159,7 +154,7 @@ class i18n {
       translation = coreData?.[key];
 
       if (!translation && !key.startsWith('i18n:')) {
-        logger?.warn('core:i18n', `❌ Key no encontrada: "${key}" (idioma: ${lang})`);
+        ogLogger?.warn('core:i18n', `❌ Key no encontrada: "${key}" (idioma: ${lang})`);
       }
     }
 
@@ -169,7 +164,7 @@ class i18n {
     }
 
     if (!translation) {
-      logger?.warn('core:i18n', `Key no encontrada: ${key}`);
+      ogLogger?.warn('core:i18n', `Key no encontrada: ${key}`);
       return key;
     }
 
@@ -179,10 +174,9 @@ class i18n {
   }
 
   static async setLang(lang) {
-    const { logger } = this.getModules();
     
     if (!this.availableLangs.includes(lang)) {
-      logger?.warn('core:i18n', `Idioma ${lang} no disponible`);
+      ogLogger?.warn('core:i18n', `Idioma ${lang} no disponible`);
       return;
     }
 
@@ -196,10 +190,10 @@ class i18n {
     this.saveLangToStorage(lang);
 
     if (this.config.refreshOnChange) {
-      logger?.info('core:i18n', '🔄 Recargando página...');
+      ogLogger?.info('core:i18n', '🔄 Recargando página...');
       window.location.reload();
     } else {
-      logger?.info('core:i18n', '⚡ Actualizando dinámicamente...');
+      ogLogger?.info('core:i18n', '⚡ Actualizando dinámicamente...');
       this.updateDynamicContent();
 
       document.dispatchEvent(new CustomEvent('lang-changed', {
@@ -209,7 +203,6 @@ class i18n {
   }
 
   static updateDynamicContent() {
-    const { logger } = this.getModules();
     
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
@@ -240,11 +233,10 @@ class i18n {
     });
 
     const elementsCount = document.querySelectorAll('[data-i18n]').length;
-    logger?.success('core:i18n', `${elementsCount} elementos actualizados`);
+    ogLogger?.success('core:i18n', `${elementsCount} elementos actualizados`);
   }
 
   static parseDataParams(element) {
-    const { logger } = this.getModules();
     const params = {};
     const paramsAttr = element.getAttribute('data-i18n-params');
 
@@ -252,7 +244,7 @@ class i18n {
       try {
         Object.assign(params, JSON.parse(paramsAttr));
       } catch (e) {
-        logger?.warn('core:i18n', 'Error parseando data-i18n-params');
+        ogLogger?.warn('core:i18n', 'Error parseando data-i18n-params');
       }
     }
 

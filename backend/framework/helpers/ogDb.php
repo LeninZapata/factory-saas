@@ -393,9 +393,12 @@ class ogDbBuilder {
   // Ejecutar
   protected function exec($sql, $binds = []) {
     try {
-      if (IS_DEV) {
+      if (OG_IS_DEV) {
         $interpolated = $sql;
         foreach ($binds as $val) {
+          if (is_array($val) || is_object($val)) {
+            $val = json_encode($val, JSON_UNESCAPED_UNICODE);
+          }
           $r = is_null($val) ? 'NULL' : (is_numeric($val) ? $val : "'" . addslashes($val) . "'");
           $interpolated = preg_replace('/\?/', $r, $interpolated, 1);
         }

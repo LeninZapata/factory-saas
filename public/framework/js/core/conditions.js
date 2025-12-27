@@ -7,8 +7,8 @@ class conditions {
 
   static getModules() {
     return {
-      form: window.ogFramework?.core?.form || window.form,
-      logger: window.ogFramework?.core?.logger || window.logger
+      form: window.ogFramework?.core?.form,
+      events: window.ogFramework?.core?.events
     };
   }
 
@@ -161,6 +161,7 @@ class conditions {
   }
 
   static setupWatchers(formId) {
+    const { events } = this.getModules();
     const formEl = document.getElementById(formId);
     if (!formEl) return;
 
@@ -175,7 +176,7 @@ class conditions {
     });
 
     // Registrar evento de cambio delegado
-    const watcherId = window.events.on(
+    const watcherId = events.on(
       `#${formId} input, #${formId} select, #${formId} textarea`,
       'change',
       (e) => {
@@ -193,7 +194,7 @@ class conditions {
     );
 
     // También escuchar input para fields de texto (cambios en tiempo real)
-    const inputWatcherId = window.events.on(
+    const inputWatcherId = events.on(
       `#${formId} input[type="text"], #${formId} input[type="email"], #${formId} input[type="number"], #${formId} textarea`,
       'input',
       (e) => {
@@ -367,11 +368,10 @@ class conditions {
   }
 
   static applyVisibilitySimple(formEl, fieldPath, shouldShow) {
-    const { logger } = this.getModules();
     const fieldElement = this.findFieldElement(formEl, fieldPath);
 
     if (!fieldElement) {
-      logger?.warn('core:conditions', `No se encontró el elemento para "${fieldPath}"`);
+      ogLogger?.warn('core:conditions', `No se encontró el elemento para "${fieldPath}"`);
       return;
     }
 
@@ -410,7 +410,6 @@ class conditions {
   }
 
   static checkCondition(context, condition) {
-    const { logger } = this.getModules();
     const { field, operator, value } = condition;
 
     // Buscar el campo en el contexto
@@ -432,7 +431,7 @@ class conditions {
     }
 
     if (!fieldEl) {
-      logger?.warn('core:conditions', `[checkCondition] ❌ Campo "${field}" no encontrado en contexto`);
+      ogLogger?.warn('core:conditions', `[checkCondition] ❌ Campo "${field}" no encontrado en contexto`);
       return false;
     }
 
@@ -498,8 +497,7 @@ class conditions {
         return !String(fieldValue).toLowerCase().includes(String(targetValue).toLowerCase());
 
       default:
-        const { logger } = this.getModules();
-        logger?.warn('core:conditions', `Operador desconocido "${operator}"`);
+        ogLogger?.warn('core:conditions', `Operador desconocido "${operator}"`);
         return false;
     }
   }
@@ -639,17 +637,16 @@ class conditions {
   }
 
   static debug(formId) {
-    const { logger } = this.getModules();
     
-    logger?.info('core:conditions', `Debug: ${formId}`);
+    ogLogger?.info('core:conditions', `Debug: ${formId}`);
 
     const rules = this.rules.get(formId);
     if (!rules) {
-      logger?.info('core:conditions', 'No hay reglas registradas para este formulario');
+      ogLogger?.info('core:conditions', 'No hay reglas registradas para este formulario');
       return;
     }
 
-    logger?.info('core:conditions', `Reglas activas: ${rules.size}`);
+    ogLogger?.info('core:conditions', `Reglas activas: ${rules.size}`);
   }
 }
 

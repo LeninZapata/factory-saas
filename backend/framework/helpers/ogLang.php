@@ -55,7 +55,7 @@ class ogLang {
     }
 
     // 1. Cargar desde framework
-    $frameworkFile = FRAMEWORK_PATH . "/lang/" . self::$locale . "/{$module}.php";
+    $frameworkFile = OG_FRAMEWORK_PATH . "/lang/" . self::$locale . "/{$module}.php";
     if (file_exists($frameworkFile)) {
       $merged = require $frameworkFile;
     }
@@ -75,7 +75,7 @@ class ogLang {
     $services = [];
 
     // Cargar services del framework
-    $frameworkServicesPath = FRAMEWORK_PATH . "/lang/" . self::$locale . "/services/";
+    $frameworkServicesPath = OG_FRAMEWORK_PATH . "/lang/" . self::$locale . "/services/";
     if (is_dir($frameworkServicesPath)) {
       foreach (scandir($frameworkServicesPath) as $file) {
         if ($file === '.' || $file === '..') continue;

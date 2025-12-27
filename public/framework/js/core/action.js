@@ -20,7 +20,7 @@ class action {
 
   static handle(action, params = {}, context = {}) {
     if (!action || typeof action !== 'string') {
-      logger.warn('core:action', 'Acción inválida:', action);
+      ogLogger.warn('core:action', 'Acción inválida:', action);
       return;
     }
 
@@ -37,7 +37,7 @@ class action {
     const value = valueParts.join(':');
 
     if (!type || !value) {
-      logger.warn('core:action', 'Formato inválido:', action);
+      ogLogger.warn('core:action', 'Formato inválido:', action);
       return;
     }
 
@@ -62,7 +62,7 @@ class action {
         return this.handleCustom(value, params, context);
 
       default:
-        logger.warn('core:action', `Tipo de acción desconocido: ${type}`);
+        ogLogger.warn('core:action', `Tipo de acción desconocido: ${type}`);
     }
   }
 
@@ -87,7 +87,7 @@ class action {
     if (modal && typeof modal.open === 'function') {
       modal.open(viewPath, params);
     } else {
-      logger.error('core:action', 'Modal no disponible');
+      ogLogger.error('core:action', 'Modal no disponible');
     }
   }
 
@@ -96,7 +96,7 @@ class action {
     const { api } = this.getModules();
 
     if (!api) {
-      logger.error('core:action', 'API no disponible');
+      ogLogger.error('core:action', 'API no disponible');
       return;
     }
 
@@ -111,10 +111,10 @@ class action {
         case 'DELETE':
           return await api.delete(endpoint);
         default:
-          logger.warn('core:action', `Método HTTP desconocido: ${method}`);
+          ogLogger.warn('core:action', `Método HTTP desconocido: ${method}`);
       }
     } catch (error) {
-      logger.error('core:action', `Error en API ${endpoint}:`, error);
+      ogLogger.error('core:action', `Error en API ${endpoint}:`, error);
       throw error;
     }
   }
@@ -124,7 +124,7 @@ class action {
       return window[functionName](params, context);
     }
 
-    logger.warn('core:action', `Función custom no encontrada: ${functionName}`);
+    ogLogger.warn('core:action', `Función custom no encontrada: ${functionName}`);
   }
 
   static handleSubmit(handler, params, context) {
@@ -147,9 +147,9 @@ class action {
     }
 
     if (!form) {
-      logger.error('core:action', 'No se encontró formulario');
+      ogLogger.error('core:action', 'No se encontró formulario');
       const { toast } = this.getModules();
-      if (toast) toast.error('No se encontró formulario');
+      if (toast) ogToast.error('No se encontró formulario');
       return;
     }
 
@@ -166,9 +166,9 @@ class action {
       }
     }
 
-    logger.error('core:action', `Handler no encontrado: ${handler}`);
+    ogLogger.error('core:action', `Handler no encontrado: ${handler}`);
     const { toast } = this.getModules();
-    if (toast) toast.error(`Handler no encontrado: ${handler}`);
+    if (toast) ogToast.error(`Handler no encontrado: ${handler}`);
   }
 
   static handleMethodCall(methodPath, params, context) {
@@ -184,7 +184,7 @@ class action {
         if (typeof window[funcName] === 'function') {
           return window[funcName](...args);
         } else {
-          logger.error('core:action', `Función global no encontrada: ${funcName}`);
+          ogLogger.error('core:action', `Función global no encontrada: ${funcName}`);
           return;
         }
       }
@@ -193,7 +193,7 @@ class action {
       for (let i = 0; i < methodParts.length - 1; i++) {
         obj = obj[methodParts[i]];
         if (!obj) {
-          logger.error('core:action', `Objeto no encontrado: ${methodParts.slice(0, i + 1).join('.')}`);
+          ogLogger.error('core:action', `Objeto no encontrado: ${methodParts.slice(0, i + 1).join('.')}`);
           return;
         }
       }
@@ -202,14 +202,14 @@ class action {
       const method = obj[methodName];
 
       if (typeof method !== 'function') {
-        logger.error('core:action', `Método no es una función: ${objectMethod}`);
+        ogLogger.error('core:action', `Método no es una función: ${objectMethod}`);
         return;
       }
 
       return method.apply(obj, args);
 
     } catch (error) {
-      logger.error('core:action', `Error ejecutando método: ${methodPath}`, error);
+      ogLogger.error('core:action', `Error ejecutando método: ${methodPath}`, error);
     }
   }
 }

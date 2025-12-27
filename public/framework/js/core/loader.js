@@ -5,14 +5,7 @@ class loader {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
-  static getModules() {
-    return {
-      logger: window.ogFramework?.core?.logger || window.logger
-    };
-  }
-
   static async loadScript(url, options = {}) {
-    const { logger } = this.getModules();
     const normalizedUrl = this.normalizeUrl(url);
 
     if (this.loaded.has(normalizedUrl)) {
@@ -24,14 +17,14 @@ class loader {
       script.src = normalizedUrl;
       script.onload = () => {
         this.loaded.add(normalizedUrl);
-        logger?.success('core:loader', `✅ Script cargado: ${normalizedUrl}`);
+        ogLogger?.success('core:loader', `✅ Script cargado: ${normalizedUrl}`);
         resolve(true);
       };
       script.onerror = () => {
         if (options.optional) {
           resolve(false);
         } else {
-          logger?.error('core:loader', `❌ Error cargando script: ${normalizedUrl}`);
+          ogLogger?.error('core:loader', `❌ Error cargando script: ${normalizedUrl}`);
           reject(new Error(`Failed to load: ${normalizedUrl}`));
         }
       };
@@ -40,7 +33,6 @@ class loader {
   }
 
   static async loadStyle(url, options = {}) {
-    const { logger } = this.getModules();
     const normalizedUrl = this.normalizeUrl(url);
 
     if (this.loaded.has(normalizedUrl)) {
@@ -53,14 +45,14 @@ class loader {
       link.href = normalizedUrl;
       link.onload = () => {
         this.loaded.add(normalizedUrl);
-        logger?.success('core:loader', `✅ Style cargado: ${normalizedUrl}`);
+        ogLogger?.success('core:loader', `✅ Style cargado: ${normalizedUrl}`);
         resolve(true);
       };
       link.onerror = () => {
         if (options.optional) {
           resolve(false);
         } else {
-          logger?.error('core:loader', `❌ Error cargando style: ${normalizedUrl}`);
+          ogLogger?.error('core:loader', `❌ Error cargando style: ${normalizedUrl}`);
           reject(new Error(`Failed to load: ${normalizedUrl}`));
         }
       };
@@ -69,21 +61,19 @@ class loader {
   }
 
   static async loadResources(scripts = [], styles = []) {
-    const { logger } = this.getModules();
-    
     if (!Array.isArray(scripts)) {
-      logger?.error('core:loader', '❌ scripts no es un array:', scripts);
+      ogLogger?.error('core:loader', '❌ scripts no es un array:', scripts);
       scripts = [];
     }
 
     if (!Array.isArray(styles)) {
-      logger?.error('core:loader', '❌ styles no es un array:', styles);
+      ogLogger?.error('core:loader', '❌ styles no es un array:', styles);
       styles = [];
     }
 
     const validScripts = scripts.filter(url => {
       if (!url || typeof url !== 'string') {
-        logger?.warn('core:loader', '⚠️ Script inválido encontrado:', url);
+        ogLogger?.warn('core:loader', '⚠️ Script inválido encontrado:', url);
         return false;
       }
       return true;
@@ -91,7 +81,7 @@ class loader {
 
     const validStyles = styles.filter(url => {
       if (!url || typeof url !== 'string') {
-        logger?.warn('core:loader', '⚠️ Style inválido encontrado:', url);
+        ogLogger?.warn('core:loader', '⚠️ Style inválido encontrado:', url);
         return false;
       }
       return true;
@@ -132,8 +122,6 @@ class loader {
   }
 
   static async loadJson(url, options = {}) {
-    const { logger } = this.getModules();
-    
     try {
       const normalizedUrl = this.normalizeUrl(url);
 
@@ -145,7 +133,7 @@ class loader {
         }
 
         const errorMsg = `HTTP ${response.status}: ${response.statusText}`;
-        logger?.error('core:loader', `❌ Error cargando JSON: ${normalizedUrl} - ${errorMsg}`);
+        ogLogger?.error('core:loader', `❌ Error cargando JSON: ${normalizedUrl} - ${errorMsg}`);
         throw new Error(errorMsg);
       }
 
@@ -158,7 +146,7 @@ class loader {
         return null;
       }
 
-      logger?.error('core:loader', `❌ Error cargando JSON: ${url}`, error);
+      ogLogger?.error('core:loader', `❌ Error cargando JSON: ${url}`, error);
       throw error;
     }
   }

@@ -53,12 +53,12 @@
 
 $router->group('/api/logs', function($router) {
 
-  $middleware = IS_DEV ? [] : ['auth'];
+  $middleware = OG_IS_DEV ? [] : ['auth'];
 
   // Obtener logs del día actual
   $router->get('/today', function() {
     $limit = (int) ogRequest::query('limit', 100);
-    $logs = ogLogReader::today($limit);
+    $logs = ogApp()->helper('logReader')->today($limit);
 
     // Aplicar filtros
     $logs = applyLogFilters($logs);
@@ -73,7 +73,7 @@ $router->group('/api/logs', function($router) {
   // Obtener los últimos logs registrados
   $router->get(['/latest','','/'], function() {
     $limit = (int) ogRequest::query('limit', 50);
-    $logs = ogLogReader::latest($limit);
+    $logs = ogApp()->helper('logReader')->latest($limit);
 
     $logs = applyLogFilters($logs);
 
@@ -85,7 +85,7 @@ $router->group('/api/logs', function($router) {
 
   // Obtener logs de una fecha específica
   $router->get('/{year}/{month}/{day}', function($year, $month, $day) {
-    $files = ogLogReader::find([
+    $files = ogApp()->helper('logReader')->find([
       'year' => $year,
       'month' => str_pad($month, 2, '0', STR_PAD_LEFT),
       'day' => str_pad($day, 2, '0', STR_PAD_LEFT)
@@ -102,7 +102,7 @@ $router->group('/api/logs', function($router) {
 
     $allLogs = [];
     foreach ($files as $file) {
-      $logs = ogLogReader::parse($file);
+      $logs = ogApp()->helper('logReader')->parse($file);
       $allLogs = array_merge($allLogs, $logs);
     }
 
@@ -125,7 +125,7 @@ $router->group('/api/logs', function($router) {
 
   // Obtener logs de un mes completo
   $router->get('/{year}/{month}', function($year, $month) {
-    $files = ogLogReader::find([
+    $files = ogApp()->helper('logReader')->find([
       'year' => $year,
       'month' => str_pad($month, 2, '0', STR_PAD_LEFT)
     ]);
@@ -141,7 +141,7 @@ $router->group('/api/logs', function($router) {
 
     $allLogs = [];
     foreach ($files as $file) {
-      $logs = ogLogReader::parse($file);
+      $logs = ogApp()->helper('logReader')->parse($file);
       $allLogs = array_merge($allLogs, $logs);
     }
 
@@ -175,7 +175,7 @@ $router->group('/api/logs', function($router) {
       $to = date('Y-m-d');
     }
 
-    $allLogs = ogLogReader::range($from, $to, 0);
+    $allLogs = ogApp()->helper('logReader')->range($from, $to, 0);
 
     $allLogs = applyLogFilters($allLogs);
 
@@ -194,7 +194,7 @@ $router->group('/api/logs', function($router) {
 
     $logs = applyLogFilters($logs);
 
-    $stats = ogLogReader::stats($logs);
+    $stats = ogApp()->helper('logReader')->stats($logs);
     $stats['date'] = date('Y-m-d');
 
     ogResponse::success($stats);
@@ -247,5 +247,5 @@ function applyLogFilters($logs) {
     return $logs;
   }
 
-  return ogLogReader::filter($logs, $filters);
+  return ogApp()->helper('logReader')->filter($logs, $filters);
 }

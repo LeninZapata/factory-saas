@@ -5,13 +5,12 @@ class form {
 
   static getModules() {
     return {
-      logger: window.ogFramework?.core?.logger || window.logger,
-      conditions: window.ogFramework?.core?.conditions || window.conditions,
-      i18n: window.ogFramework?.core?.i18n || window.i18n,
-      cache: window.ogFramework?.core?.cache || window.cache,
-      hook: window.ogFramework?.core?.hook || window.hook,
-      validator: window.ogFramework?.core?.validator || window.validator,
-      auth: window.ogFramework?.core?.auth || window.auth
+      conditions: window.ogFramework?.core?.conditions,
+      i18n: window.ogFramework?.core?.i18n,
+      cache: window.ogFramework?.core?.cache,
+      hook: window.ogFramework?.core?.hook,
+      validator: window.ogFramework?.core?.validator,
+      auth: window.ogFramework?.core?.auth
     };
   }
 
@@ -100,7 +99,7 @@ class form {
   }
 
   static async load(formName, container = null, data = null, isCore = null, afterRender = null) {
-    const { cache, hook } = this.getModules();
+    const { cache, hook, conditions } = this.getModules();
     const config = this.getConfig();
     const cacheKey = `form_${formName.replace(/\//g, '_')}`;
     let schema = cache?.get(cacheKey);
@@ -213,9 +212,7 @@ class form {
         // Aplicar valores por defecto ANTES de conditions
         this.applyDefaultValues(instanceId, target);
 
-        if (window.conditions) {
-          this.getModules().conditions?.init(instanceId);
-        }
+        this.getModules().conditions?.init(instanceId);
 
         // Enviar focus al campo que lo requiera
         const focusField = instanceSchema.fields?.find(f => f.focus === true);
@@ -228,7 +225,7 @@ class form {
           try {
             afterRender(instanceId, formEl);
           } catch (error) {
-            this.getModules().logger?.error('core:form', 'Error en afterRender:', error);
+            this.getModules().ogLogger?.error('core:form', 'Error en afterRender:', error);
           }
         }
       }
@@ -463,6 +460,7 @@ class form {
 
   static bindGrouperEvents(grouperId, mode) {
     const container = document.getElementById(grouperId);
+    const {  conditions } = this.getModules();
     if (!container) return;
 
     if (mode === 'linear') {
@@ -485,17 +483,17 @@ class form {
             content.style.display = 'block';
 
             // Re-evaluar condiciones al abrir sección
-            if (window.conditions) {
+            if (conditions) {
               const formId = container.closest('form')?.id;
               if (formId) {
                 setTimeout(() => {
                   this.getModules().conditions?.evaluate(formId);
                 }, 50);
               } else {
-                this.getModules().logger?.warn('core:form', '[Linear] No se encontró formId');
+                this.getModules().ogLogger?.warn('core:form', '[Linear] No se encontró formId');
               }
             } else {
-              this.getModules().logger?.warn('core:form', '[Linear] window.conditions no está disponible');
+              this.getModules().ogLogger?.warn('core:form', '[Linear] window.conditions no está disponible');
             }
           }
         });
@@ -521,20 +519,20 @@ class form {
             tabPanels[index].classList.add('active');
 
             // ✅ Re-evaluar condiciones al cambiar de tab
-            if (window.conditions) {
+            if (conditions) {
               const formId = container.closest('form')?.id;
               if (formId) {
                 setTimeout(() => {
                   this.getModules().conditions?.evaluate(formId);
                 }, 50);
               } else {
-                this.getModules().logger?.warn('core:form', '[Tabs] No se encontró formId');
+                this.getModules().ogLogger?.warn('core:form', '[Tabs] No se encontró formId');
               }
             } else {
-              this.getModules().logger?.warn('core:form', '[Tabs] window.conditions no está disponible');
+              this.getModules().ogLogger?.warn('core:form', '[Tabs] window.conditions no está disponible');
             }
           } else {
-            this.getModules().logger?.warn('core:form', `[Tabs] Panel ${index} no encontrado`);
+            this.getModules().ogLogger?.warn('core:form', `[Tabs] Panel ${index} no encontrado`);
           }
         });
       });
@@ -825,13 +823,13 @@ class form {
       : document.getElementById(formId);
 
     if (!formEl) {
-      this.getModules().logger?.error('core:form', `Formulario no encontrado: ${formId}`);
+      this.getModules().ogLogger?.error('core:form', `Formulario no encontrado: ${formId}`);
       return;
     }
 
     const schema = this.schemas.get(formId);
     if (!schema) {
-      this.getModules().logger?.error('core:form', `Schema no encontrado para: ${formId}`);
+      this.getModules().ogLogger?.error('core:form', `Schema no encontrado para: ${formId}`);
       return;
     }
 
@@ -881,7 +879,7 @@ class form {
       if (container) {
         this.initRepeatableContainer(container, field, path);
       } else {
-        this.getModules().logger?.error('core:form', `Container no encontrado para repeatable: "${path}"`);
+        this.getModules().ogLogger?.error('core:form', `Container no encontrado para repeatable: "${path}"`);
       }
     });
   }
@@ -1061,7 +1059,7 @@ class form {
     }
 
     if (!container) {
-      this.getModules().logger?.error('core:form', `Container no encontrado para: "${path}"`);
+      this.getModules().ogLogger?.error('core:form', `Container no encontrado para: "${path}"`);
       return;
     }
 
@@ -1126,7 +1124,7 @@ class form {
     const allSelectsAfter = document.querySelectorAll(`select[id^="select-${path.replace(/\./g, '-')}"]`);
     allSelectsAfter.forEach(sel => {
       if (selectIds.has(sel.id)) {
-        this.getModules().logger?.error('core:form', `   ❌ ID DUPLICADO DETECTADO: ${sel.id}`);
+        this.getModules().ogLogger?.error('core:form', `   ❌ ID DUPLICADO DETECTADO: ${sel.id}`);
       }
       selectIds.add(sel.id);
     });
@@ -1170,15 +1168,13 @@ class form {
             });
           }
         } else {
-          this.getModules().logger?.error('core:form', `No se pudo obtener el item recién agregado en: "${path}"`);
+          this.getModules().ogLogger?.error('core:form', `No se pudo obtener el item recién agregado en: "${path}"`);
         }
 
         // Re-inicializar transforms y conditions
         this.bindTransforms(formId);
 
-        if (window.conditions) {
-          this.getModules().conditions?.init(formId);
-        }
+        this.getModules().conditions?.init(formId);
       }, 20);
     }
   }
@@ -1299,13 +1295,13 @@ class form {
       : document.getElementById(formId);
 
     if (!formEl) {
-      this.getModules().logger?.warn('core:form', `Formulario ${formId} no encontrado`);
+      this.getModules().ogLogger?.warn('core:form', `Formulario ${formId} no encontrado`);
       return;
     }
 
     const schema = this.schemas.get(formId);
     if (!schema) {
-      this.getModules().logger?.warn('core:form', `Schema para ${formId} no encontrado`);
+      this.getModules().ogLogger?.warn('core:form', `Schema para ${formId} no encontrado`);
       return;
     }
 
@@ -1406,16 +1402,17 @@ class form {
   static fillRepeatable(container, field, data, parentPath) {
     const fieldName = field.name;
     const items = data[fieldName];
+    const { conditions  } = this.getModules();
 
     if (!Array.isArray(items) || items.length === 0) {
       return;
     }
 
     const fullPath = parentPath ? `${parentPath}.${fieldName}` : fieldName;
-    this.getModules().logger?.info('core:form', `📋 Llenando ${fullPath}: ${items.length} items`);
+    this.getModules().ogLogger?.info('core:form', `📋 Llenando ${fullPath}: ${items.length} items`);
 
     // Pausar evaluaciones de condiciones durante el llenado masivo
-    if (window.conditions && items.length >= 1) {
+    if (conditions && items.length >= 1) {
       this.getModules().conditions?.pauseEvaluations();
     }
 
@@ -1426,7 +1423,7 @@ class form {
     }
 
     if (!addButton) {
-      this.getModules().logger?.error('core:form', `Botón "Agregar" no encontrado para: ${fullPath}`);
+      this.getModules().ogLogger?.error('core:form', `Botón "Agregar" no encontrado para: ${fullPath}`);
       return;
     }
 
@@ -1437,7 +1434,7 @@ class form {
     }
 
     if (!itemsContainer) {
-      this.getModules().logger?.error('core:form', `Contenedor no encontrado para: ${fullPath}`);
+      this.getModules().ogLogger?.error('core:form', `Contenedor no encontrado para: ${fullPath}`);
       return;
     }
 
@@ -1462,8 +1459,9 @@ class form {
 
   // Llenar un item específico del repeatable (RECURSIVO)
   static fillRepeatableItem(container, fieldName, index, itemData, fieldSchema, parentPath, isLastItem = false) {
+    const { conditions } = this.getModules();
     // Reanudar evaluaciones si es el último item
-    if (isLastItem && window.conditions) {
+    if (isLastItem && conditions) {
       const formEl = container.closest('form');
       setTimeout(() => {
         this.getModules().conditions?.resumeEvaluations(formEl?.id);
@@ -1475,7 +1473,7 @@ class form {
     const currentItem = items[items.length - 1];
 
     if (!currentItem) {
-      this.getModules().logger?.error('core:form', `Item [${index}] no encontrado en el DOM`);
+      this.getModules().ogLogger?.error('core:form', `Item [${index}] no encontrado en el DOM`);
       return;
     }
 
@@ -1508,7 +1506,7 @@ class form {
         if (input) {
           this.setInputValue(input, value, true);
         } else {
-          this.getModules().logger?.warn('core:form', `Campo no encontrado: ${inputName}`);
+          this.getModules().ogLogger?.warn('core:form', `Campo no encontrado: ${inputName}`);
         }
       }
     });
@@ -1556,7 +1554,7 @@ class form {
           if (input) {
             this.setInputValue(input, value, true);
           } else {
-            this.getModules().logger?.warn('core:form', `Campo no encontrado: ${inputName}`);
+            this.getModules().ogLogger?.warn('core:form', `Campo no encontrado: ${inputName}`);
           }
         }
       }
@@ -1837,7 +1835,7 @@ class form {
     // Si es objeto, usar styleHandler
     if (typeof styleConfig === 'object') {
       if (!window.styleHandler) {
-        this.getModules().logger?.warn('cor:form', 'styleHandler no disponible');
+        this.getModules().ogLogger?.warn('cor:form', 'styleHandler no disponible');
         return '';
       }
 
@@ -1934,7 +1932,7 @@ class form {
   static async loadSelectFromAPI(selectId, source, valueField, labelField) {
     const selectEl = document.getElementById(selectId);
     if (!selectEl) {
-      this.getModules().logger?.error('core:form', `Select no encontrado: ${selectId}`);
+      this.getModules().ogLogger?.error('core:form', `Select no encontrado: ${selectId}`);
       return;
     }
 
@@ -1977,7 +1975,7 @@ class form {
       }));
 
     } catch (error) {
-      this.getModules().logger?.error('core:form', `Error cargando select ${selectId} desde ${source}:`, error);
+      this.getModules().ogLogger?.error('core:form', `Error cargando select ${selectId} desde ${source}:`, error);
       selectEl.disabled = false;
     }
   }

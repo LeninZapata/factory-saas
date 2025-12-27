@@ -3,7 +3,6 @@ class dataLoader {
     return {
       api: window.ogFramework?.core?.api || window.api,
       hook: window.ogFramework?.core?.hook || window.hook,
-      logger: window.ogFramework?.core?.logger || window.logger
     };
   }
 
@@ -12,7 +11,6 @@ class dataLoader {
   }
 
   static async load(config, extensionName = null) {
-    const { logger } = this.getModules();
     const type = config.type || 'auto';
 
     if (type === 'auto') {
@@ -27,12 +25,12 @@ class dataLoader {
       return await this.loadFromMock(config, extensionName);
     }
 
-    logger?.error('core:dataLoader', `Tipo de dataSource no válido: ${type}`);
+    ogLogger?.error('core:dataLoader', `Tipo de dataSource no válido: ${type}`);
     return null;
   }
 
   static async loadAuto(config, extensionName) {
-    const { hook, logger } = this.getModules();
+    const { hook } = this.getModules();
     
     const pluginConfig = extensionName ? hook?.getPluginConfig(extensionName) : null;
     const backendEnabled = pluginConfig?.backend?.enabled || false;
@@ -43,7 +41,7 @@ class dataLoader {
       try {
         return await this.loadFromApi(config.api);
       } catch (error) {
-        logger?.warn('core:dataLoader', `API falló, fallback a mock: ${error.message}`);
+        ogLogger?.warn('core:dataLoader', `API falló, fallback a mock: ${error.message}`);
         return await this.loadFromMock(config.mock, extensionName);
       }
     }
@@ -52,7 +50,7 @@ class dataLoader {
   }
 
   static async loadFromApi(apiConfig) {
-    const { api, logger } = this.getModules();
+    const { api } = this.getModules();
     const endpoint = apiConfig.endpoint;
     const method = apiConfig.method || 'GET';
 
@@ -76,16 +74,15 @@ class dataLoader {
       return response;
 
     } catch (error) {
-      logger?.error('core:dataLoader', `Error en API ${endpoint}: ${error.message}`);
+      ogLogger?.error('core:dataLoader', `Error en API ${endpoint}: ${error.message}`);
       throw error;
     }
   }
 
   static async loadFromMock(mockConfig, extensionName) {
-    const { logger } = this.getModules();
     
     if (!mockConfig || !mockConfig.file) {
-      logger?.error('core:dataLoader', 'No se especificó archivo mock');
+      ogLogger?.error('core:dataLoader', 'No se especificó archivo mock');
       return null;
     }
 
@@ -123,7 +120,7 @@ class dataLoader {
       return data;
 
     } catch (error) {
-      logger?.error('core:dataLoader', `Error cargando mock: ${error.message}`);
+      ogLogger?.error('core:dataLoader', `Error cargando mock: ${error.message}`);
       throw error;
     }
   }

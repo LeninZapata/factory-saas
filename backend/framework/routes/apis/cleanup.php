@@ -128,7 +128,7 @@ $router->group('/api/cleanup', function($router) {
       }
     } catch (Exception $e) {
       ogLog::error("Error eliminando carpeta: {$path}", $e->getMessage(), $logMeta);
-      ogResponse::serverError(__('api.cleanup.error_deleting'), IS_DEV ? $e->getMessage() : null);
+      ogResponse::serverError(__('api.cleanup.error_deleting'), OG_IS_DEV ? $e->getMessage() : null);
     }
   });
 

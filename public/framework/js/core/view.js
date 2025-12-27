@@ -7,14 +7,16 @@ class view {
 
   static getModules() {
     return {
-      logger: window.ogFramework?.core?.logger || window.logger,
-      hook: window.ogFramework?.core?.hook || window.hook,
-      form: window.ogFramework?.core?.form || window.form,
-      cache: window.ogFramework?.core?.cache || window.cache,
-      loader: window.ogFramework?.core?.loader || window.loader,
-      i18n: window.ogFramework?.core?.i18n || window.i18n,
-      conditions: window.ogFramework?.core?.conditions || window.conditions,
-      events: window.ogFramework?.core?.events || window.events
+      hook: window.ogFramework?.core?.hook,
+      form: window.ogFramework?.core?.form,
+      cache: window.ogFramework?.core?.cache,
+      loader: window.ogFramework?.core?.loader,
+      i18n: window.ogFramework?.core?.i18n,
+      conditions: window.ogFramework?.core?.conditions,
+      events: window.ogFramework?.core?.events,
+
+      // Component dependencies
+      tabs: window.ogFramework?.components?.tabs || window.tabs
     };
   }
 
@@ -22,8 +24,23 @@ class view {
     return window.ogFramework?.activeConfig || config || {};
   }
 
+  // Helper para obtener componentes dinámicamente
+  static getComponent(componentName) {
+    // Buscar primero en ogFramework.components
+    if (window.ogFramework?.components?.[componentName]) {
+      return window.ogFramework.components[componentName];
+    }
+    
+    // Fallback a window directo (compatibilidad temporal)
+    if (window[componentName]) {
+      return window[componentName];
+    }
+    
+    return null;
+  }
+
   static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
-    const { logger, cache } = this.getModules();
+    const { cache } = this.getModules();
     const config = this.getConfig();
     
     // Manejar notación extension|path (ej: botws|sections/botws-listado)
@@ -37,7 +54,7 @@ class view {
 
     if (!container && config.cache?.viewNavigation) {
       if (this.viewNavigationCache.has(navCacheKey)) {
-        logger?.info('core:view', `✅ Cache viewNavigation: usando HTML cacheado para "${viewName}"`);
+        ogLogger?.info('core:view', `✅ Cache viewNavigation: usando HTML cacheado para "${viewName}"`);
         const cachedData = this.viewNavigationCache.get(navCacheKey);
         const content = document.getElementById('content');
         if (content) {
@@ -55,7 +72,7 @@ class view {
             try {
               afterRender(cachedData.viewId, content);
             } catch (error) {
-              this.getModules().logger?.error('core:view', 'Error en afterRender:', error);
+              this.getModules().ogLogger?.error('core:view', 'Error en afterRender:', error);
             }
           }
           return;
@@ -102,7 +119,7 @@ class view {
       let viewData = config?.cache?.views ? cache.get(cacheKey) : null;
 
       if (viewData) {
-        this.getModules().logger?.info('core:view', `✅ Cache views: usando caché para "${viewName}"`);
+        this.getModules().ogLogger?.info('core:view', `✅ Cache views: usando caché para "${viewName}"`);
       }
 
       if (!viewData) {
@@ -125,9 +142,9 @@ class view {
 
         if (config?.cache?.views) {
           cache.set(cacheKey, viewData);
-          this.getModules().logger?.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
+          this.getModules().ogLogger?.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
         } else {
-          this.getModules().logger?.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
+          this.getModules().ogLogger?.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
         }
       }
 
@@ -151,7 +168,7 @@ class view {
         try {
           afterRender(combinedData.id, content);
         } catch (error) {
-          this.getModules().logger?.error('core:view', 'Error en afterRender:', error);
+          this.getModules().ogLogger?.error('core:view', 'Error en afterRender:', error);
         }
       }
 
@@ -164,14 +181,14 @@ class view {
             layout: combinedData.layout,
             viewData: combinedData
           });
-          this.getModules().logger?.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
+          this.getModules().ogLogger?.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
         }
       } else if (!container) {
-        this.getModules().logger?.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
+        this.getModules().ogLogger?.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
       }
 
     } catch (error) {
-      this.getModules().logger?.error('core:view', `Error cargando vista ${viewName}:`, error);
+      this.getModules().ogLogger?.error('core:view', `Error cargando vista ${viewName}:`, error);
       this.renderError(viewName, container);
     }
   }
@@ -180,14 +197,14 @@ class view {
     if (window.auth?.user?.role === 'admin') return tabs;
 
     if (!window.auth?.userPermissions?.extensions) {
-      this.getModules().logger?.warn('core:view', 'Usuario sin permisos - ocultando tabs');
+      this.getModules().ogLogger?.warn('core:view', 'Usuario sin permisos - ocultando tabs');
       return [];
     }
 
     const extensionPerms = window.auth.userPermissions.extensions[extensionName];
 
     if (!extensionPerms || extensionPerms.enabled === false) {
-      this.getModules().logger?.warn('core:view', `Extension ${extensionName} sin permisos`);
+      this.getModules().ogLogger?.warn('core:view', `Extension ${extensionName} sin permisos`);
       return [];
     }
 
@@ -202,12 +219,12 @@ class view {
     }
 
     if (!menuPerms || typeof menuPerms !== 'object') {
-      this.getModules().logger?.warn('core:view', `Sin permisos para menú ${menuId}`);
+      this.getModules().ogLogger?.warn('core:view', `Sin permisos para menú ${menuId}`);
       return [];
     }
 
     if (menuPerms.enabled === false) {
-      this.getModules().logger?.warn('core:view', `Menú ${menuId} deshabilitado`);
+      this.getModules().ogLogger?.warn('core:view', `Menú ${menuId} deshabilitado`);
       return [];
     }
 
@@ -216,22 +233,22 @@ class view {
     }
 
     if (!menuPerms.tabs || (Array.isArray(menuPerms.tabs) && menuPerms.tabs.length === 0)) {
-      this.getModules().logger?.warn('core:view', `Sin permisos de tabs para ${menuId}`);
+      this.getModules().ogLogger?.warn('core:view', `Sin permisos de tabs para ${menuId}`);
       return [];
     }
 
     if (typeof menuPerms.tabs === 'object' && !Array.isArray(menuPerms.tabs)) {
       const filteredTabs = tabs.filter(tab => menuPerms.tabs[tab.id] === true);
-      this.getModules().logger?.info('core:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
+      this.getModules().ogLogger?.info('core:view', `Tabs filtradas para ${menuId}: ${filteredTabs.length}/${tabs.length} visibles`);
 
       if (filteredTabs.length === 0) {
-        this.getModules().logger?.warn('core:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
+        this.getModules().ogLogger?.warn('core:view', `Ninguna tab tiene permiso en ${menuId}. Permisos:`, menuPerms.tabs);
       }
 
       return filteredTabs;
     }
 
-    this.getModules().logger?.warn('core:view', `Configuración de tabs no válida para ${menuId}`);
+    this.getModules().ogLogger?.warn('core:view', `Configuración de tabs no válida para ${menuId}`);
     return [];
   }
 
@@ -286,7 +303,7 @@ class view {
 
         await loader.loadResources(normalizedScripts, normalizedStyles);
       } catch (error) {
-        this.getModules().logger?.error('core:view', 'Error cargando recursos:', error);
+        this.getModules().ogLogger?.error('core:view', 'Error cargando recursos:', error);
       }
     }
   }
@@ -368,6 +385,7 @@ class view {
   }
 
   static async setupView(viewData, container = null) {
+    const { tabs } = this.getModules();
     const viewContainer = container || document.getElementById('content');
 
     await this.renderHookComponents(viewContainer);
@@ -391,13 +409,15 @@ class view {
 
     viewData.scripts.forEach((scriptPath) => {
       const componentName = this.extractComponentName(scriptPath);
-      if (componentName && window[componentName]) {
-        if (typeof window[componentName].init === 'function') {
-          try {
-            window[componentName].init();
-          } catch (error) {
-            this.getModules().logger?.error('core:view', `Error ejecutando ${componentName}.init():`, error);
-          }
+      
+      // ✅ Usar getComponent helper
+      const component = this.getComponent(componentName);
+      
+      if (component && typeof component.init === 'function') {
+        try {
+          component.init();
+        } catch (error) {
+          ogLogger.error('core:view', `Error ejecutando ${componentName}.init():`, error);
         }
       }
     });
@@ -515,17 +535,18 @@ class view {
     });
 
     const dynamicComponents = container.querySelectorAll('.dynamic-component');
-    dynamicComponents.forEach(el => {
+    dynamicComponents.forEach(async el => {
       const componentName = el.getAttribute('data-component');
       const configStr = el.getAttribute('data-config');
       const config = configStr ? JSON.parse(configStr.replace(/&quot;/g, '"')) : {};
 
-      if (componentName && window[componentName]) {
-        if (typeof window[componentName].render === 'function') {
-          window[componentName].render(config, el);
-        } else if (typeof window[componentName].init === 'function') {
-          window[componentName].init(el, config);
-        }
+      // ✅ Usar getComponent helper
+      const component = this.getComponent(componentName);
+
+      if (component && typeof component.render === 'function') {
+        await component.render(config, el);
+      } else if (component && typeof component.init === 'function') {
+        await component.init(el, config);
       }
     });
   }
@@ -620,14 +641,17 @@ class view {
       try {
         const config = JSON.parse(configStr.replace(/&quot;/g, '"'));
 
-        if (window[componentName]?.render) {
-          await window[componentName].render(config, hookElement);
+        // ✅ Usar getComponent helper
+        const component = this.getComponent(componentName);
+
+        if (component && typeof component.render === 'function') {
+          await component.render(config, hookElement);
         } else {
-          this.getModules().logger?.warn('core:view', `Componente ${componentName} no encontrado`);
+          ogLogger.warn('core:view', `Componente ${componentName} no encontrado`);
           hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Componente ${componentName} no disponible</div>`;
         }
       } catch (error) {
-        this.getModules().logger?.error('core:view', `Error renderizando hook component ${componentName}:`, error);
+        ogLogger.error('core:view', `Error renderizando hook component ${componentName}:`, error);
         hookElement.innerHTML = `<div style="padding:1rem;background:#fee;border:1px solid #fcc;border-radius:4px;">Error: ${componentName}</div>`;
       }
     }
@@ -708,7 +732,3 @@ class view {
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.view = view;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.view
-window.view = view;

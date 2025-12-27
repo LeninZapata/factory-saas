@@ -9,7 +9,6 @@ class sidebar {
       hook: window.ogFramework?.core?.hook || window.hook,
       auth: window.ogFramework?.core?.auth || window.auth,
       cache: window.ogFramework?.core?.cache || window.cache,
-      logger: window.ogFramework?.core?.logger || window.logger
     };
   }
 
@@ -31,13 +30,13 @@ class sidebar {
   }
 
   static async loadMenu() {
-    const { hook, logger } = this.getModules();
+    const { hook } = this.getModules();
     
     try {
       if (hook && typeof hook.getMenuItems === 'function') {
         const pluginMenus = hook.getMenuItems();
         
-        logger?.info('core:sidebar', `Menús cargados: ${pluginMenus.length}`);
+        ogLogger?.info('core:sidebar', `Menús cargados: ${pluginMenus.length}`);
 
         const baseMenu = [
           {
@@ -58,7 +57,7 @@ class sidebar {
         this.menuData.menu = filteredMenuItems;
 
       } else {
-        logger?.warn('core:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
+        ogLogger?.warn('core:sidebar', 'hook.getMenuItems no disponible, usando menú básico');
         this.menuData.menu = [
           {
             id: "dashboard",
@@ -72,7 +71,7 @@ class sidebar {
       this.renderMenu();
 
     } catch (error) {
-      logger?.error('core:sidebar', 'Error cargando menú:', error);
+      ogLogger?.error('core:sidebar', 'Error cargando menú:', error);
       this.menuData.menu = [
         {
           id: "dashboard",
@@ -223,7 +222,7 @@ class sidebar {
   }
 
   static async preloadView(viewPath, extensionName) {
-    const { cache, logger } = this.getModules();
+    const { cache } = this.getModules();
     const config = this.getConfig();
     
     try {
@@ -251,7 +250,7 @@ class sidebar {
         cache?.set(cacheKey, viewData);
       }
     } catch (error) {
-      logger?.warn('core:sidebar', `No se pudo precargar: ${extensionName ? extensionName + '/' : ''}${viewPath}`);
+      ogLogger?.warn('core:sidebar', `No se pudo precargar: ${extensionName ? extensionName + '/' : ''}${viewPath}`);
     }
   }
 

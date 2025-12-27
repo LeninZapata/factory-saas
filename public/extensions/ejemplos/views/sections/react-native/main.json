@@ -100,7 +100,7 @@
               },
               "legacy": {
                 "name": "⚠️ Legacy",
-                "onclick": "toast.info('Ver: {name} (ID: {id})')"
+                "onclick": "ogToast.info('Ver: {name} (ID: {id})')"
               }
             }
           }

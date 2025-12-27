@@ -204,7 +204,7 @@
       "type": "button",
       "label": "💾 Guardar Proyectos",
       "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Proyectos:', data); toast.success('✅ Proyectos guardados');"
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Proyectos:', data); ogToast.success('✅ Proyectos guardados');"
     }
   ]
 }

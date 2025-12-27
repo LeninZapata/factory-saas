@@ -1,7 +1,7 @@
 {
   "resource": "user",
   "table": "users",
-  "timestamps": true,
+  "timestamps": false,
   "middleware": ["throttle:100,1"],
 
   "routes": {

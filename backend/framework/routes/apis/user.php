@@ -5,18 +5,20 @@ $router->group('/api/user', function($router) {
 
   // Perfil del usuario autenticado
   $router->get('/profile', function() {
+    ogApp()->loadHandler('UserHandler');
     $result = UserHandler::profile([]);
     ogResponse::json($result);
   })->middleware('auth');
 
   // Actualizar configuración del usuario
   $router->put('/{id}/config', function($id) {
+    ogApp()->loadHandler('UserHandler');
     $result = UserHandler::updateConfig(['id' => $id]);
     ogResponse::json($result);
   })->middleware(['auth', 'json']);
 
 
-  if (IS_DEV) {
+  if (OG_IS_DEV) {
 
     // Generar hash de contraseña
     $router->get('/generatepass/{key}', function($key) {

@@ -10,13 +10,12 @@ if (!defined('BASE_PATH')) {
 
 // Cargar framework SOLO si no está cargado
 if (!class_exists('ogFramework')) {
-  // Definir FRAMEWORK_PATH solo si no existe
-  if (!defined('FRAMEWORK_PATH')) {
-    define('FRAMEWORK_PATH', BACKEND_PATH . '/framework');
+  // Definir OG_FRAMEWORK_PATH solo si no existe
+  if (!defined('OG_FRAMEWORK_PATH')) {
+    define('OG_FRAMEWORK_PATH', BACKEND_PATH . '/framework');
   }
-  
   // Cargar el framework completo
-  require_once FRAMEWORK_PATH . '/config/init.php';
+  require_once OG_FRAMEWORK_PATH . '/config/init.php';
 }
 
 // Cargar constantes de la aplicación

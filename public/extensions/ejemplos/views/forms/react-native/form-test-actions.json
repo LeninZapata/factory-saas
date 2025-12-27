@@ -33,19 +33,19 @@
     {
       "type": "button",
       "label": "✅ Toast Success",
-      "action": "call:toast.success:Operación exitosa",
+      "action": "call:ogToast.success:Operación exitosa",
       "style": "primary"
     },
     {
       "type": "button",
       "label": "ℹ️ Toast Info",
-      "action": "call:toast.info:Información importante:5000",
+      "action": "call:ogToast.info:Información importante:5000",
       "style": "secondary"
     },
     {
       "type": "button",
       "label": "⚠️ Toast Warning",
-      "action": "call:toast.warning:Advertencia",
+      "action": "call:ogToast.warning:Advertencia",
       "style": "secondary"
     },
     {

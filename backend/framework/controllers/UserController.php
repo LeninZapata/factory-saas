@@ -1,30 +1,29 @@
 <?php
 
-class UserController extends controller {
+class UserController extends ogController {
   // Nombre de la tabla asociada a este controlador
   protected static $table = DB_TABLES['users'];
 
-    // Elimina todas las sesiones de un usuario por archivos en /sessions
-    static function invalidateSessions($userId) {
-      $sessionsDir = STORAGE_PATH . '/sessions/';
-      if (!is_dir($sessionsDir)) return 0;
-      $pattern = $sessionsDir . "*_{$userId}_*.json";
-      $files = glob($pattern);
-      $cleaned = 0;
-      foreach ($files as $file) {
-        try {
-          unlink($file);
-          $cleaned++;
-        } catch (Exception $e) {
-          ogLog::error(__('user.session.cleanup_error'), $e->getMessage(), self::$logMeta);
-        }
+  // Elimina todas las sesiones de un usuario por archivos en /sessions
+  static function invalidateSessions($userId) {
+    $sessionsDir = STORAGE_PATH . '/sessions/';
+    if (!is_dir($sessionsDir)) return 0;
+    $pattern = $sessionsDir . "*_{$userId}_*.json";
+    $files = glob($pattern);
+    $cleaned = 0;
+    foreach ($files as $file) {
+      try {
+        unlink($file);
+        $cleaned++;
+      } catch (Exception $e) {
+        ogLog::error(__('user.session.cleanup_error'), $e->getMessage(), self::$logMeta);
       }
-      if ($cleaned > 0) {
-        ogLog::info(__('user.session.cleaned_user', ['cleaned' => $cleaned, 'userId' => $userId]), null, self::$logMeta);
-      }
-      return $cleaned;
     }
-  use ValidatesUnique;
+    if ($cleaned > 0) {
+      ogLog::info(__('user.session.cleaned_user', ['cleaned' => $cleaned, 'userId' => $userId]), null, self::$logMeta);
+    }
+    return $cleaned;
+  }
 
   private static $logMeta = ['module' => 'user', 'layer' => 'app'];
 
@@ -47,7 +46,7 @@ class UserController extends controller {
     }
 
     // Validar user único
-    $this->validateUnique(self::$table, 'user', $data['user'], 'user.already_exists');
+    $this->ValidateUnique(self::$table, 'user', $data['user'], 'user.already_exists');
 
     // Hashear contraseña
     $data['pass'] = password_hash($data['pass'], PASSWORD_BCRYPT);
@@ -67,7 +66,7 @@ class UserController extends controller {
       ogResponse::success(['id' => $id], __('user.create.success'), 201);
     } catch (Exception $e) {
       ogLog::error('Error al crear usuario', ['error' => $e->getMessage()], self::$logMeta);
-      ogResponse::serverError(__('user.create.error'), IS_DEV ? $e->getMessage() : null);
+      ogResponse::serverError(__('user.create.error'), OG_IS_DEV ? $e->getMessage() : null);
     }
   }
 

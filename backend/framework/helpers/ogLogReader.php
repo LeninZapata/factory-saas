@@ -81,7 +81,7 @@ class ogLogReader {
 
           case 'tags':
             $tagsStr = trim($value);
-            if (defined('IS_DEV') && IS_DEV) {
+            if (defined('OG_IS_DEV') && OG_IS_DEV) {
               error_log('DEBUG ogLogReader::parse tagsStr: ' . var_export($tagsStr, true));
               error_log('DEBUG ogLogReader::parse parts: ' . var_export($parts, true));
             }

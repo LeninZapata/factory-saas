@@ -13,7 +13,6 @@ class navigation {
   static getModules() {
     return {
       view: window.ogFramework?.core?.view || window.view,
-      logger: window.ogFramework?.core?.logger || window.logger
     };
   }
 
@@ -23,10 +22,10 @@ class navigation {
    * @param {object} params - Parámetros opcionales
    */
   static navigate(screen, params = {}) {
-    const { view, logger } = this.getModules();
+    const { view } = this.getModules();
     
     if (!screen) {
-      logger?.warn('core:navigation', 'Screen no especificado');
+      ogLogger?.warn('core:navigation', 'Screen no especificado');
       return;
     }
 
@@ -54,7 +53,7 @@ class navigation {
       
       view.loadView(screen, container, extension, null, null, menuId);
     } else {
-      logger?.error('core:navigation', 'view.loadView() no disponible');
+      ogLogger?.error('core:navigation', 'view.loadView() no disponible');
     }
 
     // React Native (futuro):
@@ -67,10 +66,10 @@ class navigation {
    * Volver a la vista anterior
    */
   static goBack() {
-    const { view, logger } = this.getModules();
+    const { view } = this.getModules();
     
     if (this.history.length === 0) {
-      logger?.warn('core:navigation', 'No hay historial para volver');
+      ogLogger?.warn('core:navigation', 'No hay historial para volver');
       return false;
     }
 

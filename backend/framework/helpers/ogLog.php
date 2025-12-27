@@ -36,7 +36,7 @@ class ogLog {
   }
 
   static function debug($msg, $ctx = [], $meta = []) {
-    if (!IS_DEV) return;
+    if (!OG_IS_DEV) return;
     self::write('DEBUG', $msg, $ctx, $meta);
   }
 
@@ -61,7 +61,7 @@ class ogLog {
   }
 
   static function sql($sql, $bindings = []) {
-    if (!IS_DEV) return;
+    if (!OG_IS_DEV) return;
     self::write('SQL', $sql, ['bindings' => $bindings], ['module' => 'database']);
   }
 

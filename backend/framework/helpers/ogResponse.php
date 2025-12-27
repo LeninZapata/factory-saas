@@ -9,7 +9,7 @@ class ogResponse {
     http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
     $opts = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
-    if (IS_DEV) $opts |= JSON_PRETTY_PRINT;
+    if (OG_IS_DEV) $opts |= JSON_PRETTY_PRINT;
     echo json_encode($data, $opts);
     exit;
   }
@@ -49,7 +49,7 @@ class ogResponse {
 
   static function serverError($msg = null, $debug = null) {
     $res = ['success' => false, 'error' => $msg ?? __('helper.response.server_error')];
-    if (IS_DEV && $debug) $res['debug'] = $debug;
+    if (OG_IS_DEV && $debug) $res['debug'] = $debug;
     self::json($res, 500);
   }
 }

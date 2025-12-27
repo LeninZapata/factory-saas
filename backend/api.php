@@ -12,7 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   exit();
 }
 
-require_once __DIR__ . '/app/config/init.php';
+// Cargar bootstrap (maneja todo)
+require_once __DIR__ . '/bootstrap.php';
 
+// Ejecutar aplicación
 $app = new ogApplication();
 $app->run();

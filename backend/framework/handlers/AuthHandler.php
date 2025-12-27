@@ -20,7 +20,9 @@ class AuthHandler {
       return ['success' => false, 'error' => __('auth.credentials.invalid')];
     }
 
-    $token = ogUtils::token(64);
+    // Cargar ogUtils bajo demanda
+    $utils = ogApp()->helper('utils');
+    $token = $utils->token(64);
     $expiresAt = time() + SESSION_TTL;
     $expiresAtFormatted = date('Y-m-d H:i:s', $expiresAt);
 

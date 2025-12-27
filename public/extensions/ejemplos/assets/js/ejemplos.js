@@ -22,7 +22,7 @@ class ejemplos {
       const mockData = await this.loadRepeatableMockData();
 
       if (!mockData) {
-        toast.error('❌ No se pudieron cargar los datos de ejemplo');
+        ogToast.error('❌ No se pudieron cargar los datos de ejemplo');
         return;
       }
 
@@ -31,23 +31,23 @@ class ejemplos {
       const formElement = modalContent?.querySelector('form');
 
       if (!formElement) {
-        logger.error('ext:ejemplos', 'Formulario no encontrado en el modal');
-        toast.error('❌ Error: Formulario no encontrado');
+        ogLogger.error('ext:ejemplos', 'Formulario no encontrado en el modal');
+        ogToast.error('❌ Error: Formulario no encontrado');
         return;
       }
 
       const formId = formElement.getAttribute('id');
-      logger.info('ext:ejemplos', `Llenando formulario ${formId} con datos mock`);
+      ogLogger.info('ext:ejemplos', `Llenando formulario ${formId} con datos mock`);
 
       // Llenar el formulario con los datos pasando el contexto del modal
       setTimeout(() => {
         form.fill(formId, mockData, modalContent);
-        toast.success('✅ Datos cargados correctamente');
+        ogToast.success('✅ Datos cargados correctamente');
       }, 300);
 
     } catch (error) {
-      logger.error('ext:ejemplos', 'Error abriendo modal con datos:', error);
-      toast.error('❌ Error al cargar el formulario');
+      ogLogger.error('ext:ejemplos', 'Error abriendo modal con datos:', error);
+      ogToast.error('❌ Error al cargar el formulario');
     }
   }
 
@@ -67,11 +67,11 @@ class ejemplos {
       }
 
       const data = await response.json();
-      logger.success('ext:ejemplos', 'Datos mock cargados:', data);
+      ogLogger.success('ext:ejemplos', 'Datos mock cargados:', data);
       
       return data;
     } catch (error) {
-      logger.error('ext:ejemplos', 'Error cargando mock data:', error);
+      ogLogger.error('ext:ejemplos', 'Error cargando mock data:', error);
       return null;
     }
   }

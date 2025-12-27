@@ -1,11 +1,11 @@
 <?php
-// ogController - Controlador basado en schemas JSON
+
 class ogController {
   private $config, $table, $resource;
 
   function __construct($resourceName) {
     // Buscar schema: framework → app
-    $configFile = FRAMEWORK_PATH . "/resources/schemas/{$resourceName}.json";
+    $configFile = OG_FRAMEWORK_PATH . "/resources/schemas/{$resourceName}.json";
     if (!file_exists($configFile)) {
       $configFile = APP_PATH . "/resources/schemas/{$resourceName}.json";
     }
@@ -19,7 +19,7 @@ class ogController {
     $this->resource = $resourceName;
 
     // Cargar handlers personalizados si existen: framework → app
-    $handlerFile = FRAMEWORK_PATH . "/handlers/og{$resourceName}Handler.php";
+    $handlerFile = OG_FRAMEWORK_PATH . "/handlers/og{$resourceName}Handler.php";
     if (file_exists($handlerFile)) {
       require_once $handlerFile;
     } else {
@@ -64,15 +64,15 @@ class ogController {
 
     // Validar campos requeridos
     $required = $this->getRequiredFields();
-    $validation = ogValidation::required($data, $required);
+    $validation = ogApp()->helper('validation')->required($data, $required);
     if (!$validation['valid']) ogResponse::validation($validation['errors']);
-
-    // Validar campos únicos
-    $this->validateUnique($data);
 
     // Timestamps
     if ($this->config['timestamps'] ?? false) {
       $data['created_at'] = date('Y-m-d H:i:s');
+    }else{
+      $data['dc'] = date('Y-m-d H:i:s');
+      $data['tc'] = time();
     }
 
     $id = ogDb::table($this->table)->insert($data);
@@ -86,12 +86,12 @@ class ogController {
 
     $data = ogRequest::data();
 
-    // Validar campos únicos (excepto el registro actual)
-    $this->validateUnique($data, $id);
-
     // Timestamps
     if ($this->config['timestamps'] ?? false) {
       $data['updated_at'] = date('Y-m-d H:i:s');
+    }else{
+      $data['du'] = date('Y-m-d H:i:s');
+      $data['tu'] = time();
     }
 
     $affected = ogDb::table($this->table)->where('id', $id)->update($data);
@@ -118,19 +118,27 @@ class ogController {
     return $required;
   }
 
-  // Validar campos únicos
-  private function validateUnique($data, $excludeId = null) {
-    foreach ($this->config['fields'] ?? [] as $field) {
-      if (($field['unique'] ?? false) && isset($data[$field['name']])) {
-        $query = ogDb::table($this->table)->where($field['name'], $data[$field['name']]);
-
-        // Excluir el registro actual en updates
-        if ($excludeId) $query = $query->where('id', '!=', $excludeId);
-
-        if ($query->exists()) {
-          ogResponse::error(__('core.controller.field_exists', ['field' => $field['name']]), 400);
-        }
-      }
+  // Validar campo único (legacy wrapper)
+  protected function validateUnique($table, $field, $value, $errorKey = null) {
+    if (!trait_exists('ogValidatesUnique')) {
+      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
     }
+    return $this->validateUnique($table, $field, $value, $errorKey);
+  }
+
+  // Validar campo único excepto ID actual (legacy wrapper)
+  protected function validateUniqueExcept($table, $field, $value, $excludeId, $errorKey = null) {
+    if (!trait_exists('ogValidatesUnique')) {
+      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
+    }
+    return $this->validateUniqueExcept($table, $field, $value, $excludeId, $errorKey);
+  }
+
+  // Validar email (legacy wrapper)
+  protected function validateEmail($email, $table = null, $excludeId = null) {
+    if (!trait_exists('ogValidatesUnique')) {
+      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
+    }
+    return $this->validateEmail($email, $table, $excludeId);
   }
 }

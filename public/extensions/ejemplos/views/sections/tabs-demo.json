@@ -187,7 +187,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #16a34a;'><h4 style='margin: 0 0 0.5rem; color: #14532d;'>✅ Estructura del content con formularios:</h4><pre style='background: white; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"title\": \"📝 Mi Formulario\",\n  \"content\": \"&lt;div class='dynamic-form' data-form-json='plugin/ruta/formulario'&gt;&lt;/div&gt;\"\n}</pre><p style='margin: 0.5rem 0 0 0; color: #14532d;'><strong>Importante:</strong> El sistema de tabs detectará automáticamente los <code>dynamic-form</code> y cargará los formularios correspondientes.</p></div>"
+          "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #16a34a;'><h4 style='margin: 0 0 0.5rem; color: #14532d;'>✅ Estructura del content con formularios:</h4><pre style='background: white; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"title\": \"📝 Mi Formulario\",\n  \"content\": \"&lt;div class='dynamic-form' data-form-json='plugin/ruta/formulario'&gt;&lt;/div&gt;\"\n}</pre><p style='margin: 0.5rem 0 0 0; color: #14532d;'><strong>Importante:</strong> El sistema detectará automáticamente los <code>dynamic-form</code> y cargará los formularios correspondientes.</p></div>"
         }
       ]
     },

@@ -5,7 +5,7 @@ class ogResource {
 
   function __construct($resourceName) {
     // Buscar schema: framework → app
-    $configFile = FRAMEWORK_PATH . "/resources/schemas/{$resourceName}.json";
+    $configFile = OG_FRAMEWORK_PATH . "/resources/schemas/{$resourceName}.json";
     if (!file_exists($configFile)) {
       $configFile = APP_PATH . "/resources/schemas/{$resourceName}.json";
     }
@@ -57,6 +57,9 @@ class ogResource {
   function insert($data) {
     if ($this->config['timestamps'] ?? false) {
       $data['created_at'] = date('Y-m-d H:i:s');
+    }else{
+      $data['dc'] = date('Y-m-d H:i:s');
+      $data['tc'] = time();
     }
     return ogDb::table($this->table)->insert($data);
   }
@@ -67,6 +70,9 @@ class ogResource {
 
     if ($this->config['timestamps'] ?? false) {
       $data['updated_at'] = date('Y-m-d H:i:s');
+    }else {
+      $data['du'] = date('Y-m-d H:i:s');
+      $data['tu'] = time();
     }
 
     if (is_numeric($idOrConditions)) {

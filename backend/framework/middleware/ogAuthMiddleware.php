@@ -5,7 +5,7 @@ class ogAuthMiddleware {
 
     // Validar versión PHP (solo 1 vez por sesión)
     // Solo validar versión PHP en desarrollo
-    if (IS_DEV && !$this->validatePhpVersion()) {
+    if (OG_IS_DEV && !$this->validatePhpVersion()) {
       return false;
     }
 

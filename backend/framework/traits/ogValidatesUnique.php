@@ -1,8 +1,8 @@
 <?php
-trait ValidatesUnique {
+trait ogValidatesUnique {
 
   // Validar campo único (para create)
-  protected function validateUnique($table, $field, $value, $errorKey = null) {
+  public function validateUnique($table, $field, $value, $errorKey = null) {
     if (ogDb::table($table)->where($field, $value)->exists()) {
       $error = $errorKey ?? "validation.field_exists";
       ogResponse::error(__($error, ['field' => $field]), 400);
@@ -10,7 +10,7 @@ trait ValidatesUnique {
   }
 
   // Validar campo único excepto ID actual (para update)
-  protected function validateUniqueExcept($table, $field, $value, $excludeId, $errorKey = null) {
+  public function validateUniqueExcept($table, $field, $value, $excludeId, $errorKey = null) {
     $exists = ogDb::table($table)
       ->where($field, $value)
       ->where('id', '!=', $excludeId)
@@ -23,7 +23,7 @@ trait ValidatesUnique {
   }
 
   // Validar email (formato + unicidad)
-  protected function validateEmail($email, $table = null, $excludeId = null) {
+  public function validateEmail($email, $table = null, $excludeId = null) {
     if (empty($email)) return;
 
     // Validar formato

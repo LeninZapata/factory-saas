@@ -11,7 +11,7 @@ ogLang::load(DEFAULT_LANG);
 // ogLang::load($lang);
 
 // Configurar error reporting según entorno
-if (IS_DEV) {
+if (OG_IS_DEV) {
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
   ini_set('log_errors', '1');
@@ -25,7 +25,7 @@ if (IS_DEV) {
 ogLog::setConfig([
   'format' => 'custom',
   'template' => '{year}/{month}/{day}/{module}.log',
-  'level' => IS_DEV ? 'debug' : 'info',
+  'level' => OG_IS_DEV ? 'debug' : 'info',
   'max_size' => 1048576,
   'enabled' => true
 ]);

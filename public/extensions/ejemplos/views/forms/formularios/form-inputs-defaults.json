@@ -182,7 +182,7 @@
       "type": "button",
       "label": "💾 Guardar",
       "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); toast.success('✅ Datos guardados');"
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Datos guardados');"
     }
   ]
 }
