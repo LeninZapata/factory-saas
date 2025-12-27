@@ -7,47 +7,28 @@
 // ========================================
 // DETECTAR ENTORNO
 // ========================================
-$isWordPress = defined('ABSPATH');
+$isWordPress = defined('ABSPATH') && function_exists('add_action');
 
 // ========================================
 // DEFINIR PATHS
 // ========================================
 
+// Definir path base según entorno
 if ($isWordPress) {
-  // WordPress: paths del plugin
   if (!defined('FACTORY_PLUGIN_PATH')) {
     define('FACTORY_PLUGIN_PATH', plugin_dir_path(__FILE__));
   }
-
   define('FACTORY_BASE_PATH', FACTORY_PLUGIN_PATH);
-  define('FACTORY_BACKEND_PATH', FACTORY_BASE_PATH . '/backend');
-  define('FACTORY_APP_PATH', FACTORY_BACKEND_PATH . '/app');
-
-  $pluginName = 'factory-saas';
-  $appPath = FACTORY_APP_PATH;
-
 } else {
-  // Standalone: paths relativos
   if (!defined('FACTORY_BASE_PATH')) {
     define('FACTORY_BASE_PATH', dirname(__DIR__)); // Desde /backend/bootstrap.php
   }
-
-  define('FACTORY_BACKEND_PATH', FACTORY_BASE_PATH . '/backend');
-  define('FACTORY_APP_PATH', FACTORY_BACKEND_PATH . '/app');
-
-  $pluginName = 'default';
-  $appPath = FACTORY_APP_PATH;
 }
 
-// ========================================
-// CONSTANTES GLOBALES (compatibilidad)
-// ========================================
-
-if (!defined('BASE_PATH')) {
-  define('BASE_PATH', FACTORY_BASE_PATH);
-  define('BACKEND_PATH', FACTORY_BACKEND_PATH);
-  define('APP_PATH', FACTORY_APP_PATH);
-}
+define('FACTORY_BACKEND_PATH', FACTORY_BASE_PATH . '/backend');
+define('FACTORY_APP_PATH', FACTORY_BACKEND_PATH . '/app');
+$pluginName = $isWordPress ? $pluginID : 'default';
+$appPath = FACTORY_APP_PATH;
 
 // ========================================
 // CARGAR FRAMEWORK
@@ -61,7 +42,10 @@ require_once FACTORY_APP_PATH . '/config/init.php';
 // ========================================
 
 // Registrar instancia de la aplicación
-ogApp($pluginName, $appPath);
+ogApp($pluginName, $appPath, $isWordPress);
+
+// Las rutas de app se cargan DESPUÉS de crear ogApplication
+// Ver backend/api.php
 
 // ========================================
 // HOOKS WORDPRESS (solo si está en WordPress)
@@ -92,6 +76,8 @@ if ($isWordPress) {
 
     if ($route !== '') {
       $_SERVER['REQUEST_URI'] = '/api/' . $route;
+
+      // Cargar y ejecutar api.php
       require_once FACTORY_BACKEND_PATH . '/api.php';
       exit;
     }
@@ -107,4 +93,18 @@ if ($isWordPress) {
   register_deactivation_hook(FACTORY_PLUGIN_PATH . 'factory-saas-api.php', function() {
     flush_rewrite_rules();
   });*/
+
+} else {
+  // ========================================
+  // STANDALONE: Ejecutar api.php directamente
+  // ========================================
+
+  // Si estamos en standalone (llamado desde wp-file.php vía .htaccess)
+  // y la URL es /api/*, ejecutar api.php
+
+
+  if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/api/') !== false) {
+    require_once FACTORY_BACKEND_PATH . '/api.php';
+    exit;
+  }
 }

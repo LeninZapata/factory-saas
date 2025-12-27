@@ -2,10 +2,18 @@
  * Plugin Ejemplos - Funciones auxiliares
  */
 class ejemplos {
+  static getModules() {
+    return {
+      modal: window.ogFramework?.components?.modal, //  ogModule('modal'),
+      form: window.ogFramework?.core?.form,
+      toast: window.ogFramework?.components?.toast
+    };
+  }
   /**
    * Abrir modal de repetibles anidados con datos pre-cargados
    */
   static async openRepeatableWithData() {
+    const { modal, form, toast } = this.getModules();
     try {
       // Abrir modal
       const { modalId, loadPromise } = modal.open('ejemplos|forms/formularios/form-repetibles-anidados', {

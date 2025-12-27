@@ -23,7 +23,7 @@ class AuthHandler {
     // Cargar ogUtils bajo demanda
     $utils = ogApp()->helper('utils');
     $token = $utils->token(64);
-    $expiresAt = time() + SESSION_TTL;
+    $expiresAt = time() + OG_SESSION_TTL;
     $expiresAtFormatted = date('Y-m-d H:i:s', $expiresAt);
 
     if (isset($user['config']) && is_string($user['config'])) {
@@ -48,8 +48,8 @@ class AuthHandler {
         'user' => $user,
         'token' => $token,
         'expires_at' => $expiresAtFormatted,
-        'ttl' => SESSION_TTL,
-        'ttl_ms' => SESSION_TTL_MS
+        'ttl' => OG_SESSION_TTL,
+        'ttl_ms' => OG_SESSION_TTL_MS
       ]
     ];
   }

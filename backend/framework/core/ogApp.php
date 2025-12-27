@@ -4,17 +4,19 @@ class ogFramework {
   private static $instances = [];
   private $pluginName;
   private $pluginPath;
-  private $loaded = [];
+  private $isWordPress;
+  public $loaded = [];  // Public para que ogApplication pueda guardar router
 
-  private function __construct($pluginName = 'default', $pluginPath = null) {
+  private function __construct($pluginName = 'default', $pluginPath = null, $isWordPress = false) {
     $this->pluginName = $pluginName;
     $this->pluginPath = $pluginPath ?: APP_PATH;
+    $this->isWordPress = $isWordPress;
   }
 
   // Obtener instancia (singleton por plugin)
-  static function instance($pluginName = 'default', $pluginPath = null) {
+  static function instance($pluginName = 'default', $pluginPath = null, $isWordPress = false) {
     if (!isset(self::$instances[$pluginName])) {
-      self::$instances[$pluginName] = new self($pluginName, $pluginPath);
+      self::$instances[$pluginName] = new self($pluginName, $pluginPath, $isWordPress);
     }
     return self::$instances[$pluginName];
   }
@@ -28,9 +30,9 @@ class ogFramework {
     }
 
     // Buscar en framework primero, luego en app
-    $helperFile = OG_FRAMEWORK_PATH . "/helpers/og{$name}.php";
+    $helperFile = OG_FRAMEWORK_PATH . "/helpers/og" . ucfirst($name) . ".php";
     if (!file_exists($helperFile)) {
-      $helperFile = $this->pluginPath . "/helpers/og{$name}.php";
+      $helperFile = $this->pluginPath . "/helpers/og" . ucfirst($name) . ".php";
     }
 
     if (!file_exists($helperFile)) {
@@ -56,9 +58,9 @@ class ogFramework {
       return $this->loaded[$key];
     }
 
-    $serviceFile = OG_FRAMEWORK_PATH . "/services/og{$name}Service.php";
+    $serviceFile = OG_FRAMEWORK_PATH . "/services/og" . ucfirst($name) . "Service.php";
     if (!file_exists($serviceFile)) {
-      $serviceFile = $this->pluginPath . "/services/og{$name}Service.php";
+      $serviceFile = $this->pluginPath . "/services/og" . ucfirst($name) . "Service.php";
     }
 
     if (!file_exists($serviceFile)) {
@@ -66,7 +68,7 @@ class ogFramework {
     }
 
     require_once $serviceFile;
-    $className = "og{$name}Service";
+    $className = "og" . ucfirst($name) . "Service";
 
     if (!class_exists($className)) {
       throw new Exception("Service class not found: {$className}");
@@ -84,14 +86,19 @@ class ogFramework {
       return $this->loaded[$key];
     }
 
-    $coreFile = OG_FRAMEWORK_PATH . "/core/og{$name}.php";
+    // Router ya fue guardado por ogApplication
+    if ($name === 'router' && !isset($this->loaded[$key])) {
+      throw new Exception("Router not initialized yet");
+    }
+
+    $coreFile = OG_FRAMEWORK_PATH . "/core/og" . ucfirst($name) . ".php";
 
     if (!file_exists($coreFile)) {
       throw new Exception("Core class not found: {$name}");
     }
 
     require_once $coreFile;
-    $className = "og{$name}";
+    $className = "og" . ucfirst($name);
 
     if (!class_exists($className)) {
       throw new Exception("Core class not found: {$className}");
@@ -201,6 +208,11 @@ class ogFramework {
     return $this->pluginName;
   }
 
+  // Verificar si es WordPress
+  function isWordPress() {
+    return $this->isWordPress;
+  }
+
   // Verificar si un componente está cargado
   function isLoaded($type, $name) {
     $key = "{$type}_{$name}";
@@ -245,6 +257,6 @@ class ogFramework {
 }
 
 // Alias global para acceso más corto
-function ogApp($pluginName = 'default', $pluginPath = null) {
-  return ogFramework::instance($pluginName, $pluginPath);
+function ogApp($pluginName = 'default', $pluginPath = null, $isWordPress = false) {
+  return ogFramework::instance($pluginName, $pluginPath, $isWordPress);
 }

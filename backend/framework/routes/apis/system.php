@@ -72,7 +72,7 @@ $router->group('/api/system', function($router) {
         'timezone' => date_default_timezone_get(),
         'current_time' => date('Y-m-d H:i:s'),
         'timestamp' => time(),
-        'timezone_constant' => TIMEZONE
+        'timezone_constant' => OG_TIMEZONE
     ]);
   });*/
 

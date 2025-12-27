@@ -12,7 +12,7 @@ if (!defined('BASE_PATH')) {
 if (!class_exists('ogFramework')) {
   // Definir OG_FRAMEWORK_PATH solo si no existe
   if (!defined('OG_FRAMEWORK_PATH')) {
-    define('OG_FRAMEWORK_PATH', BACKEND_PATH . '/framework');
+    define('OG_FRAMEWORK_PATH', FACTORY_BACKEND_PATH . '/framework');
   }
   // Cargar el framework completo
   require_once OG_FRAMEWORK_PATH . '/config/init.php';

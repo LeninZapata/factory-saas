@@ -52,7 +52,7 @@ class ogCache {
     if (self::$sessionStarted) return;
 
     if (session_status() === PHP_SESSION_NONE) {
-      ini_set('session.gc_maxlifetime', SESSION_TTL);
+      ini_set('session.gc_maxlifetime', OG_SESSION_TTL);
       session_start();
     }
 
@@ -123,7 +123,7 @@ class ogCache {
    *
    * @param string $key Nombre del cache
    * @param mixed $value Valor a guardar
-   * @param int|null $ttl Tiempo de vida en segundos (solo para archivos, default: SESSION_TTL)
+   * @param int|null $ttl Tiempo de vida en segundos (solo para archivos, default: OG_SESSION_TTL)
    */
   static function set($key, $value, $ttl = null) {
     // Datos globales → $_SESSION
@@ -220,7 +220,7 @@ class ogCache {
 
   private static function setToFile($key, $value, $ttl = null) {
     $file = self::getPath($key);
-    $ttl = $ttl ?? SESSION_TTL;
+    $ttl = $ttl ?? OG_SESSION_TTL;
 
     $data = [
       'value' => $value,

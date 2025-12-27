@@ -8,17 +8,12 @@ class ogApplication {
     require_once OG_FRAMEWORK_PATH . '/core/ogRouter.php';
     $this->router = new ogRouter();
 
-    // Hace $router accesible en el scope de routes/api.php
-    $router = $this->router;
+    // Guardar router en ogApp para acceder vía core()
+    ogApp()->loaded['core_router'] = $this->router;
 
-    // Cargar rutas del framework primero
+    // Cargar rutas del framework (compone rutas de framework + app)
     if (file_exists(OG_FRAMEWORK_PATH . '/routes/api.php')) {
       require_once OG_FRAMEWORK_PATH . '/routes/api.php';
-    }
-
-    // Cargar rutas de la aplicación
-    if (file_exists(ROUTES_PATH . '/api.php')) {
-      require_once ROUTES_PATH . '/api.php';
     }
   }
 
