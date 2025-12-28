@@ -1,6 +1,13 @@
 <?php
 
+// Cargar trait antes de declarar la clase
+if (!trait_exists('ogValidatesUnique')) {
+  require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
+}
+
 class ogController {
+  use ogValidatesUnique;  // Usar el trait para validaciones
+  
   private $config, $table, $resource;
 
   function __construct($resourceName) {
@@ -70,7 +77,7 @@ class ogController {
     // Timestamps
     if ($this->config['timestamps'] ?? false) {
       $data['created_at'] = date('Y-m-d H:i:s');
-    }else{
+    } else {
       $data['dc'] = date('Y-m-d H:i:s');
       $data['tc'] = time();
     }
@@ -89,7 +96,7 @@ class ogController {
     // Timestamps
     if ($this->config['timestamps'] ?? false) {
       $data['updated_at'] = date('Y-m-d H:i:s');
-    }else{
+    } else {
       $data['du'] = date('Y-m-d H:i:s');
       $data['tu'] = time();
     }
@@ -116,29 +123,5 @@ class ogController {
       }
     }
     return $required;
-  }
-
-  // Validar campo único (legacy wrapper)
-  protected function validateUnique($table, $field, $value, $errorKey = null) {
-    if (!trait_exists('ogValidatesUnique')) {
-      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
-    }
-    return $this->validateUnique($table, $field, $value, $errorKey);
-  }
-
-  // Validar campo único excepto ID actual (legacy wrapper)
-  protected function validateUniqueExcept($table, $field, $value, $excludeId, $errorKey = null) {
-    if (!trait_exists('ogValidatesUnique')) {
-      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
-    }
-    return $this->validateUniqueExcept($table, $field, $value, $excludeId, $errorKey);
-  }
-
-  // Validar email (legacy wrapper)
-  protected function validateEmail($email, $table = null, $excludeId = null) {
-    if (!trait_exists('ogValidatesUnique')) {
-      require_once OG_FRAMEWORK_PATH . '/traits/ogValidatesUnique.php';
-    }
-    return $this->validateEmail($email, $table, $excludeId);
   }
 }

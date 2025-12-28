@@ -40,7 +40,7 @@ class endpoints {
       const cacheTTL = 60 * 60 * 1000; // 1 hora
 
       // Intentar obtener del caché primero
-      let data = cache.get(cacheKey);
+      let data = ogCache.get(cacheKey);
 
       if (data) {
         ogLogger.info('✅ Endpoints obtenidos desde caché');
@@ -49,7 +49,7 @@ class endpoints {
         ogLogger.info('📡 Cargando endpoints desde API...');
         
         // Hacer petición al endpoint
-        const response = await api.get('/api/system/routes');
+        const response = await ogApi.get('/api/system/routes');
 
         if (!response.success) {
           throw new Error(response.error || 'Error al cargar endpoints');
@@ -58,7 +58,7 @@ class endpoints {
         this.endpointsData = response.data;
         
         // Guardar en caché
-        cache.set(cacheKey, response.data, cacheTTL);
+        ogCache.set(cacheKey, response.data, cacheTTL);
         ogLogger.info('✅ Endpoints guardados en caché por 1 hora');
       }
 
@@ -295,7 +295,7 @@ class endpoints {
     }
 
     // Eliminar del caché
-    cache.delete('endpoints_routes_list');
+    ogCache.delete('endpoints_routes_list');
     ogLogger.info('✅ Caché eliminado');
 
     // Recargar datos

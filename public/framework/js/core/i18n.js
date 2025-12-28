@@ -1,4 +1,4 @@
-class i18n {
+class ogI18n {
   // NOTA: i18n es compartido entre todos los plugins
   // El último plugin en inicializarse define el idioma activo
   // Esto es intencional: un usuario solo usa un idioma a la vez
@@ -303,10 +303,12 @@ class i18n {
   }
 }
 
+// global
+window.ogI18n = ogI18n;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.i18n = i18n;
+  window.ogFramework.core.i18n = ogI18n;
 }
 
-
-window.__ = (key, params) => i18n.t(key, params);
+window.__ = (key, params) => ogI18n.t(key, params);

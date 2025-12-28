@@ -36,10 +36,16 @@ class ogService {
       if (!is_dir($providerPath)) continue;
 
       $normalizerClass = $provider . 'Normalizer';
+      $normalizerFile = $providerPath . '/' . $normalizerClass . '.php';
 
-      // Autoload maneja la carga
-      if (class_exists($normalizerClass) && method_exists($normalizerClass, 'detect')) {
-        if ($normalizerClass::detect($rawData)) return $provider;
+      // Cargar clase bajo demanda si existe el archivo
+      if (file_exists($normalizerFile)) {
+        require_once $normalizerFile;
+        
+        // Ahora sí verificar si existe y tiene el método detect
+        if (class_exists($normalizerClass) && method_exists($normalizerClass, 'detect')) {
+          if ($normalizerClass::detect($rawData)) return $provider;
+        }
       }
     }
 
@@ -49,6 +55,16 @@ class ogService {
   // Llamar método estático en clase de un provider
   static function call($category, $provider, $className, $method, ...$args) {
     $class = $provider . $className;
+
+    // Cargar clase bajo demanda si no existe
+    if (!class_exists($class)) {
+      $basePath = SERVICES_PATH . "/integrations/{$category}/{$provider}";
+      $classFile = $basePath . '/' . $class . '.php';
+      
+      if (file_exists($classFile)) {
+        require_once $classFile;
+      }
+    }
 
     if (!class_exists($class)) {
       ogLog::throwError(__('core.service.class_not_found', ['class' => $class]), [], self::$logMeta);

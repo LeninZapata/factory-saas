@@ -1,4 +1,4 @@
-class widget {
+class ogWidget {
   static grids = new Map();
   static draggedWidget = null;
 
@@ -15,12 +15,12 @@ class widget {
     if (window.ogFramework?.components?.[componentName]) {
       return window.ogFramework.components[componentName];
     }
-    
+
     // Fallback a window directo (compatibilidad temporal)
     if (window[componentName]) {
       return window[componentName];
     }
-    
+
     return null;
   }
 
@@ -87,7 +87,7 @@ class widget {
 
   static async loadWidgetContent(body, config) {
     const { view, form } = this.getModules();
-    
+
     if (!body) {
       ogLogger.error('com:widget', `Body no válido`);
       return;
@@ -103,7 +103,7 @@ class widget {
 
         // ✅ Usar getComponent helper
         const component = this.getComponent(config.component);
-        
+
         if (component && typeof component.render === 'function') {
           await component.render(compConfig, placeholder);
         } else {
@@ -171,7 +171,10 @@ class widget {
   }
 }
 
+// Global
+window.ogWidget = ogWidget;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.components.widget = widget;
+  window.ogFramework.components.widget = ogWidget;
 }

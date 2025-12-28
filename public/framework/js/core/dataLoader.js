@@ -1,4 +1,4 @@
-class dataLoader {
+class ogDataLoader {
   static getModules() {
     return {
       api: window.ogFramework?.core?.api || window.api,
@@ -146,7 +146,10 @@ class dataLoader {
   }
 }
 
+// Global
+window.ogDataLoader = ogDataLoader;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.dataLoader = dataLoader;
+  window.ogFramework.core.dataLoader = ogDataLoader;
 }

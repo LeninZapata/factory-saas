@@ -1,4 +1,4 @@
-class view {
+class ogView {
   static views = {};
   static loadedExtensions = {};
   static viewNavigationCache = new Map();
@@ -16,7 +16,7 @@ class view {
       events: window.ogFramework?.core?.events,
 
       // Component dependencies
-      tabs: window.ogFramework?.components?.tabs || window.tabs
+      tabs: window.ogFramework?.components?.tabs || window.ogTabs
     };
   }
 
@@ -30,19 +30,19 @@ class view {
     if (window.ogFramework?.components?.[componentName]) {
       return window.ogFramework.components[componentName];
     }
-    
+
     // Fallback a window directo (compatibilidad temporal)
     if (window[componentName]) {
       return window[componentName];
     }
-    
+
     return null;
   }
 
   static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
     const { cache } = this.getModules();
     const config = this.getConfig();
-    
+
     // Manejar notación extension|path (ej: botws|sections/botws-listado)
     if (viewName.includes('|')) {
       const [targetExtension, targetPath] = viewName.split('|');
@@ -149,8 +149,11 @@ class view {
       }
 
       if (viewData.tabs && extensionContext) {
+        ogLogger?.info('core:view', `🔍 ANTES de filtrar tabs:`, viewData.tabs.length, 'tabs');
+        ogLogger?.info('core:view', `🔍 extensionContext: ${extensionContext}, menuId: ${menuId || viewData.id}`);
         const effectiveMenuId = menuId || viewData.id;
         viewData.tabs = this.filterTabsByPermissions(viewData.tabs, extensionContext, effectiveMenuId);
+        ogLogger?.info('core:view', `🔍 DESPUÉS de filtrar tabs:`, viewData.tabs.length, 'tabs');
       }
 
       const combinedData = this.combineResources(viewData, menuResources);
@@ -194,14 +197,17 @@ class view {
   }
 
   static filterTabsByPermissions(tabs, extensionName, menuId) {
-    if (window.auth?.user?.role === 'admin') return tabs;
+    ogLogger?.info('core:view', `🔐 Filtrando tabs para extension: ${extensionName}, menu: ${menuId}`);
+    ogLogger?.info('core:view', `🔐 User role:`, window.ogAuth?.user?.role);
+    ogLogger?.info('core:view', `🔐 Tabs originales:`, tabs.length);
+    if (window.ogAuth?.user?.role === 'admin') return tabs;
 
-    if (!window.auth?.userPermissions?.extensions) {
+    if (!window.ogAuth?.userPermissions?.extensions) {
       this.getModules().ogLogger?.warn('core:view', 'Usuario sin permisos - ocultando tabs');
       return [];
     }
 
-    const extensionPerms = window.auth.userPermissions.extensions[extensionName];
+    const extensionPerms = window.ogAuth.userPermissions.extensions[extensionName];
 
     if (!extensionPerms || extensionPerms.enabled === false) {
       this.getModules().ogLogger?.warn('core:view', `Extension ${extensionName} sin permisos`);
@@ -284,7 +290,7 @@ class view {
 
   static async loadViewResources(viewData) {
     const { loader } = this.getModules();
-    
+
     if (viewData.scripts || viewData.styles) {
       try {
         // Normalizar rutas agregando 'extensions/' si no lo tienen
@@ -328,6 +334,7 @@ class view {
   }
 
   static renderView(viewData, extensionContext = null) {
+    const { tabs } = this.getModules();
     const content = document.getElementById('content');
     document.body.setAttribute('data-view', viewData.id);
     document.body.className = document.body.className
@@ -389,11 +396,12 @@ class view {
     const viewContainer = container || document.getElementById('content');
 
     await this.renderHookComponents(viewContainer);
-
+    ogLogger?.info('core:view', 'window.ogTabs:', window.ogTabs);
+    ogLogger?.info('core:view', 'window.ogFramework.components.tabs:', window.ogFramework?.components?.tabs);
     if (viewData.tabs) {
       const tabsContainer = viewContainer.querySelector('.view-tabs-container');
       if (tabsContainer) {
-        await tabs.render(viewData, tabsContainer);
+        await this.getModules().tabs.render(viewData, tabsContainer);
       }
     } else {
       await this.loadDynamicComponents(viewContainer);
@@ -409,10 +417,10 @@ class view {
 
     viewData.scripts.forEach((scriptPath) => {
       const componentName = this.extractComponentName(scriptPath);
-      
+
       // ✅ Usar getComponent helper
       const component = this.getComponent(componentName);
-      
+
       if (component && typeof component.init === 'function') {
         try {
           component.init();
@@ -475,15 +483,15 @@ class view {
   // Procesar cadenas i18n en contenido HTML
   static processI18nInString(str) {
     const { i18n } = this.getModules();
-    
+
     if (!str || typeof str !== 'string') return str;
-    
+
     // Reemplazar {i18n:key} o {i18n:key|param1:value1|param2:value2}
     return str.replace(/\{i18n:([^}]+)\}/g, (match, content) => {
       const parts = content.split('|');
       const key = parts[0];
       const params = {};
-      
+
       // Procesar parámetros opcionales
       for (let i = 1; i < parts.length; i++) {
         const [paramKey, paramValue] = parts[i].split(':');
@@ -491,7 +499,7 @@ class view {
           params[paramKey] = paramValue;
         }
       }
-      
+
       return i18n ? i18n.t(key, params) : key;
     });
   }
@@ -514,22 +522,22 @@ class view {
 
   static async loadDynamicComponents(container) {
     const { form } = this.getModules();
-    
+
     // Obtener el contexto de extensión del contenedor padre
     const viewContainer = container.closest('[data-extension-context]');
     const extensionContext = viewContainer?.getAttribute('data-extension-context') || null;
 
     const dynamicForms = container.querySelectorAll('.dynamic-form');
-    
+
     dynamicForms.forEach(async el => {
       const formJson = el.getAttribute('data-form-json');
-      
+
       if (formJson && form) {
         // Si hay contexto de extensión y el formJson no incluye '|', agregarlo
-        const formPath = (extensionContext && !formJson.includes('|')) 
-          ? `${extensionContext}|forms/${formJson}` 
+        const formPath = (extensionContext && !formJson.includes('|'))
+          ? `${extensionContext}|forms/${formJson}`
           : formJson;
-        
+
         await form.load(formPath, el);
       }
     });
@@ -554,7 +562,7 @@ class view {
   static initFormValidation() {
     const { form } = this.getModules();
     const formElements = document.querySelectorAll('form[data-validation]');
-    
+
     formElements.forEach(formEl => {
       if (form && typeof form.validate === 'function') {
         const formId = formEl.id;
@@ -589,7 +597,7 @@ class view {
 
   static processHooksForHTML(viewData) {
     const { hook } = this.getModules();
-    
+
     if (!viewData.id || !hook) return null;
 
     const allHooks = hook.execute(`hook_${viewData.id}`, []);
@@ -728,7 +736,10 @@ class view {
   }
 }
 
+// Global
+window.ogView = ogView;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.view = view;
+  window.ogFramework.core.view = ogView;
 }

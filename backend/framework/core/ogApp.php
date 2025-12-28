@@ -9,7 +9,13 @@ class ogFramework {
 
   private function __construct($pluginName = 'default', $pluginPath = null, $isWordPress = false) {
     $this->pluginName = $pluginName;
-    $this->pluginPath = $pluginPath ?: APP_PATH;
+
+    // No usar APP_PATH como fallback - debe pasarse explícitamente
+    if (!$pluginPath) {
+      throw new Exception("Plugin path is required for ogApp initialization");
+    }
+
+    $this->pluginPath = $pluginPath;
     $this->isWordPress = $isWordPress;
   }
 

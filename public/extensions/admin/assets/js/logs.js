@@ -75,7 +75,7 @@ class logs {
       const cacheTTL = 5 * 60 * 1000; // 5 minutos
 
       // Intentar obtener del caché primero
-      let data = cache.get(cacheKey);
+      let data = ogCache.get(cacheKey);
 
       if (data) {
         ogLogger.info('ext:admin:logs',`✅ Logs obtenidos desde caché (${filterKey})`);
@@ -108,7 +108,7 @@ class logs {
         }
 
         // Hacer petición al endpoint
-        const response = await api.get(endpoint);
+        const response = await ogApi.get(endpoint);
 
         if (!response.success) {
           throw new Error(response.error || 'Error al cargar logs');
@@ -117,7 +117,7 @@ class logs {
         this.logsData = response.data;
 
         // Guardar en caché
-        cache.set(cacheKey, response.data, cacheTTL);
+        ogCache.set(cacheKey, response.data, cacheTTL);
       }
 
       // Renderizar los logs con el filtro de layer actual
@@ -230,7 +230,7 @@ class logs {
         deleteBtn.disabled = true;
         deleteBtn.innerText = 'Eliminando...';
         try {
-          const res = await api.get('/api/cleanup/storage/logs');
+          const res = await ogApi.get('/api/cleanup/storage/logs');
           if (res.success) {
             ogToast.success('Logs eliminados correctamente');
             await this.forceReload();
@@ -260,7 +260,7 @@ class logs {
     });
   }
 
-  // Filtro por nivel usando el cache actual
+  // Filtro por nivel usando el ogCache actual
   static filterByLevel(level) {
     this.currentLevel = level;
     const container = document.getElementById('logs-container');
@@ -282,7 +282,7 @@ class logs {
     });
   }
 
-  // Filtro por layer usando el cache actual
+  // Filtro por layer usando el ogCache actual
   static filterByLayer(layer) {
     this.currentLayer = layer;
     const container = document.getElementById('logs-container');
@@ -356,11 +356,11 @@ class logs {
 
 
     // Eliminar todos los caches de logs usando PROYECT_SLUG
-    cache.delete(PROYECT_SLUG + '_logs_today');
-    cache.delete(PROYECT_SLUG + '_logs_yesterday');
-    cache.delete(PROYECT_SLUG + '_logs_7days');
-    cache.delete(PROYECT_SLUG + '_logs_15days');
-    cache.delete(PROYECT_SLUG + '_logs_30days');
+    ogCache.delete(PROYECT_SLUG + '_logs_today');
+    ogCache.delete(PROYECT_SLUG + '_logs_yesterday');
+    ogCache.delete(PROYECT_SLUG + '_logs_7days');
+    ogCache.delete(PROYECT_SLUG + '_logs_15days');
+    ogCache.delete(PROYECT_SLUG + '_logs_30days');
     ogLogger.info('ext:admin:logs','✅ Caché eliminado');
 
     // Determinar cuál filtro está activo

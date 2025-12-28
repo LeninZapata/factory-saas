@@ -41,6 +41,17 @@ if ($module) {
 
     // Verificar si existe controller personalizado
     $controllerClass = ucfirst($module) . 'Controller';
+    
+    // Intentar cargar controller personalizado (framework → app)
+    if (!class_exists($controllerClass)) {
+      try {
+        ogApp()->loadController($controllerClass);
+      } catch (Exception $e) {
+        // Controller no encontrado, usar genérico
+      }
+    }
+    
+    // Instanciar controller (personalizado o genérico)
     $ctrl = class_exists($controllerClass)
       ? new $controllerClass()
       : new ogController($module);

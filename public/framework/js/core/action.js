@@ -7,7 +7,7 @@
  * action.handle('modal:user-form');
  * action.handle('api:save', {data: {...}});
  */
-class action {
+class ogAction {
   static getModules() {
     return {
       navigation: window.ogFramework?.core?.navigation,
@@ -54,7 +54,7 @@ class action {
       case 'call':
       case 'method':
         return this.handleMethodCall(value, params, context);
-      
+
       case 'submit':
         return this.handleSubmit(value, params, context);
 
@@ -68,7 +68,7 @@ class action {
 
   static handleNavigate(screen, params, context) {
     const { navigation, view } = this.getModules();
-    
+
     if (navigation && typeof navigation.navigate === 'function') {
       navigation.navigate(screen, {
         container: context.container,
@@ -83,7 +83,7 @@ class action {
 
   static handleModal(viewPath, params, context) {
     const { modal } = this.getModules();
-    
+
     if (modal && typeof modal.open === 'function') {
       modal.open(viewPath, params);
     } else {
@@ -214,18 +214,16 @@ class action {
   }
 }
 
-// Registrar en ogFramework (preferido)
-if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.action = action;
-}
+// Global
+window.ogAction = ogAction;
 
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.action
-window.action = action;
+if (typeof window.ogFramework !== 'undefined') {
+  window.ogFramework.core.action = ogAction;
+}
 
 // Proxy global para uso en HTML onclick
 window.actionProxy = {
   handle: (actionStr, params, context) => {
-    return action.handle(actionStr, params, context);
+    return window.ogFramework.core.action.handle(actionStr, params, context);
   }
 };

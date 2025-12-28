@@ -26,8 +26,10 @@ trait ogValidatesUnique {
   public function validateEmail($email, $table = null, $excludeId = null) {
     if (empty($email)) return;
 
+    // Cargar ogValidation bajo demanda
+    $validation = ogApp()->helper('validation');
     // Validar formato
-    if (!ogValidation::email($email)) {
+    if (!$validation->email($email)) {
       ogResponse::error(__('validation.invalid_email'), 400);
     }
 

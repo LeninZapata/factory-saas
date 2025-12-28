@@ -2,7 +2,7 @@
 abstract class baseChatApiProvider implements chatApiProviderInterface {
 
   // Meta para logs
-  protected static $logMeta = ['module' => 'chatapi', 'layer' => 'framework'];
+  protected static $logMeta = ['module' => 'ogChatApi', 'layer' => 'framework'];
 
   protected $apiKey;
   protected $instance;
@@ -18,8 +18,8 @@ abstract class baseChatApiProvider implements chatApiProviderInterface {
   }
 
   function validateConfig(): bool {
-    if (empty($this->apiKey)) ogLog::throwError(__('services.chatapi.api_key_required', ['provider' => $this->getProviderName()]), [], self::$logMeta);
-    if (empty($this->instance)) ogLog::throwError(__('services.chatapi.instance_required', ['provider' => $this->getProviderName()]), [], self::$logMeta);
+    if (empty($this->apiKey)) ogLog::throwError(__('services.ogChatApi.api_key_required', ['provider' => $this->getProviderName()]), [], self::$logMeta);
+    if (empty($this->instance)) ogLog::throwError(__('services.ogChatApi.instance_required', ['provider' => $this->getProviderName()]), [], self::$logMeta);
     return true;
   }
 

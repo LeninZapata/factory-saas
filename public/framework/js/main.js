@@ -33,7 +33,7 @@
   let SCRIPTS_TO_LOAD = [
     // Core - ogLogger PRIMERO (se usa en todos los demás)
     'js/core/logger.js',
-    
+
     // Core - Resto en orden de dependencias
     'js/core/cache.js',
     'js/core/action.js',
@@ -101,7 +101,7 @@
         new Function(scriptContent)();
       });
 
-      // ✅ Asegurar que ogLogger esté disponible globalmente SIEMPRE
+      // Asegurar que ogLogger esté disponible globalmente SIEMPRE
       if (window.ogLogger) {
         window.ogFramework.logger = window.ogLogger;
         // Alias temporal para compatibilidad

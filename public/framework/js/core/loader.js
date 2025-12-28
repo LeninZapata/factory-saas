@@ -1,4 +1,4 @@
-class loader {
+class ogLoader {
   static loaded = new Set();
 
   static getConfig() {
@@ -152,11 +152,10 @@ class loader {
   }
 }
 
+// Global
+window.loader = ogLoader;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.loader = loader;
+  window.ogFramework.core.loader = ogLoader;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.loader
-window.loader = loader;

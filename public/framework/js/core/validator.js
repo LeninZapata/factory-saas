@@ -1,4 +1,4 @@
-class validator {
+class ogValidator {
   static schemas = {
     view: {
       required: ['id', 'title'],
@@ -66,11 +66,10 @@ class validator {
   }
 }
 
+// Mantener en window para compatibilidad (temporal)
+window.ogValidator = ogValidator;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.validator = validator;
+  window.ogFramework.core.validator = ogValidator;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.validator
-window.validator = validator;

@@ -22,23 +22,23 @@
 if (!function_exists('get_file_data')) {
   /**
    * Obtener datos del header del archivo (compatibilidad standalone)
-   * 
+   *
    * @param string $file Ruta del archivo
    * @param array $headers Headers a extraer
    * @return array Datos extraídos
    */
   function get_file_data($file, $headers = []) {
     $fileData = [];
-    
+
     if (!file_exists($file)) {
       return array_fill_keys($headers, '');
     }
-    
+
     // Leer primeras 8KB del archivo
     $fp = fopen($file, 'r');
     $fileContent = fread($fp, 8192);
     fclose($fp);
-    
+
     // Mapeo de headers comunes
     $headerMap = [
       'Plugin Name' => 'Name',
@@ -55,21 +55,21 @@ if (!function_exists('get_file_data')) {
       'License URI' => 'LicenseURI',
       'Plugin ID' => 'PluginID'
     ];
-    
+
     // Extraer cada header
     foreach ($headers as $header) {
       $key = $headerMap[$header] ?? $header;
-      
+
       // Buscar patrón: Header: Value
       $pattern = '/^[ \t\/*#@]*' . preg_quote($header, '/') . ':(.*)$/mi';
-      
+
       if (preg_match($pattern, $fileContent, $match)) {
         $fileData[$key] = trim(preg_replace('/\s*(?:\*\/|\?>).*/', '', $match[1]));
       } else {
         $fileData[$key] = '';
       }
     }
-    
+
     return $fileData;
   }
 }

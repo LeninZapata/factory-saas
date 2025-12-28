@@ -25,7 +25,7 @@ class UserHandler {
         'user_id' => $session['user_id'],
         'expired_since' => time() - $session['expires_timestamp']
       ], self::$logMeta);
-      
+
       self::deleteSession($token);
       return ['success' => false, 'error' => __('auth.token.expired')];
     }

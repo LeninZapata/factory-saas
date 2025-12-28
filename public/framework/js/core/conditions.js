@@ -1,4 +1,4 @@
-class conditions {
+class ogConditions {
   static rules = new Map();
   static watchers = new Map();
   static initialized = false;
@@ -113,7 +113,7 @@ class conditions {
   static extractConditions(fields, rulesMap, parentPath = '') {
     fields.forEach((field, index) => {
       let fieldPath;
-      
+
       // Construir fieldPath según el tipo de campo
       if (field.name) {
         fieldPath = parentPath ? `${parentPath}.${field.name}` : field.name;
@@ -139,7 +139,7 @@ class conditions {
       if (field.type === 'repeatable' && field.fields) {
         this.extractConditions(field.fields, rulesMap, fieldPath);
       }
-      
+
       // Recursivo para grouper
       if (field.type === 'grouper') {
         if (field.groups && Array.isArray(field.groups)) {
@@ -152,7 +152,7 @@ class conditions {
           this.extractConditions(field.fields, rulesMap, parentPath);
         }
       }
-      
+
       // Recursivo para groups
       if (field.type === 'group' && field.fields) {
         this.extractConditions(field.fields, rulesMap, parentPath);
@@ -250,7 +250,7 @@ class conditions {
   // Método auxiliar para reanudar y ejecutar evaluación final
   static resumeEvaluations(formId) {
     this.isFillingForm = false;
-    
+
     // Ejecutar evaluación final después de un pequeño delay
     setTimeout(() => {
       if (formId) {
@@ -276,7 +276,7 @@ class conditions {
       const normalizedPath = dataPath.replace(/\[\d+\]/g, '');
       return normalizedPath === repeatablePath;
     });
-    
+
     if (repeatableContainers.length === 0) {
       return;
     }
@@ -297,7 +297,7 @@ class conditions {
         // Buscar el campo target dentro de este item específico
         // Puede ser un input/select (con name), un repeatable anidado, o un grouper (con data-field-path)
         let targetField = item.querySelector(`[name*=".${fieldName}"]`);
-        
+
         // Si no se encuentra por name, buscar por data-field-path (repeatables anidados o groupers)
         if (!targetField) {
           const allFieldPaths = item.querySelectorAll('.form-repeatable[data-field-path], .grouper[data-field-path]');
@@ -308,7 +308,7 @@ class conditions {
             // Comparar si termina con el fieldName
             return normalizedFieldPath.endsWith(`.${fieldName}`) || normalizedFieldPath === fieldName;
           });
-          
+
           // Si hay múltiples candidatos, tomar el de path más corto (el más cercano al nivel actual)
           if (candidates.length > 0) {
             targetField = candidates.reduce((shortest, current) => {
@@ -318,7 +318,7 @@ class conditions {
             });
           }
         }
-        
+
         if (targetField) {
           const fieldElement = targetField.closest('.form-group, .form-checkbox, .form-repeatable, .grouper');
 
@@ -637,7 +637,7 @@ class conditions {
   }
 
   static debug(formId) {
-    
+
     ogLogger?.info('core:conditions', `Debug: ${formId}`);
 
     const rules = this.rules.get(formId);
@@ -650,7 +650,10 @@ class conditions {
   }
 }
 
+// Global
+window.ogConditions = ogConditions;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.conditions = conditions;
+  window.ogFramework.core.conditions = ogConditions;
 }

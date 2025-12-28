@@ -31,6 +31,6 @@ class ogLogger {
 
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.ogLogger = ogLogger;
+  window.ogFramework.core.logger = ogLogger;
   window.ogLogger = ogLogger;
 }

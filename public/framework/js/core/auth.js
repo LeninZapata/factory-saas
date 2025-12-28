@@ -1,4 +1,4 @@
-class auth {
+class ogAuth {
   static config = {};
   static user = null;
   static userPermissions = null;
@@ -25,7 +25,7 @@ class auth {
 
   static async init(config) {
     const globalConfig = window.ogFramework?.activeConfig || window.appConfig || {};
-    
+
     this.config = {
       enabled: true,
       loginView: 'auth/login',
@@ -65,7 +65,6 @@ class auth {
   // ============================================
 
   static async check() {
-    const {  cache, api } = this.getModules();
     const token = this.getToken();
 
     if (!token) {
@@ -95,7 +94,6 @@ class auth {
   }
 
   static async login(formIdOrCredentials) {
-    const { form } = this.getModules();
     try {
       ogLogger.info('core:auth', 'Iniciando login...');
       const { form, api, cache, toast } = this.getModules();
@@ -186,7 +184,7 @@ class auth {
 
   static setupLoginHandler() {
     const { events } = this.getModules();
-    
+
     if (!events) {
       ogLogger.error('core:auth', 'events no está cargado');
       return;
@@ -205,7 +203,7 @@ class auth {
       const data = Object.fromEntries(formData);
 
       if (!data.user || !data.pass) {
-        auth.showLoginError(form, __('core.auth.error.required_fields'));
+        ogAuth.showLoginError(form, __('core.auth.error.required_fields'));
         return;
       }
 
@@ -216,7 +214,7 @@ class auth {
         btn.textContent = __('core.auth.login.loading');
       }
 
-      const result = await auth.login(data);
+      const result = await ogAuth.login(data);
 
       if (btn) {
         btn.disabled = false;
@@ -224,7 +222,7 @@ class auth {
       }
 
       if (!result.success) {
-        auth.showLoginError(form, result.error || __('core.auth.error.login_failed'));
+        ogAuth.showLoginError(form, result.error || __('core.auth.error.login_failed'));
       }
     }, document);
 
@@ -233,7 +231,7 @@ class auth {
 
   static showLoginError(form, message) {
     let error = form.querySelector('.form-error');
-    
+
     if (!error) {
       error = document.createElement('div');
       error.className = 'form-error';
@@ -335,7 +333,6 @@ class auth {
     this.stopSessionMonitoring();
     this.clearSession();
     this.user = null;
-
     const { toast } = this.getModules();
     if (toast) {
       ogToast.warning(__('core.auth.session_expired'));
@@ -353,6 +350,7 @@ class auth {
   // ============================================
 
   static loadUserPermissions() {
+    console.log(`this.user.config:`, this.user.config);
     if (!this.user || !this.user.config) {
       ogLogger.warn('core:auth', 'No hay configuración de usuario');
       return;
@@ -496,7 +494,7 @@ class auth {
 
   static showLogin() {
     const { layout, view } = this.getModules();
-    
+
     if (layout) {
       layout.init('auth');
     }
@@ -606,11 +604,10 @@ class auth {
   }
 }
 
+// Mantener en window para compatibilidad
+window.ogAuth = ogAuth;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.auth = auth;
+  window.ogFramework.core.auth = ogAuth;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.auth
-window.auth = auth;

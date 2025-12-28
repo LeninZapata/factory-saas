@@ -1,14 +1,14 @@
-class sidebar {
+class ogSidebar {
   static menuData = {
     menu: []
   };
 
   static getModules() {
     return {
-      view: window.ogFramework?.core?.view || window.view,
-      hook: window.ogFramework?.core?.hook || window.hook,
-      auth: window.ogFramework?.core?.auth || window.auth,
-      cache: window.ogFramework?.core?.cache || window.cache,
+      view: window.ogFramework?.core?.view || window.ogView,
+      hook: window.ogFramework?.core?.hook || window.ogHook,
+      auth: window.ogFramework?.core?.auth || window.ogAuth,
+      cache: window.ogFramework?.core?.cache || window.ogCache,
     };
   }
 
@@ -388,7 +388,10 @@ class sidebar {
   }
 }
 
+// Global
+window.ogSidebar = ogSidebar;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.sidebar = sidebar;
+  window.ogFramework.core.sidebar = ogSidebar;
 }

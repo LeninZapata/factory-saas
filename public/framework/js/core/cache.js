@@ -1,4 +1,4 @@
-class cache {
+class ogCache {
   static memoryCache = new Map();
   static defaultTTL = 60 * 60 * 1000;
   static prefix = null;
@@ -105,7 +105,7 @@ class cache {
 
   static clear() {
     const prefix = this.getPrefix();
-    
+
     // Limpiar memoryCache solo del proyecto actual
     for (const key of this.memoryCache.keys()) {
       if (key.startsWith(prefix)) {
@@ -151,7 +151,7 @@ class cache {
     const memoryKeys = Array.from(this.memoryCache.keys())
       .filter(key => key.startsWith(prefix))
       .map(key => key.replace(prefix, ''));
-    
+
     const localKeys = Object.keys(localStorage)
       .filter(key => key.startsWith(prefix))
       .map(key => key.replace(prefix, ''));
@@ -205,9 +205,9 @@ class cache {
       const config = window.ogFramework?.activeConfig || window.appConfig;
       slug = config?.slug || 'default';
     }
-    
+
     const debugKey = `debugCache_${slug}`;
-    
+
     window[debugKey] = {
       stats: () => this.getStats(),
       clear: () => this.clear(),
@@ -224,10 +224,10 @@ class cache {
       prefix: () => this.getPrefix(),
       slug: () => slug
     };
-    
+
     // También mantener window.debugCache genérico (apunta al último)
     window.debugCache = window[debugKey];
-    
+
     ogLogger.debug('core:cache', `Cache debug enabled for: ${slug} (access via window.${debugKey})`);
   }
 }
@@ -236,11 +236,10 @@ setInterval(() => cache.cleanup(), 5 * 60 * 1000);
 
 window.addEventListener('load', () => cache.cleanup());
 
+// Global
+window.ogCache = ogCache;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.cache = cache;
+  window.ogFramework.core.cache = ogCache;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.cache
-window.cache = cache;

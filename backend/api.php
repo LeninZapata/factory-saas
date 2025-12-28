@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   exit();
 }
 
-// Cargar bootstrap (maneja todo)
-require_once __DIR__ . '/bootstrap.php';
+// Bootstrap ya fue cargado desde wp.php → bootstrap.php → api.php
+// NO cargar bootstrap aquí (causaría loop infinito)
 
 // Ejecutar aplicación
 $app = new ogApplication();

@@ -164,7 +164,7 @@ class ogModal {
   static close(modalId) {
     const { tabs } = this.getModules();
     const overlay = this.modals.get(modalId);
-    
+
     if (overlay) {
       overlay.remove();
       this.modals.delete(modalId);
@@ -178,7 +178,7 @@ class ogModal {
 
   static async openWithData(resource, options = {}) {
     const { dataLoader, hook, toast, form } = this.getModules();
-    
+
     if (!options.id) {
       ogLogger.warn('com:modal', 'No se especificó ID para cargar datos');
       const result = this.open(resource, options);

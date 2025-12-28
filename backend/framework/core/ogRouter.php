@@ -153,7 +153,20 @@ class ogRouter {
         ogLog::throwError(__('core.router.controller_not_found', ['controller' => $class]), [], self::$logMeta);
       }
 
-      $controller = new $class();
+      // Instanciar controller correctamente
+      $reflection = new ReflectionClass($class);
+      $constructor = $reflection->getConstructor();
+      
+      if ($constructor && $constructor->getNumberOfRequiredParameters() > 0) {
+        // Controller requiere parámetros (probablemente ogController)
+        // Extraer resourceName desde el nombre de la clase
+        // Ejemplo: WebhookController -> webhook, UserController -> user
+        $resourceName = strtolower(str_replace('Controller', '', $class));
+        $controller = new $class($resourceName);
+      } else {
+        // Controller sin parámetros requeridos
+        $controller = new $class();
+      }
 
       if (!method_exists($controller, $method)) {
         ogLog::throwError(__('core.router.method_not_found_in_controller', ['method' => $method, 'controller' => $class]), [], self::$logMeta);

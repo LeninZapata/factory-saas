@@ -29,9 +29,9 @@ class ogHttp {
 
     try {
       $ch = curl_init();
-
+      $url = ogApp()->helper('url')::normalizeUrl($url);
       $curlOpts = [
-        CURLOPT_URL => ogUrl::normalizeUrl($url),
+        CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => $config['timeout'],
         CURLOPT_SSL_VERIFYPEER => $config['ssl_verify'],

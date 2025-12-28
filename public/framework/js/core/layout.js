@@ -1,4 +1,4 @@
-class layout {
+class ogLayout {
   static init(mode = 'app', container = null) {
     const app = container || document.getElementById('app');
     if (!app) return;
@@ -62,7 +62,10 @@ class layout {
   }
 }
 
+// Global
+window.ogLayout = ogLayout;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.layout = layout;
+  window.ogFramework.core.layout = ogLayout;
 }

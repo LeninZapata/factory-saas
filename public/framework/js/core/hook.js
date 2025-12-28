@@ -1,4 +1,4 @@
-class hook {
+class ogHook {
   static hooks = new Map();
   static loadedHooks = new Set();
   static pluginRegistry = new Map();
@@ -480,7 +480,10 @@ class hook {
   }
 }
 
+// Global
+window.ogHook = ogHook;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.hook = hook;
+  window.ogFramework.core.hook = ogHook;
 }

@@ -1,21 +1,22 @@
-class datatable {
+class ogDatatable {
   static tables = new Map();
   static counter = 0;
 
   static getModules() {
     return {
-      hook: window.ogFramework?.core?.hook,
-      view: window.ogFramework?.core?.view,
-      auth: window.ogFramework?.core?.auth,
-      api: window.ogFramework?.core?.api,
+      hook      : window.ogFramework?.core?.hook,
+      view      : window.ogFramework?.core?.view,
+      auth      : window.ogFramework?.core?.auth,
+      api       : window.ogFramework?.core?.api,
       dataLoader: window.ogFramework?.core?.dataLoader,
-      i18n: window.ogFramework?.core?.i18n,
+      i18n      : window.ogFramework?.core?.i18n,
+      cache     : window.ogFramework?.core?.cache,
     };
   }
 
   static getComponent(){
     return {
-    
+
     }
   }
 
@@ -85,7 +86,7 @@ class datatable {
 
   static detectPluginName(container) {
     const { hook, view } = this.getModules();
-    
+
     if (!container || typeof container.closest !== 'function') {
       ogLogger.warn('com:datatable', 'Container inválido en detectPluginName');
       return null;
@@ -114,6 +115,7 @@ class datatable {
 
   static async loadData(config, extensionName) {
     const source = config.source;
+    const { api, cache } = this.getModules();
 
     if (!source) {
       ogLogger.warn('com:datatable', 'No source specified');
@@ -243,10 +245,10 @@ class datatable {
     // Si es un objeto simple CON campos de datos (no solo success), convertirlo a array
     if (typeof response === 'object' && Object.keys(response).length > 0) {
       // Verificar si tiene campos que parecen datos de entidad (id, name, etc)
-      const hasDataFields = Object.keys(response).some(key => 
+      const hasDataFields = Object.keys(response).some(key =>
         !['success', 'message', 'error', 'status'].includes(key)
       );
-      
+
       if (hasDataFields) {
         return [response];
       }
@@ -583,7 +585,7 @@ class datatable {
 
   static hasRoleAccess(action) {
     const { auth } = this.getModules();
-    
+
     // Si la acción no tiene restricción de role, permitir acceso
     if (!action.role) return true;
 
@@ -603,6 +605,7 @@ class datatable {
 
   // Obtener datos cacheados de una tabla por source
   static getCached(source) {
+    const { cache } = this.getModules();
     const cacheKey = `datatable_${source.replace(/[^a-zA-Z0-9]/g, '_')}`;
     const cached = cache.get(cacheKey);
 
@@ -637,12 +640,16 @@ class datatable {
 
   // Limpiar caché de una tabla específica
   static clearCache(source) {
+    const { cache } = this.getModules();
     const cacheKey = `datatable_${source.replace(/[^a-zA-Z0-9]/g, '_')}`;
     cache.delete(cacheKey);
   }
 }
 
+// ✅ Exponer GLOBALMENTE como ogModal (usado en onclick de HTML)
+window.ogDatatable = ogDatatable;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.components.datatable = datatable;
+  window.ogFramework.components.datatable = ogDatatable;
 }

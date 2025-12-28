@@ -1,4 +1,4 @@
-class api {
+class ogApi {
   static getModules() {
     return {
       toast: window.ogFramework?.components?.toast,
@@ -11,7 +11,7 @@ class api {
     if (options._context) {
       return options._context;
     }
-    
+
     // Fallback a activeConfig
     return window.ogFramework?.activeConfig || {};
   }
@@ -23,7 +23,7 @@ class api {
 
   static getHeaders(options = {}) {
     const config = this.getConfig(options);
-    return { 
+    return {
       'Content-Type': 'application/json',
       ...config.api?.headers
     };
@@ -32,7 +32,7 @@ class api {
   static async request(endpoint, options = {}) {
     const baseURL = this.getBaseURL(options);
     let fullURL = `${baseURL}${endpoint}`;
-    
+
     const protocolMatch = fullURL.match(/^(https?:\/\/)/);
     const protocol = protocolMatch ? protocolMatch[1] : '';
     const urlWithoutProtocol = protocol ? fullURL.slice(protocol.length) : fullURL;
@@ -50,10 +50,10 @@ class api {
 
     if (!options.skipAuth) {
       const token = auth?.getToken?.();
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-        
+
         if (config.isDevelopment) {
           const tokenDisplay = token.substring(0, 20) + '...';
           ogLogger.debug('core:api', `🔑 Token incluido: ${tokenDisplay}`);
@@ -67,9 +67,9 @@ class api {
       const res = await fetch(fullURL, { ...options, headers });
 
       if (res.status === 400) {
-        
+
         ogLogger.error('core:api', `❌ Bad Request (400) - ${fullURL}`);
-        
+
         const contentType = res.headers.get('content-type') || '';
         let errorMsg = window.__?.('core.api.bad_request') || 'Bad Request';
 
@@ -95,9 +95,9 @@ class api {
 
           try {
             const errorData = JSON.parse(text);
-            
+
             ogLogger.error('core:api', `❌ Error ${res.status}:`, errorData);
-            
+
             const errorMsg = errorData.message || errorData.error || `HTTP ${res.status}`;
 
             if (toast && typeof ogToast.error === 'function') {
@@ -105,11 +105,11 @@ class api {
             }
 
             throw new Error(errorMsg);
-            
+
           } catch (parseError) {
-            
+
             ogLogger.error('core:api', `❌ Error ${res.status} - JSON corrupto`);
-            
+
             console.group(`🚨 JSON Corrupto - ${fullURL}`);
             console.error('Status:', res.status);
             console.error('Content-Type:', contentType);
@@ -124,9 +124,9 @@ class api {
           }
         } else if (contentType.includes('text/html')) {
           const htmlError = await res.text();
-          
+
           ogLogger.error('core:api', `❌ Error ${res.status} - Respuesta HTML`);
-          
+
           console.group(`🚨 Error HTML Backend - ${fullURL}`);
           console.error('Status:', res.status);
           console.log(htmlError);
@@ -137,9 +137,9 @@ class api {
           throw new Error(`${window.__?.('core.api.backend_error') || 'Error de backend'}: ${errorMsg}`);
         } else {
           const textError = await res.text();
-          
+
           ogLogger.error('core:api', `❌ Error ${res.status}`);
-          
+
           throw new Error(`HTTP ${res.status}: ${textError.substring(0, 100)}`);
         }
       }
@@ -152,9 +152,9 @@ class api {
         try {
           return JSON.parse(text);
         } catch (parseError) {
-          
+
           ogLogger.error('core:api', `⚠️ Respuesta exitosa pero JSON corrupto`);
-          
+
           console.group(`⚠️ JSON Corrupto (200 OK) - ${fullURL}`);
           console.warn('Status:', res.status);
           console.error('Parse Error:', parseError.message);
@@ -165,9 +165,9 @@ class api {
         }
       } else if (contentType.includes('text/html')) {
         const htmlResponse = await res.text();
-        
+
         ogLogger.error('core:api', `⚠️ Backend devolvió HTML en lugar de JSON`);
-        
+
         console.group(`⚠️ Respuesta HTML inesperada - ${fullURL}`);
         console.log(htmlResponse);
         console.groupEnd();
@@ -183,7 +183,7 @@ class api {
       }
 
     } catch (error) {
-      
+
       ogLogger.error('core:api', `Error: ${fullURL}`, error.message);
       throw error;
     }
@@ -195,11 +195,10 @@ class api {
   static delete = (e, opts = {}) => this.request(e, { method: 'DELETE', ...opts });
 }
 
+// Global
+window.ogApi = ogApi;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.api = api;
+  window.ogFramework.core.api = ogApi;
 }
-
-// Mantener en window para compatibilidad (temporal)
-// TODO: Eliminar cuando toda la app use ogFramework.core.api
-window.api = api;

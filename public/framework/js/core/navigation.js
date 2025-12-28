@@ -5,7 +5,7 @@
  * 
  * Preparado para React Native (mismo API)
  */
-class navigation {
+class ogNavigation {
   static history = [];
   static currentScreen = null;
   static maxHistory = 50;
@@ -146,7 +146,10 @@ class navigation {
   }
 }
 
+// Global
+window.ogNavigation = ogNavigation;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.navigation = navigation;
+  window.ogFramework.core.navigation = ogNavigation;
 }

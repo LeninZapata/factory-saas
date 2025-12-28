@@ -1,4 +1,4 @@
-class form {
+class ogForm {
   static schemas = new Map();
   static registeredEvents = new Set();
   static selectCache = new Map(); // ✅ Cache para selects con source
@@ -10,7 +10,8 @@ class form {
       cache: window.ogFramework?.core?.cache,
       hook: window.ogFramework?.core?.hook,
       validator: window.ogFramework?.core?.validator,
-      auth: window.ogFramework?.core?.auth
+      auth: window.ogFramework?.core?.auth,
+      api: window.ogFramework?.core?.api,
     };
   }
 
@@ -1832,14 +1833,14 @@ class form {
       return `style="${styleConfig}"`;
     }
 
-    // Si es objeto, usar styleHandler
+    // Si es objeto, usar ogStyle
     if (typeof styleConfig === 'object') {
-      if (!window.styleHandler) {
-        this.getModules().ogLogger?.warn('cor:form', 'styleHandler no disponible');
+      if (!window.ogStyle) {
+        this.getModules().ogLogger?.warn('cor:form', 'ogStyle no disponible');
         return '';
       }
 
-      const inlineStyle = styleHandler.resolve(styleConfig);
+      const inlineStyle = ogStyle.resolve(styleConfig);
       return inlineStyle ? `style="${inlineStyle}"` : '';
     }
 
@@ -1930,6 +1931,7 @@ class form {
   }
 
   static async loadSelectFromAPI(selectId, source, valueField, labelField) {
+    const { api } = this.getModules();
     const selectEl = document.getElementById(selectId);
     if (!selectEl) {
       this.getModules().ogLogger?.error('core:form', `Select no encontrado: ${selectId}`);
@@ -2016,7 +2018,10 @@ class form {
   }
 }
 
+// Exponer GLOBALMENTE como ogModal
+window.ogForm = ogForm;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.core.form = form;
+  window.ogFramework.core.form = ogForm;
 }

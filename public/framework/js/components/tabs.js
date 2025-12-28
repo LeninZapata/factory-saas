@@ -1,4 +1,4 @@
-class tabs {
+class ogTabs {
   static tabCache = new Map();
   static extensionContextMap = new Map(); // Guardar contexto por ID de tabs
 
@@ -14,12 +14,12 @@ class tabs {
     if (window.ogFramework?.components?.[componentName]) {
       return window.ogFramework.components[componentName];
     }
-    
+
     // Fallback a window directo (compatibilidad temporal)
     if (window[componentName]) {
       return window[componentName];
     }
-    
+
     return null;
   }
 
@@ -31,7 +31,7 @@ class tabs {
     // Obtener el contexto de extensión del contenedor padre para preservarlo
     const viewContainer = container.closest('[data-extension-context]');
     const extensionContext = viewContainer?.getAttribute('data-extension-context') || null;
-  
+
     // Guardar el contexto para este tabs específico
     this.extensionContextMap.set(tabsData.id, extensionContext);
 
@@ -246,7 +246,7 @@ class tabs {
 
   static async loadDynamicComponents(tabsId, container) {
     const { form } = this.getModules();
-    
+
     // Obtener el contexto guardado para este tabs específico
     const extensionContext = this.extensionContextMap.get(tabsId) || null;
 
@@ -254,20 +254,20 @@ class tabs {
 
     for (const formContainer of formContainers) {
       const formJson = formContainer.dataset.formJson;
-      
+
       try {
         let formPath = formJson;
 
         // Si hay contexto de extensión y el formJson no incluye '|'
         if (extensionContext && !formJson.includes('|')) {
           // Remover el prefijo de extensión si ya está presente
-          const cleanFormJson = formJson.startsWith(`${extensionContext}/`) 
-            ? formJson.substring(extensionContext.length + 1) 
+          const cleanFormJson = formJson.startsWith(`${extensionContext}/`)
+            ? formJson.substring(extensionContext.length + 1)
             : formJson;
-          
+
           formPath = `${extensionContext}|forms/${cleanFormJson}`;
         }
-        
+
         await form.load(formPath, formContainer);
       } catch (error) {
         ogLogger.error('com:tabs', 'Error cargando formulario:', error);
@@ -306,7 +306,10 @@ class tabs {
   }
 }
 
+// Exponer GLOBALMENTE como ogTabs
+window.ogTabs = ogTabs;
+
 // Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
-  window.ogFramework.components.tabs = tabs;
+  window.ogFramework.components.tabs = ogTabs;
 }
