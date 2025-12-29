@@ -1,13 +1,26 @@
 Backend (Framework):
-☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
-de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
-que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-☐ Constantes por ejemplo IS_DEV es muy generico debe ser OG_IS_DEV o algo asi para evitar conflictos con otros plugins
+✔ Constantes por ejemplo IS_DEV es muy generico debe ser OG_IS_DEV o algo asi para evitar conflictos con otros plugins @done(29-12-2025 02:43)
 APP_PATH | FRAMEWORK_PATH | DB_TABLES otros ejemplos de constantes que pueden chocar con otros plugins
 ☐ crear un backend/front que seria la parte visual pero debe ser compatible con wordpress y standalone
 esto es para crear extensiones que tengan parte backend y parte frontend pero que casi sea lo mismo
 recuerda quqe wordpress crear 1 menu y en ese menu asignas los que se puede ver aca y en el frontend seria
 lo mismo pero en el frontend.
+☐ en ogApp hay formas de mejorar la carga de handler,conroller, service, helper etc...
+primero hay que crear el hendler y controller directo para usar ahorita no mas se esta cargando
+luego el servicio si tiene una asignacion directa pero no tiene creo el Load, entonces a ese hay que crearle el load
+y ha ambos al directo tipo service y loadService preguntale a la IA si teniendo un array interno de controler,handler y servicios
+preCargados entonces retornar el objeto directamente sin tener que volver a isntanciarlo o llamarlo con requiere
+preguntale si asi es mucho mas rapido en tiempo de ejecucion
+☐ Crear un metodo que transporte datos desde framework a otros lado como app
+crear un ogApp()->setStore('key','value') y ogApp()->getStore('key')
+esto es para transportar datos entre framework y app o entre framework y plugins
+con esto se evita global y se puede transportar datos facilmente ya que la instancia de ogApp
+es unica en todo el sistema y se puede usar en cualquier parte
+☐ no me muestra los routes de session cuando voy a la pantalla de routes
+☐ no existe el key api.session.invalidated y creo que hay algunos
+☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
+de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
+que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
 
 Frontend (Framework):
 ✔ Se daño el FOCUS en el input, no hay referencia debes pedir que lo haga de nuevo @done(23-12-2025 21:47)

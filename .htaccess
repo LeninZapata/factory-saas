@@ -5,7 +5,7 @@
 
 # Configuraciones básicas
 Options -Indexes
-DirectoryIndex public/index.html
+DirectoryIndex backend/public/index.html
 
 # Habilitar mod_rewrite
 RewriteEngine On
@@ -36,4 +36,4 @@ RewriteRule ^shared/(.*)$ shared/$1 [L]
 # ============================================
 # Todo lo demás va a public/
 RewriteCond %{REQUEST_URI} !^/backend/
-RewriteRule ^(.*)$ public/$1 [L]
+RewriteRule ^(.*)$ backend/public/$1 [L]
