@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Demo</title>
+  <link rel="stylesheet" href="../framework/css/main.css" />
+</head>
+<body>
+<div id="demo-app"></div>
+<script>
+  var cfg = {
+    slug: 'demo',
+    version: '1.0.0',
+    baseUrl: '/factory-saas/public/demo/',
+    frameworkUrl: '/factory-saas/public/framework/',
+    frameworkPath: '../framework',
+    container: '#demo-app',
+
+    // ✅ Vista inicial
+    defaultView: 'dashboard/dashboard',  // ← Cambiar aquí
+
+    // ✅ Agregar i18n
+    i18n: {
+      enabled: true,
+      defaultLang: 'es',
+      availableLangs: ['es', 'en']
+    },
+
+    auth: {
+      enabled: false
+    },
+
+    routes: {
+      coreViews: '../framework2/js/views',
+      extensionViews: '../2extensions/{extensionName}/views2'
+    }
+  };
+</script>
+<script src="../og-framework.js"></script>
+<script>ogFramework.register('demo', cfg);</script>
+</body>
+</html>

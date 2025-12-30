@@ -1,0 +1,232 @@
+// ==========================================
+// DOCUMENTACIÓN DE USO
+// ==========================================
+
+/*
+SISTEMA DE TRIGGERS INTERNO DEL FRAMEWORK
+
+El sistema de triggers permite que módulos del framework inyecten contenido
+o ejecuten acciones en otros módulos sin acoplamiento directo.
+
+═══════════════════════════════════════════════════════════════════════
+
+PASO 1: REGISTRAR UN TRIGGER
+═══════════════════════════════════════════════════════════════════════
+
+En el módulo que QUIERE INYECTAR contenido (ej: auth.js, notifications.js):
+
+Al FINAL del archivo, después de registrar en ogFramework:
+
+  if (typeof window.ogTrigger !== 'undefined') {
+    ogTrigger.register('sidebar:footer', 'ogAuth', 'injectLogoutButton');
+    //                  ↑ target        ↑ clase   ↑ método
+  }
+
+Target format: 'moduloReceptor:zona'
+  - 'sidebar:footer' → Inyectar en footer del sidebar
+  - 'sidebar:header' → Inyectar en header del sidebar
+  - 'layout:toolbar' → Inyectar en toolbar del layout
+  - etc.
+
+═══════════════════════════════════════════════════════════════════════
+
+PASO 2: CREAR EL MÉTODO QUE SE EJECUTARÁ
+═══════════════════════════════════════════════════════════════════════
+
+En el mismo módulo (ej: auth.js):
+
+  static injectLogoutButton(target) {
+    const config = window.ogFramework?.activeConfig || {};
+    
+    // Validar si debe ejecutarse
+    if (!config.auth?.enabled) {
+      return;
+    }
+
+    // Generar el HTML
+    const html = `<button>Logout</button>`;
+
+    // Inyectarlo usando el método inject() del módulo receptor
+    const { sidebar } = this.getModules();
+    if (sidebar?.inject) {
+      const zone = target.split(':')[1]; // 'footer'
+      sidebar.inject(zone, html);
+      
+      // Bindear eventos si es necesario
+      setTimeout(() => {
+        const btn = document.getElementById('btn-logout');
+        if (btn) {
+          btn.addEventListener('click', () => this.logout());
+        }
+      }, 0);
+    }
+  }
+
+═══════════════════════════════════════════════════════════════════════
+
+PASO 3: EJECUTAR TRIGGERS EN EL MÓDULO RECEPTOR
+═══════════════════════════════════════════════════════════════════════
+
+En el módulo que RECIBE contenido (ej: sidebar.js):
+
+Ejecutar triggers DESPUÉS de que el DOM esté listo:
+
+  static renderMenu() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    // Renderizar estructura
+    const header = this.generateHeader();
+    const menuHTML = this.generateMenuHtml(this.menuData.menu);
+    const footer = this.generateFooter();
+    sidebar.innerHTML = header + menuHTML + footer;
+
+    // Bindear eventos propios
+    this.bindMenuEvents();
+
+    // ✅ EJECUTAR TRIGGERS - DOM ya está listo
+    if (window.ogTrigger) {
+      ogTrigger.execute('sidebar'); // Ejecuta todos los 'sidebar:*'
+    }
+  }
+
+═══════════════════════════════════════════════════════════════════════
+
+PASO 4: AGREGAR MÉTODO inject() EN EL MÓDULO RECEPTOR
+═══════════════════════════════════════════════════════════════════════
+
+En el módulo receptor (ej: sidebar.js):
+
+  static inject(zone, html) {
+    const validZones = ['header', 'footer', 'content'];
+    
+    if (!validZones.includes(zone)) {
+      ogLogger?.error('core:sidebar', `Zona inválida: ${zone}`);
+      return false;
+    }
+
+    const container = document.querySelector(`.sidebar-${zone}`);
+    
+    if (!container) {
+      ogLogger?.error('core:sidebar', `Contenedor no encontrado: .sidebar-${zone}`);
+      return false;
+    }
+
+    container.innerHTML += html;
+    ogLogger?.info('core:sidebar', `✅ Contenido inyectado en sidebar-${zone}`);
+    return true;
+  }
+
+═══════════════════════════════════════════════════════════════════════
+
+EJEMPLOS COMPLETOS
+═══════════════════════════════════════════════════════════════════════
+
+EJEMPLO 1: Auth inyecta logout en sidebar footer
+────────────────────────────────────────────────
+
+// auth.js (al final)
+ogTrigger.register('sidebar:footer', 'ogAuth', 'injectLogoutButton');
+
+// auth.js (método)
+static injectLogoutButton(target) {
+  if (!config.auth?.enabled) return;
+  const html = `<button id="btn-logout">Logout</button>`;
+  ogSidebar.inject('footer', html);
+}
+
+// sidebar.js (en renderMenu, después de innerHTML)
+ogTrigger.execute('sidebar');
+
+
+EJEMPLO 2: Notifications inyecta campana en sidebar header
+───────────────────────────────────────────────────────────
+
+// notifications.js (al final)
+ogTrigger.register('sidebar:header', 'ogNotifications', 'injectBell');
+
+// notifications.js (método)
+static injectBell(target) {
+  const html = `<div class="notification-bell">🔔</div>`;
+  ogSidebar.inject('header', html);
+}
+
+// sidebar.js (ya ejecuta todos los triggers con 'sidebar')
+ogTrigger.execute('sidebar'); // ← Ejecuta auth Y notifications
+
+
+EJEMPLO 3: Widget inyecta botón en layout toolbar
+──────────────────────────────────────────────────
+
+// widget.js (al final)
+ogTrigger.register('layout:toolbar', 'ogWidget', 'injectQuickAction');
+
+// widget.js (método)
+static injectQuickAction(target) {
+  const html = `<button>Quick Action</button>`;
+  ogLayout.inject('toolbar', html);
+}
+
+// layout.js (después de renderizar toolbar)
+ogTrigger.execute('layout');
+
+═══════════════════════════════════════════════════════════════════════
+
+PATRONES Y BUENAS PRÁCTICAS
+═══════════════════════════════════════════════════════════════════════
+
+1. NAMING DE TARGETS
+   Format: 'moduloReceptor:zona'
+   ✅ Correcto: 'sidebar:footer', 'layout:toolbar'
+   ❌ Incorrecto: 'footer', 'sidebar_footer'
+
+2. VALIDACIÓN EN EL MÉTODO
+   Siempre validar condiciones antes de inyectar:
+   if (!config.feature?.enabled) return;
+
+3. EVENTOS ASÍNCRONOS
+   Usar setTimeout(() => {...}, 0) para bindear eventos después de inyectar
+
+4. EJECUCIÓN POR MÓDULO
+   Cada módulo ejecuta solo sus propios triggers:
+   ogTrigger.execute('sidebar') // Solo 'sidebar:*'
+   ogTrigger.execute('layout')  // Solo 'layout:*'
+
+5. ORDEN DE CARGA
+   Los triggers se registran cuando el script carga.
+   Se ejecutan cuando el módulo receptor está listo.
+   No importa el orden de carga de scripts.
+
+═══════════════════════════════════════════════════════════════════════
+
+DEBUGGING
+═══════════════════════════════════════════════════════════════════════
+
+// Ver todos los triggers registrados
+ogTrigger.list();
+
+// Ver triggers de un módulo específico
+ogTrigger.list('sidebar');
+
+// Resetear (útil para testing)
+ogTrigger.reset();
+
+═══════════════════════════════════════════════════════════════════════
+
+CHECKLIST PARA AGREGAR UN NUEVO TRIGGER
+═══════════════════════════════════════════════════════════════════════
+
+En el módulo que INYECTA (ej: auth.js):
+□ Registrar trigger al final del archivo
+□ Crear método estático que recibe (target)
+□ Validar condiciones antes de inyectar
+□ Usar módulo.inject(zone, html)
+□ Bindear eventos con setTimeout si es necesario
+
+En el módulo que RECIBE (ej: sidebar.js):
+□ Tener método inject(zone, html)
+□ Tener estructura DOM con clases .modulo-zona
+□ Ejecutar ogTrigger.execute('modulo') después de renderizar
+
+═══════════════════════════════════════════════════════════════════════
+*/

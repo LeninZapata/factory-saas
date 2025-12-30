@@ -5,7 +5,7 @@
 
 # Configuraciones básicas
 Options -Indexes
-DirectoryIndex backend/public/index.html
+DirectoryIndex public/index.html
 
 # Habilitar mod_rewrite
 RewriteEngine On
@@ -19,7 +19,7 @@ RewriteRule ^api/(.*)$ wp.php [QSA,L]
 
 # ============================================
 # ARCHIVOS ESTÁTICOS EXISTENTES
-# ============================================
+# ====================0========================
 # Si el archivo existe físicamente, servirlo directamente
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
@@ -36,4 +36,4 @@ RewriteRule ^shared/(.*)$ shared/$1 [L]
 # ============================================
 # Todo lo demás va a public/
 RewriteCond %{REQUEST_URI} !^/backend/
-RewriteRule ^(.*)$ backend/public/$1 [L]
+RewriteRule ^(.*)$ public/$1 [L]
