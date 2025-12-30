@@ -7,45 +7,46 @@ Sistema blacksystem con arquitectura MVC personalizada, sistema de extensiones y
 
 ### Backend (PHP)
 
+
 #### Logging
-- Usar `log::error()`, `log::warning()`, `log::info()`, `log::debug()` (solo para debug) del helper log.php
+- Usar `ogLog::warn()`,`ogLog::error()`, `ogLog::warning()`, `ogLog::info()`, `ogLog::debug()` (solo para debug) del helper ogLog.php
 - Los logs se guardan en `/backend/app/storage/logs/`
-- SIEMPRE incluir contexto con array `['module' => 'nombre']`
+- SIEMPRE incluir contexto con array `$logMeta` que debe estar como variable de clase, sino agregarla como `public $logMeta = ['module' => 'nombre_clase', 'layer' => 'framework|app'];`
 
 #### Arquitectura
 - **Controllers**: Extienden de `controller` base, métodos CRUD estándar
 - **Handlers**: Lógica especializada (generación archivos, procesamiento)
 - **Resources**: Archivos JSON que definen estructura de modelos
-- **Helpers**: Funciones utilitarias estáticas (db, file, log, request, response, validation)
+- **Helpers**: Funciones utilitarias estáticas recargadas desde el inicio (ogDb, ogLog, ogRequest, ogResponse), tambien existe otros helpers especificos como ogFile, ogHttp, ogStr, ogUrl, etc.. deben ser llamado asi ogApp()->helper('str')->metodo() 
 - **Middleware**: authMiddleware, corsMiddleware, jsonMiddleware, etc.
 
 #### Acceso a Base de Datos
 - Usar helper `db::table('nombre_tabla')` - NO MySQLQueryBuilder
 - Métodos disponibles:
-  - `db::table('users')->find($id)` - Buscar por ID
-  - `db::table('users')->where('campo', 'valor')->first()` - Primera coincidencia
-  - `db::table('users')->where()->get()` - Múltiples resultados
-  - `db::table('users')->insert($data)` - Insertar
-  - `db::table('users')->where()->update($data)` - Actualizar
-  - `db::table('users')->where()->delete()` - Eliminar
-  - `db::table('users')->paginate($page, $perPage)->get()` - Paginación
-  - `db::table('users')->count()` - Contar registros
-  - `db::table('users')->whereFilters()` - agregar filtros dinámicos en array (mi favorita)
-  - dentro de `framework/helpers/db.php` hay más métodos útiles como el `whereFilters()`
+  - `ogDb::table('users')->find($id)` - Buscar por ID
+  - `ogDb::table('users')->where('campo', 'valor')->first()` - Primera coincidencia
+  - `ogDb::table('users')->where()->get()` - Múltiples resultados
+  - `ogDb::table('users')->insert($data)` - Insertar
+  - `ogDb::table('users')->where()->update($data)` - Actualizar
+  - `ogDb::table('users')->where()->delete()` - Eliminar
+  - `ogDb::table('users')->paginate($page, $perPage)->get()` - Paginación
+  - `ogDb::table('users')->count()` - Contar registros
+  - `ogDb::table('users')->whereFilters()` - agregar filtros dinámicos en array (mi favorita)
+  - dentro de `framework/helpers/ogDb.php` hay más métodos útiles como el `whereFilters()`
 
 #### Respuestas API
 ```php
 // Éxito
-response::success($data, $message, $statusCode);
+ogResponse::success($data, $message, $statusCode);
 
 // Error servidor
-response::serverError($message, $debug);
+ogResponse::serverError($message, $debug);
 
 // No encontrado
-response::notFound($message);
+ogResponse::notFound($message);
 
 // Error validación
-response::json(['success' => false, 'error' => $message], 200);
+ogResponse::json(['success' => false, 'error' => $message], 200);
 ```
 
 #### Traducciones
@@ -89,23 +90,18 @@ response::json(['success' => false, 'error' => $message], 200);
 }
 ```
 
-#### Rutas Estándar
-- Datos de bots: `/shared/bots/data/{number}.json`
-- Workflows: `/shared/bots/infoproduct/rapid/workflow_{number}.json`
-- Activadores: `/shared/bots/infoproduct/rapid/activators_{number}.json`
-- Mensajes: `/shared/bots/infoproduct/messages/{type}_{product_id}.json`
-
 #### Helpers de Archivos
 ```php
 // Guardar JSON con data
-file::saveJson($path, $data, $module, $action);
+ogFile::saveJson($path, $data, $module, $action);
 
 // Guardar JSON con items
-file::saveJsonItems($path, $items, $module, $action);
+ogFile::saveJsonItems($path, $items, $module, $action);
 
 // Leer JSON con reconstrucción automática
-file::getJson($path, $reconstructCallback);
+ogFile::getJson($path, $reconstructCallback);
 ```
+Nota: usar la referencia ogApp()->helper('file')->metodo() para llamar a los metodos del helper ogFile
 
 ### Handlers
 
@@ -115,7 +111,7 @@ file::getJson($path, $reconstructCallback);
 - Reconstrucción automática si no existen
 - Ejemplo:
 ```php
-class botHandlers {
+class botHandler {
   static function getDataFile($botNumber) {
     $path = STORAGE_PATH . '/bots/data/' . $botNumber . '.json';
     return file::getJson($path, function() use ($botNumber) {
@@ -133,17 +129,21 @@ class botHandlers {
 
 #### Estructura Estándar
 ```php
-class moduloController extends controller {
+class moduloController extends ogController {
+  // Nombre de la tabla asociada a este controlador
+  protected $table = DB_TABLES['users'];
+  private $logMeta = ['module' => 'moduloController', 'layer' => 'app|framework'];
+
   function __construct() {
     parent::__construct('nombre_recurso');
   }
 
   function create() {
-    $data = request::data();
+    $data = ogRequest::data();
 
     // Validaciones
     if (!isset($data['campo'])) {
-      response::json(['success' => false, 'error' => __('modulo.error')], 200);
+      ogResponse::json(['success' => false, 'error' => __('modulo.error')], 200);
     }
 
     // Timestamps
@@ -152,17 +152,17 @@ class moduloController extends controller {
 
     // Insertar
     try {
-      $id = db::table('tabla')->insert($data);
+      $id = ogDb::table($this->table)->insert($data);
 
       // Invocar handlers si aplica
       if ($affected > 0) {
-        moduloHandler::handleContext($data, 'create');
+        ogApp()->handler($this->table)->metodoConexto($data, 'create'); // llama do
       }
 
-      response::success(['id' => $id], __('modulo.success'), 201);
+      ogResponse::success(['id' => $id], __('modulo.success'), 201);
     } catch (Exception $e) {
-      log::error('Controller - Error', ['message' => $e->getMessage()], ['module' => 'modulo']);
-      response::serverError(__('modulo.error'), IS_DEV ? $e->getMessage() : null);
+      ogLlog::error('Controller - Error', ['message' => $e->getMessage()], $this->logMeta);
+      ogResponse::serverError(__('modulo.error'), IS_DEV ? $e->getMessage() : null);
     }
   }
 }
@@ -171,7 +171,7 @@ class moduloController extends controller {
 ### Frontend (JavaScript)
 
 #### Estructura de Extensiones
-- Cada extensión en `/public/extensions/{nombre}/`
+- Cada extensión en `/public/extensions/{nombre}/` (puede cambiar las rutas segun config)
 - Archivos JSON para definir vistas, formularios, secciones
 - JavaScript en `/assets/js/`
 - Traducciones en `/lang/{es|en}.json`
@@ -187,13 +187,13 @@ class moduloEntity {
   static context = 'nombre_contexto';
 
   static async get(id) {
-    const res = await api.get(`${this.apis.endpoint}/${id}`);
+    const res = await ogModule('api').get(`${this.apis.endpoint}/${id}`);
     return res.success === false ? null : (res.data || res);
   }
 
   static async save(formId) {
-    const validation = form.validate(formId);
-    if (!validation.success) return toast.error(validation.message);
+    const validation = ogModule('form').validate(formId);
+    if (!validation.success) return ogComponent('toast').error(validation.message);
 
     const body = this.buildBody(validation.data);
     const result = this.currentId
@@ -201,8 +201,8 @@ class moduloEntity {
       : await this.create(body);
 
     if (result) {
-      toast.success(__('modulo.success'));
-      modal.closeAll();
+      ogComponent('toast').success(__('modulo.success'));
+      ogComponent('modal').closeAll();
       this.refresh();
     }
   }
@@ -210,13 +210,13 @@ class moduloEntity {
 ```
 
 #### Componentes Framework
-- `api` - Llamadas HTTP
-- `form` - Manejo formularios (fill, validate, clearAllErrors)
-- `modal` - Modales
-- `toast` - Notificaciones
-- `datatable` - Tablas de datos
-- `auth` - Autenticación (auth.user)
-- `logger` - Logs frontend
+- `ogApi` - Llamadas HTTP
+- `ogForm` - Manejo formularios (fill, validate, clearAllErrors)
+- `ogModal` - Modales
+- `ogToast` - Notificaciones
+- `ogDatatable` - Tablas de datos
+- `ogAuth` - Autenticación (auth.user)
+- `ogLogger` - Logs frontend
 
 ### Nombres y Estructura
 
@@ -226,7 +226,8 @@ class moduloEntity {
 - **Métodos**: camelCase → `function getUserData()`
 - **Variables**: camelCase → `$userData`, `$botNumber`
 - **Constantes**: UPPER_SNAKE_CASE → `SHARED_PATH`, `BASE_PATH`
-- **Archivos JSON**: snake_case → `bot_data_1.json`, `user_settings.json`
+- **Archivos JSON de almacenamiento**: snake_case → `bot_data_1.json`, `user_settings.json`
+- **Archivos JSON para vistas/form**: nameextension-view1 → `nameextension-view1.json`
 
 #### IMPORTANTE
 - Nombres de archivos, clases, métodos, variables: SIEMPRE en inglés
@@ -236,20 +237,22 @@ class moduloEntity {
 
 #### Rutas API
 - `/backend/app/routes/apis/{modulo}.php`
-- Registradas en `/backend/app/routes/api.php`
+- Registradas en `/backend/app/routes/apis/{modulo}.php`
+
+Existen rutas para app/ como para framework/.
+- Registradas en `/backend/app/routes/apis/` y 
+- Registradas en `/backend/framework/routes/apis`
 
 #### Extensiones
 - Plugin.json define metadatos
-- Rutas propias en `/routes/routes.php`
-- Autoload desde `/backend/framework/core/extensionLoader.php`
 
 ## Reglas Importantes
 
 1. **NO eliminar archivos** sin verificar dependencias
-2. **Usar constantes** de `/backend/app/config/consts.php`:
-   - `BASE_PATH`, `BACKEND_PATH`, `SHARED_PATH`, `STORAGE_PATH`
-   - `TIME_MINUTE`, `TIME_HOUR`, `TIME_DAY`, etc.
-3. **NO usar `require_once`** - autoload en `consts.php` ya lo maneja
+2. **Usar constantes** de  `/backend/framework/config/consts.php` y `/backend/app/config/consts.php`
+3. **NO usar `require_once`** - por lo general todo esta como carga bajo de manda sin autoload, es decir
+puedes user ogApp()->helper('nombre_helper')->metodo() o ogApp()->handler('nombre_handler')->service() o ogApp()->core('nombre_modulo')->metodo()
+ogApp()->controller('nombre_controller')->metodo() ogApp()->helper('nombre_modelo')->metodo()
 4. **Espaciado**: 2 espacios para indentación
 5. **NO dejar espacios** en blanco al final de líneas
 6. **Comentarios existentes**: NO eliminar, solo editar si necesario
@@ -266,11 +269,11 @@ class moduloEntity {
 $data['dc'] = date('Y-m-d H:i:s');
 $data['ta'] = time();
 
-$id = db::table('tabla')->insert($data);
+$id = ogDb::table($this->table)->insert($data);
 
 if ($id) {
   $data['id'] = $id;
-  moduloHandler::handleByContext($data, 'create');
+  ogApp()->handler('handler')->handleByContext($data, 'create');
 }
 ```
 
@@ -278,8 +281,8 @@ if ($id) {
 ```php
 // En handler
 static function getFile($identifier) {
-  $path = SHARED_PATH . '/ruta/archivo_' . $identifier . '.json';
-  return file::getJson($path, function() use ($identifier) {
+  $path = SHARED_PATH|RUTA . '/ruta/archivo_' . $identifier . '.json';
+  return ogFile::getJson($path, function() use ($identifier) {
     return self::generateFile($identifier, null, 'rebuild');
   });
 }
@@ -292,7 +295,7 @@ if (isset($data['config']['apis']) && is_array($data['config']['apis'])) {
   foreach ($data['config']['apis'] as $key => $ids) {
     $resolved = [];
     foreach ($ids as $id) {
-      $item = db::table('tabla')->find($id);
+      $item = ogDb::table($this->table)->find($id);
       if ($item) {
         if (isset($item['config']) && is_string($item['config'])) {
           $item['config'] = json_decode($item['config'], true);
@@ -308,9 +311,11 @@ if (isset($data['config']['apis']) && is_array($data['config']['apis'])) {
 ## Notas de Desarrollo
 
 - **Logs mínimos**: Solo errores y operaciones críticas
-- **Código minimalista**: Sin comentarios PHPDoc excesivos en handlers
+- **Código minimalista**: Sin comentarios PHPDoc excesivos en handlers y otros metodos simples, solo comentarios necesarios ya que a las clases
+y metodos son semanticos y se entiende, solo comentarios en cosas complejas
+- **Modularidad**: Lógica compleja en handlers, controllers limpios
 - **Versatilidad**: Métodos deben funcionar con o sin datos completos
-- **Performance**: Usar archivos JSON para datos frecuentes, evitar consultas repetitivas
+- **Performance**: Usar archivos JSON para datos frecuentes, evitar consultas repetitivas (por lo general solo en flujos (workflows) o bots)
 
 ## Comentarios en metodos/funciones/clases
 - no quiero que hagas esto:

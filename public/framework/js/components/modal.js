@@ -2,18 +2,6 @@ class ogModal {
   static modals = new Map();
   static counter = 0;
 
-  // ❌ DEPRECADO: Usar ogModule() y ogComponent() en su lugar
-  static getModules() {
-    return {
-      form: ogModule('form'),
-      view: ogModule('view'),
-      dataLoader: ogModule('dataLoader'),
-      hook: ogModule('hook'),
-      toast: ogComponent('toast'),
-      tabs: ogComponent('tabs'),
-      i18n: ogModule('i18n')
-    };
-  }
 
   static open(resource, options = {}) {
     const modalId = `modal-${++this.counter}`;
@@ -176,7 +164,10 @@ class ogModal {
   }
 
   static async openWithData(resource, options = {}) {
-    const { dataLoader, hook, toast, form } = this.getModules();
+    const dataLoader = ogModule('dataLoader');
+    const hook = ogModule('hook');
+    const toast = ogComponent('toast');
+    // form no se usa directamente aquí
 
     if (!options.id) {
       ogLogger.warn('com:modal', 'No se especificó ID para cargar datos');
@@ -272,7 +263,7 @@ class ogModal {
 
   // Procesar cadenas i18n en contenido (usa i18n.processString)
   static processI18nInString(str) {
-    const { i18n } = this.getModules();
+    const i18n = ogModule('i18n');
     return i18n ? i18n.processString(str) : str;
   }
 }

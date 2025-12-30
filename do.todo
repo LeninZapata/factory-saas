@@ -1,43 +1,12 @@
 Backend (Framework):
-☐ en ogApp hay formas de mejorar la carga de handler,conroller, service, helper etc...
-primero hay que crear el hendler y controller directo para usar ahorita no mas se esta cargando
-luego el servicio si tiene una asignacion directa pero no tiene creo el Load, entonces a ese hay que crearle el load
-y ha ambos al directo tipo service y loadService preguntale a la IA si teniendo un array interno de controler,handler y servicios
-preCargados entonces retornar el objeto directamente sin tener que volver a isntanciarlo o llamarlo con requiere
-preguntale si asi es mucho mas rapido en tiempo de ejecucion
-☐ Crear un metodo que transporte datos desde framework a otros lado como app
-crear un ogApp()->setStore('key','value') y ogApp()->getStore('key')
-esto es para transportar datos entre framework y app o entre framework y plugins
-con esto se evita global y se puede transportar datos facilmente ya que la instancia de ogApp
-es unica en todo el sistema y se puede usar en cualquier parte
-☐ no me muestra los routes de session cuando voy a la pantalla de routes
-☐ no existe el key api.session.invalidated y creo que hay algunos
+☐ no existe el key api.session.invalidated y creo que hay algunos y core.auth.session_expired
 ☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-
+☐ CONSTANTE en el framework que estan mal STORAGE_PATH DB_TABLES
 Frontend (Framework):
-✔ otro archivo que esta consumiento muchos tokens son los arhcivos de idioma @done(29-12-2025 23:10)
-se repiten muchas veces los key padre por ejemplp
-"infoproduct.products.list.title": "Gestión de Infoproductos",
-"infoproduct.products.list.header.title": "Infoproductos Digitales",
-el "infoproduct.products" se repite muchas veces podriamos hacer algo como
-"infoproduct": {
-  "products": {
-    "list": {
-      "title": "Gestión de Infoproductos",
-      "header": {
-        "title": "Infoproductos Digitales"
-      }
-    }
-  }
-}
-esto ayudaria a reducir tokens en los archivos de idioma
-MIDE EL PESO COMO QUEDA ANTES Y DESPUES PARA VER SI REALMENTE AYUDA
-☐ Usar ogModule('modal'), y ogComponent('toast') en vez de window.ogFramework?.components?.modal para traerlos a
-directamente las exntesiones para hacer esto con mejor semantica.
-☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ En el visor de los logs agregar un copy para copiar el contenido del log rapidamente
+☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
@@ -73,3 +42,4 @@ quedar en el primer campo obligatorio que falte por llenar
 y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
 y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento 
 michos tokens.
+

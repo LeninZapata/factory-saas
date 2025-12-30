@@ -1,9 +1,5 @@
 class ogLangSelector {
-  static getModules() {
-    return {
-      i18n: window.ogFramework?.core?.i18n || window.ogI18n
-    };
-  }
+
 
   static init() {
     const header = document.querySelector('.header, #header');
@@ -16,7 +12,8 @@ class ogLangSelector {
       return;
     }
 
-    const { i18n } = this.getModules();
+
+    const i18n = ogModule('i18n');
     if (!i18n) {
       ogLogger?.warn('com:langSelector', 'i18n no disponible');
       return;

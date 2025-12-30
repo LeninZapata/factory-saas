@@ -5,24 +5,6 @@ class ogAuth {
   static userPreferences = null;
   static sessionCheckInterval = null;
 
-  static getModules() {
-    return {
-      cache: window.ogFramework?.core?.cache || window.ogCache,
-      api: window.ogFramework?.core?.api || window.ogApi,
-      view: window.ogFramework?.core?.view || window.ogView,
-      form: window.ogFramework?.core?.form || window.ogForm,
-      hook: window.ogFramework?.core?.hook || window.ogHook,
-      sidebar: window.ogFramework?.core?.sidebar || window.ogSidebar,
-      layout: window.ogFramework?.core?.layout || window.ogLayout,
-      events: window.ogFramework?.core?.events || window.ogEvents,
-      toast: window.ogFramework?.components?.toast || window.ogToast,
-    };
-  }
-
-  // ============================================
-  // INICIALIZACIÓN
-  // ============================================
-
   static async init(config) {
     const globalConfig = window.ogFramework?.activeConfig || window.appConfig || {};
 
@@ -34,9 +16,9 @@ class ogAuth {
       sessionCheckInterval: 5 * 60 * 1000,
       tokenTTL: 24 * 60 * 60 * 1000,
       api: {
-        login: '/api/user/login',
-        logout: '/api/user/logout',
-        me: '/api/user/profile'
+        login: '/api/auth/login',
+        logout: '/api/auth/logout',
+        me: '/api/auth/profile'
       },
       ...config
     };
@@ -73,11 +55,11 @@ class ogAuth {
     }
 
     try {
-      const { api } = this.getModules();
+      const api = ogModule('api');
       const response = await api.get(this.config.api.me);
 
       if (response.success && response.data) {
-        const { cache } = this.getModules();
+        const cache = ogModule('cache');
         cache.setLocal(`${this.config.storageKey}_user`, response.data, this.config.tokenTTL);
         ogLogger.success('core:auth', 'Sesión válida');
         return true;
@@ -97,7 +79,10 @@ class ogAuth {
   static async login(formIdOrCredentials) {
     try {
       ogLogger.info('core:auth', 'Iniciando login...');
-      const { form, api, cache, toast } = this.getModules();
+      const form = ogModule('form');
+      const api = ogModule('api');
+      const cache = ogModule('cache');
+      const toast = ogComponent('toast');
 
       let credentials;
       if (typeof formIdOrCredentials === 'string') {
@@ -169,7 +154,7 @@ class ogAuth {
 
     if (token) {
       try {
-        const { api } = this.getModules();
+        const api = ogModule('api');
         await api.post(this.config.api.logout);
         ogLogger.success('core:auth', 'Logout en backend exitoso');
       } catch (error) {
@@ -191,8 +176,8 @@ class ogAuth {
   // ============================================
 
   static setupLoginHandler() {
-    const { events } = this.getModules();
 
+    const events = ogModule('events');
     if (!events) {
       ogLogger.error('core:auth', 'events no está cargado');
       return;
@@ -260,7 +245,7 @@ class ogAuth {
   // ============================================
 
   static getToken() {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     const key = `${this.config.storageKey}_token`;
     const token = cache.getLocal(key);
 
@@ -268,12 +253,12 @@ class ogAuth {
   }
 
   static async getUser() {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     return cache.getLocal(`${this.config.storageKey}_user`);
   }
 
   static clearSession() {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     cache.delete(`${this.config.storageKey}_token`);
     cache.delete(`${this.config.storageKey}_user`);
   }
@@ -320,24 +305,27 @@ class ogAuth {
 
     if (!token) {
       ogLogger.warn('core:auth', '🔐 Token no encontrado en verificación periódica');
+      ogComponent('toast')?.warning(__('🔐 Token no encontrado en verificación periódica'));
       this.handleSessionExpired();
       return;
     }
 
     try {
-      const { api } = this.getModules();
+      const api = ogModule('api');
       const response = await api.get(this.config.api.me);
 
       if (response.success && response.data) {
         ogLogger.debug('core:auth', '✅ Sesión válida (verificación periódica)');
       } else {
         ogLogger.warn('core:auth', '⚠️ Respuesta inesperada en verificación de sesión');
+        ogComponent('toast')?.warning(__('Respuesta inesperada en verificación de sesión'));
         this.handleSessionExpired();
       }
 
     } catch (error) {
       if (error.message.includes('401') || error.message.includes('Token')) {
         ogLogger.warn('core:auth', '🔐 Sesión expirada detectada en verificación periódica');
+        ogComponent('toast')?.warning(__('🔐 Sesión expirada detectada en verificación periódica'));
         this.handleSessionExpired();
       } else {
         ogLogger.error('core:auth', 'Error en verificación de sesión:', error.message);
@@ -349,9 +337,9 @@ class ogAuth {
     this.stopSessionMonitoring();
     this.clearSession();
     this.user = null;
-    const { toast } = this.getModules();
-    if (toast) {
-      ogToast.warning(__('core.auth.session_expired'));
+    const toast = ogComponent('toast');
+    if (toast && typeof toast.warning === 'function') {
+      toast.warning(__('core.auth.session_expired'));
     }
 
     ogLogger.warn('core:auth', '⚠️ Sesión expirada, redirigiendo al login...');
@@ -389,7 +377,7 @@ class ogAuth {
   }
 
   static filterExtensionsByPermissions() {
-    const { hook } = this.getModules();
+    const hook = ogModule('hook');
     if (this.user?.role === 'admin') {
       ogLogger.info('core:auth', '👑 Usuario admin detectado - sin filtrado de permisos');
       return;
@@ -508,7 +496,8 @@ class ogAuth {
   // ============================================
 
   static showLogin() {
-    const { layout, view } = this.getModules();
+    const layout = ogModule('layout');
+    const view = ogModule('view');
 
     if (layout) {
       layout.init('auth');
@@ -523,7 +512,10 @@ class ogAuth {
 
   static async showApp() {
     const layoutExists = document.querySelector('.layout .header');
-    const { layout, hook, view, sidebar } = this.getModules();
+    const layout = ogModule('layout');
+    const hook = ogModule('hook');
+    const view = ogModule('view');
+    const sidebar = ogModule('sidebar');
 
     if (!layoutExists && layout) {
       layout.init('app');
@@ -561,7 +553,11 @@ class ogAuth {
 
   static clearAppCaches() {
     ogLogger.info('core:auth', 'Limpiando caches de aplicación...');
-    const { view, form, hook, sidebar, cache } = this.getModules();
+    const view = ogModule('view');
+    const form = ogModule('form');
+    const hook = ogModule('hook');
+    const sidebar = ogModule('sidebar');
+    const cache = ogModule('cache');
 
     if (view) {
       if (view.viewNavigationCache) view.viewNavigationCache.clear();
@@ -594,7 +590,9 @@ class ogAuth {
 
   static async reloadAppAfterPermissionChange() {
     ogLogger.info('core:auth', 'Recargando aplicación con nuevos permisos...');
-    const { hook, view, sidebar } = this.getModules();
+    const hook = ogModule('hook');
+    const view = ogModule('view');
+    const sidebar = ogModule('sidebar');
 
     if (hook?.loadPluginHooks) {
       await hook.loadPluginHooks();
@@ -642,7 +640,7 @@ class ogAuth {
       </button>
     `;
 
-    const { sidebar } = this.getModules();
+    const sidebar = ogModule('sidebar');
     if (sidebar && sidebar.inject) {
       const zone = target.split(':')[1]; // Extraer 'footer' de 'sidebar:footer'
       sidebar.inject(zone, html);

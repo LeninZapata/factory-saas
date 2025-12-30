@@ -1,10 +1,5 @@
 class ogDataLoader {
-  static getModules() {
-    return {
-      api: window.ogFramework?.core?.api || window.ogApi,
-      hook: window.ogFramework?.core?.hook || window.ogHook,
-    };
-  }
+
 
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
@@ -30,8 +25,8 @@ class ogDataLoader {
   }
 
   static async loadAuto(config, extensionName) {
-    const { hook } = this.getModules();
-    
+    const hook = ogModule('hook');
+
     const pluginConfig = extensionName ? hook?.getPluginConfig(extensionName) : null;
     const backendEnabled = pluginConfig?.backend?.enabled || false;
 
@@ -50,7 +45,7 @@ class ogDataLoader {
   }
 
   static async loadFromApi(apiConfig) {
-    const { api } = this.getModules();
+    const api = ogModule('api');
     const endpoint = apiConfig.endpoint;
     const method = apiConfig.method || 'GET';
 
@@ -80,7 +75,7 @@ class ogDataLoader {
   }
 
   static async loadFromMock(mockConfig, extensionName) {
-    
+
     if (!mockConfig || !mockConfig.file) {
       ogLogger?.error('core:dataLoader', 'No se especificó archivo mock');
       return null;
@@ -100,7 +95,7 @@ class ogDataLoader {
       }
 
       const cacheBuster = `?v=${VERSION}`;
-      
+
       const response = await fetch(mockPath + cacheBuster);
 
       if (!response.ok) {

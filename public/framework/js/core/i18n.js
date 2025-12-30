@@ -13,11 +13,7 @@ class ogI18n {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
-  static getModules() {
-    return {
-      cache: window.ogFramework?.core?.cache || window.ogCache,
-    };
-  }
+
 
   static async init(config = {}) {
     this.config = {
@@ -61,7 +57,7 @@ class ogI18n {
   }
 
   static async loadCoreLang(lang) {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     const globalConfig = this.getConfig();
     const version = globalConfig.version || "1.0.0" || Date.now();
 
@@ -106,7 +102,7 @@ class ogI18n {
     const globalConfig = this.getConfig();
     const version = globalConfig.version || "1.0.0" || Date.now();
     const baseUrl = globalConfig.baseUrl || '/';
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
 
     const cacheKey = `i18n_extension_${extensionName}_${lang}`;
     let data = cache.get(cacheKey);

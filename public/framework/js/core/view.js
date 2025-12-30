@@ -5,20 +5,7 @@ class ogView {
   static lastSessionCheck = 0;
   static SESSION_CHECK_INTERVAL = 30000;
 
-  static getModules() {
-    return {
-      hook: window.ogFramework?.core?.hook || window.ogHook,
-      form: window.ogFramework?.core?.form || window.ogForm,
-      cache: window.ogFramework?.core?.cache || window.ogCache,
-      loader: window.ogFramework?.core?.loader || window.ogLoader,
-      i18n: window.ogFramework?.core?.i18n || window.ogI18n,
-      conditions: window.ogFramework?.core?.conditions || window.ogConditions,
-      events: window.ogFramework?.core?.events || window.ogEvents,
 
-      // Component dependencies
-      tabs: window.ogFramework?.components?.tabs || window.ogTabs
-    };
-  }
 
   static getConfig() {
     return window.ogFramework?.activeConfig || config || {};
@@ -26,21 +13,21 @@ class ogView {
 
   // Helper para obtener componentes dinámicamente
   static getComponent(componentName) {
-    // Buscar primero en ogFramework.components
+    if (typeof ogComponent === 'function') {
+      return ogComponent(componentName);
+    }
+    // Fallback legacy
     if (window.ogFramework?.components?.[componentName]) {
       return window.ogFramework.components[componentName];
     }
-
-    // Fallback a window directo (compatibilidad temporal)
     if (window[componentName]) {
       return window[componentName];
     }
-
     return null;
   }
 
   static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     const config = this.getConfig();
 
     // Manejar notación extension|path (ej: botws|sections/botws-listado)
@@ -72,7 +59,7 @@ class ogView {
             try {
               afterRender(cachedData.viewId, content);
             } catch (error) {
-              this.getModules().ogLogger?.error('core:view', 'Error en afterRender:', error);
+              ogLogger?.error('core:view', 'Error en afterRender:', error);
             }
           }
           return;
@@ -173,9 +160,9 @@ class ogView {
 
         if (config?.cache?.views) {
           cache.set(cacheKey, viewData);
-          this.getModules().ogLogger?.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
+          ogLogger?.info('core:view', `💾 Cache views: guardando en caché "${viewName}"`);
         } else {
-          this.getModules().ogLogger?.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
+          ogLogger?.info('core:view', `⚠️ Cache views: NO cacheando "${viewName}" (deshabilitado)`);
         }
       }
 
@@ -202,7 +189,7 @@ class ogView {
         try {
           afterRender(combinedData.id, content);
         } catch (error) {
-          this.getModules().ogLogger?.error('core:view', 'Error en afterRender:', error);
+          ogLogger?.error('core:view', 'Error en afterRender:', error);
         }
       }
 
@@ -215,14 +202,14 @@ class ogView {
             layout: combinedData.layout,
             viewData: combinedData
           });
-          this.getModules().ogLogger?.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
+          ogLogger?.info('core:view', `💾 Cache viewNavigation: guardando HTML renderizado para "${viewName}"`);
         }
       } else if (!container) {
-        this.getModules().ogLogger?.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
+        ogLogger?.info('core:view', `⚠️ Cache viewNavigation: NO cacheando HTML para "${viewName}" (deshabilitado)`);
       }
 
     } catch (error) {
-      this.getModules().ogLogger?.error('core:view', `Error cargando vista ${viewName}:`, error);
+      ogLogger?.error('core:view', `Error cargando vista ${viewName}:`, error);
       this.renderError(viewName, container);
     }
   }
@@ -320,7 +307,7 @@ class ogView {
   }
 
   static async loadViewResources(viewData) {
-    const { loader } = this.getModules();
+    const loader = ogModule('loader');
 
     if (viewData.scripts || viewData.styles) {
       try {
@@ -340,7 +327,7 @@ class ogView {
 
         await loader.loadResources(normalizedScripts, normalizedStyles);
       } catch (error) {
-        this.getModules().ogLogger?.error('core:view', 'Error cargando recursos:', error);
+        ogLogger?.error('core:view', 'Error cargando recursos:', error);
       }
     }
   }
@@ -366,7 +353,7 @@ class ogView {
   }
 
   static renderView(viewData, extensionContext = null) {
-    const { tabs } = this.getModules();
+    const tabs = ogComponent('tabs');
     const content = document.getElementById('content');
     document.body.setAttribute('data-view', viewData.id);
     document.body.className = document.body.className
@@ -424,14 +411,14 @@ class ogView {
   }
 
   static async setupView(viewData, container = null) {
-    const { tabs } = this.getModules();
+    const tabs = ogComponent('tabs');
     const viewContainer = container || document.getElementById('content');
 
     await this.renderHookComponents(viewContainer);
     if (viewData.tabs) {
       const tabsContainer = viewContainer.querySelector('.view-tabs-container');
       if (tabsContainer) {
-        await this.getModules().tabs.render(viewData, tabsContainer);
+        await tabs.render(viewData, tabsContainer);
       }
     } else {
       await this.loadDynamicComponents(viewContainer);
@@ -512,7 +499,7 @@ class ogView {
 
   // Procesar cadenas i18n en contenido HTML
   static processI18nInString(str) {
-    const { i18n } = this.getModules();
+    const i18n = ogModule('i18n');
 
     if (!str || typeof str !== 'string') return str;
 
@@ -539,6 +526,7 @@ class ogView {
     if (!viewData) return;
 
     if (viewData.tabs) {
+      const tabs = ogComponent('tabs');
       const tabsContainer = document.querySelector('.view-tabs-container');
       if (tabsContainer) {
         await tabs.render(viewData, tabsContainer);
@@ -551,7 +539,7 @@ class ogView {
   }
 
   static async loadDynamicComponents(container) {
-    const { form } = this.getModules();
+    const form = ogModule('form');
 
     // Obtener el contexto de extensión del contenedor padre
     const viewContainer = container.closest('[data-extension-context]');
@@ -590,7 +578,7 @@ class ogView {
   }
 
   static initFormValidation() {
-    const { form } = this.getModules();
+    const form = ogModule('form');
     const formElements = document.querySelectorAll('form[data-validation]');
 
     formElements.forEach(formEl => {
@@ -626,7 +614,7 @@ class ogView {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   static processHooksForHTML(viewData) {
-    const { hook } = this.getModules();
+    const hook = ogModule('hook');
 
     if (!viewData.id || !hook) return null;
 

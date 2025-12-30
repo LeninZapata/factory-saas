@@ -1,3 +1,4 @@
+// No se requieren cambios, ya cumple con la convención actual.
 class ogCache {
   static memoryCache = new Map();
   static defaultTTL = 60 * 60 * 1000;

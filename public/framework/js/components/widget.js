@@ -2,27 +2,16 @@ class ogWidget {
   static grids = new Map();
   static draggedWidget = null;
 
-  static getModules() {
-    return {
-      view: window.ogFramework?.core?.view,
-      form: window.ogFramework?.core?.form
-    };
-  }
+
 
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
+
   static getComponent(componentName) {
-    if (window.ogFramework?.components?.[componentName]) {
-      return window.ogFramework.components[componentName];
-    }
-
-    if (window[componentName]) {
-      return window[componentName];
-    }
-
-    return null;
+    // Usar ogComponent para obtener el componente
+    return ogComponent(componentName);
   }
 
   static async render(config, container) {
@@ -92,7 +81,8 @@ class ogWidget {
   }
 
   static async loadWidgetContent(body, config) {
-    const { view, form } = this.getModules();
+    const view = ogModule('view');
+    const form = ogModule('form');
 
     if (!body) {
       ogLogger.error('com:widget', `Body no válido`);

@@ -3,21 +3,14 @@ class ogSidebar {
     menu: []
   };
 
-  static getModules() {
-    return {
-      view: window.ogFramework?.core?.view || window.ogView,
-      hook: window.ogFramework?.core?.hook || window.ogHook,
-      auth: window.ogFramework?.core?.auth || window.ogAuth,
-      cache: window.ogFramework?.core?.cache || window.ogCache,
-    };
-  }
+
 
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
   static async init() {
-    const { view } = this.getModules();
+    const view = ogModule('view');
     
     await this.loadMenu();
 
@@ -30,7 +23,7 @@ class ogSidebar {
   }
 
   static async loadMenu() {
-    const { hook } = this.getModules();
+    const hook = ogModule('hook');
     
     try {
       if (hook && typeof hook.getMenuItems === 'function') {
@@ -165,7 +158,7 @@ class ogSidebar {
   }
 
   static bindMenuEvents() {
-    const { view } = this.getModules();
+    const view = ogModule('view');
     const menuItems = document.querySelectorAll('.menu-item');
 
     menuItems.forEach(item => {
@@ -223,7 +216,7 @@ class ogSidebar {
   }
 
   static async preloadView(viewPath, extensionName) {
-    const { cache } = this.getModules();
+    const cache = ogModule('cache');
     const config = this.getConfig();
     
     try {
@@ -283,7 +276,7 @@ class ogSidebar {
   }
 
   static detectPluginFromMenuId(menuId) {
-    const { view } = this.getModules();
+    const view = ogModule('view');
     
     for (const [extensionName, pluginConfig] of Object.entries(view.loadedExtensions)) {
       if (menuId.startsWith(`${extensionName}-`)) {
@@ -349,7 +342,7 @@ class ogSidebar {
 
   // Validar acceso por role (igual que form.js)
   static hasRoleAccess(menuItem) {
-    const { auth } = this.getModules();
+    const auth = ogModule('auth');
     
     // Si el menú no tiene restricción de role, permitir acceso
     if (!menuItem.role) return true;

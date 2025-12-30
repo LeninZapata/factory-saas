@@ -121,7 +121,7 @@ class ogGrouper {
 
   static async initDynamicContent(container) {
     const dynamicForms = container.querySelectorAll('.dynamic-form[data-form-json]');
-    const form = window.ogFramework?.core?.form || window.ogForm;
+    const form = ogModule('form');
 
     for (const formContainer of dynamicForms) {
       const formJson = formContainer.dataset.formJson;

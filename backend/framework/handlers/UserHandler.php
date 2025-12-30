@@ -3,34 +3,9 @@ class UserHandler {
   protected static $table = DB_TABLES['users'];
   private static $logMeta = ['module' => 'user', 'layer' => 'framework'];
 
-  static function profile($params) {
-    $token = ogRequest::bearerToken();
-
-    if (!$token) {
-      ogLog::warn('profile - token no recibido', [], self::$logMeta);
-      return ['success' => false, 'error' => __('auth.token.missing')];
-    }
-
-    $session = self::getSessionFromToken($token);
-
-    if (!$session) {
-      ogLog::error('profile - sesión no encontrada en archivo', [ 'token_short' => substr($token, 0, 16) ], self::$logMeta);
-      return ['success' => false, 'error' => __('auth.token.invalid')];
-    }
-
-    if ($session['expires_timestamp'] < time()) {
-      ogLog::warn('profile - sesión expirada', [
-        'user_id' => $session['user_id'],
-        'expired_since' => time() - $session['expires_timestamp']
-      ], self::$logMeta);
-
-      self::deleteSession($token);
-      return ['success' => false, 'error' => __('auth.token.expired')];
-    }
-
-    return ['success' => true, 'data' => $session['user']];
-  }
-
+  /**
+   * Actualizar configuracion del usuario
+   */
   static function updateConfig($params) {
     $id = $params['id'];
     $data = ogRequest::data();
@@ -51,6 +26,7 @@ class UserHandler {
       'tu' => time()
     ]);
 
+    // Actualizar sesion si el usuario esta autenticado
     $token = ogRequest::bearerToken();
     if ($token) {
       self::updateSessionUserData($token, ['config' => json_decode($config, true)]);
@@ -63,66 +39,37 @@ class UserHandler {
     ];
   }
 
-  private static function getSessionFromToken($token) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
-
-    if (!is_dir($sessionsDir)) {
-      ogLog::error('getSessionFromToken - directorio no existe', ['dir' => $sessionsDir], self::$logMeta);
-      return null;
-    }
+  /**
+   * Actualizar datos del usuario en la sesion activa
+   */
+  private static function updateSessionUserData($token, $updates) {
+    $cache = ogApp()->helper('cache');
+    $cache::setConfig([
+      'dir' => STORAGE_PATH . '/sessions',
+      'ext' => 'json',
+      'format' => '{expires}_{var1}_{key:16}'
+    ], 'session');
 
     $tokenShort = substr($token, 0, 16);
-    $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
-    $files = glob($pattern);
+    $session = $cache::get($tokenShort);
 
-    if (empty($files)) {
-      return null;
+    if (!$session) {
+      $cache::setConfigDefault();
+      return false;
     }
 
-    $session = json_decode(file_get_contents($files[0]), true);
-
-    if (!$session || !isset($session['user_id']) || $session['token'] !== $token) {
-      ogLog::error('getSessionFromToken - sesión inválida en archivo', [
-        'file' => basename($files[0])
-      ], self::$logMeta);
-      return null;
-    }
-
-    return $session;
-  }
-
-  private static function updateSessionUserData($token, $updates) {
-    $session = self::getSessionFromToken($token);
-
-    if (!$session) return false;
-
+    // Actualizar datos del usuario en la sesion
     foreach ($updates as $key => $value) {
       $session['user'][$key] = $value;
     }
 
-    $tokenShort = substr($token, 0, 16);
-    $pattern = STORAGE_PATH . "/sessions/*_*_{$tokenShort}.json";
-    $files = glob($pattern);
+    // Guardar sesion actualizada
+    $ttl = $session['expires_timestamp'] - time();
+    $cache::set($tokenShort, $session, $ttl, [
+      'var1' => $session['user_id']
+    ]);
 
-    if (!empty($files)) {
-      file_put_contents($files[0], json_encode($session, JSON_UNESCAPED_UNICODE));
-    }
-
+    $cache::setConfigDefault();
     return true;
-  }
-
-  private static function deleteSession($token) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
-    $tokenShort = substr($token, 0, 16);
-    $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
-    $files = glob($pattern);
-
-    foreach ($files as $file) {
-      $session = json_decode(file_get_contents($file), true);
-      if ($session && $session['token'] === $token) {
-        unlink($file);
-        return;
-      }
-    }
   }
 }
