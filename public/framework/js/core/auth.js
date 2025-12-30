@@ -339,7 +339,7 @@ class ogAuth {
     this.user = null;
     const toast = ogComponent('toast');
     if (toast && typeof toast.warning === 'function') {
-      toast.warning(__('core.auth.session_expired'));
+      toast.warning(__('core.auth.session.expired'));
     }
 
     ogLogger.warn('core:auth', '⚠️ Sesión expirada, redirigiendo al login...');

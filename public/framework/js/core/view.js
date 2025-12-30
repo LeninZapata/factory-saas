@@ -13,9 +13,9 @@ class ogView {
 
   // Helper para obtener componentes dinámicamente
   static getComponent(componentName) {
-    if (typeof ogComponent === 'function') {
+    /*if (typeof ogComponent === 'function') {
       return ogComponent(componentName);
-    }
+    }*/
     // Fallback legacy
     if (window.ogFramework?.components?.[componentName]) {
       return window.ogFramework.components[componentName];

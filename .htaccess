@@ -19,7 +19,7 @@ RewriteRule ^api/(.*)$ wp.php [QSA,L]
 
 # ============================================
 # ARCHIVOS ESTÁTICOS EXISTENTES
-# ====================0========================
+# ============================================
 # Si el archivo existe físicamente, servirlo directamente
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]

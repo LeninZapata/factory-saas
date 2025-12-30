@@ -3,21 +3,6 @@ class ogTabs {
   static tabCache = new Map();
   static extensionContextMap = new Map(); // Guardar contexto por ID de tabs
 
-  // Helper para obtener componentes dinámicamente
-  static getComponent(componentName) {
-    // Buscar primero en ogFramework.components
-    if (window.ogFramework?.components?.[componentName]) {
-      return window.ogFramework.components[componentName];
-    }
-
-    // Fallback a window directo (compatibilidad temporal)
-    if (window[componentName]) {
-      return window[componentName];
-    }
-
-    return null;
-  }
-
   static async render(tabsData, container) {
     this.tabCache.clear();
 

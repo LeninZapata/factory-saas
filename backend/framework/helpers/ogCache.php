@@ -39,7 +39,7 @@ class ogCache {
   private static function initConfig() {
     if (!isset(self::$configs['default'])) {
       self::$configs['default'] = array_merge(self::$defaultConfig, [
-        'dir' => STORAGE_PATH . '/cache'
+        'dir' => ogApp()->getPath('storage') . '/cache'
       ]);
     }
   }

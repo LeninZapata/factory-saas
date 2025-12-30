@@ -76,7 +76,7 @@ class ogAuthMiddleware {
   }
 
   private function getSessionFromToken($token) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('storage') . '/sessions/';
     ogLog::debug('authMiddleware::getSessionFromToken - Buscando sesión', [
       'token_short' => substr($token, 0, 30)
     ], ['module' => 'auth', 'layer' => 'middleware']);
@@ -115,7 +115,7 @@ class ogAuthMiddleware {
   }
 
   private function deleteSession($token) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('storage') . '/sessions/';
     $tokenShort = substr($token, 0, 16);
     $pattern = $sessionsDir . "*_*_{$tokenShort}.json";
     $files = glob($pattern);
@@ -134,7 +134,7 @@ class ogAuthMiddleware {
   }
 
   private function cleanupExpiredSessions($maxFiles = 10) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('storage') . '/sessions/';
 
     if (!is_dir($sessionsDir)) {
       return 0;

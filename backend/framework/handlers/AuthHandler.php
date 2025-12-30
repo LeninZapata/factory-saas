@@ -18,7 +18,7 @@ class AuthHandler {
    */
   private static function setupSessionCache() {
     ogApp()->helper('cache')::setConfig([
-      'dir' => STORAGE_PATH . '/sessions',
+      'dir' => ogApp()->getPath('storage') . '/sessions',
       'ext' => 'json',
       'format' => '{expires}_{var1}_{key:16}' // key:16 = primeros 16 chars del tokenShort
     ], 'session');

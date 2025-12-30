@@ -1,11 +1,15 @@
 Backend (Framework):
-☐ no existe el key api.session.invalidated y creo que hay algunos y core.auth.session_expired
 ☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-☐ CONSTANTE en el framework que estan mal STORAGE_PATH DB_TABLES
+☐ Las variables de tu ogDb se conectan creo que constante, esto debe cambiar lo debes inicializar
+la contencion en un lado conigurable tipo consts.php para que pongas alli la de en este caso wordpress
+o la de standalone, con eso ya se puede variar.s
+☐ COmo AUTH maneja tablas de user que esta en App entonces debe ver como los unes o como se hace alli
+porque esta que usa la constante DB_TABLES entonces esta mal o no tan mal, pero digamos esa variable esta
+regenerica para usarlo en el framework
+
 Frontend (Framework):
-☐ En el visor de los logs agregar un copy para copiar el contenido del log rapidamente
 ☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
