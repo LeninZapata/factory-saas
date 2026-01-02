@@ -1,5 +1,5 @@
 <?php
-// routes/apis/cleanup.php - Endpoints de limpieza de carpetas
+// routes/cleanup.php - Endpoints de limpieza de carpetas
 
 $router->group('/api/cleanup', function($router) {
 

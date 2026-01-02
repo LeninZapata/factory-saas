@@ -1,5 +1,5 @@
 <?php
-// routes/apis/system.php - Rutas de sistema y limpieza
+// routes/system.php - Rutas de sistema y limpieza
 
 $router->group('/api/system', function($router) {
 

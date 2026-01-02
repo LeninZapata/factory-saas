@@ -8,9 +8,20 @@ o la de standalone, con eso ya se puede variar.s
 ☐ COmo AUTH maneja tablas de user que esta en App entonces debe ver como los unes o como se hace alli
 porque esta que usa la constante DB_TABLES entonces esta mal o no tan mal, pero digamos esa variable esta
 regenerica para usarlo en el framework
+☐ que en handler, controlller, helpers se pueda ir dentro de carpetas,
+creo que actualmente solo si lo pones asi ->helper('algo') el va buscar dentro de
+la carpeta helpers, pero si quiero poner helpers/mis_helpers/mi_helper.php
+no lo encuentra, esto debe ser posible, asi como en controllers y handlers
+para eso deberia tomar encuenta el ultimo slash / y tomar todo lo que este antes como la carpeta
+y lo que este despues como el archivo a cargar.
 
 Frontend (Framework):
 ☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
+☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
+de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc... 
+se agreguen los hooks en los lugares correspondientess
+☐ Hooks a nivel de menu, no existe hooks a nivel de menu por ejemplo que un plugin
+agregue un menu a otro o algo asi.
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
 ☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute

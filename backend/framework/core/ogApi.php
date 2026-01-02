@@ -45,8 +45,9 @@ if ($module) {
     // Intentar cargar controller personalizado (framework → app)
     if (!class_exists($controllerClass)) {
       try {
-        ogApp()->loadController($controllerClass);
+        ogApp()->loadController($module);
       } catch (Exception $e) {
+        ogLog::warning("Controller personalizado no encontrado: {$controllerClass}", ['module' => $module, 'path' => $resourceFile], ['module' => 'api.php', 'layer' => 'framework/routes']);
         // Controller no encontrado, usar genérico
       }
     }
@@ -90,7 +91,7 @@ if ($module) {
 }
 
 // PASO 2: Cargar rutas manuales del FRAMEWORK
-$frameworkRoutes = OG_FRAMEWORK_PATH . '/routes/apis/' . $module . '.php';
+$frameworkRoutes = OG_FRAMEWORK_PATH . '/routes/' . $module . '.php';
 if ($module && file_exists($frameworkRoutes)) {
   require_once $frameworkRoutes;
 }
@@ -98,7 +99,7 @@ if ($module && file_exists($frameworkRoutes)) {
 // PASO 3: Cargar rutas manuales de APP del plugin actual
 if ($module) {
   $pluginPath = ogApp($pluginName)->getPath();
-  $appRoutes = $pluginPath . '/routes/apis/' . $module . '.php';
+  $appRoutes = $pluginPath . '/routes/' . $module . '.php';
 
   if (file_exists($appRoutes)) {
     require_once $appRoutes;

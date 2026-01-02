@@ -1,5 +1,5 @@
 <?php
-// routes/apis/user.php
+// routes/user.php
 // Solo rutas relacionadas con CRUD de usuarios (no autenticacion)
 $router->group('/api/user', function($router) {
 
