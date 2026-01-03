@@ -8,17 +8,19 @@ o la de standalone, con eso ya se puede variar.s
 ☐ COmo AUTH maneja tablas de user que esta en App entonces debe ver como los unes o como se hace alli
 porque esta que usa la constante DB_TABLES entonces esta mal o no tan mal, pero digamos esa variable esta
 regenerica para usarlo en el framework
-☐ que en handler, controlller, helpers se pueda ir dentro de carpetas,
-creo que actualmente solo si lo pones asi ->helper('algo') el va buscar dentro de
-la carpeta helpers, pero si quiero poner helpers/mis_helpers/mi_helper.php
-no lo encuentra, esto debe ser posible, asi como en controllers y handlers
-para eso deberia tomar encuenta el ultimo slash / y tomar todo lo que este antes como la carpeta
-y lo que este despues como el archivo a cargar.
+☐ Prueba agregando una capa intermedia dentro de backend de esta forma:
+app -> middle -> framework
+Ya que por ejemplo alli puedes usar servicios porque por ejemplo en el framework no puedes usar
+servicios a lo logo porque puede saturarse de servicios y de mas.
+Entonces esa cama intermedia no esta ni en app ni en framework, es como un punto intermedio
+donde puedes usar servicios y demas. Ademas esto es indicado bueno para wordpress
+por ejemplo alli no puedes enviar funciones o cosas que no se usaen entoncs por eso
+servicios no se va usar y entonces con esto podemos usar los serivcios en esa capa.
 
 Frontend (Framework):
 ☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
-de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc... 
+de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc...
 se agreguen los hooks en los lugares correspondientess
 ☐ Hooks a nivel de menu, no existe hooks a nivel de menu por ejemplo que un plugin
 agregue un menu a otro o algo asi.
@@ -51,10 +53,10 @@ Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todo
 actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
 (PARECE QUE ESTO YA EXISTE CON ROLE ADMIN EL CAMPO SE MUESTRA O NO, SOLO FALTARIA LLENARLO CON UN ENDPOINT
 Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
-☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe 
+☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe
 quedar en el primer campo obligatorio que falte por llenar
 ☐ Parte los JSON por ejemplo existe JSON muy extensos entonces puede que se partan en viaras partes
 y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
-y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento 
+y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento
 michos tokens.
 

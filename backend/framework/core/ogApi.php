@@ -25,47 +25,73 @@ if (preg_match('#^/api/([^/]+)#', $path, $matches)) {
   $module = $matches[1];
 }
 
+// IMPORTANTE: Reescribir URL si tiene guiones (para que router matchee)
+$urlRewritten = false;
+if ($module && strpos($module, '-') !== false) {
+  $moduleCamelCase = ogApp()->helper('str')::toCamelCase($module);
+
+  // Reescribir $_SERVER['REQUEST_URI'] internamente
+  $originalUri = $_SERVER['REQUEST_URI'];
+  $_SERVER['REQUEST_URI'] = str_replace("/api/{$module}", "/api/{$moduleCamelCase}", $_SERVER['REQUEST_URI']);
+
+  $urlRewritten = true;
+
+  ogLog::warning("Ruta con kebab-case detectada (reescrita a camelCase)", [
+    'url_original' => $originalUri,
+    'url_reescrita' => $_SERVER['REQUEST_URI'],
+    'module_original' => $module,
+    'module_convertido' => $moduleCamelCase,
+    'recomendacion' => "Usar URL /api/{$moduleCamelCase} directamente"
+  ], ['module' => 'ogApi', 'layer' => 'framework/routes']);
+
+  // Actualizar $module y $path para el resto del código
+  $module = $moduleCamelCase;
+  $path = str_replace("/api/{$matches[1]}", "/api/{$moduleCamelCase}", $path);
+}
+
 // PASO 1: Auto-registrar rutas CRUD desde JSON
 if ($module) {
+  $moduleCamelCase = $module; // Ya fue convertido arriba si tenía guiones
+
   // Buscar schema en framework primero
-  $resourceFile = OG_FRAMEWORK_PATH . "/resources/schemas/{$module}.json";
+  $resourceFile = OG_FRAMEWORK_PATH . "/resources/schemas/{$moduleCamelCase}.json";
 
   // Si no existe en framework, buscar en app del plugin actual
   if (!file_exists($resourceFile)) {
     $pluginPath = ogApp($pluginName)->getPath();
-    $resourceFile = $pluginPath . "/resources/schemas/{$module}.json";
+    $resourceFile = $pluginPath . "/resources/schemas/{$moduleCamelCase}.json";
   }
 
   if (file_exists($resourceFile)) {
     $config = json_decode(file_get_contents($resourceFile), true);
 
     // Verificar si existe controller personalizado
-    $controllerClass = ucfirst($module) . 'Controller';
-    
+    $controllerClass = ucfirst($moduleCamelCase) . 'Controller';
+
     // Intentar cargar controller personalizado (framework → app)
     if (!class_exists($controllerClass)) {
       try {
-        ogApp()->loadController($module);
+        ogApp()->loadController($moduleCamelCase);
       } catch (Exception $e) {
-        ogLog::warning("Controller personalizado no encontrado: {$controllerClass}", ['module' => $module, 'path' => $resourceFile], ['module' => 'api.php', 'layer' => 'framework/routes']);
+        ogLog::warning("Controller personalizado no encontrado: {$controllerClass}", ['module' => $moduleCamelCase, 'path' => $resourceFile], ['module' => 'ogApi', 'layer' => 'framework/routes']);
         // Controller no encontrado, usar genérico
       }
     }
-    
+
     // Instanciar controller (personalizado o genérico)
     $ctrl = class_exists($controllerClass)
       ? new $controllerClass()
-      : new ogController($module);
+      : new ogController($moduleCamelCase);
 
     $globalMw = $config['middleware'] ?? [];
 
-    // Rutas CRUD estándar
+    // Rutas CRUD siempre en camelCase
     $crudRoutes = [
-      'list'   => ['get',    "/api/{$module}",      'list'],
-      'show'   => ['get',    "/api/{$module}/{id}", 'show'],
-      'create' => ['post',   "/api/{$module}",      'create'],
-      'update' => ['put',    "/api/{$module}/{id}", 'update'],
-      'delete' => ['delete', "/api/{$module}/{id}", 'delete']
+      'list'   => ['get',    "/api/{$moduleCamelCase}",      'list'],
+      'show'   => ['get',    "/api/{$moduleCamelCase}/{id}", 'show'],
+      'create' => ['post',   "/api/{$moduleCamelCase}",      'create'],
+      'update' => ['put',    "/api/{$moduleCamelCase}/{id}", 'update'],
+      'delete' => ['delete', "/api/{$moduleCamelCase}/{id}", 'delete']
     ];
 
     foreach ($crudRoutes as $key => $routeData) {
@@ -91,15 +117,21 @@ if ($module) {
 }
 
 // PASO 2: Cargar rutas manuales del FRAMEWORK
-$frameworkRoutes = OG_FRAMEWORK_PATH . '/routes/' . $module . '.php';
-if ($module && file_exists($frameworkRoutes)) {
-  require_once $frameworkRoutes;
+if ($module) {
+  $moduleCamelCase = $module; // Ya convertido si tenía guiones
+
+  $frameworkRoutes = OG_FRAMEWORK_PATH . '/routes/' . $moduleCamelCase . '.php';
+  if (file_exists($frameworkRoutes)) {
+    require_once $frameworkRoutes;
+  }
 }
 
 // PASO 3: Cargar rutas manuales de APP del plugin actual
 if ($module) {
+  $moduleCamelCase = $module; // Ya convertido si tenía guiones
+
   $pluginPath = ogApp($pluginName)->getPath();
-  $appRoutes = $pluginPath . '/routes/' . $module . '.php';
+  $appRoutes = $pluginPath . '/routes/' . $moduleCamelCase . '.php';
 
   if (file_exists($appRoutes)) {
     require_once $appRoutes;

@@ -323,6 +323,17 @@
           "content": "<div style='background: #e0e7ff; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #4f46e5;'><h4 style='margin: 0 0 0.5rem; color: #3730a3;'>💡 ¿Cuándo usar cada uno?</h4><ul style='margin: 0; color: #3730a3;'><li><strong>Usa Tabs cuando:</strong> El contenido son categorías diferentes y el usuario solo necesita ver una a la vez (ej: Perfil, Configuración, Historial)</li><li><strong>Usa Grouper Linear cuando:</strong> Necesitas mostrar secciones relacionadas que el usuario puede querer ver simultáneamente (ej: FAQ, Panel de configuraciones múltiples)</li><li><strong>Usa Grouper Tabs cuando:</strong> Quieres la funcionalidad de tabs pero con diferente estilo o implementación específica del sistema</li></ul></div>"
         }
       ]
+    },
+    {
+      "id": "onload-demo",
+      "title": "⚡ Onload",
+      "onLoad": "(function(){ var div = document.getElementById('onload-demo-info'); if(div){ var msg = '<div style=\"margin-top:1rem;padding:1rem;background:#e0f2fe;border-radius:0.5rem;border-left:4px solid #0284c7\"><b>¡Script ejecutado por onLoad!</b><br>Este mensaje fue inyectado dinámicamente. Puedes usar este atributo para inicializar widgets, cargar datos, o cualquier JS personalizado al mostrar la tab.</div>'; div.insertAdjacentHTML('beforeend', msg); } })()",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div id='onload-demo-info' style='padding: 1.5rem; background: #f0f9ff; border-radius: 0.5rem;'><h3>⚡ Uso de <code>onLoad</code> en Tabs</h3><p style='margin: 1rem 0;'>El atributo <code>onLoad</code> permite ejecutar código JavaScript automáticamente cuando se muestra la tab por primera vez.</p><h4 style='margin-top: 1.5rem;'>🎯 ¿Para qué sirve?</h4><ul style='line-height: 1.8;'><li>Inicializar widgets o componentes complejos</li><li>Cargar datos dinámicos desde una API</li><li>Ejecutar animaciones o efectos visuales</li><li>Configurar eventos o listeners específicos</li><li>Cualquier acción personalizada en JavaScript</li></ul><h4 style='margin-top: 1.5rem;'>💻 Ejemplo de uso:</h4><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"onLoad\": \"miModulo.inicializar()\",\n  \"content\": [...]\n}</pre><p style='margin-top: 1rem; padding: 1rem; background: #fef3c7; border-radius: 0.5rem; border-left: 4px solid #f59e0b;'><strong>⚠️ Nota:</strong> Esta tab tiene un <code>onLoad</code> que inyecta un mensaje debajo de este texto. ¡Observa cómo aparece!</p></div>"
+        }
+      ]
     }
   ]
 }
