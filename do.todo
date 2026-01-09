@@ -16,8 +16,31 @@ Entonces esa cama intermedia no esta ni en app ni en framework, es como un punto
 donde puedes usar servicios y demas. Ademas esto es indicado bueno para wordpress
 por ejemplo alli no puedes enviar funciones o cosas que no se usaen entoncs por eso
 servicios no se va usar y entonces con esto podemos usar los serivcios en esa capa.
+☐ eSTAS variables FACTORY_ no puede estar en el bootstrap alli debe OG_xxxx
+☐ la validacion de php 8.1 no llega al router porque se muere antes, creo que debes
+validarlo mucho antes en el bootstrap o en el core del framework, hay que ver donde 
+porque por ejemplos las peticiones no llegan esperemos que se pueda usar el cache antes
+de llegar a aplicacion o algo asi....
+☐ EL user_id aparte de ser global en AUTH Middle, debes ponerlo en ->cache::memory para que se pueda
+usarlo en tiempo de ejecucion en cualquier parte del framework. Debes ponerrlo como practica eso.
+☐ Helper tambien debe estar en las capas de app/ y middle/ para que pueda buscarlos desde alli
+porque por ejemplo el framework no necesita todos los healpers y no todas las funciones se podria
+decir, osea digamos hay funciones de string que solo son para app o para middle.
+@NOTA: DEBES revisar bien que helpers vas a mandar fuera del framework que no este en el app
+porque sino va haber conflictos y errores fatales. Otra que estos helper deben tener el prefijo
+de la aplicacion no del nucleo para evitar conflictos, cuando haya multiples apps usando el mismo framework.
+La logica que todo lo que tegna que ver con el framework empieze con og pero actualmente helper no lo hace asi
+entonces creo que hay que cambiar un poco esto. La relacion es BUscar un patron para que no conjunta en la busqueda
+de archivo como tal.
 
 Frontend (Framework):
+☐ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco
+y mientras mas items mas se demora, hay que optimizar esto. es por el settimeout 
+de que tiene index * 300 esto va incrementando el tiempo de espera, hay que ver como optimizar esto.
+la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego 
+revalua todo las condiciones, si le bajo el tiempo corre una bala pero las condiciones no funcionan
+creo que es un problema mas de condiciones que debe optimizarse a nivel de evaluar al final.
+☐ No funciona el parametro ROW para textarea, es decir no lo coloca
 ☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
 de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc...
@@ -29,7 +52,7 @@ agregue un menu a otro o algo asi.
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
-☐ Repetibles con drop and drop para ordenar los elementos
+☐ Repetibles con drop and drop para ordenar los elementos  
 ☐ Repetibles tipo acordions
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
@@ -60,3 +83,9 @@ y que haya un item de tipo:json_part que cargue esa parte del json en especifico
 y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento
 michos tokens.
 
+Otros:
+☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
+parsear todo y luego generar la documentacion automatica actualizados.
+https://chat.deepseek.com/a/chat/s/dbedab39-f8b3-465c-b25d-217bf9787d87
+☐ Probar esta extension para poder usar webhook rutas agrupados y en secuencia
+https://marketplace.visualstudio.com/items?itemName=VASubasRaj.flashpost
