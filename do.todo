@@ -1,5 +1,5 @@
 Backend (Framework):
-☐ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato
+✔ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato @done(11-01-2026 13:47)
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
 ☐ Las variables de tu ogDb se conectan creo que constante, esto debe cambiar lo debes inicializar
@@ -17,7 +17,7 @@ donde puedes usar servicios y demas. Ademas esto es indicado bueno para wordpres
 por ejemplo alli no puedes enviar funciones o cosas que no se usaen entoncs por eso
 servicios no se va usar y entonces con esto podemos usar los serivcios en esa capa.
 ☐ eSTAS variables FACTORY_ no puede estar en el bootstrap alli debe OG_xxxx
-☐ la validacion de php 8.1 no llega al router porque se muere antes, creo que debes
+☐ la validacion de php 8.1 no llega al router porque se mue re antes, creo que debes
 validarlo mucho antes en el bootstrap o en el core del framework, hay que ver donde 
 porque por ejemplos las peticiones no llegan esperemos que se pueda usar el cache antes
 de llegar a aplicacion o algo asi....
@@ -32,6 +32,9 @@ de la aplicacion no del nucleo para evitar conflictos, cuando haya multiples app
 La logica que todo lo que tegna que ver con el framework empieze con og pero actualmente helper no lo hace asi
 entonces creo que hay que cambiar un poco esto. La relacion es BUscar un patron para que no conjunta en la busqueda
 de archivo como tal.
+☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
+tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
+ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
 
 Frontend (Framework):
 ☐ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco

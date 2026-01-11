@@ -18,7 +18,8 @@
     "create": {
       "method": "POST",
       "path": "/api/user",
-      "middleware": ["json"]
+      "middleware": ["json"],
+      "example": {"user": "john_doe", "pass": "mypassword123", "email": "john@example.com", "role": "user"}
     },
     "update": {
       "method": "PUT",

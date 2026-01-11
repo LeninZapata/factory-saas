@@ -2,6 +2,7 @@
 // routes/auth.php - Todas las rutas de autenticacion
 $router->group('/api/auth', function($router) {
 
+  // @example {"username": "admin", "password": "123456"}
   // Login - autenticar usuario
   $router->post('/login', function() {
     ogApp()->loadHandler('auth');
