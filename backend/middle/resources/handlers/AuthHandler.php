@@ -241,7 +241,7 @@ class AuthHandler {
 /*
  * FORMATO DE ARCHIVOS GENERADOS:
  * 1767200468_3_3f1101d2254c65f5.json
- * └─────────┘ └┘ └──────────────┘
+ * └─────────┘└┘ └──────────────┘
  * timestamp   ID  tokenShort (16 chars)
  *
  * VENTAJAS:

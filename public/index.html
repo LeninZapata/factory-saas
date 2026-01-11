@@ -22,15 +22,15 @@
     pathname += '/';
   }
 
-  var isDev = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|.*\.local|192\.168\.|10\.)/.test(window.location.hostname) ||
+  var ogIsDev = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|.*\.local|192\.168\.|10\.)/.test(window.location.hostname) ||
               ['3000', '5173', '8080'].includes(window.location.port);
   
   // ✅ Configuración sin variables globales intermedias
   var appConfig_factory_saas = {
     slug: 'backsystem',
-    version: isDev ? `dev-${Date.now()}` : version,
-    environment: isDev ? 'development' : 'production',
-    isDevelopment: isDev,
+    version: ogIsDev ? `dev-${Date.now()}` : version,
+    environment: ogIsDev ? 'development' : 'production',
+    isDevelopment: ogIsDev,
 
     // Rutas directamente en config
     baseUrl: pathname,
@@ -65,8 +65,8 @@
     },
 
     cache: {
-      views: !isDev,
-      forms: !isDev
+      views: !ogIsDev,
+      forms: !ogIsDev
     }
   };
 

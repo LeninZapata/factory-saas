@@ -2,7 +2,7 @@ Backend (Framework):
 ✔ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato @done(11-01-2026 13:47)
 de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
 que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-☐ Las variables de tu ogDb se conectan creo que constante, esto debe cambiar lo debes inicializar
+✔ Las variables de tu ogDb se conectan creo que constante, esto debe cambiar lo debes inicializar @done(11-01-2026 15:33)
 la contencion en un lado conigurable tipo consts.php para que pongas alli la de en este caso wordpress
 o la de standalone, con eso ya se puede variar.s
 ☐ COmo AUTH maneja tablas de user que esta en App entonces debe ver como los unes o como se hace alli
@@ -18,7 +18,7 @@ por ejemplo alli no puedes enviar funciones o cosas que no se usaen entoncs por 
 servicios no se va usar y entonces con esto podemos usar los serivcios en esa capa.
 ☐ eSTAS variables FACTORY_ no puede estar en el bootstrap alli debe OG_xxxx
 ☐ la validacion de php 8.1 no llega al router porque se mue re antes, creo que debes
-validarlo mucho antes en el bootstrap o en el core del framework, hay que ver donde 
+validarlo mucho antes en el bootstrap o en el core del framework, hay que ver donde
 porque por ejemplos las peticiones no llegan esperemos que se pueda usar el cache antes
 de llegar a aplicacion o algo asi....
 ☐ EL user_id aparte de ser global en AUTH Middle, debes ponerlo en ->cache::memory para que se pueda
@@ -38,9 +38,9 @@ ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace d
 
 Frontend (Framework):
 ☐ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco
-y mientras mas items mas se demora, hay que optimizar esto. es por el settimeout 
+y mientras mas items mas se demora, hay que optimizar esto. es por el settimeout
 de que tiene index * 300 esto va incrementando el tiempo de espera, hay que ver como optimizar esto.
-la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego 
+la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego
 revalua todo las condiciones, si le bajo el tiempo corre una bala pero las condiciones no funcionan
 creo que es un problema mas de condiciones que debe optimizarse a nivel de evaluar al final.
 ☐ No funciona el parametro ROW para textarea, es decir no lo coloca
@@ -55,7 +55,7 @@ agregue un menu a otro o algo asi.
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
-☐ Repetibles con drop and drop para ordenar los elementos  
+☐ Repetibles con drop and drop para ordenar los elementos
 ☐ Repetibles tipo acordions
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.

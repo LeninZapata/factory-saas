@@ -2,7 +2,7 @@ class ogLogger {
   static forceDebug = false; // Para forzar debug temporalmente
 
   // Getter dinámico que lee el config cada vez
-  static get isDev() {
+  static get ogIsDev() {
     const config = window.ogFramework?.activeConfig || window.appConfig;
     return config?.isDevelopment || false;
   }
@@ -30,7 +30,7 @@ class ogLogger {
   }
 
   static print(type, module, ...args) {
-    if (type === 'debug' && !this.isDev && !this.forceDebug) return;
+    if (type === 'debug' && !this.ogIsDev && !this.forceDebug) return;
     const typeLabel = type.toLowerCase();
     console.log(
       `%c[${module.toLowerCase()}]%c %c[${typeLabel}]%c`,
