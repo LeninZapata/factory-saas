@@ -65,18 +65,35 @@ class ejemplos {
   static async loadRepeatableMockData() {
     try {
       // Usar mock COMPLETO con 3 niveles (proyectos + tareas + subtareas + miembros)
-      const url = `${window.BASE_URL}extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
+      //const url = `${window.BASE_URL}extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
+      const url = `extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
       const cacheBuster = `?v=${window.VERSION}`;
-      
-      const response = await fetch(url + cacheBuster);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+      // Obtener respuesta (podría ser un Response de fetch o un objeto ya parseado)
+      const response = await ogApi.get(url + cacheBuster);
+
+      if (!response) {
+        throw new Error('Empty response');
       }
 
-      const data = await response.json();
+      let data;
+
+      // Si es un objeto y no tiene el metodo json(), asumimos que ya está parseado
+      if (typeof response === 'object' && typeof response.json !== 'function') {
+        data = response;
+      } else if (response && typeof response.json === 'function') {
+        // Es una Response-like (fetch), validar status y parsear JSON
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        data = await response.json();
+      } else {
+        // Fallback: devolver lo que venga
+        data = response;
+      }
+
       ogLogger.success('ext:ejemplos', 'Datos mock cargados:', data);
-      
+
       return data;
     } catch (error) {
       ogLogger.error('ext:ejemplos', 'Error cargando mock data:', error);

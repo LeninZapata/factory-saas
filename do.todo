@@ -4,7 +4,7 @@ tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se pu
 ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
 
 Frontend (Framework):
-☐ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco
+✔ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco @done(12-01-2026 16:43)
 y mientras mas items mas se demora, hay que optimizar esto. es por el settimeout
 de que tiene index * 300 esto va incrementando el tiempo de espera, hay que ver como optimizar esto.
 la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego

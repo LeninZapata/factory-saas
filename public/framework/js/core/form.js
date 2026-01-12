@@ -1346,11 +1346,11 @@ class ogForm {
     const processAllFields = (fields) => {
       if (!fields) return;
 
+      // Primero llenar campos simples (rápido)
       fields.forEach(field => {
         if (field.type === 'repeatable') {
-          if (!skipRepeatables) {
-            this.fillRepeatable(formEl, field, data, '');
-          }
+          // Postponer repetables
+          return;
         } else if (field.type === 'group' && field.fields) {
           processAllFields(field.fields);
         } else if (field.type === 'grouper' && field.groups) {
@@ -1358,7 +1358,19 @@ class ogForm {
             if (group.fields) processAllFields(group.fields);
           });
         } else if (field.name) {
-          const value = data[field.name];
+          // Buscar valor por name directo o con dot notation
+          let value = data[field.name];
+          
+          // Si no se encuentra, intentar con dot notation
+          if (value === undefined) {
+            const dotNotationKey = Object.keys(data).find(key => 
+              key.endsWith('.' + field.name) || key === field.name
+            );
+            if (dotNotationKey) {
+              value = data[dotNotationKey];
+            }
+          }
+
           if (value !== undefined && value !== null) {
             const input = formEl.querySelector(`[name="${field.name}"]`);
             if (input) {
@@ -1367,6 +1379,31 @@ class ogForm {
           }
         }
       });
+
+      // Luego llenar repetables (asíncrono)
+      if (!skipRepeatables) {
+        fields.forEach(field => {
+          if (field.type === 'repeatable') {
+            // Buscar datos del repeatable con dot notation
+            let repeatableData = data[field.name];
+            
+            if (!repeatableData) {
+              const dotNotationKey = Object.keys(data).find(key => 
+                key.endsWith('.' + field.name) || key === field.name
+              );
+              if (dotNotationKey) {
+                repeatableData = data[dotNotationKey];
+              }
+            }
+
+            if (repeatableData) {
+              // Crear un objeto temporal con el nombre correcto para fillRepeatable
+              const tempData = { [field.name]: repeatableData };
+              this.fillRepeatable(formEl, field, tempData, '');
+            }
+          }
+        });
+      }
     };
 
     // Primera pasada: llenar todo (o solo selects si skipRepeatables=true)
@@ -1406,11 +1443,11 @@ class ogForm {
     ogLogger?.info('core:form', `📋 Llenando ${fullPath}: ${items.length} items`);
 
     // Pausar evaluaciones de condiciones durante el llenado masivo
-    if (conditions && items.length >= 1) {
-      conditions?.pauseEvaluations();
+    if (conditions) {
+      conditions.pauseEvaluations();
     }
 
-    // Encontrar botón "Agregar" (puede tener path completo o simple)
+    // Encontrar botón "Agregar"
     let addButton = container.querySelector(`.repeatable-add[data-path="${fullPath}"]`);
     if (!addButton) {
       addButton = container.querySelector(`.repeatable-add[data-path="${fieldName}"]`);
@@ -1418,6 +1455,7 @@ class ogForm {
 
     if (!addButton) {
       ogLogger?.error('core:form', `Botón "Agregar" no encontrado para: ${fullPath}`);
+      if (conditions) conditions.resumeEvaluations();
       return;
     }
 
@@ -1429,39 +1467,48 @@ class ogForm {
 
     if (!itemsContainer) {
       ogLogger?.error('core:form', `Contenedor no encontrado para: ${fullPath}`);
+      if (conditions) conditions.resumeEvaluations();
       return;
     }
 
     // Limpiar items existentes
     itemsContainer.innerHTML = '';
 
-    // Agregar items uno por uno
-    items.forEach((itemData, index) => {
+    const formEl = container.closest('form');
+    let completedItems = 0;
+    const totalItems = items.length;
+
+    // Función para procesar cada item con un pequeño delay para selects
+    const processItem = (index) => {
+      if (index >= totalItems) {
+        // Todos los items procesados
+        if (conditions) {
+          requestAnimationFrame(() => {
+            conditions.resumeEvaluations(formEl?.id);
+          });
+        }
+        return;
+      }
+
+      const itemData = items[index];
+      addButton.click();
+
+      // Usar setTimeout mínimo para dar tiempo a que el select se inicialice
       setTimeout(() => {
-        // Click en "Agregar"
-        addButton.click();
+        this.fillRepeatableItem(itemsContainer, fieldName, index, itemData, field.fields, fullPath);
+        
+        // Procesar siguiente item
+        processItem(index + 1);
+      }, 50); // 50ms es suficiente para que el select se inicialice
+    };
 
-        // Esperar y llenar
-        setTimeout(() => {
-          const isLastItem = (index === items.length - 1);
-          this.fillRepeatableItem(itemsContainer, fieldName, index, itemData, field.fields, fullPath, isLastItem);
-        }, 100);
-
-      }, index * 300); // 300ms entre cada item
-    });
+    // Iniciar procesamiento
+    processItem(0);
   }
 
   // Llenar un item específico del repeatable (RECURSIVO)
+  // Nota: isLastItem se mantiene por compatibilidad pero ya no se usa
   static fillRepeatableItem(container, fieldName, index, itemData, fieldSchema, parentPath, isLastItem = false) {
-    const conditions = ogModule('conditions');
-    // Reanudar evaluaciones si es el último item
-    if (isLastItem && conditions) {
-      const formEl = container.closest('form');
-      setTimeout(() => {
-        conditions?.resumeEvaluations(formEl?.id);
-      }, 200);
-    }
-
     // Obtener el item recién agregado
     const items = container.querySelectorAll('.repeatable-item');
     const currentItem = items[items.length - 1];
@@ -1471,18 +1518,16 @@ class ogForm {
       return;
     }
 
-    // ✅ Obtener el índice REAL del DOM (no del array)
+    // Obtener el índice REAL del DOM
     const domIndex = parseInt(currentItem.dataset.index || index);
 
-    // Calcular path del item usando el índice del DOM
+    // Calcular path del item
     const itemPath = parentPath ? `${parentPath}[${domIndex}]` : `${fieldName}[${domIndex}]`;
 
     // Iterar sobre cada campo del schema
     fieldSchema.forEach(subField => {
       if (subField.type === 'repeatable') {
-        // ✅ RECURSIÓN: Llenar repeatable anidado
-
-        // Llamar recursivamente pasando el item actual como contenedor
+        // RECURSIÓN: Llenar repeatable anidado
         this.fillRepeatable(currentItem, subField, itemData, itemPath);
 
       } else {
@@ -1493,26 +1538,45 @@ class ogForm {
           return;
         }
 
-        // Selector con path completo: proyectos[0].nombre_proyecto
+        // Selector con path completo
         const inputName = `${itemPath}.${subField.name}`;
         const input = currentItem.querySelector(`[name="${inputName}"]`);
 
         if (input) {
-          this.setInputValue(input, value, true);
-        } else {
-          ogLogger?.warn('core:form', `Campo no encontrado: ${inputName}`);
+          // Si es un select con source, esperar a que cargue
+          if (input.tagName === 'SELECT' && input.dataset.source) {
+            // Marcar que necesita ser llenado después de cargar
+            input.dataset.pendingValue = JSON.stringify(value);
+            
+            // Si el select ya está cargado (cache), llenar inmediatamente
+            if (input.options.length > 1) {
+              this.setInputValue(input, value, true);
+            } else {
+              // Esperar a que el select se cargue
+              const waitForLoad = (e) => {
+                if (e.target === input || e.detail?.selectId === input.id) {
+                  const pendingValue = input.dataset.pendingValue;
+                  if (pendingValue) {
+                    try {
+                      const val = JSON.parse(pendingValue);
+                      this.setInputValue(input, val, true);
+                      delete input.dataset.pendingValue;
+                    } catch (err) {
+                      this.setInputValue(input, pendingValue, true);
+                    }
+                  }
+                  input.removeEventListener('select:afterLoad', waitForLoad);
+                }
+              };
+              input.addEventListener('select:afterLoad', waitForLoad);
+            }
+          } else {
+            // Campo normal (no select o select sin source)
+            this.setInputValue(input, value, true);
+          }
         }
       }
     });
-
-    // Si es el último item, re-ejecutar fill para seleccionar valores en los selects
-    if (isLastItem) {
-      const formEl = container.closest('form');
-      if (formEl?.dataset.formData) {
-        const originalData = JSON.parse(formEl.dataset.formData);
-        this.fill(formEl.id, originalData, null, true); // skipRepeatables=true
-      }
-    }
   }
 
   // Llenar solo los selects de un item repeatable (sin recrear)
