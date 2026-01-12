@@ -9,8 +9,17 @@
  * - Limpieza automatica con cleanup()
  */
 class AuthHandler {
-  protected static $table = DB_TABLES['users'];
+  protected static $table;
   private static $logMeta = ['module' => 'auth', 'layer' => 'framework'];
+
+  // Obtener tabla desde memoria cache (lazy loading)
+  private static function getTable() {
+    if (!self::$table) {
+      $tables = ogCache::memoryGet('db_tables', []);
+      self::$table = $tables['users'] ?? 'users';
+    }
+    return self::$table;
+  }
 
   /**
    * Configurar ogCache para sesiones
@@ -38,7 +47,7 @@ class AuthHandler {
       return ['success' => false, 'error' => __('auth.credentials.required')];
     }
 
-    $user = ogDb::table(self::$table)
+    $user = ogDb::table(self::getTable())
       ->where('user', $data['user'])
       ->orWhere('email', $data['user'])
       ->first();
@@ -61,7 +70,7 @@ class AuthHandler {
 
     self::saveSession($user, $token, $expiresAt);
 
-    ogDb::table(self::$table)->where('id', $user['id'])->update([
+    ogDb::table(self::getTable())->where('id', $user['id'])->update([
       'du' => date('Y-m-d H:i:s'),
       'tu' => time()
     ]);

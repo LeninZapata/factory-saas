@@ -1,23 +1,15 @@
 <?php
-/**
- * BOOTSTRAP.PHP - Inicialización compartida
- * Funciona tanto standalone como en WordPress
- */
-
+// Inicialización compartida
 $pluginName    = $isWP ? $pluginData['PluginID'] : 'default';
 $appPath       = $thePluginPath . '/backend/app';
 
-// CARGAR FRAMEWORK
-// Cargar init.php de App -> (carga framework si no existe)
+// Load framework
 require_once $appPath . '/config/init.php';
 
-// REGISTRAR INSTANCIA
 // Registrar instancia de la aplicación
 ogApp($pluginName, $appPath, $isWP);
 
 // Las rutas de app se cargan DESPUÉS de crear ogApplication
-// Ver backend/api.php
-
 // HOOKS WORDPRESS (solo si está en WordPress)
 if ($isWP) {
 

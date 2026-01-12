@@ -31,14 +31,14 @@ $router->group('/api/cleanup', function($router) {
 
     // Determinar ruta base según prefijo
     if (strpos($path, 'storage/') === 0) {
-      // storage/cache -> BACKEND_PATH/app/storage/cache
+      // storage/cache -> backend/app/storage/cache
       $relativePath = substr($path, 8); // remover "storage/"
-      $fullPath = STORAGE_PATH . '/' . $relativePath;
+      $fullPath = ogApp()->getPath('storage') . '/' . $relativePath;
       $base = 'storage';
     } else {
-      // shared/bots -> BASE_PATH/shared/bots
+      // shared/bots -> base/shared/bots
       $relativePath = substr($path, 7); // remover "shared/"
-      $fullPath = SHARED_PATH . '/' . $relativePath;
+      $fullPath = ogApp()->getPath('shared') . '/' . $relativePath;
       $base = 'shared';
     }
 

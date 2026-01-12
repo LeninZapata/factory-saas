@@ -342,6 +342,24 @@ class ogFramework {
   }
 
   function getPath($subPath = '') {
+    // Rutas predefinidas
+    $routes = [
+      'base' => dirname(dirname($this->pluginPath)),
+      'backend' => dirname($this->pluginPath),
+      'app' => $this->pluginPath,
+      'storage' => $this->pluginPath . '/storage',
+      'logs' => $this->pluginPath . '/storage/logs',
+      'cache' => $this->pluginPath . '/storage/cache',
+      'sessions' => $this->pluginPath . '/storage/sessions',
+      'shared' => dirname(dirname($this->pluginPath)) . '/shared',
+    ];
+
+    // Si subPath es una ruta predefinida, devolverla
+    if (isset($routes[$subPath])) {
+      return $routes[$subPath];
+    }
+
+    // Si no, concatenar con pluginPath
     return $this->pluginPath . ($subPath ? '/' . ltrim($subPath, '/') : '');
   }
 

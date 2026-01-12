@@ -1,7 +1,16 @@
 <?php
 class UserHandler {
-  protected static $table = DB_TABLES['users'];
+  protected static $table;
   private static $logMeta = ['module' => 'user', 'layer' => 'framework'];
+
+  // Obtener tabla desde memoria cache (lazy loading)
+  private static function getTable() {
+    if (!self::$table) {
+      $tables = ogCache::memoryGet('db_tables', []);
+      self::$table = $tables['users'] ?? 'users';
+    }
+    return self::$table;
+  }
 
   /**
    * Actualizar configuracion del usuario
@@ -20,7 +29,7 @@ class UserHandler {
       return ['success' => false, 'error' => __('user.config.invalid')];
     }
 
-    $affected = ogDb::table(self::$table)->where('id', $id)->update([
+    $affected = ogDb::table(self::getTable())->where('id', $id)->update([
       'config' => $config,
       'du' => date('Y-m-d H:i:s'),
       'tu' => time()
@@ -45,7 +54,7 @@ class UserHandler {
   private static function updateSessionUserData($token, $updates) {
     $cache = ogApp()->helper('cache');
     $cache::setConfig([
-      'dir' => STORAGE_PATH . '/sessions',
+      'dir' => ogApp()->getPath('sessions'),
       'ext' => 'json',
       'format' => '{expires}_{var1}_{key:16}'
     ], 'session');

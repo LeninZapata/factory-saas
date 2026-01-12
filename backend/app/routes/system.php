@@ -5,7 +5,7 @@ $router->group('/api/system', function($router) {
 
   // Informacion general del sistema
   $router->get('/info', function() {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
     $activeCount = 0;
 
     if (is_dir($sessionsDir)) {
@@ -22,7 +22,7 @@ $router->group('/api/system', function($router) {
     ogResponse::success([
       'php_version' => PHP_VERSION,
       'environment' => OG_IS_DEV ? 'development' : 'production',
-      'storage_path' => STORAGE_PATH,
+      'storage_path' => ogApp()->getPath('storage'),
       'sessions_active' => $activeCount
     ]);
   })->middleware('auth');
@@ -37,7 +37,7 @@ $router->group('/api/system', function($router) {
  
   // Estadisticas de cache
   $router->get('/cache/stats', function() {
-    $cacheDir = STORAGE_PATH . '/cache/';
+    $cacheDir = ogApp()->getPath('cache') . '/';
 
     if (!is_dir($cacheDir)) {
       ogResponse::success([

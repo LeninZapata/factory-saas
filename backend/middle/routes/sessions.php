@@ -8,7 +8,7 @@ $router->group('/api/sessions', function($router) {
 
   // Listar todas las sesiones activas y expiradas
   $router->get(['/',''], function() {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
 
     if (!is_dir($sessionsDir)) {
       ogResponse::success(['active' => [], 'expired' => []]);
@@ -61,7 +61,7 @@ $router->group('/api/sessions', function($router) {
 
   // Obtener estadísticas de sesiones
   $router->get('/stats', function() use ($logMeta) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
 
     if (!is_dir($sessionsDir)) {
       ogResponse::success([
@@ -119,7 +119,7 @@ $router->group('/api/sessions', function($router) {
 
   // Listar sesiones de un usuario específico
   $router->get('/user/{user_id}', function($userId) use ($logMeta) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
 
     if (!is_dir($sessionsDir)) {
       ogResponse::success([
@@ -173,7 +173,7 @@ $router->group('/api/sessions', function($router) {
 
   // Limpiar sesiones expiradas del sistema
   $router->delete('/cleanup', function() use ($logMeta) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
 
     if (!is_dir($sessionsDir)) {
       ogResponse::success([

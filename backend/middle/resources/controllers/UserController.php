@@ -2,11 +2,11 @@
 
 class UserController extends ogController {
   // Nombre de la tabla asociada a este controlador
-  protected static $table = DB_TABLES['users'];
+  protected static $table;
 
   // Elimina todas las sesiones de un usuario por archivos en /sessions
   static function invalidateSessions($userId) {
-    $sessionsDir = STORAGE_PATH . '/sessions/';
+    $sessionsDir = ogApp()->getPath('sessions') . '/';
     if (!is_dir($sessionsDir)) return 0;
     $pattern = $sessionsDir . "*_{$userId}_*.json";
     $files = glob($pattern);
@@ -28,6 +28,10 @@ class UserController extends ogController {
   private static $logMeta = ['module' => 'user', 'layer' => 'app'];
 
   function __construct() {
+    // Obtener tabla desde memoria cache
+    $tables = ogCache::memoryGet('db_tables', []);
+    self::$table = $tables['users'] ?? 'users';
+    
     parent::__construct('user');
   }
 

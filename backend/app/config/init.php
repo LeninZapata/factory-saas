@@ -13,3 +13,6 @@ if (!class_exists('ogFramework')) {
 
 // Cargar constantes de la aplicación
 require_once __DIR__ . '/consts.php';
+
+// Cargar configuraciones de ejecución de la app (después del framework)
+require_once __DIR__ . '/execute.php';
