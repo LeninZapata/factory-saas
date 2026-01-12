@@ -47,9 +47,24 @@
     },
     {
       "name": "textarea",
-      "label": "Textarea",
+      "label": "Textarea Normal (sin rows)",
       "type": "textarea",
-      "placeholder": "Texto largo..."
+      "placeholder": "Texto largo sin especificar rows..."
+    },
+    {
+      "name": "textarea_rows_10",
+      "label": "Textarea con 10 filas",
+      "type": "textarea",
+      "placeholder": "Este textarea tiene rows=10 para textos más largos",
+      "rows": 10
+    },
+    {
+      "name": "textarea_full",
+      "label": "Textarea con rows y cols",
+      "type": "textarea",
+      "placeholder": "Este tiene rows=5 y cols=50",
+      "rows": 5,
+      "cols": 50
     },
     {
       "name": "checkbox",
@@ -62,14 +77,15 @@
       "name": "submit",
       "type": "button",
       "label": "✅ Enviar",
-      "action": "submit"
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Formulario enviado');"
     },
     {
       "name": "reset",
       "type": "button",
       "label": "🔄 Limpiar",
       "style": "secondary",
-      "action": "reset"
+      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
     }
   ]
 }

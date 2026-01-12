@@ -10,7 +10,7 @@ de que tiene index * 300 esto va incrementando el tiempo de espera, hay que ver 
 la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego
 revalua todo las condiciones, si le bajo el tiempo corre una bala pero las condiciones no funcionan
 creo que es un problema mas de condiciones que debe optimizarse a nivel de evaluar al final.
-☐ No funciona el parametro ROW para textarea, es decir no lo coloca
+✔ No funciona el parametro ROW para textarea, es decir no lo coloca @done(12-01-2026 16:50)
 ☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
 de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc...

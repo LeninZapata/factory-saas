@@ -632,6 +632,8 @@ class ogForm {
       ${field.min !== undefined ? `min="${field.min}"` : ''}
       ${field.max !== undefined ? `max="${field.max}"` : ''}
       ${field.step !== undefined ? `step="${field.step}"` : ''}
+      ${field.rows !== undefined ? `rows="${field.rows}"` : ''}
+      ${field.cols !== undefined ? `cols="${field.cols}"` : ''}
       ${classNames ? `class="${classNames}"` : ''}
       ${validationAttrs}
     `.trim();
