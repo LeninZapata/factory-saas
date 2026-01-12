@@ -136,6 +136,20 @@
                     "form_json": "ejemplos|forms/formularios/form-repetibles-anidados"
                   }
                 ]
+              },
+              {
+                "id": "repetibles-acordeon",
+                "title": "Acordeones",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>🎯 Repetibles con Acordeón</h3><p>Items con headers colapsables para organizar mejor los formularios largos.</p><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #f59e0b;'><strong>💡 Características:</strong><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem;'><li><code>hasHeader: true</code> - Muestra un header en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón clickeable</li><li><code>headerTitle</code> - Personaliza el título (usa {index} para el número)</li></ul></div>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos|forms/formularios/form-repeatable-accordion"
+                  }
+                ]
               }
             ]
           }

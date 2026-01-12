@@ -249,6 +249,65 @@ textarea {
 .repeatable-item .repeatable-item .repeatable-header h4 {
   font-size: 0.9rem;
 }
+
+/* ===================================
+   Acordeón en Repetables (Minimalista)
+   ================================= */
+
+/* Items con header (acordeón o simple) */
+.repeatable-item.repeatable-item-accordion,
+.repeatable-item.repeatable-item-with-header {
+  border: 1px solid #ddd;
+  flex-direction: column;
+  padding: 0;
+}
+.repeatable-item.repeatable-item-with-header .repeatable-content {
+  padding: 1rem;
+}
+
+/* Header del item con acordeón */
+.repeatable-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.repeatable-item-header.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.repeatable-item-header.clickable:hover {
+  background: #e9ecef;
+}
+
+.repeatable-item-title {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.repeatable-toggle {
+  color: #6c757d;
+  font-size: 0.875rem;
+  transition: transform 0.2s;
+}
+
+/* Body del acordeón */
+.repeatable-item-body {
+  padding: 1rem;
+}
+
+/* Item colapsado */
+.repeatable-item.collapsed .repeatable-item-header {
+  border-radius: 0.375rem;
+  border-bottom: none;
+}
+
 /* ===================================
    Grupos de Campos (Field Groups)
    ================================= */

@@ -785,6 +785,23 @@ class ogForm {
           item.remove();
         }
       }
+
+      // Toggle de acordeón en repeatable items
+      const header = e.target.closest('.repeatable-item-header');
+      if (header && header.dataset.toggle === 'accordion') {
+        const item = header.closest('.repeatable-item');
+        const body = item.querySelector('.repeatable-item-body');
+        const toggle = header.querySelector('.repeatable-toggle');
+        
+        if (body) {
+          const isOpen = body.style.display !== 'none';
+          body.style.display = isOpen ? 'none' : 'block';
+          if (toggle) {
+            toggle.textContent = isOpen ? '▶' : '▼';
+          }
+          item.classList.toggle('collapsed', isOpen);
+        }
+      }
     });
 
     // 🔥 NUEVO: Marcar campos cuando el usuario los modifica
@@ -894,6 +911,20 @@ class ogForm {
     }
     if (field.gap) {
       container.dataset.gap = field.gap;
+    }
+
+    // Guardar opciones de acordeón
+    if (field.accordion !== undefined) {
+      container.dataset.accordion = field.accordion;
+    }
+    if (field.hasHeader !== undefined) {
+      container.dataset.hasHeader = field.hasHeader;
+    }
+    if (field.headerTitle) {
+      container.dataset.headerTitle = field.headerTitle;
+    }
+    if (field.removeText) {
+      container.dataset.removeText = field.removeText;
     }
 
     // Crear items iniciales si initialItems > 0
@@ -1067,6 +1098,12 @@ class ogForm {
     const columns = container.dataset.columns ? parseInt(container.dataset.columns) : null;
     const gap = container.dataset.gap || 'normal';
 
+    // Obtener opciones de acordeón
+    const accordion = container.dataset.accordion === 'true';
+    const hasHeader = container.dataset.hasHeader === 'true' || accordion;
+    const headerTitle = container.dataset.headerTitle || 'Item #{index}';
+    const removeText = container.dataset.removeText || 'Eliminar';
+
     // 3. Construir el path del item
     const itemPath = `${path}[${newIndex}]`;
 
@@ -1098,17 +1135,45 @@ class ogForm {
       contentHtml = itemFields;
     }
 
+    // Opciones de acordeón (ya obtenidas del dataset arriba)
+    const processedTitle = headerTitle.replace('{index}', (newIndex + 1).toString());
+
     // 6. Crear el HTML del item
-    const itemHtml = `
-      <div class="repeatable-item" data-index="${newIndex}">
-        <div class="repeatable-content">
-          ${contentHtml}
+    let itemHtml = '';
+    
+    if (hasHeader) {
+      // Con header (puede ser acordeón o no)
+      const headerClass = accordion ? 'repeatable-item-accordion' : 'repeatable-item-with-header';
+      const contentClass = accordion ? 'repeatable-item-body' : 'repeatable-content';
+      const toggleIcon = accordion ? '<span class="repeatable-toggle">▼</span>' : '';
+      
+      itemHtml = `
+        <div class="repeatable-item ${headerClass}" data-index="${newIndex}">
+          <div class="repeatable-item-header ${accordion ? 'clickable' : ''}" ${accordion ? 'data-toggle="accordion"' : ''}>
+            <span class="repeatable-item-title">${processedTitle}</span>
+            ${toggleIcon}
+          </div>
+          <div class="${contentClass}" ${accordion ? 'style="display:block"' : ''}>
+            ${contentHtml}
+            <div class="repeatable-remove">
+              <button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>
+            </div>
+          </div>
         </div>
-        <div class="repeatable-remove">
-          <button type="button" class="btn btn-sm btn-danger repeatable-remove">Eliminar</button>
+      `;
+    } else {
+      // Sin header (comportamiento original)
+      itemHtml = `
+        <div class="repeatable-item" data-index="${newIndex}">
+          <div class="repeatable-content">
+            ${contentHtml}
+          </div>
+          <div class="repeatable-remove">
+            <button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
 
     // 7. Insertar en el DOM
     container.insertAdjacentHTML('beforeend', itemHtml);

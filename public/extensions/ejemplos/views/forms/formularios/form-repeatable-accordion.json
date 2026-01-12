@@ -1,0 +1,235 @@
+{
+  "id": "form-repeatable-accordion",
+  "title": "Repetables con Acordeón",
+  "description": "Ejemplos de repetables con headers y acordeones minimalistas",
+  "fields": [
+    {
+      "type": "html",
+      "content": "<div style='background: #e0f2fe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #0284c7;'><h3 style='margin: 0 0 1rem;'>🎯 Opciones de Acordeón</h3><ul style='margin: 0; line-height: 1.8;'><li><code>hasHeader: true</code> - Muestra un header con título en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón click able</li><li><code>headerTitle: \"Item #{index}\"</code> - Personaliza el título (usa {index})</li></ul></div>"
+    },
+    {
+      "name": "tareas_basicas",
+      "label": "📋 Tareas con Header Simple",
+      "type": "repeatable",
+      "description": "Items con header pero sin acordeón (siempre visibles)",
+      "hasHeader": true,
+      "headerTitle": "Tarea #{index}",
+      "addText": "➕ Agregar Tarea",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 hasHeader: true, accordion: false</strong><br>Tiene header pero NO es acordeón (siempre visible)</div>"
+        },
+        {
+          "name": "titulo",
+          "label": "Título de la Tarea",
+          "type": "text",
+          "placeholder": "Ej: Revisar emails",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "prioridad",
+              "label": "Prioridad",
+              "type": "select",
+              "options": [
+                { "value": "baja", "label": "🟢 Baja" },
+                { "value": "media", "label": "🟡 Media" },
+                { "value": "alta", "label": "🔴 Alta" }
+              ]
+            },
+            {
+              "name": "completada",
+              "label": "✅ Completada",
+              "type": "checkbox"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "contactos_acordeon",
+      "label": "📞 Contactos (Acordeón)",
+      "type": "repeatable",
+      "description": "Haz clic en el header de cada item para expandir/colapsar",
+      "accordion": true,
+      "headerTitle": "Contacto #{index}",
+      "addText": "➕ Agregar Contacto",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 accordion: true</strong><br>Haz clic en el header para colapsar/expandir</div>"
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre Completo",
+          "type": "text",
+          "placeholder": "Juan Pérez",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "email",
+              "label": "Email",
+              "type": "email",
+              "placeholder": "juan@ejemplo.com"
+            },
+            {
+              "name": "telefono",
+              "label": "Teléfono",
+              "type": "tel",
+              "placeholder": "+593 99 999 9999"
+            }
+          ]
+        },
+        {
+          "name": "direccion",
+          "label": "Dirección",
+          "type": "textarea",
+          "placeholder": "Calle, número, ciudad...",
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "name": "proyectos_personalizados",
+      "label": "🚀 Proyectos con Título Personalizado",
+      "type": "repeatable",
+      "description": "El título del header es personalizable con {index}",
+      "accordion": true,
+      "headerTitle": "🎯 Proyecto #{index} - Expandir para editar",
+      "addText": "➕ Nuevo Proyecto",
+      "removeText": "❌ Eliminar",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fae8ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #a855f7; font-size: 0.9rem;'><strong>💡 headerTitle personalizado</strong><br>Usa <code>{index}</code> para incluir el número del item</div>"
+        },
+        {
+          "name": "nombre_proyecto",
+          "label": "Nombre del Proyecto",
+          "type": "text",
+          "placeholder": "Sistema de Gestión",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "estado",
+              "label": "Estado",
+              "type": "select",
+              "options": [
+                { "value": "planificacion", "label": "📝 Planificación" },
+                { "value": "desarrollo", "label": "⚙️ Desarrollo" },
+                { "value": "testing", "label": "🧪 Testing" },
+                { "value": "completado", "label": "✅ Completado" }
+              ]
+            },
+            {
+              "name": "presupuesto",
+              "label": "Presupuesto ($)",
+              "type": "number",
+              "placeholder": "5000",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "fecha_entrega",
+              "label": "Fecha de Entrega",
+              "type": "date"
+            }
+          ]
+        },
+        {
+          "name": "descripcion",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "Describe el proyecto...",
+          "rows": 4
+        }
+      ]
+    },
+    {
+      "name": "productos_sin_config",
+      "label": "📦 Productos (Sin Header - Original)",
+      "type": "repeatable",
+      "description": "Comportamiento original sin header ni acordeón",
+      "addText": "➕ Agregar Producto",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #f3f4f6; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #6b7280; font-size: 0.9rem;'><strong>💡 Sin configuración especial</strong><br>Comportamiento original (sin hasHeader ni accordion)</div>"
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "codigo",
+              "label": "Código",
+              "type": "text",
+              "placeholder": "PROD-001"
+            },
+            {
+              "name": "nombre",
+              "label": "Nombre",
+              "type": "text",
+              "placeholder": "Laptop HP"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "precio",
+              "label": "Precio",
+              "type": "number",
+              "placeholder": "299.99",
+              "step": 0.01
+            },
+            {
+              "name": "stock",
+              "label": "Stock",
+              "type": "number",
+              "placeholder": "10"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar Todo",
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Datos guardados');"
+    },
+    {
+      "name": "reset",
+      "type": "button",
+      "label": "🔄 Limpiar",
+      "style": "secondary",
+      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
+    }
+  ]
+}
