@@ -446,6 +446,7 @@ class ogCache {
    */
   static function memorySet($key, $value) {
     self::$memory[$key] = $value;
+    return $value;
   }
 
   /**

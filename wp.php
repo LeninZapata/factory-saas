@@ -27,7 +27,11 @@ if (!defined('ABSPATH')) { define('ABSPATH', $thePluginPath . '/'); }
 require_once __DIR__ . '/funcs.php';
 
 // Obtener datos del plugin
-$pluginData = get_file_data(__FILE__, [ 'Plugin Name', 'Version', 'Text Domain', 'Description', 'Author', 'Requires PHP', 'Plugin ID' ]);
+$pluginData = get_file_data(__FILE__, [ 
+  'Plugin Name', 'Version', 'Text Domain', 
+  'Description', 'Author', 'Requires PHP', 
+  'Plugin ID', 'Plugin prefix'
+]);
 
 // Cargar bootstrap
 require_once $thePluginPath . '/backend/bootstrap.php'; // Cargar bootstrap (maneja todo)

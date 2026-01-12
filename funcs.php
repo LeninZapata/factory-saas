@@ -78,3 +78,43 @@ function ogIsProduction() {
   return !ogIsDev();
 }
 endif;
+
+if( ! function_exists('ogValidatePhpVersion') ) :
+/**
+ * Validar versión de PHP requerida
+ * @param string $requiredVersion Versión mínima requerida
+ * @param bool $isWP Si está en WordPress
+ * @return bool True si la versión es válida
+ */
+function ogValidatePhpVersion($requiredVersion = '8.1', $isWP = false) {
+  if (!version_compare(phpversion(), $requiredVersion, '>=')) {
+    if ($isWP) {
+      // WordPress: mostrar notice en admin
+      add_action('admin_notices', function() use ($requiredVersion) {
+        ?>
+        <div class="notice notice-error">
+          <p>
+            <strong>Factory SaaS:</strong> 
+            Your PHP version (<?php echo phpversion(); ?>) is 
+            <a href="https://php.net/supported-versions.php" rel="noreferrer" target="_blank">outdated</a> 
+            and not supported. This plugin requires PHP <?php echo $requiredVersion; ?> or higher.
+            Please upgrade PHP and try again.
+          </p>
+        </div>
+        <?php
+      });
+      return false;
+    } else {
+      // Standalone: mostrar error y terminar
+      http_response_code(500);
+      die(
+        '<h1>PHP Version Error</h1>' .
+        '<p>Your PHP version (' . phpversion() . ') is not supported.</p>' .
+        '<p>This application requires PHP ' . $requiredVersion . ' or higher.</p>' .
+        '<p>Please upgrade PHP and try again.</p>'
+      );
+    }
+  }
+  return true;
+}
+endif;

@@ -1,37 +1,4 @@
 Backend (Framework):
-✔ en los routers vista agrega el body osea por ejemplo los put y post deben tener un formato @done(11-01-2026 13:47)
-de ejemplo esto debe aparecer pero para evitar romper el diseño esto debe haber un flecha para arriba y para abjao
-que muestre un ejemplo del body, el body debe estar comentado para poder obtener rapidamente el ejemplo
-✔ Las variables de tu ogDb se conectan creo que constante, esto debe cambiar lo debes inicializar @done(11-01-2026 15:33)
-la contencion en un lado conigurable tipo consts.php para que pongas alli la de en este caso wordpress
-o la de standalone, con eso ya se puede variar.s
-☐ COmo AUTH maneja tablas de user que esta en App entonces debe ver como los unes o como se hace alli
-porque esta que usa la constante DB_TABLES entonces esta mal o no tan mal, pero digamos esa variable esta
-regenerica para usarlo en el framework
-☐ Prueba agregando una capa intermedia dentro de backend de esta forma:
-app -> middle -> framework
-Ya que por ejemplo alli puedes usar servicios porque por ejemplo en el framework no puedes usar
-servicios a lo logo porque puede saturarse de servicios y de mas.
-Entonces esa cama intermedia no esta ni en app ni en framework, es como un punto intermedio
-donde puedes usar servicios y demas. Ademas esto es indicado bueno para wordpress
-por ejemplo alli no puedes enviar funciones o cosas que no se usaen entoncs por eso
-servicios no se va usar y entonces con esto podemos usar los serivcios en esa capa.
-☐ eSTAS variables FACTORY_ no puede estar en el bootstrap alli debe OG_xxxx
-☐ la validacion de php 8.1 no llega al router porque se mue re antes, creo que debes
-validarlo mucho antes en el bootstrap o en el core del framework, hay que ver donde
-porque por ejemplos las peticiones no llegan esperemos que se pueda usar el cache antes
-de llegar a aplicacion o algo asi....
-☐ EL user_id aparte de ser global en AUTH Middle, debes ponerlo en ->cache::memory para que se pueda
-usarlo en tiempo de ejecucion en cualquier parte del framework. Debes ponerrlo como practica eso.
-☐ Helper tambien debe estar en las capas de app/ y middle/ para que pueda buscarlos desde alli
-porque por ejemplo el framework no necesita todos los healpers y no todas las funciones se podria
-decir, osea digamos hay funciones de string que solo son para app o para middle.
-@NOTA: DEBES revisar bien que helpers vas a mandar fuera del framework que no este en el app
-porque sino va haber conflictos y errores fatales. Otra que estos helper deben tener el prefijo
-de la aplicacion no del nucleo para evitar conflictos, cuando haya multiples apps usando el mismo framework.
-La logica que todo lo que tegna que ver con el framework empieze con og pero actualmente helper no lo hace asi
-entonces creo que hay que cambiar un poco esto. La relacion es BUscar un patron para que no conjunta en la busqueda
-de archivo como tal.
 ☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
 tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
 ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
