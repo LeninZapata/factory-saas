@@ -163,6 +163,63 @@
       ]
     },
     {
+      "name": "faqs_single",
+      "label": "❓ FAQs (Solo uno abierto)",
+      "type": "repeatable",
+      "description": "Solo puede haber UNA pregunta expandida a la vez - útil para FAQs",
+      "accordion": true,
+      "accordionSingle": true,
+      "headerTitle": "❓ Pregunta #{index}",
+      "addText": "➕ Agregar Pregunta",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 accordionSingle: true</strong><br>Solo un acordeón puede estar abierto a la vez. Al abrir uno, los demás se cierran automáticamente</div>"
+        },
+        {
+          "name": "pregunta",
+          "label": "Pregunta",
+          "type": "text",
+          "placeholder": "¿Cuál es el horario de atención?",
+          "required": true
+        },
+        {
+          "name": "respuesta",
+          "label": "Respuesta",
+          "type": "textarea",
+          "placeholder": "Nuestro horario de atención es...",
+          "rows": 4,
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "categoria",
+              "label": "Categoría",
+              "type": "select",
+              "options": [
+                { "value": "general", "label": "General" },
+                { "value": "tecnico", "label": "Técnico" },
+                { "value": "facturacion", "label": "Facturación" },
+                { "value": "soporte", "label": "Soporte" }
+              ]
+            },
+            {
+              "name": "orden",
+              "label": "Orden de visualización",
+              "type": "number",
+              "placeholder": "1",
+              "min": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "productos_sin_config",
       "label": "📦 Productos (Sin Header - Original)",
       "type": "repeatable",

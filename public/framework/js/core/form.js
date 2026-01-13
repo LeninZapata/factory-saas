@@ -801,6 +801,29 @@ class ogForm {
         
         if (body) {
           const isOpen = body.style.display !== 'none';
+          
+          // Si accordionSingle está activo, cerrar todos los otros del mismo nivel
+          const container = item.closest('.repeatable-items');
+          if (container && container.dataset.accordionSingle === 'true' && !isOpen) {
+            const allItems = container.querySelectorAll(':scope > .repeatable-item');
+            
+            allItems.forEach(otherItem => {
+              if (otherItem !== item) {
+                const otherBody = otherItem.querySelector('.repeatable-item-body');
+                const otherToggle = otherItem.querySelector('.repeatable-toggle');
+                
+                if (otherBody && otherBody.style.display !== 'none') {
+                  otherBody.style.display = 'none';
+                  if (otherToggle) {
+                    otherToggle.textContent = '▶';
+                  }
+                  otherItem.classList.add('collapsed');
+                }
+              }
+            });
+          }
+          
+          // Toggle del item actual
           body.style.display = isOpen ? 'none' : 'block';
           if (toggle) {
             toggle.textContent = isOpen ? '▶' : '▼';
@@ -931,6 +954,9 @@ class ogForm {
     }
     if (field.removeText) {
       container.dataset.removeText = field.removeText;
+    }
+    if (field.accordionSingle !== undefined) {
+      container.dataset.accordionSingle = field.accordionSingle;
     }
 
     // Crear items iniciales si initialItems > 0
@@ -1109,6 +1135,7 @@ class ogForm {
     const hasHeader = container.dataset.hasHeader === 'true' || accordion;
     const headerTitle = container.dataset.headerTitle || 'Item #{index}';
     const removeText = container.dataset.removeText || 'Eliminar';
+    const accordionSingle = container.dataset.accordionSingle === 'true';
 
     // 3. Construir el path del item
     const itemPath = `${path}[${newIndex}]`;
@@ -1192,6 +1219,27 @@ class ogForm {
     // 7. Insertar en el DOM
     container.insertAdjacentHTML('beforeend', itemHtml);
     container.dataset.itemCount = (newIndex + 1).toString();
+
+    // Si accordionSingle está activo, cerrar todos los otros items del mismo nivel
+    if (accordionSingle && accordion) {
+      const addedItem = container.lastElementChild;
+      const allItems = container.querySelectorAll(':scope > .repeatable-item');
+      
+      allItems.forEach(item => {
+        if (item !== addedItem) {
+          const body = item.querySelector('.repeatable-item-body');
+          const toggle = item.querySelector('.repeatable-toggle');
+          
+          if (body) {
+            body.style.display = 'none';
+            if (toggle) {
+              toggle.textContent = '▶';
+            }
+            item.classList.add('collapsed');
+          }
+        }
+      });
+    }
 
     // 🚨 VERIFICAR IDS DUPLICADOS
     const selectIds = new Set();
