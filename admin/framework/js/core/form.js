@@ -122,6 +122,10 @@ class ogForm {
         const basePath = config.routes?.coreViews || 'js/views';
         url = `${config.baseUrl || "/"}${basePath}/${formName}.json`;
       }
+      else if (formName.startsWith('middle:')) {
+        formName = formName.replace('middle:', '');
+        url = `${config.baseUrl || "/"}middle/views/${formName}.json`;
+      }
       else if (formName.includes('/')) {
         const parts = formName.split('/');
         const firstPart = parts[0];
@@ -790,8 +794,11 @@ class ogForm {
       // Toggle de acordeón en repeatable items
       const header = e.target.closest('.repeatable-item-header');
       if (header && header.dataset.toggle === 'accordion') {
-        // No hacer nada si se clickeó el botón eliminar
-        if (e.target.classList.contains('repeatable-remove') || e.target.closest('.repeatable-remove')) {
+        // No hacer nada si se clickeó el botón eliminar o el drag handle
+        if (e.target.classList.contains('repeatable-remove') || 
+            e.target.closest('.repeatable-remove') ||
+            e.target.classList.contains('repeatable-drag-handle') ||
+            e.target.closest('.repeatable-drag-handle')) {
           return;
         }
         
@@ -833,6 +840,53 @@ class ogForm {
       }
     });
 
+    // Drag and Drop para sortable repeatables
+    let draggedItem = null;
+    let draggedContainer = null;
+
+    document.addEventListener('dragstart', (e) => {
+      const dragHandle = e.target.closest('.repeatable-drag-handle');
+      if (!dragHandle) return;
+
+      const item = dragHandle.closest('.repeatable-item');
+      const container = item?.closest('.repeatable-items');
+      
+      if (item && container && container.dataset.sortable === 'true') {
+        draggedItem = item;
+        draggedContainer = container;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', item.innerHTML);
+      }
+    });
+
+    document.addEventListener('dragover', (e) => {
+      if (!draggedItem) return;
+      e.preventDefault();
+      
+      const afterElement = this.getDragAfterElement(draggedContainer, e.clientY);
+      
+      if (afterElement == null) {
+        draggedContainer.appendChild(draggedItem);
+      } else {
+        draggedContainer.insertBefore(draggedItem, afterElement);
+      }
+    });
+
+    document.addEventListener('dragend', (e) => {
+      if (!draggedItem) return;
+      
+      draggedItem.classList.remove('dragging');
+      
+      // Recalcular índices y títulos
+      if (draggedContainer) {
+        this.reindexRepeatableItems(draggedContainer);
+      }
+      
+      draggedItem = null;
+      draggedContainer = null;
+    });
+
     // 🔥 NUEVO: Marcar campos cuando el usuario los modifica
     document.addEventListener('input', (e) => {
       const input = e.target;
@@ -851,6 +905,22 @@ class ogForm {
     });
 
     this.registeredEvents.add('form-events');
+  }
+
+  // Helper para calcular dónde insertar el item arrastrado
+  static getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll(':scope > .repeatable-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
   // ============================================================================
@@ -957,6 +1027,9 @@ class ogForm {
     }
     if (field.accordionSingle !== undefined) {
       container.dataset.accordionSingle = field.accordionSingle;
+    }
+    if (field.sortable !== undefined) {
+      container.dataset.sortable = field.sortable;
     }
 
     // Crear items iniciales si initialItems > 0
@@ -1136,6 +1209,7 @@ class ogForm {
     const headerTitle = container.dataset.headerTitle || 'Item #{index}';
     const removeText = container.dataset.removeText || 'Eliminar';
     const accordionSingle = container.dataset.accordionSingle === 'true';
+    const sortable = container.dataset.sortable === 'true';
 
     // 3. Construir el path del item
     const itemPath = `${path}[${newIndex}]`;
@@ -1179,13 +1253,17 @@ class ogForm {
       const headerClass = accordion ? 'repeatable-item-accordion' : 'repeatable-item-with-header';
       const contentClass = accordion ? 'repeatable-item-body' : 'repeatable-content';
       
+      // Icono drag si sortable está activo (3 columnas de puntos para que sea más fácil clickear)
+      const dragIcon = sortable ? '<span class="repeatable-drag-handle" draggable="true">⋮⋮⋮</span>' : '';
+      
       // Botón eliminar siempre en el header cuando hay header
       const removeButton = `<button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>`;
       const toggleIcon = accordion ? '<span class="repeatable-toggle">▼</span>' : '';
       
-      // Orden: eliminar primero, toggle después
+      // Orden: drag, eliminar, toggle
       const headerActions = `
         <div class="repeatable-item-header-actions">
+          ${dragIcon}
           ${removeButton}
           ${toggleIcon}
         </div>
@@ -1300,6 +1378,43 @@ class ogForm {
         conditions?.init(formId);
       }, 20);
     }
+  }
+
+  // ============================================================================
+  // REINDEXAR ITEMS DE REPEATABLE DESPUÉS DE DRAG AND DROP
+  // ============================================================================
+
+  static reindexRepeatableItems(container) {
+    const items = container.querySelectorAll(':scope > .repeatable-item');
+    const headerTitle = container.dataset.headerTitle || 'Item #{index}';
+    const path = container.dataset.path;
+
+    items.forEach((item, index) => {
+      // Actualizar data-index
+      item.dataset.index = index;
+
+      // Actualizar título si tiene {index}
+      if (headerTitle.includes('{index}')) {
+        const titleEl = item.querySelector('.repeatable-item-title');
+        if (titleEl) {
+          titleEl.textContent = headerTitle.replace('{index}', (index + 1).toString());
+        }
+      }
+
+      // Actualizar atributos name de todos los inputs dentro del item
+      const inputs = item.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        const currentName = input.getAttribute('name');
+        if (currentName) {
+          // Reemplazar el índice en el path: path[oldIndex].field -> path[newIndex].field
+          const newName = currentName.replace(/\[(\d+)\]/, `[${index}]`);
+          input.setAttribute('name', newName);
+        }
+      });
+    });
+
+    // Actualizar itemCount
+    container.dataset.itemCount = items.length.toString();
   }
 
   // ============================================================================

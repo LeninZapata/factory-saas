@@ -163,6 +163,69 @@
       ]
     },
     {
+      "name": "pasos_sortable",
+      "label": "📝 Pasos del Tutorial (Ordenable)",
+      "type": "repeatable",
+      "description": "Arrastra los items para reordenarlos - el orden importa en tutoriales paso a paso",
+      "accordion": true,
+      "sortable": true,
+      "headerTitle": "Paso #{index}",
+      "addText": "➕ Agregar Paso",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 sortable: true</strong><br>Arrastra el icono ⋮⋮ para reordenar. Los índices y títulos se actualizan automáticamente</div>"
+        },
+        {
+          "name": "titulo_paso",
+          "label": "Título del Paso",
+          "type": "text",
+          "placeholder": "Ej: Crear una cuenta",
+          "required": true
+        },
+        {
+          "name": "descripcion",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "Explica qué debe hacer el usuario en este paso...",
+          "rows": 4,
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "duracion",
+              "label": "Duración estimada (min)",
+              "type": "number",
+              "placeholder": "5",
+              "min": 1
+            },
+            {
+              "name": "dificultad",
+              "label": "Dificultad",
+              "type": "select",
+              "options": [
+                { "value": "facil", "label": "🟢 Fácil" },
+                { "value": "medio", "label": "🟡 Medio" },
+                { "value": "dificil", "label": "🔴 Difícil" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tips",
+          "label": "💡 Tips adicionales (opcional)",
+          "type": "textarea",
+          "placeholder": "Consejos o advertencias para este paso...",
+          "rows": 2
+        }
+      ]
+    },
+    {
       "name": "faqs_single",
       "label": "❓ FAQs (Solo uno abierto)",
       "type": "repeatable",

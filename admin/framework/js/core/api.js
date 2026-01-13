@@ -12,7 +12,17 @@ class ogApi {
 
   static getBaseURL(options = {}) {
     const config = this.getConfig(options);
-    return config.baseUrl || config.api?.baseURL || '';
+
+    // Usar apiBaseUrl si existe, sino usar baseUrl sin /admin/
+    if (config.apiBaseUrl) {
+      return config.apiBaseUrl;
+    }
+
+    // Fallback: remover /admin/ de baseUrl
+    let baseUrl = config.baseUrl || '';
+    baseUrl = baseUrl.replace(/\/admin\/?$/, '/');
+
+    return baseUrl || config.api?.baseURL || '';
   }
 
   static getHeaders(options = {}) {
@@ -84,20 +94,20 @@ class ogApi {
 
           try {
             let errorData;
-            
+
             try {
               errorData = JSON.parse(text);
             } catch (parseError) {
               // Si falla el parsing, usar el texto directamente
               errorData = { error: text };
             }
-            
+
             const errorMsg = errorData.message || errorData.error || `HTTP ${res.status}`;
 
             // MANEJO ESPECIAL PARA ERROR 401 (Unauthorized)
             if (res.status === 401) {
               ogLogger.warn('core:api', '🔒 Sesión expirada o no autorizado - redirigiendo a login');
-              
+
               // Mostrar mensaje al usuario
               toast.error(errorMsg);
               /*if (typeof ogToast.error === 'function') {
@@ -130,7 +140,7 @@ class ogApi {
             throw new Error(errorMsg);
 
           } catch (parseError) {
-            
+
             // Si es error 401 que lanzamos nosotros, re-lanzarlo
             if (res.status === 401) {
               throw parseError;

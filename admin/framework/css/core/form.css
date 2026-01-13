@@ -328,6 +328,36 @@ textarea {
 }
 
 /* ===================================
+   Drag and Drop (Minimalista)
+   ================================= */
+
+.repeatable-drag-handle {
+  cursor: move;
+  color: #6c757d;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+  letter-spacing: -2px;
+}
+
+.repeatable-drag-handle:hover {
+  color: #495057;
+}
+
+.repeatable-item.dragging {
+  opacity: 0.3;
+}
+
+/* Asegurar que los items con header tengan position relative */
+.repeatable-item.repeatable-item-accordion,
+.repeatable-item.repeatable-item-with-header {
+  position: relative;
+}
+
+/* ===================================
    Grupos de Campos (Field Groups)
    ================================= */
 

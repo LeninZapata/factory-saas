@@ -5,13 +5,17 @@ class ogAuth {
   static userPreferences = null;
   static sessionCheckInterval = null;
 
-  static async init(config) {
-    const globalConfig = window.ogFramework?.activeConfig || window.appConfig || {};
+  static getConfig() {
+    return window.ogFramework?.activeConfig || window.appConfig || {};
+  }
+
+  static async init() {
+    const config = this.getConfig();
 
     this.config = {
       enabled: true,
       loginView: 'auth/login',
-      redirectAfterLogin: 'dashboard',
+      redirectAfterLogin: 'dashboard/dashboard',
       storageKey: 'auth',
       sessionCheckInterval: 5 * 60 * 1000,
       tokenTTL: 24 * 60 * 60 * 1000,
@@ -20,10 +24,13 @@ class ogAuth {
         logout: '/api/auth/logout',
         me: '/api/auth/profile'
       },
-      ...config
+      ...config.auth  // ← Tomar la configuración de auth del config global
     };
 
-    if (!this.config.enabled) return;
+    if (!this.config.enabled) {
+      ogLogger.warn('core:auth', 'Auth deshabilitado en configuración');
+      return;
+    }
 
     ogLogger.info('core:auth', 'Inicializando autenticación...');
 
@@ -38,6 +45,7 @@ class ogAuth {
       this.startSessionMonitoring();
       await this.showApp();
     } else {
+      ogLogger.info('core:auth', 'No hay sesión activa - mostrando login');
       this.showLogin();
     }
   }
@@ -362,7 +370,17 @@ class ogAuth {
     ogLogger.info('core:auth', '👤 Usuario:', this.user.user, '| Role:', this.user.role);
 
     const config = this.user.config;
-    this.userPermissions = config.permissions || {};
+    
+    // ✅ NORMALIZACIÓN: Soportar tanto 'plugins' como 'extensions'
+    const permissions = config.permissions || {};
+    
+    if (permissions.plugins && !permissions.extensions) {
+      ogLogger.info('core:auth', '🔄 Normalizando permissions.plugins → permissions.extensions');
+      permissions.extensions = permissions.plugins;
+      delete permissions.plugins;
+    }
+    
+    this.userPermissions = permissions;
     this.userPreferences = config.preferences || {};
 
     ogLogger.success('core:auth', '✅ Permisos cargados exitosamente');
@@ -505,7 +523,7 @@ class ogAuth {
     document.body.setAttribute('data-view', 'login-view');
 
     if (view) {
-      view.loadView(this.config.loginView);
+      view.loadView('middle:auth/login');
     }
   }
 

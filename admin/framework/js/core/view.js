@@ -26,7 +26,7 @@ class ogView {
     return null;
   }
 
-  static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null) {
+  static async loadView(viewName, container = null, extensionContext = null, menuResources = null, afterRender = null, menuId = null, viewContext = null) {
     const cache = ogModule('cache');
     const config = this.getConfig();
 
@@ -37,7 +37,14 @@ class ogView {
       viewName = targetPath;
     }
 
-    const navCacheKey = `nav_${extensionContext || 'core'}_${viewName}`;
+    // Manejar notación context:path (ej: middle:auth/login)
+    if (viewName.includes(':')) {
+      const [targetContext, targetPath] = viewName.split(':');
+      viewContext = targetContext;
+      viewName = targetPath;
+    }
+
+    const navCacheKey = `nav_${viewContext || extensionContext || 'core'}_${viewName}`;
 
     if (!container && config.cache?.viewNavigation) {
       if (this.viewNavigationCache.has(navCacheKey)) {
@@ -72,7 +79,12 @@ class ogView {
 
     const frameworkPath = config?.frameworkPath || 'framework';
 
-    if (extensionContext) {
+    // Prioridad de búsqueda: context explícito > extension > core
+    if (viewContext === 'middle') {
+      basePath = 'middle/views';
+      cacheKey = `middle_view_${viewName.replace(/\//g, '_')}`;
+    }
+    else if (extensionContext) {
       basePath = `extensions/${extensionContext}/views`;
       cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
     }
@@ -102,7 +114,6 @@ class ogView {
     }
 
     try {
-      // Solo leer del caché si está habilitado
       let viewData = config?.cache?.views ? cache.get(cacheKey) : null;
 
       if (viewData) {
@@ -128,7 +139,6 @@ class ogView {
 
         viewData = await response.json();
         
-        // 🔍 DEBUG: Vista cargada exitosamente desde servidor
         ogLogger?.success('core:view', `✅ Vista cargada desde servidor: "${viewName}"`);
 
         if (config?.cache?.views) {

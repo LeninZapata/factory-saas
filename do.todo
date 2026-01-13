@@ -22,7 +22,7 @@ agregue un menu a otro o algo asi.
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
-☐ Repetibles con drop and drop para ordenar los elementos
+✔ Repetibles con drop and drop para ordenar los elementos @done(13-01-2026 07:06)
 ✔ Repetibles tipo acordions @done(12-01-2026 18:02)
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
@@ -52,7 +52,7 @@ quedar en el primer campo obligatorio que falte por llenar
 y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
 y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento
 michos tokens.
-
+☐ partir el form.js en 2 o 3 partes para optimizar la carga
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
 parsear todo y luego generar la documentacion automatica actualizados.

@@ -24,6 +24,11 @@ class ogSidebar {
 
   static async loadMenu() {
     const hook = ogModule('hook');
+    const auth = ogModule('auth');
+    
+    // ✅ Detectar si estamos en WordPress
+    const isWordPress = typeof window.wp !== 'undefined' || 
+                        (typeof ABSPATH !== 'undefined' && ABSPATH.includes('wp-'));
     
     try {
       if (hook && typeof hook.getMenuItems === 'function') {
@@ -44,8 +49,18 @@ class ogSidebar {
         const allMenuItems = [...baseMenu, ...pluginMenus];
         const uniqueMenuItems = this.removeDuplicateMenus(allMenuItems);
 
-        // Filtrar menús por role del usuario
-        const filteredMenuItems = this.filterMenusByRole(uniqueMenuItems);
+        // ✅ Solo filtrar por role si NO es WordPress Y auth está habilitado
+        let filteredMenuItems;
+        if (isWordPress) {
+          ogLogger?.info('core:sidebar', '🔓 WordPress detectado - mostrando todos los menús');
+          filteredMenuItems = uniqueMenuItems;
+        } else if (auth && auth.config?.enabled) {
+          ogLogger?.info('core:sidebar', '🔐 Standalone con auth - filtrando menús por permisos');
+          filteredMenuItems = this.filterMenusByRole(uniqueMenuItems);
+        } else {
+          ogLogger?.info('core:sidebar', '🔓 Auth deshabilitado - mostrando todos los menús');
+          filteredMenuItems = uniqueMenuItems;
+        }
 
         this.menuData.menu = filteredMenuItems;
 
@@ -342,10 +357,16 @@ class ogSidebar {
 
   // Validar acceso por role (igual que form.js)
   static hasRoleAccess(menuItem) {
-    const auth = ogModule('auth');
-    
     // Si el menú no tiene restricción de role, permitir acceso
     if (!menuItem.role) return true;
+
+    const auth = ogModule('auth');
+    
+    // Si auth no está disponible (deshabilitado), permitir acceso
+    if (!auth) {
+      ogLogger?.warn('core:sidebar', 'Auth no disponible - permitiendo acceso sin restricciones');
+      return true;
+    }
 
     // Obtener role del usuario actual
     const userRole = auth?.user?.role;
@@ -359,6 +380,15 @@ class ogSidebar {
 
   // Filtrar menús por role de forma recursiva
   static filterMenusByRole(menuItems) {
+    const auth = ogModule('auth');
+    const userRole = auth?.user?.role;
+    
+    // ✅ Si el usuario es admin, mostrar TODO
+    if (userRole === 'admin') {
+      ogLogger?.info('core:sidebar', '👑 Usuario admin - mostrando todos los menús sin filtrado');
+      return menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
+    }
+    
     return menuItems
       .filter(item => this.hasRoleAccess(item))
       .map(item => {
@@ -378,7 +408,7 @@ class ogSidebar {
         }
         return true;
       })
-      .sort((a, b) => (a.order || 999) - (b.order || 999)); // ✅ Ordenar por order
+      .sort((a, b) => (a.order || 999) - (b.order || 999));
   }
 }
 

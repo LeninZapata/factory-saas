@@ -12,93 +12,62 @@ class ogHook {
   }
 
   static async loadPluginHooks() {
-    const api = ogModule('api');
     const config = this.getConfig();
-    const startTime = performance.now();
-    this.menuItems = [];
 
     try {
-      const cacheBuster = `?v=${config.version || "1.0.0"}`;
-      const response = await api.get('extensions/index.json' + cacheBuster);
+      // Usar extensionsPath si existe, sino usar baseUrl
+      console.log(`config.extensionsPath:`, config.extensionsPath);
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+      const indexUrl = `${extensionsBase}index.json?v=${config.version || '1.0.0'}`;
 
-      if (!response?.extensions || !Array.isArray(response.extensions)) {
-        ogLogger?.warn('core:hook', 'extensions/index.json vacío o mal formado');
+      ogLogger?.info('core:hook', `📦 Cargando index de extensions desde: ${indexUrl}`);
+
+      const response = await fetch(indexUrl);
+
+      if (!response.ok) {
+        ogLogger?.error('core:hook', `❌ No se pudo cargar index.json: ${response.status}`);
         return;
       }
 
-      const pluginLoadPromises = response.extensions.map(async (pluginInfo) => {
-        const pluginConfig = await this.loadPluginConfig(pluginInfo.name);
+      const indexData = await response.json();
+      const extensions = indexData.extensions || [];
 
-        if (pluginConfig?.enabled) {
-          this.pluginRegistry.set(pluginInfo.name, pluginConfig);
+      ogLogger?.info('core:hook', `✅ Extensions encontradas: ${extensions.length}`);
 
-          // ✅ Guardar copia original (sin filtrar)
-          this.pluginRegistryOriginal.set(pluginInfo.name, JSON.parse(JSON.stringify(pluginConfig)));
-
-          if (pluginConfig.autoload) {
-            await this.loadExtensionScript(pluginInfo.name, pluginConfig.autoload);
-          }
-
-          if (pluginConfig.scripts?.length > 0) {
-            // Normalizar rutas antes de cargar
-            const normalizedScripts = this.normalizeResources(pluginConfig.scripts);
-            const normalizedStyles = this.normalizeResources(pluginConfig.styles || []);
-
-            await this.loadPluginResources(normalizedScripts, normalizedStyles);
-
-            // Actualizar en pluginConfig para que los menús usen las rutas normalizadas
-            pluginConfig.scripts = normalizedScripts;
-            pluginConfig.styles = normalizedStyles;
-          }
-
-          await this.loadPluginLanguages(pluginInfo.name);
-
-          if (pluginConfig.name === 'dashboard') return;
-
-          if (pluginConfig.hasMenu && pluginConfig.menu) {
-            const menuItem = {
-              id: pluginConfig.name,
-              title: pluginConfig.menu.title,
-              icon: pluginConfig.menu.icon,
-              order: pluginConfig.menu.order || 100
-            };
-
-            // Preservar role del menú principal si existe
-            if (pluginConfig.menu.role) {
-              menuItem.role = pluginConfig.menu.role;
-            }
-
-            if (pluginConfig.menu.items?.length > 0) {
-              menuItem.items = this.processMenuItems(
-                pluginConfig.menu.items,
-                pluginConfig.name,
-                pluginConfig.scripts || [],
-                pluginConfig.styles || []
-              );
-            } else if (pluginConfig.menu.view) {
-              menuItem.view = pluginConfig.menu.view;
-              if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
-              if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
-            }
-
-            this.menuItems.push(menuItem);
-          }
-
-          if (pluginConfig.hasHooks) {
-            await this.loadPluginHook(pluginInfo.name);
-          }
-
-          if (pluginConfig.menu?.preloadViews === true) {
-            await this.preloadPluginViews(pluginInfo.name, pluginConfig);
-          }
-        }
-      });
-
-      await Promise.all(pluginLoadPromises);
-      this.menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
+      for (const ext of extensions) {
+        await this.loadPlugin(ext.name);
+      }
 
     } catch (error) {
-      ogModule('logger')?.error('core:hook', 'Error cargando extensions:', error);
+      ogLogger?.error('core:hook', '❌ Error cargando extensions:', error);
+    }
+  }
+
+  // Ejemplo: si hay un método loadPlugin que carga hooks.js
+  static async loadPlugin(extensionName) {
+    const config = this.getConfig();
+    
+    try {
+      // ✅ Usar extensionsPath
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+      const hooksUrl = `${extensionsBase}${extensionName}/hooks.js?v=${config.version || '1.0.0'}`;
+      
+      ogLogger?.info('core:hook', `📦 Cargando hooks de: ${extensionName}`);
+      
+      const response = await fetch(hooksUrl);
+      
+      if (!response.ok) {
+        ogLogger?.warn('core:hook', `⚠️ No se pudo cargar hooks.js de ${extensionName}`);
+        return;
+      }
+
+      const script = await response.text();
+      new Function(script)();
+      
+      ogLogger?.success('core:hook', `✅ Hooks de ${extensionName} cargados`);
+
+    } catch (error) {
+      ogLogger?.error('core:hook', `❌ Error cargando ${extensionName}:`, error);
     }
   }
 
@@ -121,7 +90,7 @@ class ogHook {
     const i18n = ogModule('i18n');
     const cache = ogModule('cache');
     const config = this.getConfig();
-    
+
     try {
       const langPath = `${config.baseUrl || "/"}extensions/${extensionName}/lang/${lang}.json`;
       const cacheBuster = `?v=${config.version || "1.0.0"}`;
@@ -151,7 +120,7 @@ class ogHook {
   static async preloadPluginViews(extensionName, pluginConfig) {
     const cache = ogModule('cache');
     const config = this.getConfig();
-    
+
     if (!pluginConfig.menu?.items) return;
     const viewsToPreload = [];
     const collectViews = (items) => {
@@ -179,7 +148,7 @@ class ogHook {
 
   static async loadExtensionScript(extensionName, scriptFile) {
     const config = this.getConfig();
-    
+
     try {
       const scriptPath = `extensions/${extensionName}/${scriptFile}`;
       const cacheBuster = `?v=${config.version || "1.0.0"}`;
@@ -194,7 +163,7 @@ class ogHook {
 
   static async loadPluginResources(scripts = [], styles = []) {
     const loader = ogModule('loader');
-    
+
     if (loader && typeof loader.loadResources === 'function') {
       try {
         await loader.loadResources(scripts, styles);
@@ -317,7 +286,7 @@ class ogHook {
   static async loadPluginConfig(extensionName) {
     const api = ogModule('api');
     const config = this.getConfig();
-    
+
     try {
       const cacheBuster = `?v=${config.version || "1.0.0"}`;
       return await api.get(`extensions/${extensionName}/index.json${cacheBuster}`);
@@ -328,7 +297,7 @@ class ogHook {
 
   static async loadPluginHook(extensionName) {
     const config = this.getConfig();
-    
+
     try {
       const hookPath = `extensions/${extensionName}/hooks.js`;
       const cacheBuster = `?v=${config.version || "1.0.0"}`;

@@ -39,7 +39,6 @@
     'js/core/conditions.js',
     'js/core/dataLoader.js',
     'js/core/form.js',
-    'js/core/auth.js',
     'js/core/view.js',
     'js/core/navigation.js',
     'js/core/sidebar.js',
@@ -57,39 +56,39 @@
   // REGISTRO DE CONFIGURACIONES
   // ==========================================
 
-  ogFramework.register = function(slug, config) {
-    if (!slug || typeof slug !== 'string') {
-      throw new Error('ogFramework.register: slug must be a string');
+  ogFramework.register = async function(slug, config) {
+    if (!slug || !config) {
+      console.error('❌ ogFramework.register requiere slug y config');
+      return;
     }
 
-    if (!config || typeof config !== 'object') {
-      throw new Error('ogFramework.register: config must be an object');
-    }
-
-    console.log(`📦 Registering config for: ${slug}`);
+    console.log(`✅ Registering config for: ${slug}`);
 
     // Normalizar config
-    config.slug = slug;
     const normalizedConfig = this.normalizeConfig(config);
 
-    // Guardar configuración
+    // Guardar en AMBOS lugares para compatibilidad
+    this.instances[slug] = normalizedConfig;
     this.configs[slug] = normalizedConfig;
 
-    // Si los scripts ya están cargados, inicializar inmediatamente
-    if (this._scriptsLoaded) {
-      this.initInstance(slug, normalizedConfig);
-    } else {
-      // Agregar a cola de inicialización pendiente
-      this._pendingInits.push({ slug, config: normalizedConfig });
-
-      // Si es la primera configuración, iniciar carga de scripts
-      if (!this._scriptsLoading) {
-        this._scriptsLoading = true;
-        this.loadFrameworkScripts();
-      }
+    // Si es la primera configuración, iniciar carga de scripts
+    if (!this._scriptsLoading) {
+      this._scriptsLoading = true;
+      await this.loadFrameworkScripts();
     }
 
-    return this;
+    // Activar esta instancia
+    this.setActiveContext(slug);
+
+    // ✅ AGREGAR: Si los scripts ya están cargados, inicializar inmediatamente
+    if (this._scriptsLoaded) {
+      await this.initInstance(slug, normalizedConfig);
+    } else {
+      // ✅ AGREGAR: Si no, agregar a pendientes
+      this._pendingInits.push({ slug, config: normalizedConfig });
+    }
+
+    console.log(`✅ Config registered and activated for: ${slug}`);
   };
 
   // ==========================================
@@ -106,7 +105,7 @@
 
     try {
       // Usar la primera config para obtener frameworkUrl
-      const firstConfig = Object.values(this.configs)[0];
+      const firstConfig = Object.values(this.instances)[0];
       if (!firstConfig) {
         throw new Error('No config found for loading scripts');
       }
@@ -114,7 +113,7 @@
       const frameworkUrl = firstConfig.frameworkUrl || 'framework/';
       const cacheBuster = '?v=' + (firstConfig.version || Date.now());
 
-      // Cargar todos los scripts en paralelo
+      // 1. Cargar todos los scripts del framework en paralelo
       const scriptPromises = FRAMEWORK_SCRIPTS.map(url =>
         fetch(frameworkUrl + url + cacheBuster)
           .then(r => {
@@ -125,7 +124,7 @@
 
       const scripts = await Promise.all(scriptPromises);
 
-      // Ejecutar scripts
+      // Ejecutar scripts del framework
       scripts.forEach(scriptContent => {
         new Function(scriptContent)();
       });
@@ -135,8 +134,32 @@
         window.ogFramework.logger = window.ogLogger;
       }
 
+      ogLogger.success('framework', '✅ Framework scripts loaded');
+
+      // 2. Cargar scripts de MIDDLE condicionalmente (auth.js)
+      if (firstConfig.auth?.enabled === true) {
+        ogLogger.info('framework', '🔐 Auth habilitado - Cargando middle/auth.js');
+        try {
+          const authUrl = firstConfig.baseUrl + 'middle/js/auth.js' + cacheBuster;
+          const authResponse = await fetch(authUrl);
+
+          if (!authResponse.ok) {
+            throw new Error('Failed to load auth.js');
+          }
+
+          const authScript = await authResponse.text();
+          new Function(authScript)();
+
+          ogLogger.success('framework', '✅ Auth.js cargado correctamente');
+        } catch (error) {
+          ogLogger.error('framework', '❌ Error cargando auth.js:', error);
+        }
+      } else {
+        ogLogger.info('framework', '⚠️ Auth deshabilitado - Saltando middle/auth.js');
+      }
+
       this._scriptsLoaded = true;
-      ogLogger.info('framework', '✅ Framework scripts loaded');
+      ogLogger.success('framework', '✅ Todos los scripts core cargados');
 
       // Inicializar instancias pendientes
       this.initPendingInstances();
@@ -269,23 +292,46 @@
   // ==========================================
 
   ogFramework.normalizeConfig = function(config) {
-    return {
-      slug: config.slug,
-      version: config.version || '1.0.0',
-      environment: config.environment || 'production',
-      isDevelopment: config.isDevelopment || false,
-      baseUrl: config.baseUrl || '/',
-      frameworkUrl: config.frameworkUrl || 'framework/',
-      publicUrl: config.publicUrl || window.location.origin + '/',
-      frameworkPath: config.frameworkPath || 'framework',
-      container: config.container || '#app',
-      defaultView: config.defaultView || 'dashboard/dashboard',
-      i18n: config.i18n || { enabled: false },
-      auth: config.auth || { enabled: false },
-      routes: config.routes || {},
-      cache: config.cache || {},
-      custom: config.custom || {}
+    // Defaults para propiedades críticas
+    const defaults = {
+      slug: 'default',
+      version: '1.0.0',
+      environment: 'production',
+      isDevelopment: false,
+      baseUrl: '/',
+      frameworkUrl: 'framework/',
+      publicUrl: window.location.origin + '/',
+      frameworkPath: 'framework',
+      container: '#app',
+      defaultView: 'dashboard/dashboard',
+      i18n: { enabled: false },
+      auth: { enabled: false },
+      routes: {},
+      cache: {},
+      custom: {}
     };
+
+    // Merge: defaults primero, luego config (config sobrescribe defaults)
+    const normalized = { ...defaults, ...config };
+
+    // Para objetos anidados, hacer merge profundo
+    if (config.i18n) {
+      normalized.i18n = { ...defaults.i18n, ...config.i18n };
+    }
+    if (config.auth) {
+      normalized.auth = { ...defaults.auth, ...config.auth };
+    }
+    if (config.routes) {
+      normalized.routes = { ...defaults.routes, ...config.routes };
+    }
+    if (config.cache) {
+      normalized.cache = { ...defaults.cache, ...config.cache };
+    }
+    if (config.custom) {
+      normalized.custom = { ...defaults.custom, ...config.custom };
+    }
+
+    return normalized;
   };
 
   // ==========================================
