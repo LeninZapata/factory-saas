@@ -214,6 +214,147 @@
           ]
         }
       ]
+    },
+    {
+      "name": "departamentos_anidados",
+      "label": "🏢 Departamentos con Equipos (Acordeones Anidados)",
+      "type": "repeatable",
+      "description": "Acordeones dentro de acordeones - Departamentos → Equipos → Miembros",
+      "accordion": true,
+      "headerTitle": "🏢 Departamento #{index}",
+      "addText": "➕ Agregar Departamento",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #f0f9ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0ea5e9; font-size: 0.9rem;'><strong>💡 Acordeones Anidados</strong><br>Cada departamento puede tener equipos (también en acordeón), y cada equipo puede tener miembros</div>"
+        },
+        {
+          "name": "nombre_depto",
+          "label": "Nombre del Departamento",
+          "type": "text",
+          "placeholder": "Ej: Tecnología",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "presupuesto",
+              "label": "Presupuesto Anual ($)",
+              "type": "number",
+              "placeholder": "100000",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "ubicacion",
+              "label": "Ubicación",
+              "type": "text",
+              "placeholder": "Piso 3, Edificio A"
+            }
+          ]
+        },
+        {
+          "name": "equipos",
+          "label": "👥 Equipos del Departamento",
+          "type": "repeatable",
+          "accordion": true,
+          "headerTitle": "👥 Equipo #{index}",
+          "addText": "➕ Agregar Equipo",
+          "removeText": "🗑️",
+          "fields": [
+            {
+              "name": "nombre_equipo",
+              "label": "Nombre del Equipo",
+              "type": "text",
+              "placeholder": "Ej: Frontend Team",
+              "required": true
+            },
+            {
+              "type": "group",
+              "columns": 2,
+              "gap": "normal",
+              "fields": [
+                {
+                  "name": "lider",
+                  "label": "Líder del Equipo",
+                  "type": "text",
+                  "placeholder": "Nombre del líder"
+                },
+                {
+                  "name": "objetivo",
+                  "label": "Objetivo Principal",
+                  "type": "select",
+                  "options": [
+                    { "value": "desarrollo", "label": "Desarrollo" },
+                    { "value": "mantenimiento", "label": "Mantenimiento" },
+                    { "value": "innovacion", "label": "Innovación" },
+                    { "value": "soporte", "label": "Soporte" }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "miembros",
+              "label": "👤 Miembros del Equipo",
+              "type": "repeatable",
+              "accordion": true,
+              "headerTitle": "👤 Miembro #{index}",
+              "addText": "➕ Agregar Miembro",
+              "removeText": "🗑️",
+              "fields": [
+                {
+                  "name": "nombre_miembro",
+                  "label": "Nombre Completo",
+                  "type": "text",
+                  "placeholder": "Juan Pérez",
+                  "required": true
+                },
+                {
+                  "type": "group",
+                  "columns": 3,
+                  "gap": "normal",
+                  "fields": [
+                    {
+                      "name": "cargo",
+                      "label": "Cargo",
+                      "type": "select",
+                      "options": [
+                        { "value": "junior", "label": "Junior" },
+                        { "value": "mid", "label": "Mid-level" },
+                        { "value": "senior", "label": "Senior" },
+                        { "value": "lead", "label": "Lead" }
+                      ]
+                    },
+                    {
+                      "name": "email",
+                      "label": "Email",
+                      "type": "email",
+                      "placeholder": "juan@empresa.com"
+                    },
+                    {
+                      "name": "telefono",
+                      "label": "Teléfono",
+                      "type": "tel",
+                      "placeholder": "+593 99 999 9999"
+                    }
+                  ]
+                },
+                {
+                  "name": "habilidades",
+                  "label": "Habilidades Principales",
+                  "type": "textarea",
+                  "placeholder": "Ej: React, Node.js, PostgreSQL...",
+                  "rows": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "statusbar": [

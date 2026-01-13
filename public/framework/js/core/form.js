@@ -780,6 +780,7 @@ class ogForm {
       }
 
       if (e.target.classList.contains('repeatable-remove')) {
+        e.stopPropagation(); // Evitar que dispare el toggle del acordeón
         const item = e.target.closest('.repeatable-item');
         if (item && confirm('¿Eliminar este elemento?')) {
           item.remove();
@@ -789,6 +790,11 @@ class ogForm {
       // Toggle de acordeón en repeatable items
       const header = e.target.closest('.repeatable-item-header');
       if (header && header.dataset.toggle === 'accordion') {
+        // No hacer nada si se clickeó el botón eliminar
+        if (e.target.classList.contains('repeatable-remove') || e.target.closest('.repeatable-remove')) {
+          return;
+        }
+        
         const item = header.closest('.repeatable-item');
         const body = item.querySelector('.repeatable-item-body');
         const toggle = header.querySelector('.repeatable-toggle');
@@ -1145,19 +1151,27 @@ class ogForm {
       // Con header (puede ser acordeón o no)
       const headerClass = accordion ? 'repeatable-item-accordion' : 'repeatable-item-with-header';
       const contentClass = accordion ? 'repeatable-item-body' : 'repeatable-content';
+      
+      // Botón eliminar siempre en el header cuando hay header
+      const removeButton = `<button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>`;
       const toggleIcon = accordion ? '<span class="repeatable-toggle">▼</span>' : '';
+      
+      // Orden: eliminar primero, toggle después
+      const headerActions = `
+        <div class="repeatable-item-header-actions">
+          ${removeButton}
+          ${toggleIcon}
+        </div>
+      `;
       
       itemHtml = `
         <div class="repeatable-item ${headerClass}" data-index="${newIndex}">
           <div class="repeatable-item-header ${accordion ? 'clickable' : ''}" ${accordion ? 'data-toggle="accordion"' : ''}>
             <span class="repeatable-item-title">${processedTitle}</span>
-            ${toggleIcon}
+            ${headerActions}
           </div>
           <div class="${contentClass}" ${accordion ? 'style="display:block"' : ''}>
             ${contentHtml}
-            <div class="repeatable-remove">
-              <button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>
-            </div>
           </div>
         </div>
       `;

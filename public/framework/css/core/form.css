@@ -261,9 +261,6 @@ textarea {
   flex-direction: column;
   padding: 0;
 }
-.repeatable-item.repeatable-item-with-header .repeatable-content {
-  padding: 1rem;
-}
 
 /* Header del item con acordeón */
 .repeatable-item-header {
@@ -289,6 +286,14 @@ textarea {
   font-weight: 600;
   color: #495057;
   font-size: 0.95rem;
+  flex: 1;
+}
+
+/* Acciones del header (toggle + botón eliminar) */
+.repeatable-item-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .repeatable-toggle {
@@ -302,10 +307,24 @@ textarea {
   padding: 1rem;
 }
 
+/* Content para header simple */
+.repeatable-item.repeatable-item-with-header .repeatable-content {
+  padding: 1rem;
+}
+
 /* Item colapsado */
 .repeatable-item.collapsed .repeatable-item-header {
   border-radius: 0.375rem;
   border-bottom: none;
+}
+
+/* Evitar que el botón eliminar dispare el toggle */
+.repeatable-item-header-actions .repeatable-remove {
+  pointer-events: auto;
+}
+
+.repeatable-item-header.clickable .repeatable-remove {
+  pointer-events: auto;
 }
 
 /* ===================================
