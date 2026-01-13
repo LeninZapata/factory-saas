@@ -85,7 +85,9 @@ class ogView {
       cacheKey = `middle_view_${viewName.replace(/\//g, '_')}`;
     }
     else if (extensionContext) {
-      basePath = `extensions/${extensionContext}/views`;
+      // Usar extensionsPath si existe
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+      basePath = `${extensionsBase}${extensionContext}/views`.replace(config.baseUrl, '');
       cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.startsWith('core:')) {
@@ -98,7 +100,9 @@ class ogView {
       const firstPart = parts[0];
       const isExtension = window.hook?.isExtensionEnabled?.(firstPart);
       if (isExtension) {
-        basePath = `extensions/${firstPart}/views`;
+        // Usar extensionsPath si existe
+        const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+        basePath = `${extensionsBase}${firstPart}/views`.replace(config.baseUrl, '');
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
         cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
@@ -138,7 +142,7 @@ class ogView {
         }
 
         viewData = await response.json();
-        
+
         ogLogger?.success('core:view', `✅ Vista cargada desde servidor: "${viewName}"`);
 
         if (config?.cache?.views) {
@@ -291,17 +295,35 @@ class ogView {
 
   static async loadViewResources(viewData) {
     const loader = ogModule('loader');
+    const config = this.getConfig();
 
     if (viewData.scripts || viewData.styles) {
       try {
-        // Normalizar rutas agregando 'extensions/' si no lo tienen
+        // Usar extensionsPath para recursos de extensions
         const normalizeResources = (resources = []) => {
           return resources.map(path => {
             if (!path) return path;
-            // Si ya empieza con 'extensions/', dejarlo como está
-            if (path.startsWith('extensions/')) return path;
+
+            // Si ya tiene protocolo (http/https), dejarlo como está
+            if (path.startsWith('http://') || path.startsWith('https://')) {
+              return path;
+            }
+
+            // Si ya empieza con extensionsPath completo, dejarlo
+            if (config.extensionsPath && path.startsWith(config.extensionsPath)) {
+              return path;
+            }
+
+            // Si empieza con 'extensions/', convertir a ruta completa
+            if (path.startsWith('extensions/')) {
+              const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+              // Remover 'extensions/' del inicio y agregar extensionsPath
+              return path.replace('extensions/', extensionsBase);
+            }
+
             // Si NO empieza con 'extensions/', agregarlo
-            return `extensions/${path}`;
+            const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+            return `${extensionsBase}${path}`;
           });
         };
 

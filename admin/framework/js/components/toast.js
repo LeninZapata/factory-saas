@@ -1,10 +1,9 @@
+// toast.js - Con prefijo og-
 class ogToast {
-  static containers = {}; // Mapa de contenedores por posición
+  static containers = {};
   static queue = [];
   static active = [];
   static maxVisible = 5;
-
-
 
   static show(message, options = {}) {
     const config = {
@@ -39,53 +38,48 @@ class ogToast {
 
   static display(message, config) {
     const container = this.ensureContainer(config.position);
-
-    // Traducir mensaje si empieza con "i18n:" o si es una key de traducción
     const translatedMessage = this.translateMessage(message);
 
     const toastEl = document.createElement('div');
-    toastEl.className = `toast toast-${config.type}`;
+    toastEl.className = `og-toast og-toast-${config.type}`;
     toastEl.innerHTML = `
-      <span class="toast-icon">${this.getIcon(config.type)}</span>
-      <span class="toast-message">${translatedMessage}</span>
-      <button class="toast-close" onclick="ogToast.remove(this.parentElement)">×</button>
+      <span class="og-toast-icon">${this.getIcon(config.type)}</span>
+      <span class="og-toast-message">${translatedMessage}</span>
+      <button class="og-toast-close" onclick="ogToast.remove(this.parentElement)">×</button>
     `;
 
     container.appendChild(toastEl);
     this.active.push(toastEl);
 
-    setTimeout(() => toastEl.classList.add('toast-show'), 10);
-
+    setTimeout(() => toastEl.classList.add('og-toast-show'), 10);
     setTimeout(() => this.remove(toastEl), config.duration);
   }
 
-  // Traducir mensaje si es una key i18n
   static translateMessage(message) {
     if (!message) return message;
 
+    const i18n = window.ogFramework?.i18n || window.ogModule?.('i18n');
+    if (!i18n) return message;
+
     // Si empieza con "i18n:", quitar el prefijo y traducir
     if (message.startsWith('i18n:')) {
-      const key = message.substring(5); // Quitar "i18n:"
-      return ogModule('i18n') && ogModule('i18n').__ ? ogModule('i18n').__(key) : (window.__ ? window.__(key) : message);
+      const key = message.substring(5);
+      return i18n.t ? i18n.t(key) : message;
     }
 
-    // Si NO contiene espacios y tiene puntos, probablemente es una key
-    // Ejemplo: "admin.user.success.created"
+    // Si es una key de traducción (contiene puntos pero no espacios)
     if (!message.includes(' ') && message.includes('.')) {
-      const i18n = ogModule('i18n');
-      const translated = i18n && i18n.__ ? i18n.__(message) : (window.__ ? window.__(message) : message);
-      // Si la traducción es diferente a la key, usarla
+      const translated = i18n.t ? i18n.t(message) : message;
       return translated !== message ? translated : message;
     }
 
-    // Si no, retornar el mensaje tal cual
     return message;
   }
 
   static remove(toastEl) {
-    if (!toastEl || !toastEl.classList.contains('toast-show')) return;
+    if (!toastEl || !toastEl.classList.contains('og-toast-show')) return;
 
-    toastEl.classList.remove('toast-show');
+    toastEl.classList.remove('og-toast-show');
 
     setTimeout(() => {
       toastEl.remove();
@@ -99,20 +93,16 @@ class ogToast {
   }
 
   static ensureContainer(position) {
-    // Si ya existe el contenedor para esta posición, retornarlo
     if (this.containers[position]) {
       return this.containers[position];
     }
 
-    // Crear nuevo contenedor para esta posición
     const container = document.createElement('div');
-    container.className = `toast-container toast-${position}`;
+    container.className = `og-toast-container og-toast-${position}`;
     container.dataset.position = position;
     document.body.appendChild(container);
 
-    // Guardar referencia
     this.containers[position] = container;
-
     return container;
   }
 
@@ -125,12 +115,19 @@ class ogToast {
     };
     return icons[type] || icons.info;
   }
+
+  // Limpiar todos los toasts
+  static clearAll() {
+    this.active.forEach(toast => this.remove(toast));
+    this.queue = [];
+  }
 }
 
-// ✅ Exponer GLOBALMENTE como ogToast (usado en onclick y en código JS)
+// Exponer globalmente
 window.ogToast = ogToast;
 
-// Registrar en ogFramework
-if (typeof window.ogFramework !== 'undefined') {
+// Registrar en ogFramework si existe
+if (window.ogFramework) {
+  window.ogFramework.components = window.ogFramework.components || {};
   window.ogFramework.components.toast = ogToast;
 }

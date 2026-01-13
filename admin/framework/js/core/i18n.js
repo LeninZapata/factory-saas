@@ -101,7 +101,6 @@ class ogI18n {
   static async loadExtensionLang(extensionName, lang) {
     const globalConfig = this.getConfig();
     const version = globalConfig.version || "1.0.0" || Date.now();
-    const baseUrl = globalConfig.baseUrl || '/';
     const cache = ogModule('cache');
 
     const cacheKey = `i18n_extension_${extensionName}_${lang}`;
@@ -110,7 +109,9 @@ class ogI18n {
     if (!data) {
       try {
         const cacheBuster = `?v=${version}`;
-        const response = await fetch(`${baseUrl}extensions/${extensionName}/lang/${lang}.json${cacheBuster}`);
+        // ✅ CAMBIO: Usar extensionsPath
+        const extensionsBase = globalConfig.extensionsPath || `${globalConfig.baseUrl}extensions/`;
+        const response = await fetch(`${extensionsBase}${extensionName}/lang/${lang}.json${cacheBuster}`);
 
         if (response.ok) {
           data = await response.json();

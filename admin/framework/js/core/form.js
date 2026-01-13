@@ -103,8 +103,8 @@ class ogForm {
       // Manejar notación extension|path (ej: ejemplos|forms/formularios/form-inputs-normales)
       if (formName.includes('|')) {
         const [extensionName, restPath] = formName.split('|');
-        const basePath = config.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
-        url = `${config.baseUrl || "/"}${basePath}/${restPath}.json`;
+        const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+        url = `${extensionsBase}${extensionName}/views/${restPath}.json`;  // ← Agregado /views/
       }
       else if (isCore === true) {
         const basePath = config.routes?.coreViews || 'js/views';
@@ -114,8 +114,8 @@ class ogForm {
         const parts = formName.split('/');
         const extensionName = parts[0];
         const restPath = parts.slice(1).join('/');
-        const basePath = config.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
-        url = `${config.baseUrl || "/"}${basePath}/forms/${restPath}.json`;
+        const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+        url = `${extensionsBase}${extensionName}/views/forms/${restPath}.json`;  // ← Agregado /views/
       }
       else if (formName.startsWith('core:')) {
         formName = formName.replace('core:', '');
@@ -136,8 +136,8 @@ class ogForm {
         if (isExtension) {
           const extensionName = parts[0];
           const restPath = parts.slice(1).join('/');
-          const basePath = config.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
-          url = `${config.baseUrl || "/"}${basePath}/forms/${restPath}.json`;
+          const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
+          url = `${extensionsBase}${extensionName}/views/forms/${restPath}.json`;  // ← Agregado /views/
         } else {
           const basePath = config.routes?.coreViews || 'js/views';
           url = `${config.baseUrl || "/"}${basePath}/${formName}.json`;

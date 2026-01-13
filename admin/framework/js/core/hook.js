@@ -2,21 +2,77 @@ class ogHook {
   static hooks = new Map();
   static loadedHooks = new Set();
   static pluginRegistry = new Map();
-  static pluginRegistryOriginal = new Map(); // ← Copia sin filtrar
+  static pluginRegistryOriginal = new Map();
   static menuItems = [];
-
-
 
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
+  // ============================================
+  // REGISTRO DE EXTENSIONS
+  // ============================================
+
+  /**
+   * Registrar un extension manualmente
+   * @param {string} extensionName - Nombre del extension
+   * @param {object} config - Configuración del extension
+   */
+  static register(extensionName, config) {
+    if (!extensionName || !config) {
+      ogLogger?.error('core:hook', 'register() requiere extensionName y config');
+      return;
+    }
+
+    ogLogger?.info('core:hook', `📝 Registrando extension: ${extensionName}`);
+
+    // Normalizar config básica
+    const normalizedConfig = {
+      name: extensionName,
+      enabled: config.enabled !== false,
+      hasMenu: config.hasMenu || false,
+      hasViews: config.hasViews || false,
+      hasLanguages: config.hasLanguages || false,
+      backend: config.backend || { enabled: false },
+      description: config.description || '',
+      version: config.version || '1.0.0',
+      ...config
+    };
+
+    // Procesar menú si existe
+    if (normalizedConfig.hasMenu && normalizedConfig.menu) {
+      const extensionScripts = this.normalizeResources(config.scripts || []);
+      const extensionStyles = this.normalizeResources(config.styles || []);
+
+      normalizedConfig.menu = {
+        title: config.menu.title || extensionName,
+        icon: config.menu.icon || '📦',
+        order: config.menu.order || 100,
+        role: config.menu.role || null,
+        items: config.menu.items
+          ? this.processMenuItems(config.menu.items, extensionName, extensionScripts, extensionStyles)
+          : [],
+        view: config.menu.view || null
+      };
+    }
+
+    // Guardar en ambos registros
+    this.pluginRegistry.set(extensionName, normalizedConfig);
+    this.pluginRegistryOriginal.set(extensionName, { ...normalizedConfig });
+
+    ogLogger?.success('core:hook', `✅ Extension "${extensionName}" registrado con ${normalizedConfig.menu?.items?.length || 0} menús`);
+
+    return normalizedConfig;
+  }
+
+  // ============================================
+  // CARGA DE EXTENSIONS
+  // ============================================
+
   static async loadPluginHooks() {
     const config = this.getConfig();
 
     try {
-      // Usar extensionsPath si existe, sino usar baseUrl
-      console.log(`config.extensionsPath:`, config.extensionsPath);
       const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
       const indexUrl = `${extensionsBase}index.json?v=${config.version || '1.0.0'}`;
 
@@ -43,33 +99,248 @@ class ogHook {
     }
   }
 
-  // Ejemplo: si hay un método loadPlugin que carga hooks.js
   static async loadPlugin(extensionName) {
     const config = this.getConfig();
-    
+
     try {
-      // ✅ Usar extensionsPath
       const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
-      const hooksUrl = `${extensionsBase}${extensionName}/hooks.js?v=${config.version || '1.0.0'}`;
-      
-      ogLogger?.info('core:hook', `📦 Cargando hooks de: ${extensionName}`);
-      
-      const response = await fetch(hooksUrl);
-      
-      if (!response.ok) {
-        ogLogger?.warn('core:hook', `⚠️ No se pudo cargar hooks.js de ${extensionName}`);
-        return;
+
+      // 1. Cargar index.json del extension (configuración y menú)
+      const indexUrl = `${extensionsBase}${extensionName}/index.json?v=${config.version || '1.0.0'}`;
+      ogLogger?.info('core:hook', `📦 Cargando config de: ${extensionName}`);
+
+      const indexResponse = await fetch(indexUrl);
+
+      if (indexResponse.ok) {
+        const extensionConfig = await indexResponse.json();
+
+        // Registrar el extension con su configuración
+        this.register(extensionName, extensionConfig);
+      } else {
+        ogLogger?.warn('core:hook', `⚠️ No se encontró index.json para ${extensionName}`);
+        // Registrar con config básico
+        this.register(extensionName, {
+          enabled: true,
+          hasMenu: false
+        });
       }
 
-      const script = await response.text();
-      new Function(script)();
-      
-      ogLogger?.success('core:hook', `✅ Hooks de ${extensionName} cargados`);
+      // 2. Cargar hooks.js si existe (opcional - solo para hooks dinámicos)
+      const hooksUrl = `${extensionsBase}${extensionName}/hooks.js?v=${config.version || '1.0.0'}`;
+      const hooksResponse = await fetch(hooksUrl);
+
+      if (hooksResponse.ok) {
+        const script = await hooksResponse.text();
+        new Function(script)();
+
+        // Marcar que los hooks fueron cargados
+        this.loadedHooks.add(extensionName);
+        ogLogger?.success('core:hook', `✅ Hooks de ${extensionName} cargados`);
+      }
+
+      // ✅ 3. NUEVO: Cargar idioma del extension
+      const i18n = ogModule('i18n');
+      if (i18n) {
+        const currentLang = i18n.getLang();
+        ogLogger?.info('core:hook', `🌐 Cargando idioma ${currentLang} para ${extensionName}`);
+        await i18n.loadExtensionLang(extensionName, currentLang);
+      }
 
     } catch (error) {
       ogLogger?.error('core:hook', `❌ Error cargando ${extensionName}:`, error);
     }
   }
+
+  // ============================================
+  // GESTIÓN DE MENÚS
+  // ============================================
+
+  static processMenuItems(items, parentPlugin = '', extensionScripts = [], extensionStyles = []) {
+    return items
+      .map(item => {
+        const processedItem = {
+          id: item.id,
+          title: item.title,
+          order: item.order || 999
+        };
+
+        if (item.role) {
+          processedItem.role = item.role;
+        }
+        if (item.icon) {
+          processedItem.icon = item.icon;
+        }
+
+        const itemScripts = this.normalizeResources(item.scripts || []);
+        const combinedScripts = [...extensionScripts, ...itemScripts];
+        if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
+
+        const itemStyles = this.normalizeResources(item.styles || []);
+        const combinedStyles = [...extensionStyles, ...itemStyles];
+        if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
+
+        if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
+
+        if (item.items?.length > 0) {
+          processedItem.items = this.processMenuItems(item.items, parentPlugin, extensionScripts, extensionStyles);
+        } else if (item.view) {
+          processedItem.view = item.view;
+        }
+
+        return processedItem;
+      })
+      .sort((a, b) => (a.order || 100) - (b.order || 100));
+  }
+
+  static getMenuItems() {
+    const menuItems = [];
+
+    for (const [extensionName, pluginConfig] of this.pluginRegistry) {
+      // Solo incluir extensions habilitados
+      if (pluginConfig.enabled !== true) {
+        continue;
+      }
+
+      // Si el extension tiene menú, agregarlo
+      if (pluginConfig.hasMenu && pluginConfig.menu) {
+        const menuItem = {
+          id: pluginConfig.name || extensionName,
+          title: pluginConfig.menu.title,
+          icon: pluginConfig.menu.icon,
+          order: pluginConfig.menu.order || 100
+        };
+
+        if (pluginConfig.menu.role) {
+          menuItem.role = pluginConfig.menu.role;
+        }
+
+        if (pluginConfig.menu.items?.length > 0) {
+          menuItem.items = pluginConfig.menu.items;
+        } else if (pluginConfig.menu.view) {
+          menuItem.view = pluginConfig.menu.view;
+          if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
+          if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
+        }
+
+        menuItems.push(menuItem);
+      }
+    }
+
+    menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
+
+    return menuItems;
+  }
+
+  static getAllExtensionsForPermissions() {
+    const extensions = [];
+
+    for (const [name, config] of this.pluginRegistryOriginal) {
+      extensions.push({
+        name,
+        hasMenu: config.hasMenu || false,
+        hasViews: config.hasViews || false,
+        menu: config.menu || null,
+        description: config.description || ''
+      });
+    }
+
+    return extensions;
+  }
+
+  // ============================================
+  // EJECUCIÓN DE HOOKS (CON VALIDACIÓN DE PERMISOS)
+  // ============================================
+
+  static execute(hookName, defaultData = []) {
+    let baseName = hookName;
+    let hasPrefix = false;
+
+    if (hookName.startsWith('hook_')) {
+      baseName = hookName.replace('hook_', '');
+      hasPrefix = true;
+    }
+
+    const normalizedName = this.normalizeHookName(baseName);
+    const finalHookName = hasPrefix ? `hook_${normalizedName}` : normalizedName;
+
+    let results = [...defaultData];
+
+    // Iterar sobre todos los extensions cargados
+    for (const extensionName of this.loadedHooks) {
+      // ✅ VALIDAR: Solo ejecutar hooks de extensions habilitados
+      if (!this.isExtensionEnabled(extensionName)) {
+        ogLogger?.debug('core:hook', `⏭️ Saltando hooks de "${extensionName}" (deshabilitado)`);
+        continue;
+      }
+
+      const hookClass = window[`${extensionName}Hooks`];
+
+      if (hookClass && typeof hookClass[finalHookName] === 'function') {
+        try {
+          const hookResult = hookClass[finalHookName]();
+
+          if (Array.isArray(hookResult)) {
+            const itemsWithOrder = hookResult.map(item => ({
+              order: item.order || 999,
+              ...item
+            }));
+            results = [...results, ...itemsWithOrder];
+
+            ogLogger?.debug('core:hook', `✅ Hook ejecutado: ${extensionName}.${finalHookName}() - ${hookResult.length} items`);
+          } else {
+            ogLogger?.warn('core:hook', `${extensionName}.${finalHookName}() no retornó un array`);
+          }
+        } catch (error) {
+          ogLogger?.error('core:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
+        }
+      }
+    }
+
+    results.sort((a, b) => (a.order || 999) - (b.order || 999));
+
+    return results;
+  }
+
+  static normalizeHookName(viewId) {
+    return viewId.replace(/-([a-z0-9])/g, (match, char) => char.toUpperCase());
+  }
+
+  // ============================================
+  // HELPERS
+  // ============================================
+
+  static normalizeResourcePath(path) {
+    if (!path) return path;
+    if (path.startsWith('extensions/')) return path;
+    return `extensions/${path}`;
+  }
+
+  static normalizeResources(resources = []) {
+    return resources.map(path => this.normalizeResourcePath(path));
+  }
+
+  static getPluginConfig(extensionName) {
+    return this.pluginRegistry.get(extensionName);
+  }
+
+  static isExtensionEnabled(extensionName) {
+    const config = this.pluginRegistry.get(extensionName);
+    return config ? config.enabled === true : false;
+  }
+
+  static getEnabledExtensions() {
+    const enabled = [];
+    for (const [name, config] of this.pluginRegistry) {
+      if (config.enabled === true) {
+        enabled.push({ name, ...config });
+      }
+    }
+    return enabled;
+  }
+
+  // ============================================
+  // RECURSOS Y LENGUAJES (sin cambios)
+  // ============================================
 
   static async loadPluginLanguages(extensionName) {
     const i18n = ogModule('i18n');
@@ -95,7 +366,6 @@ class ogHook {
       const langPath = `${config.baseUrl || "/"}extensions/${extensionName}/lang/${lang}.json`;
       const cacheBuster = `?v=${config.version || "1.0.0"}`;
 
-      // Usar loader.loadJson con opción optional y silent
       const translations = await loader.loadJson(langPath + cacheBuster, {
         optional: true,
         silent: true
@@ -103,7 +373,6 @@ class ogHook {
 
       if (!translations) return false;
 
-      // Guardar traducciones
       if (!i18n.exntesionTranslations.has(extensionName)) {
         i18n.exntesionTranslations.set(extensionName, new Map());
       }
@@ -117,53 +386,8 @@ class ogHook {
     }
   }
 
-  static async preloadPluginViews(extensionName, pluginConfig) {
-    const cache = ogModule('cache');
-    const config = this.getConfig();
-
-    if (!pluginConfig.menu?.items) return;
-    const viewsToPreload = [];
-    const collectViews = (items) => {
-      items.forEach(item => {
-        if (item.view) viewsToPreload.push(item.view);
-        if (item.items?.length > 0) collectViews(item.items);
-      });
-    };
-    collectViews(pluginConfig.menu.items);
-
-    for (const viewPath of viewsToPreload) {
-      try {
-        const basePath = config.routes?.extensionViews?.replace('{extensionName}', extensionName) || `extensions/${extensionName}/views`;
-        const fullPath = `${config.baseUrl || "/"}${basePath}/${viewPath}.json`;
-        const cacheBuster = `?v=${config.version || "1.0.0"}`;
-        const response = await fetch(fullPath + cacheBuster);
-        if (response.ok) {
-          const viewData = await response.json();
-          const cacheKey = `view_${extensionName}_${viewPath.replace(/\//g, '_')}`;
-          cache?.set(cacheKey, viewData);
-        }
-      } catch (error) {}
-    }
-  }
-
-  static async loadExtensionScript(extensionName, scriptFile) {
-    const config = this.getConfig();
-
-    try {
-      const scriptPath = `extensions/${extensionName}/${scriptFile}`;
-      const cacheBuster = `?v=${config.version || "1.0.0"}`;
-      const response = await fetch(`${config.baseUrl || "/"}${scriptPath}${cacheBuster}`);
-      if (!response.ok) return;
-      const scriptContent = await response.text();
-      new Function(scriptContent)();
-    } catch (error) {
-      ogModule('logger')?.error('core:hook', `Error cargando autoload ${extensionName}:`, error.message);
-    }
-  }
-
   static async loadPluginResources(scripts = [], styles = []) {
     const loader = ogModule('loader');
-
     if (loader && typeof loader.loadResources === 'function') {
       try {
         await loader.loadResources(scripts, styles);
@@ -171,245 +395,22 @@ class ogHook {
     }
   }
 
-  // Normalizar rutas de recursos (agregar 'extensions/' si no lo tiene)
-  static normalizeResourcePath(path) {
-    if (!path) return path;
-
-    // Si ya empieza con 'extensions/', dejarlo como está
-    if (path.startsWith('extensions/')) {
-      return path;
-    }
-
-    // Si NO empieza con 'extensions/', agregarlo
-    return `extensions/${path}`;
-  }
-
-  // Normalizar array de recursos
-  static normalizeResources(resources = []) {
-    return resources.map(path => this.normalizeResourcePath(path));
-  }
-
-  static processMenuItems(items, parentPlugin = '', extensionScripts = [], extensionStyles = []) {
-    return items
-      .map(item => {
-        const processedItem = {
-          id: item.id,
-          title: item.title,
-          order: item.order || 999
-        };
-
-        // Preservar role si existe
-        if (item.role) {
-          processedItem.role = item.role;
-        }
-
-        // Normalizar scripts/styles del item
-        const itemScripts = this.normalizeResources(item.scripts || []);
-        const combinedScripts = [...extensionScripts, ...itemScripts];
-        if (combinedScripts.length > 0) processedItem.scripts = combinedScripts;
-        const itemStyles = this.normalizeResources(item.styles || []);
-        const combinedStyles = [...extensionStyles, ...itemStyles];
-        if (combinedStyles.length > 0) processedItem.styles = combinedStyles;
-        if (item.preloadViews !== undefined) processedItem.preloadViews = item.preloadViews;
-        if (item.items?.length > 0) {
-          processedItem.items = this.processMenuItems(item.items, parentPlugin, extensionScripts, extensionStyles);
-        } else if (item.view) {
-          processedItem.view = item.view;
-        }
-        return processedItem;
-      })
-      .sort((a, b) => (a.order || 100) - (b.order || 100));
-  }
-
-  // Filtrar menús solo por extensions enabled=true
-  static getMenuItems() {
-    const menuItems = [];
-
-    // Reconstruir menuItems desde pluginRegistry (que ya está filtrado por auth.js)
-    for (const [extensionName, pluginConfig] of this.pluginRegistry) {
-      // Solo incluir extensions habilitados
-      if (pluginConfig.enabled !== true) {
-        continue;
-      }
-
-      // Si el extension tiene menú, agregarlo
-      if (pluginConfig.hasMenu && pluginConfig.menu) {
-        const menuItem = {
-          id: pluginConfig.name || extensionName,
-          title: pluginConfig.menu.title,
-          icon: pluginConfig.menu.icon,
-          order: pluginConfig.menu.order || 100
-        };
-
-        // Preservar role del menú principal si existe
-        if (pluginConfig.menu.role) {
-          menuItem.role = pluginConfig.menu.role;
-        }
-
-        // Usar los items YA FILTRADOS del pluginConfig.menu
-        if (pluginConfig.menu.items?.length > 0) {
-          menuItem.items = pluginConfig.menu.items;
-        } else if (pluginConfig.menu.view) {
-          menuItem.view = pluginConfig.menu.view;
-          if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;
-          if (pluginConfig.styles) menuItem.styles = pluginConfig.styles;
-        }
-
-        menuItems.push(menuItem);
-      }
-    }
-
-    // Ordenar por order
-    menuItems.sort((a, b) => (a.order || 999) - (b.order || 999));
-
-    return menuItems;
-  }
-
-  // Obtener TODOS los extensions (sin filtrar por permisos)
-  static getAllExtensionsForPermissions() {
-    const extensions = [];
-
-    // Usar la copia original (sin filtrar)
-    for (const [name, config] of this.pluginRegistryOriginal) {
-      extensions.push({
-        name,
-        hasMenu: config.hasMenu || false,
-        hasViews: config.hasViews || false,
-        menu: config.menu || null,
-        description: config.description || ''
-      });
-    }
-
-    return extensions;
-  }
-
-  static async loadPluginConfig(extensionName) {
-    const api = ogModule('api');
-    const config = this.getConfig();
-
-    try {
-      const cacheBuster = `?v=${config.version || "1.0.0"}`;
-      return await api.get(`extensions/${extensionName}/index.json${cacheBuster}`);
-    } catch (error) {
-      return { name: extensionName, enabled: false, hasHooks: false };
-    }
-  }
-
-  static async loadPluginHook(extensionName) {
-    const config = this.getConfig();
-
-    try {
-      const hookPath = `extensions/${extensionName}/hooks.js`;
-      const cacheBuster = `?v=${config.version || "1.0.0"}`;
-      const response = await fetch(`${config.baseUrl || "/"}${hookPath}${cacheBuster}`);
-      if (!response.ok) return;
-      const scriptContent = await response.text();
-      new Function(scriptContent)();
-      const hookClassName = `${extensionName}Hooks`;
-      if (window[hookClassName]) {
-        this.loadedHooks.add(extensionName);
-      }
-    } catch (error) {}
-  }
-
-  static getPluginConfig(extensionName) {
-    return this.pluginRegistry.get(extensionName);
-  }
-
-  static isExtensionEnabled(extensionName) {
-    const config = this.pluginRegistry.get(extensionName);
-    return config ? config.enabled === true : false;
-  }
-
-  static getEnabledExtensions() {
-    const enabled = [];
-    for (const [name, config] of this.pluginRegistry) {
-      if (config.enabled === true) {
-        enabled.push({ name, ...config });
-      }
-    }
-    return enabled;
-  }
-
-  static hasPluginLanguages(extensionName) {
-    const config = this.pluginRegistry.get(extensionName);
-    return config?.hasLanguages || false;
-  }
-
-  static getPluginLanguages(extensionName) {
-    const config = this.pluginRegistry.get(extensionName);
-    return config?.loadedLanguages || [];
-  }
-
-  static execute(hookName, defaultData = []) {
-    // Extraer el nombre base (sin el prefijo "hook_")
-    let baseName = hookName;
-    let hasPrefix = false;
-
-    if (hookName.startsWith('hook_')) {
-      baseName = hookName.replace('hook_', '');
-      hasPrefix = true;
-    }
-
-    // Normalizar el nombre si contiene guiones
-    // "admin-panel" → "adminPanel"
-    const normalizedName = this.normalizeHookName(baseName);
-
-    // Reconstruir el nombre completo del hook
-    const finalHookName = hasPrefix ? `hook_${normalizedName}` : normalizedName;
-
-    let results = [...defaultData];
-
-    // Iterar sobre todos los extensions cargados
-    for (const extensionName of this.loadedHooks) {
-      if (!this.isExtensionEnabled(extensionName)) continue;
-
-      const hookClass = window[`${extensionName}Hooks`];
-
-      if (hookClass && typeof hookClass[finalHookName] === 'function') {
-        try {
-          const hookResult = hookClass[finalHookName]();
-
-          if (Array.isArray(hookResult)) {
-            const itemsWithOrder = hookResult.map(item => ({
-              order: item.order || 999,
-              ...item
-            }));
-            results = [...results, ...itemsWithOrder];
-          } else {
-            ogModule('logger')?.warn('core:hook', `${extensionName}.${finalHookName}() no retornó un array`);
-          }
-        } catch (error) {
-          ogModule('logger')?.error('core:hook', `Error ejecutando ${extensionName}.${finalHookName}():`, error);
-        }
-      }
-    }
-
-    // Ordenar por campo "order"
-    results.sort((a, b) => (a.order || 999) - (b.order || 999));
-
-    return results;
-  }
-
   static async renderHookResult(hookResult, container) {
     if (!hookResult || !container) return;
 
     if (hookResult.type === 'html') {
-      // Renderizar HTML directo
       const wrapper = document.createElement('div');
       wrapper.id = hookResult.id;
       wrapper.innerHTML = hookResult.content;
       container.appendChild(wrapper);
     }
     else if (hookResult.type === 'component') {
-      // Renderizar componente
       const wrapper = document.createElement('div');
       wrapper.id = hookResult.id;
       container.appendChild(wrapper);
 
       const componentName = hookResult.component;
 
-      // Verificar que el componente existe
       if (window[componentName] && typeof window[componentName].render === 'function') {
         try {
           await window[componentName].render(hookResult.config, wrapper);
@@ -424,7 +425,6 @@ class ogHook {
     }
   }
 
-  // Método helper para renderizar múltiples hooks en un contenedor
   static async renderHooks(hookName, containerId, defaultData = []) {
     const container = document.getElementById(containerId);
     if (!container) {
@@ -438,16 +438,10 @@ class ogHook {
       await this.renderHookResult(result, container);
     }
   }
-
-  static normalizeHookName(viewId) {
-    return viewId.replace(/-([a-z0-9])/g, (match, char) => char.toUpperCase());
-  }
 }
 
-// Global
 window.ogHook = ogHook;
 
-// Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.hook = ogHook;
 }
