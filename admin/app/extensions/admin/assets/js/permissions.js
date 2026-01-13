@@ -26,7 +26,7 @@ class permissions {
     const selectorId = `permissions-${version}`;
 
     // Cargar tabs de todas las vistas
-    await this.loadAllViewsTabs(extensionsData);
+    await this.loadAllViewsTabs(extensionsData, config);
 
     const html = `
       <div class="permissions-selector" id="${selectorId}">
@@ -60,7 +60,7 @@ class permissions {
   /**
    * Cargar tabs de todas las vistas de todos los extensions
    */
-  static async loadAllViewsTabs(extensionsData) {
+  static async loadAllViewsTabs(extensionsData, config) {
     for (const extension of extensionsData) {
       if (!extension.hasMenu || !extension.menu?.items) continue;
 
@@ -75,7 +75,7 @@ class permissions {
 
         try {
           // Cargar el JSON de la vista
-          const viewData = await this.loadViewJson(extension.name, viewPath);
+          const viewData = await this.loadViewJson(extension.name, viewPath, config);
 
           // Extraer tabs si existen
           if (viewData?.tabs && Array.isArray(viewData.tabs)) {
@@ -95,16 +95,20 @@ class permissions {
   /**
    * Cargar JSON de una vista
    */
-  static async loadViewJson(extensionName, viewPath) {
-    // Obtener baseUrl del config actual
-    const config = window.ogFramework?.activeConfig || window.appConfig;
-    const baseUrl = config?.baseUrl || '/';
+  static async loadViewJson(extensionName, viewPath, config) {
+    // Obtener baseUrl del config activo
+    const activeConfig = config || window.ogFramework?.activeConfig || window.appConfig;
+    
+    if (!activeConfig) {
+      throw new Error('No configuration found');
+    }
 
-    // Construir URL: {baseUrl}extensions/{extension}/views/{viewPath}.json
-    const url = `${baseUrl}extensions/${extensionName}/views/${viewPath}.json`;
+    const baseUrl = activeConfig.baseUrl || '/';
+    const extensionsPath = activeConfig.extensionsPath || `${baseUrl}extensions/`;
 
-    // ogLogger?.debug('com:permissions', `🔍 Cargando vista: ${url}`);
-
+    // Construir URL CORRECTA usando extensionsPath
+    // Formato: {baseUrl}app/extensions/{extension}/views/{viewPath}.json
+    const url = `${extensionsPath}${extensionName}/views/${viewPath}.json`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);

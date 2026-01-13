@@ -20,23 +20,23 @@ class ogGrouper {
   }
 
   static async renderLinear(config, container) {
-    const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const grouperId = `og-grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const collapsible = config.collapsible !== false;
     const openFirst = config.openFirst !== false;
 
-    let html = `<div class="grouper grouper-linear" id="${grouperId}">`;
+    let html = `<div class="og-grouper og-grouper-linear" id="${grouperId}">`;
 
     config.groups.forEach((group, index) => {
       const isOpen = openFirst && index === 0;
       const contentId = `${grouperId}-content-${index}`;
 
       html += `
-        <div class="grouper-section ${isOpen ? 'open' : ''}" data-group-index="${index}">
-          <div class="grouper-header ${collapsible ? 'collapsible' : ''}" data-toggle="${contentId}">
-            <h3 class="grouper-title">${group.title || `Grupo ${index + 1}`}</h3>
-            ${collapsible ? '<span class="grouper-toggle">▼</span>' : ''}
+        <div class="og-grouper-section ${isOpen ? 'open' : ''}" data-group-index="${index}">
+          <div class="og-grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}" data-toggle="${contentId}">
+            <h3 class="og-grouper-title">${group.title || `Grupo ${index + 1}`}</h3>
+            ${collapsible ? '<span class="og-grouper-toggle">▼</span>' : ''}
           </div>
-          <div class="grouper-content" id="${contentId}" style="${isOpen ? '' : 'display:none'}">
+          <div class="og-grouper-content" id="${contentId}" style="${isOpen ? '' : 'display:none'}">
             ${group.content || ''}
           </div>
         </div>
@@ -47,19 +47,19 @@ class ogGrouper {
     container.innerHTML = html;
 
     if (collapsible) {
-      const headers = container.querySelectorAll('.grouper-header.collapsible');
+      const headers = container.querySelectorAll('.og-grouper-header.collapsible');
 
       headers.forEach(header => {
         header.addEventListener('click', () => {
           const contentId = header.dataset.toggle;
           const content = document.getElementById(contentId);
-          const section = header.closest('.grouper-section');
+          const section = header.closest('.og-grouper-section');
           const isOpen = section.classList.contains('open');
 
-          const allSections = container.querySelectorAll('.grouper-section');
+          const allSections = container.querySelectorAll('.og-grouper-section');
           allSections.forEach(s => s.classList.remove('open'));
 
-          const allContents = container.querySelectorAll('.grouper-content');
+          const allContents = container.querySelectorAll('.og-grouper-content');
           allContents.forEach(c => c.style.display = 'none');
 
           if (!isOpen) {
@@ -74,27 +74,27 @@ class ogGrouper {
   }
 
   static async renderTabs(config, container) {
-    const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const grouperId = `og-grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const activeIndex = config.activeIndex || 0;
 
-    let html = `<div class="grouper grouper-tabs" id="${grouperId}">`;
-    html += '<div class="grouper-tabs-header">';
+    let html = `<div class="og-grouper og-grouper-tabs" id="${grouperId}">`;
+    html += '<div class="og-grouper-tabs-header">';
 
     config.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       html += `
-        <button class="grouper-tab-btn ${isActive ? 'active' : ''}" data-tab-index="${index}">
+        <button class="og-grouper-tab-btn ${isActive ? 'active' : ''}" data-tab-index="${index}">
           ${group.title || `Tab ${index + 1}`}
         </button>
       `;
     });
 
-    html += '</div><div class="grouper-tabs-content">';
+    html += '</div><div class="og-grouper-tabs-content">';
 
     config.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       html += `
-        <div class="grouper-tab-panel ${isActive ? 'active' : ''}" data-tab-index="${index}">
+        <div class="og-grouper-tab-panel ${isActive ? 'active' : ''}" data-tab-index="${index}">
           ${group.content || ''}
         </div>
       `;
@@ -103,8 +103,13 @@ class ogGrouper {
     html += '</div></div>';
     container.innerHTML = html;
 
-    const buttons = container.querySelectorAll('.grouper-tab-btn');
-    const panels = container.querySelectorAll('.grouper-tab-panel');
+    // Detectar overflow para mostrar degradados
+    setTimeout(() => {
+      this.checkTabsOverflow(container.querySelector('.og-grouper-tabs-header'));
+    }, 100);
+
+    const buttons = container.querySelectorAll('.og-grouper-tab-btn');
+    const panels = container.querySelectorAll('.og-grouper-tab-panel');
 
     buttons.forEach((button, index) => {
       button.addEventListener('click', () => {
@@ -117,6 +122,43 @@ class ogGrouper {
     });
 
     await this.initDynamicContent(container);
+  }
+
+  static checkTabsOverflow(header) {
+    if (!header) return;
+
+    const hasOverflow = header.scrollWidth > header.clientWidth;
+    const isScrolledLeft = header.scrollLeft > 0;
+
+    if (hasOverflow) {
+      header.classList.add('has-overflow-right');
+    } else {
+      header.classList.remove('has-overflow-right', 'has-overflow-left');
+    }
+
+    if (isScrolledLeft) {
+      header.classList.add('has-overflow-left');
+    } else {
+      header.classList.remove('has-overflow-left');
+    }
+
+    // Actualizar en scroll
+    header.addEventListener('scroll', () => {
+      const isAtStart = header.scrollLeft <= 5;
+      const isAtEnd = header.scrollLeft + header.clientWidth >= header.scrollWidth - 5;
+
+      if (!isAtStart) {
+        header.classList.add('has-overflow-left');
+      } else {
+        header.classList.remove('has-overflow-left');
+      }
+
+      if (!isAtEnd) {
+        header.classList.add('has-overflow-right');
+      } else {
+        header.classList.remove('has-overflow-right');
+      }
+    });
   }
 
   static async initDynamicContent(container) {

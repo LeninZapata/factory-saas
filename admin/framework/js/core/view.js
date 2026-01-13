@@ -30,6 +30,11 @@ class ogView {
     const cache = ogModule('cache');
     const config = this.getConfig();
 
+    ogLogger?.info('core:view', `📌 === LOADVIEW CALLED ===`);
+    ogLogger?.info('core:view', `📌 viewName: "${viewName}"`);
+    ogLogger?.info('core:view', `📌 extensionContext: "${extensionContext}"`);
+    ogLogger?.info('core:view', `📌 viewContext: "${viewContext}"`);
+
     // Manejar notación extension|path (ej: botws|sections/botws-listado)
     if (viewName.includes('|')) {
       const [targetExtension, targetPath] = viewName.split('|');
@@ -85,9 +90,9 @@ class ogView {
       cacheKey = `middle_view_${viewName.replace(/\//g, '_')}`;
     }
     else if (extensionContext) {
-      // Usar extensionsPath si existe
-      const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
-      basePath = `${extensionsBase}${extensionContext}/views`.replace(config.baseUrl, '');
+      // extensionsPath ya incluye baseUrl completo
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}app/extensions/`;
+      basePath = `${extensionsBase}${extensionContext}/views`;
       cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
     }
     else if (viewName.startsWith('core:')) {
@@ -98,16 +103,31 @@ class ogView {
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
       const firstPart = parts[0];
-      const isExtension = window.hook?.isExtensionEnabled?.(firstPart);
+      
+      const hook = ogModule('hook');
+      
+      ogLogger?.debug('core:view', `🔍 Detectando extensión: "${firstPart}"`);
+      ogLogger?.debug('core:view', `🔍 hook existe:`, !!hook);
+      ogLogger?.debug('core:view', `🔍 hook.isExtensionEnabled existe:`, !!(hook?.isExtensionEnabled));
+      
+      const isExtension = hook?.isExtensionEnabled?.(firstPart);
+      
+      ogLogger?.debug('core:view', `🔍 ¿"${firstPart}" es extensión?:`, isExtension);
+      
       if (isExtension) {
-        // Usar extensionsPath si existe
-        const extensionsBase = config.extensionsPath || `${config.baseUrl}extensions/`;
-        basePath = `${extensionsBase}${firstPart}/views`.replace(config.baseUrl, '');
+        // extensionsPath ya incluye baseUrl completo
+        const extensionsBase = config.extensionsPath || `${config.baseUrl}app/extensions/`;
+        basePath = `${extensionsBase}${firstPart}/views`;
+        
+        ogLogger?.info('core:view', `✅ Extensión detectada: ${firstPart}`);
+        ogLogger?.info('core:view', `📂 basePath: ${basePath}`);
+        
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
         cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
         extensionContext = firstPart;
       } else {
+        ogLogger?.warn('core:view', `⚠️ "${firstPart}" NO es extensión, usando core`);
         basePath = config.routes?.coreViews || `${frameworkPath}/js/views`;
         cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
       }
@@ -126,7 +146,10 @@ class ogView {
 
       if (!viewData) {
         const cacheBuster = `?t=${config.version || "1.0.0"}`;
-        const url = `${config.baseUrl || "/"}${basePath}/${viewName}.json${cacheBuster}`;
+        // Si basePath comienza con '/', ya es absoluto (extensiones), no concatenar baseUrl
+        const url = basePath.startsWith('/')
+          ? `${basePath}/${viewName}.json${cacheBuster}`
+          : `${config.baseUrl || "/"}${basePath}/${viewName}.json${cacheBuster}`;
 
         const response = await fetch(url);
 
@@ -359,7 +382,18 @@ class ogView {
 
   static renderView(viewData, extensionContext = null) {
     const tabs = ogComponent('tabs');
+
+    // IMPORTANTE: Usar #content (contenedor interno) NO #app (contenedor principal)
+    // El layout ya creó la estructura con header, sidebar y content
     const content = document.getElementById('content');
+
+    // Verificar que el contenedor exista
+    if (!content) {
+      ogLogger?.error('core:view', `Contenedor #content no encontrado`);
+      this.renderError(viewData.id);
+      return;
+    }
+
     document.body.setAttribute('data-view', viewData.id);
     document.body.className = document.body.className
       .split(' ')
@@ -417,7 +451,15 @@ class ogView {
 
   static async setupView(viewData, container = null) {
     const tabs = ogComponent('tabs');
+
+    // Si no se pasa container, usar #content (área de contenido del layout)
     const viewContainer = container || document.getElementById('content');
+
+    // Verificar que el contenedor exista
+    if (!viewContainer) {
+      ogLogger?.error('core:view', `Contenedor no encontrado en setupView`);
+      return;
+    }
 
     await this.renderHookComponents(viewContainer);
     if (viewData.tabs) {
@@ -537,7 +579,11 @@ class ogView {
         await tabs.render(viewData, tabsContainer);
       }
     } else {
-      await this.loadDynamicComponents(document.getElementById('content'));
+      // Usar #content (contenedor de vistas del layout)
+      const content = document.getElementById('content');
+      if (content) {
+        await this.loadDynamicComponents(content);
+      }
     }
 
     setTimeout(() => this.initFormValidation(), 0);
@@ -607,6 +653,7 @@ class ogView {
     if (container) {
       container.innerHTML = errorHTML;
     } else {
+      // Usar #content (contenedor de vistas del layout)
       const content = document.getElementById('content');
       if (content) {
         content.innerHTML = errorHTML;

@@ -4,14 +4,6 @@ tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se pu
 ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
 
 Frontend (Framework):
-✔ Cuando tienes un listado de repeater y muchos items con condiciones esto demora un poco @done(12-01-2026 16:43)
-y mientras mas items mas se demora, hay que optimizar esto. es por el settimeout
-de que tiene index * 300 esto va incrementando el tiempo de espera, hay que ver como optimizar esto.
-la veo dificil porque lo que hace esesperar cada item a que el anterior termine ademas luego
-revalua todo las condiciones, si le bajo el tiempo corre una bala pero las condiciones no funcionan
-creo que es un problema mas de condiciones que debe optimizarse a nivel de evaluar al final.
-✔ No funciona el parametro ROW para textarea, es decir no lo coloca @done(12-01-2026 16:50)
-☐ el css debe usar el formato de og- ogToast para que no haya conflictos con otros plugins
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
 de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc...
 se agreguen los hooks en los lugares correspondientess
@@ -22,8 +14,6 @@ agregue un menu a otro o algo asi.
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
-✔ Repetibles con drop and drop para ordenar los elementos @done(13-01-2026 07:06)
-✔ Repetibles tipo acordions @done(12-01-2026 18:02)
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
 ☐ persistencia en widgets posicion
@@ -34,8 +24,6 @@ en una extraña posicion en si.
 ☐ crear el ejemplo de un menu de 3 niveles porque si lo hace
 ☐ en react native quedo pendiente seguir con el tema de la navegacion
 link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
-✔ sgun esta conversacion el "action": "submit:auth.login" esta generando otro evento y se duplica en el submit @done(12-01-2026 18:03)
-almenos en el login hay que preguntar si esto va duplicar al resto deformularios
 ☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
 esto sirve para ponerlo en los activadores de bienvenida del infoproducto
 ☐ Agregar que tu puedes tener un campo que solo sea visible para el admin

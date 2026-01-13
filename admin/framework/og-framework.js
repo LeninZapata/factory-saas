@@ -80,11 +80,11 @@
     // Activar esta instancia
     this.setActiveContext(slug);
 
-    // ✅ AGREGAR: Si los scripts ya están cargados, inicializar inmediatamente
+    // Si los scripts ya están cargados, inicializar inmediatamente
     if (this._scriptsLoaded) {
       await this.initInstance(slug, normalizedConfig);
     } else {
-      // ✅ AGREGAR: Si no, agregar a pendientes
+      // Si no, agregar a pendientes
       this._pendingInits.push({ slug, config: normalizedConfig });
     }
 
@@ -113,7 +113,7 @@
       const frameworkUrl = firstConfig.frameworkUrl || 'framework/';
       const cacheBuster = '?v=' + (firstConfig.version || Date.now());
 
-      // 1. Cargar todos los scripts del framework en paralelo
+      // Cargar todos los scripts del framework en paralelo
       const scriptPromises = FRAMEWORK_SCRIPTS.map(url =>
         fetch(frameworkUrl + url + cacheBuster)
           .then(r => {
@@ -136,7 +136,7 @@
 
       ogLogger.success('framework', '✅ Framework scripts loaded');
 
-      // 2. Cargar scripts de MIDDLE condicionalmente (auth.js)
+      // Cargar scripts de MIDDLE condicionalmente (auth.js)
       if (firstConfig.auth?.enabled === true) {
         ogLogger.info('framework', '🔐 Auth habilitado - Cargando middle/auth.js');
         try {
@@ -185,7 +185,7 @@
   };
 
   // ==========================================
-  // INICIALIZACIÓN DE INSTANCIA
+  // INICIALIZACIÓN DE INSTANCIA (CORREGIDO)
   // ==========================================
 
   ogFramework.initInstance = async function(slug, config) {
@@ -197,7 +197,6 @@
 
       if (!container) {
         console.warn(`⚠️ Container "${config.container}" not found for ${slug}`);
-        // Reintentarlo con MutationObserver
         this.waitForContainer(slug, config);
         return;
       }
@@ -210,7 +209,7 @@
         context: {}
       };
 
-      // Setear como contexto activo (temporal)
+      // Setear como contexto activo
       this.setActiveContext(slug);
 
       // i18n
@@ -225,17 +224,42 @@
         await this.core.auth.init(config.auth);
 
         if (!this.core.auth.isAuthenticated()) {
-          ogLogger?.info('framework', `⚠️ User not authenticated for: ${slug}`)  ;
+          ogLogger?.info('framework', `⚠️ User not authenticated for: ${slug}`);
           this.instances[slug] = instance;
           return;
         }
 
-        ogLogger?.info('framework', `User authenticated for ${slug}`);
-        await this.core.auth.showApp();
+        ogLogger?.info('framework', `✅ User authenticated for ${slug}`);
+        
+        // PASO 1: Inicializar layout con el container
+        if (this.core.layout) {
+          this.core.layout.init('app', container);
+        }
+
+        // PASO 2: Cargar hooks de extensiones ANTES del sidebar
+        if (this.core.hook) {
+          await this.core.hook.loadPluginHooks();
+        }
+
+        // PASO 3: Inicializar sidebar (ya tiene los menús de extensiones)
+        if (this.core.sidebar) {
+          await this.core.sidebar.init();
+        }
+
+        // PASO 4: Cargar vista por defecto
+        if (this.core.view) {
+          this.core.view.loadView(config.defaultView || 'middle:dashboard/dashboard');
+        }
+
       } else {
         // Sin auth - mostrar app directamente
         if (this.core.layout) {
           this.core.layout.init('app', container);
+        }
+
+        // Cargar hooks de extensiones ANTES del sidebar
+        if (this.core.hook) {
+          await this.core.hook.loadPluginHooks();
         }
 
         if (this.core.sidebar) {
@@ -243,7 +267,7 @@
         }
 
         if (this.core.view) {
-          this.core.view.loadView(config.defaultView || 'dashboard/dashboard');
+          this.core.view.loadView(config.defaultView || 'middle:dashboard/dashboard');
         }
       }
 
@@ -253,7 +277,7 @@
       }
 
       this.instances[slug] = instance;
-      console.log(`✅ Instance initialized: ${slug}`);
+      ogLogger?.success('framework', `✅ Instance initialized: ${slug}`);
 
     } catch (error) {
       console.error(`❌ Error initializing ${slug}:`, error);
@@ -303,7 +327,7 @@
       publicUrl: window.location.origin + '/',
       frameworkPath: 'framework',
       container: '#app',
-      defaultView: 'dashboard/dashboard',
+      defaultView: 'middle:dashboard/dashboard',
       i18n: { enabled: false },
       auth: { enabled: false },
       routes: {},
@@ -468,23 +492,15 @@
   // HELPERS SEMÁNTICOS GLOBALES
   // ==========================================
 
-  /**
-   * Acceso rápido a módulos del core
-   * @param {string} moduleName - Nombre del módulo (api, form, view, etc.)
-   * @returns {object|null} El módulo solicitado
-   * @example ogModule('api').get('/users')
-   */
   window.ogModule = function(moduleName) {
     if (!moduleName) {
       console.warn('ogModule: moduleName is required');
       return null;
     }
 
-    // Buscar en ogFramework.core
     const module = window.ogFramework?.core?.[moduleName];
 
     if (!module) {
-      // Fallback a window global (compatibilidad)
       const globalName = 'og' + moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
       const fallback = window[globalName];
 
@@ -498,23 +514,15 @@
     return module;
   };
 
-  /**
-   * Acceso rápido a componentes
-   * @param {string} componentName - Nombre del componente (toast, modal, tabs, etc.)
-   * @returns {object|null} El componente solicitado
-   * @example ogComponent('toast').success('Guardado!')
-   */
   window.ogComponent = function(componentName) {
     if (!componentName) {
       console.warn('ogComponent: componentName is required');
       return null;
     }
 
-    // Buscar en ogFramework.components
     const component = window.ogFramework?.components?.[componentName];
 
     if (!component) {
-      // Fallback a window global (compatibilidad)
       const globalName = 'og' + componentName.charAt(0).toUpperCase() + componentName.slice(1);
       const fallback = window[globalName];
 

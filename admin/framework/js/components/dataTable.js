@@ -259,10 +259,19 @@ class ogDatatable {
     // Calcular colspan total (columnas + acciones si existen)
     const totalColumns = columns.length + (hasActions ? 1 : 0);
 
+    // Determinar clase de tabla (soporta con/sin prefijo)
+    let tableClass = 'og-table';
+    
+    // Si config.tableClass existe, convertir a prefijo og-
+    if (config.tableClass) {
+      const baseClass = config.tableClass.replace('table-', 'og-table-');
+      tableClass = `og-table ${baseClass}`;
+    }
+
     return `
-      <div class="datatable-container" id="${tableId}" data-datatable="${tableId}">
-        <div class="table-responsive">
-          <table class="table">
+      <div class="og-datatable-container" id="${tableId}" data-datatable="${tableId}">
+        <div class="og-table-responsive">
+          <table class="${tableClass}">
             <thead>
               <tr>
                 ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
@@ -522,7 +531,7 @@ class ogDatatable {
     const container = document.getElementById(tableId);
     if (!container) return;
 
-    const wrapper = container.querySelector('.table-responsive');
+    const wrapper = container.querySelector('.og-table-responsive');
     if (!wrapper) return;
 
     // Verificar si hay overflow horizontal

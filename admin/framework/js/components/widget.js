@@ -2,12 +2,9 @@ class ogWidget {
   static grids = new Map();
   static draggedWidget = null;
 
-
-
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
-
 
   static getComponent(componentName) {
     // Usar ogComponent para obtener el componente
@@ -27,13 +24,14 @@ class ogWidget {
 
     const appConfig = this.getConfig();
     const version = appConfig.version || '1.0.0';
-    const gridId = `widget-grid-${version.replace(/\./g, '-')}`;
+    const gridId = `og-widget-grid-${version.replace(/\./g, '-')}`;
 
     this.grids.set(gridId, config);
     const cols = config.columns || 2;
 
     const grid = document.createElement('div');
-    grid.className = 'widget-grid';
+    // CAMBIAR: .widget-grid → .og-widget-grid
+    grid.className = 'og-widget-grid';
     grid.id = gridId;
     grid.dataset.cols = cols;
 
@@ -52,24 +50,29 @@ class ogWidget {
 
     const appConfig = this.getConfig();
     const version = appConfig.version || '1.0.0';
-    const widgetId = `widget-${version.replace(/\./g, '-')}-${Math.random().toString(36).substr(2, 9)}`;
+    const widgetId = `og-widget-${version.replace(/\./g, '-')}-${Math.random().toString(36).substr(2, 9)}`;
 
+    // CAMBIAR: .widget-item → .og-widget-item
     const widget = document.createElement('div');
-    widget.className = 'widget-item';
+    widget.className = 'og-widget-item';
     widget.id = widgetId;
     widget.draggable = true;
     widget.dataset.order = config.order || 999;
 
+    // CAMBIAR: .widget-body → .og-widget-body
     const widgetBody = document.createElement('div');
-    widgetBody.className = 'widget-body';
+    widgetBody.className = 'og-widget-body';
     widgetBody.setAttribute('data-widget-id', widgetId);
-    widgetBody.innerHTML = `<div class="widget-loading">${__('com.widget.loading')}</div>`;
+    // CAMBIAR: .widget-loading → .og-widget-loading
+    widgetBody.innerHTML = `<div class="og-widget-loading">${__('com.widget.loading')}</div>`;
 
+    // CAMBIAR: .widget-header → .og-widget-header
+    // CAMBIAR: .widget-drag → .og-widget-drag
     const widgetHeader = document.createElement('div');
-    widgetHeader.className = 'widget-header';
+    widgetHeader.className = 'og-widget-header';
     widgetHeader.innerHTML = `
       <h4>${config.title || __('com.widget.title')}</h4>
-      <span class="widget-drag">⋮⋮</span>
+      <span class="og-widget-drag">⋮⋮</span>
     `;
 
     widget.appendChild(widgetHeader);
@@ -115,7 +118,8 @@ class ogWidget {
       }
     } catch (error) {
       ogLogger.error('com:widget', `Error cargando widget:`, error);
-      body.innerHTML = `<div class="widget-error">${__('com.widget.error_loading')}</div>`;
+      // CAMBIAR: .widget-error → .og-widget-error
+      body.innerHTML = `<div class="og-widget-error">${__('com.widget.error_loading')}</div>`;
     }
   }
 
@@ -134,7 +138,8 @@ class ogWidget {
   static bindDragEvents(grid) {
     if (!grid) return;
 
-    const widgets = grid.querySelectorAll('.widget-item');
+    // CAMBIAR: .widget-item → .og-widget-item
+    const widgets = grid.querySelectorAll('.og-widget-item');
     if (!widgets || widgets.length === 0) return;
 
     widgets.forEach(w => {
@@ -166,8 +171,10 @@ class ogWidget {
   }
 }
 
+// Exponer GLOBALMENTE como ogWidget
 window.ogWidget = ogWidget;
 
+// Registrar en ogFramework (preferido)
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.widget = ogWidget;
 }

@@ -14,8 +14,8 @@ class ogAuth {
 
     this.config = {
       enabled: true,
-      loginView: 'auth/login',
-      redirectAfterLogin: 'dashboard/dashboard',
+      loginView: 'middle:auth/login',
+      redirectAfterLogin: 'middle:dashboard/dashboard',
       storageKey: 'auth',
       sessionCheckInterval: 5 * 60 * 1000,
       tokenTTL: 24 * 60 * 60 * 1000,
@@ -134,8 +134,11 @@ class ogAuth {
 
         this.normalizeConfig();
         this.loadUserPermissions();
-        await this.showApp();
         this.startSessionMonitoring();
+        
+        // Recargar la página para que og-framework inicie todo correctamente
+        ogLogger.info('core:auth', 'Recargando página para inicializar aplicación...');
+        window.location.reload();
 
         return { success: true, user, token, ttl_ms };
       }
@@ -528,44 +531,21 @@ class ogAuth {
   }
 
   static async showApp() {
-    const layoutExists = document.querySelector('.layout .header');
-    const layout = ogModule('layout');
-    const hook = ogModule('hook');
-    const view = ogModule('view');
-    const sidebar = ogModule('sidebar');
-
-    if (!layoutExists && layout) {
-      layout.init('app');
-    }
-
+    // Este método es llamado DURANTE la inicialización por og-framework.js
+    // Solo debe preparar el estado, NO inicializar layout/sidebar/view
+    // og-framework.js se encarga de todo eso después
+    
+    ogLogger?.info('core:auth', '✅ Usuario autenticado - preparando app...');
+    
+    // Solo establecer el atributo del body
     document.body.setAttribute('data-view', 'app-view');
-
-    if (hook?.loadPluginHooks) {
-      ogLogger.info('core:auth', 'Cargando extensions...');
-      await hook.loadPluginHooks();
-
-      if (view && hook.getEnabledExtensions) {
-        const enabledExtensions = hook.getEnabledExtensions();
-        view.loadedExtensions = {};
-
-        for (const extension of enabledExtensions) {
-          view.loadedExtensions[extension.name] = true;
-        }
-      }
-
-      this.filterExtensionsByPermissions();
-
-      ogLogger.success('core:auth', 'Extensions cargados y filtrados');
-    }
-
-    if (sidebar) {
-      await sidebar.init();
-    }
-
-    if (view) {
-      const viewToLoad = this.config.redirectAfterLogin || 'dashboard';
-      view.loadView(viewToLoad);
-    }
+    
+    // NO hacer nada más aquí
+    // og-framework.js llamará a:
+    // - layout.init()
+    // - hook.loadPluginHooks()
+    // - sidebar.init()
+    // - view.loadView(config.defaultView)
   }
 
   static clearAppCaches() {
@@ -651,7 +631,7 @@ class ogAuth {
         <span class="user-icon">👤</span>
         <span class="user-name">${userName}</span>
       </div>
-      <button class="btn-logout" id="btn-logout">
+      <button class="btn btn-logout" id="btn-logout">
         <span class="logout-icon">🚪</span>
         <span class="logout-text">${__('core.sidebar.logout')}</span>
       </button>

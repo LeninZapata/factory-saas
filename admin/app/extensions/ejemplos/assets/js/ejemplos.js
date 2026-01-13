@@ -35,7 +35,7 @@ class ejemplos {
       }
 
       // Encontrar el formulario en el modal
-      const modalContent = document.querySelector(`#${modalId} .modal-content`);
+      const modalContent = document.querySelector(`#${modalId} .og-modal-content`);
       const formElement = modalContent?.querySelector('form');
 
       if (!formElement) {
@@ -66,7 +66,7 @@ class ejemplos {
     try {
       // Usar mock COMPLETO con 3 niveles (proyectos + tareas + subtareas + miembros)
       //const url = `${window.BASE_URL}extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
-      const url = `extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
+      const url = `admin/app/extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
       const cacheBuster = `?v=${window.VERSION}`;
 
       // Obtener respuesta (podría ser un Response de fetch o un objeto ya parseado)

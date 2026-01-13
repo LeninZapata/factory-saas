@@ -3,45 +3,37 @@ class ogSidebar {
     menu: []
   };
 
-
-
   static getConfig() {
     return window.ogFramework?.activeConfig || window.appConfig || {};
   }
 
   static async init() {
-    const view = ogModule('view');
-    
+    // Solo cargar el menú, NO cargar la vista
+    // og-framework.js se encargará de cargar config.defaultView
     await this.loadMenu();
-
-    const firstView = this.getFirstView();
-    if (firstView) {
-      if (view && typeof view.loadView === 'function') {
-        await view.loadView(firstView);
-      }
-    }
   }
 
   static async loadMenu() {
     const hook = ogModule('hook');
     const auth = ogModule('auth');
     
-    // ✅ Detectar si estamos en WordPress
+    // Detectar si estamos en WordPress
     const isWordPress = typeof window.wp !== 'undefined' || 
                         (typeof ABSPATH !== 'undefined' && ABSPATH.includes('wp-'));
-    
+
     try {
       if (hook && typeof hook.getMenuItems === 'function') {
         const pluginMenus = hook.getMenuItems();
         
         ogLogger?.info('core:sidebar', `Menús cargados: ${pluginMenus.length}`);
 
+        // Menú base con prefijo middle:
         const baseMenu = [
           {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard/dashboard",
+            view: "middle:dashboard/dashboard",
             order: 1
           }
         ];
@@ -49,7 +41,7 @@ class ogSidebar {
         const allMenuItems = [...baseMenu, ...pluginMenus];
         const uniqueMenuItems = this.removeDuplicateMenus(allMenuItems);
 
-        // ✅ Solo filtrar por role si NO es WordPress Y auth está habilitado
+        // Solo filtrar por role si NO es WordPress Y auth está habilitado
         let filteredMenuItems;
         if (isWordPress) {
           ogLogger?.info('core:sidebar', '🔓 WordPress detectado - mostrando todos los menús');
@@ -71,7 +63,7 @@ class ogSidebar {
             id: "dashboard",
             title: "Dashboard",
             icon: "📊",
-            view: "dashboard/dashboard"
+            view: "middle:dashboard/dashboard"
           }
         ];
       }
@@ -85,7 +77,7 @@ class ogSidebar {
           id: "dashboard",
           title: "Dashboard",
           icon: "📊",
-          view: "dashboard/dashboard"
+          view: "middle:dashboard/dashboard"
         }
       ];
       this.renderMenu();
@@ -120,11 +112,13 @@ class ogSidebar {
   }
 
   static generateHeader() {
-    return '<div class="sidebar-header"></div>';
+    // CAMBIAR: .sidebar-header → .og-sidebar-header
+    return '<div class="og-sidebar-header"></div>';
   }
 
   static generateFooter() {
-    return '<div class="sidebar-footer"></div>';
+    // CAMBIAR: .sidebar-footer → .og-sidebar-footer
+    return '<div class="og-sidebar-footer"></div>';
   }
 
   // Inyectar contenido en zonas del sidebar
@@ -136,15 +130,16 @@ class ogSidebar {
       return false;
     }
 
-    const container = document.querySelector(`.sidebar-${zone}`);
+    // CAMBIAR: .sidebar-${zone} → .og-sidebar-${zone}
+    const container = document.querySelector(`.og-sidebar-${zone}`);
     
     if (!container) {
-      ogLogger?.error('core:sidebar', `Contenedor no encontrado: .sidebar-${zone}`);
+      ogLogger?.error('core:sidebar', `Contenedor no encontrado: .og-sidebar-${zone}`);
       return false;
     }
 
     container.innerHTML += html;
-    ogLogger?.info('core:sidebar', `✅ Contenido inyectado en sidebar-${zone}`);
+    ogLogger?.info('core:sidebar', `✅ Contenido inyectado en og-sidebar-${zone}`);
     return true;
   }
 
@@ -152,19 +147,26 @@ class ogSidebar {
     return menuItems.map(item => {
       const hasSubmenu = item.items && item.items.length > 0;
       const isSubmenu = level > 0;
-      const itemClass = `menu-item ${hasSubmenu ? 'has-submenu' : ''} ${isSubmenu ? 'submenu-item' : ''} level-${level}`;
+      
+      // CAMBIAR: .menu-item → .og-menu-item
+      // CAMBIAR: .has-submenu → .og-has-submenu
+      // CAMBIAR: .submenu-item → (ya no existe, solo og-menu-item)
+      const itemClass = `og-menu-item ${hasSubmenu ? 'og-has-submenu' : ''} level-${level}`;
 
       const showIcon = !isSubmenu && item.icon;
-      const iconHtml = showIcon ? `<span class="menu-icon">${item.icon}</span>` : '';
+      // CAMBIAR: .menu-icon → .og-menu-icon
+      const iconHtml = showIcon ? `<span class="og-menu-icon">${item.icon}</span>` : '';
 
+      // CAMBIAR: .menu-title → .og-menu-title
+      // CAMBIAR: .menu-arrow → .og-menu-arrow
       return `
         <div class="${itemClass}" data-id="${item.id}" data-level="${level}">
           ${iconHtml}
-          <span class="menu-title">${item.title}</span>
-          ${hasSubmenu ? '<span class="menu-arrow"></span>' : ''}
+          <span class="og-menu-title">${item.title}</span>
+          ${hasSubmenu ? '<span class="og-menu-arrow"></span>' : ''}
         </div>
         ${hasSubmenu ? `
-          <div class="submenu level-${level + 1}">
+          <div class="og-submenu level-${level + 1}">
             ${this.generateMenuHtml(item.items, level + 1)}
           </div>
         ` : ''}
@@ -174,7 +176,8 @@ class ogSidebar {
 
   static bindMenuEvents() {
     const view = ogModule('view');
-    const menuItems = document.querySelectorAll('.menu-item');
+    // CAMBIAR: .menu-item → .og-menu-item
+    const menuItems = document.querySelectorAll('.og-menu-item');
 
     menuItems.forEach(item => {
       item.addEventListener('click', async (e) => {
@@ -227,6 +230,7 @@ class ogSidebar {
     });
 
     if (preloadCount > 0) {
+      // (logging opcional)
     }
   }
 
@@ -286,19 +290,31 @@ class ogSidebar {
   }
 
   static setActiveMenu(activeItem) {
-    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    // CAMBIAR: .menu-item → .og-menu-item
+    document.querySelectorAll('.og-menu-item').forEach(item => item.classList.remove('active'));
     activeItem.classList.add('active');
   }
 
   static detectPluginFromMenuId(menuId) {
-    const view = ogModule('view');
+    const hook = ogModule('hook');
     
-    for (const [extensionName, pluginConfig] of Object.entries(view.loadedExtensions)) {
+    ogLogger?.debug('core:sidebar', `🔍 detectPluginFromMenuId: menuId="${menuId}"`);
+    
+    if (!hook || !hook.pluginRegistry) {
+      ogLogger?.warn('core:sidebar', `⚠️ hook no disponible`);
+      return null;
+    }
+    
+    // Revisar todas las extensiones registradas
+    for (const [extensionName, pluginConfig] of hook.pluginRegistry) {
+      ogLogger?.debug('core:sidebar', `🔍 Checking if "${menuId}" starts with "${extensionName}-"`);
       if (menuId.startsWith(`${extensionName}-`)) {
+        ogLogger?.success('core:sidebar', `✅ Extension detected: ${extensionName}`);
         return extensionName;
       }
     }
 
+    ogLogger?.warn('core:sidebar', `⚠️ No extension detected for menuId: ${menuId}`);
     return null;
   }
 
@@ -325,7 +341,7 @@ class ogSidebar {
 
     if (isOpening) {
       const level = parseInt(element.dataset.level) || 0;
-      const siblings = document.querySelectorAll(`.menu-item.level-${level}`);
+      const siblings = document.querySelectorAll(`.og-menu-item.level-${level}`);
       siblings.forEach(sibling => {
         if (sibling !== element) {
           sibling.classList.remove('open');
@@ -336,7 +352,7 @@ class ogSidebar {
 
   static getFirstView() {
     if (!this.menuData || !this.menuData.menu || this.menuData.menu.length === 0) {
-      return 'dashboard/dashboard';
+      return 'middle:dashboard/dashboard';
     }
 
     const findFirstView = (items) => {
@@ -352,7 +368,7 @@ class ogSidebar {
       return null;
     };
 
-    return findFirstView(this.menuData.menu) || 'dashboard/dashboard';
+    return findFirstView(this.menuData.menu) || 'middle:dashboard/dashboard';
   }
 
   // Validar acceso por role (igual que form.js)

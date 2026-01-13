@@ -10,7 +10,7 @@
 <div id="app"></div>
 
 <script>
-  let version = '0.4.1';
+  let version = '0.4.2';
 
   // Detectar si estamos en /admin/ o en root
   var pathname = window.location.pathname;
@@ -51,14 +51,15 @@
 
     // Sin ../ porque ya estamos en /admin/
     baseUrl: pathname,
-    frameworkUrl: pathname + 'framework/',  // ← /admin/framework/
+    frameworkUrl: pathname + 'framework/',
     publicUrl: window.location.origin + pathname,
     frameworkPath: 'framework',
     extensionsPath: pathname + 'app/extensions/',
     apiBaseUrl: pathname.replace(/\/admin\/?$/, '/'),
 
     container: '#app',
-    defaultView: 'dashboard/dashboard',
+    // ✅ CAMBIO AQUÍ: Usar notación middle: para vistas en /middle/views/
+    defaultView: 'middle:dashboard/dashboard',
 
     i18n: {
       enabled: true,
@@ -95,7 +96,6 @@
 
   (function() {
     const script = document.createElement('script');
-    // Construir ruta del og-framework.js
     const ogFrameworkPath = 'framework/og-framework.js?v=' + appConfig_factory_saas.version;
 
     console.log('10. Intentando cargar og-framework.js desde:', ogFrameworkPath);

@@ -1,85 +1,135 @@
 class ogModal {
   static modals = new Map();
   static counter = 0;
-
+  static defaultEffect = 'slide-up'; // Efecto por defecto
 
   static open(resource, options = {}) {
-    const modalId = `modal-${++this.counter}`;
-
-    // Crear overlay
+    const modalId = `og-modal-${++this.counter}`;
     const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
+    overlay.className = 'og-modal-overlay';
     overlay.id = modalId;
 
-    // Crear contenedor
+    // Aplicar efecto (opción o por defecto)
+    const effect = options.effect || this.defaultEffect;
+    overlay.dataset.effect = effect;
+
     const container = document.createElement('div');
-    container.className = 'modal-container';
+    container.className = 'og-modal-container';
     container.style.width = options.width || '80%';
     container.style.maxWidth = options.maxWidth || '900px';
 
-    // Header
     const header = document.createElement('div');
-    header.className = 'modal-header';
+    header.className = 'og-modal-header';
     const processedTitle = this.processI18nInString(options.title) || __('com.modal.title');
     header.innerHTML = `
       <h3>${processedTitle}</h3>
-      <button class="modal-close" onclick="ogModal.close('${modalId}')">&times;</button>
+      <button class="og-modal-close" onclick="ogModal.close('${modalId}', '${effect}')">&times;</button>
     `;
 
-    // Content
     const content = document.createElement('div');
-    content.className = 'modal-content';
-    content.innerHTML = `<div class="modal-loading">${__('com.modal.loading')}</div>`;
+    content.className = 'og-modal-content';
+    content.innerHTML = `<div class="og-modal-loading">${__('com.modal.loading')}</div>`;
 
-    // Footer (opcional)
     const footer = document.createElement('div');
-    footer.className = 'modal-footer';
+    footer.className = 'og-modal-footer';
+
     if (options.footer) {
       footer.innerHTML = this.processI18nInString(options.footer);
     } else if (options.showFooter !== false) {
       footer.innerHTML = `
-        <button class="btn btn-secondary" onclick="ogModal.close('${modalId}')">${__('com.modal.close')}</button>
+        <button class="btn btn-secondary" onclick="ogModal.close('${modalId}', '${effect}')">${__('com.modal.close')}</button>
       `;
     }
 
-    // Ensamblar
     container.appendChild(header);
     container.appendChild(content);
+
     if (options.showFooter !== false || options.footer) {
       container.appendChild(footer);
     }
+
     overlay.appendChild(container);
     document.body.appendChild(overlay);
-
-    // Guardar referencia
     this.modals.set(modalId, overlay);
 
-    // Cargar contenido (retorna Promise)
     const loadPromise = this.loadContent(modalId, resource, options);
-
     return { modalId, loadPromise };
   }
 
+  static close(modalId, effect = 'slide-up') {
+    const overlay = this.modals.get(modalId);
+
+    if (overlay && !overlay.classList.contains('og-modal-closing')) {
+      // Configurar velocidad (más rápido: 0.2s, 0.15s, etc.)
+      const exitDuration = 0.2; // 200ms - más rápido que los 300ms de entrada
+      const exitTiming = 'ease-out'; // Puede ser diferente
+
+      overlay.classList.add('og-modal-closing');
+
+      // Animar overlay
+      overlay.style.animation = `og-modal-overlay-fadeOut ${exitDuration}s ${exitTiming} forwards`;
+
+      const container = overlay.querySelector('.og-modal-container');
+      if (container) {
+        let exitAnimation = 'og-modal-slide-up-out';
+        if (effect === 'fade-scale') {
+          exitAnimation = 'og-modal-fade-scale-out';
+        } else if (effect === 'slide-right') {
+          exitAnimation = 'og-modal-slide-right-out';
+        }
+
+        container.style.animation = `${exitAnimation} ${exitDuration}s ${exitTiming} forwards`;
+      }
+
+      // Remover después de la animación (más rápido)
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) {
+          overlay.remove();
+        }
+        this.modals.delete(modalId);
+      }, exitDuration * 1000); // Convertir a milisegundos
+    }
+  }
+
+  static closeAll() {
+    this.modals.forEach((overlay, id) => {
+      const effect = overlay.dataset.effect || this.defaultEffect;
+      this.close(id, effect);
+    });
+  }
+
+  // ... (resto del código loadContent y demás métodos se mantiene igual)
   static async loadContent(modalId, resource, options) {
-    const content = document.querySelector(`#${modalId} .modal-content`);
+    const content = document.querySelector(`#${modalId} .og-modal-content`);
 
     try {
-      // HTML directo
       if (options.html) {
         content.innerHTML = resource;
         return;
       }
 
-      // CORE: Formulario del core con prefijo "core:"
       if (typeof resource === 'string' && resource.startsWith('core:')) {
         const corePath = resource.replace('core:', '');
         const afterRenderCallback = options.afterRender || null;
-
         await ogModule('form').load(corePath, content, null, true, afterRenderCallback);
         return;
       }
 
-      // Formulario de extension con prefijo "extension:"
+      // Soporte para middle: (formularios en /middle/)
+      if (typeof resource === 'string' && resource.startsWith('middle:')) {
+        const middlePath = resource.replace('middle:', '');
+        const afterRenderCallback = options.afterRender || null;
+        
+        // Pasar directamente con el prefijo middle: para que form.js lo procese
+        if (middlePath.includes('/forms/')) {
+          await ogModule('form').load(`middle:${middlePath}`, content, null, null, afterRenderCallback);
+        } else {
+          // Si es una vista
+          await ogModule('view').loadView(middlePath, content, null, null, afterRenderCallback, null, 'middle');
+        }
+        return;
+      }
+
       if (typeof resource === 'string' && resource.startsWith('extension:')) {
         const pluginPath = resource.replace('extension:', '');
         const afterRenderCallback = options.afterRender || null;
@@ -87,24 +137,20 @@ class ogModal {
         return;
       }
 
-      // Formulario de extension (legacy): "ejemplos|forms/login"
       if (typeof resource === 'string' && resource.includes('|forms/')) {
         const [extensionName, formPath] = resource.split('|');
         const formName = formPath.replace('forms/', '');
-
-        // ✅ FIX: Pasar afterRender callback
         const afterRenderCallback = options.afterRender || null;
         await ogModule('form').load(`${extensionName}/${formName}`, content, null, false, afterRenderCallback);
         return;
       }
 
-      // Formulario del core (sin prefijo): "user/forms/user-form" o "auth/forms/login-form"
       if (typeof resource === 'string' && resource.includes('/forms/')) {
-        await ogModule('form').load(resource, content);
+        const afterRenderCallback = options.afterRender || null;
+        await ogModule('form').load(resource, content, null, false, afterRenderCallback);
         return;
       }
 
-      // Vista del core con prefijo "core:"
       if (typeof resource === 'string' && resource.startsWith('core:sections/')) {
         const corePath = resource.replace('core:sections/', '');
         const afterRenderCallback = options.afterRender || null;
@@ -112,7 +158,6 @@ class ogModal {
         return;
       }
 
-      // Vista de extension: "user|sections/user"
       if (typeof resource === 'string' && resource.includes('|')) {
         const [extension, viewPath] = resource.split('|');
         const afterRenderCallback = options.afterRender || null;
@@ -120,20 +165,16 @@ class ogModal {
         return;
       }
 
-      // Vista simple: "dashboard" o "sections/user"
       if (typeof resource === 'string') {
         const afterRenderCallback = options.afterRender || null;
         await ogModule('view').loadView(resource, content, null, null, afterRenderCallback);
         return;
       }
 
-      // Objeto con configuración
-      if (typeof resource === 'object') {
-        if (resource.view) {
-          const afterRenderCallback = options.afterRender || null;
-          await ogModule('view').loadView(resource.view, content, null, null, afterRenderCallback);
-          return;
-        }
+      if (typeof resource === 'object' && resource.view) {
+        const afterRenderCallback = options.afterRender || null;
+        await ogModule('view').loadView(resource.view, content, null, null, afterRenderCallback);
+        return;
       }
 
       throw new Error('Formato de recurso no válido');
@@ -149,25 +190,10 @@ class ogModal {
     }
   }
 
-  static close(modalId) {
-    const overlay = this.modals.get(modalId);
-
-    if (overlay) {
-      overlay.remove();
-      this.modals.delete(modalId);
-      // ogComponent('modal')?.clearCache();
-    }
-  }
-
-  static closeAll() {
-    this.modals.forEach((overlay, id) => this.close(id));
-  }
-
   static async openWithData(resource, options = {}) {
     const dataLoader = ogModule('dataLoader');
     const hook = ogModule('hook');
     const toast = ogComponent('toast');
-    // form no se usa directamente aquí
 
     if (!options.id) {
       ogLogger.warn('com:modal', 'No se especificó ID para cargar datos');
@@ -176,8 +202,8 @@ class ogModal {
     }
 
     const { modalId, loadPromise } = this.open(resource, options);
-
     let extensionName = null;
+
     if (resource.includes('|')) {
       extensionName = resource.split('|')[0];
     }
@@ -210,8 +236,7 @@ class ogModal {
       try {
         await loadPromise;
         const data = await dataLoader.loadDetail(dataLoaderConfig, options.id, extensionName);
-
-        const modalContent = document.querySelector(`#${modalId} .modal-content`);
+        const modalContent = document.querySelector(`#${modalId} .og-modal-content`);
         const formElement = modalContent?.querySelector('form');
 
         if (!formElement) {
@@ -223,7 +248,6 @@ class ogModal {
         }
 
         const realFormId = formElement.getAttribute('id');
-
         ogModule('form')?.fill(realFormId, data, modalContent);
 
       } catch (error) {
@@ -247,7 +271,6 @@ class ogModal {
         const formElement = document.getElementById(formId);
 
         if (formElement) {
-          const elapsed = Date.now() - startTime;
           resolve(formElement);
         } else if (Date.now() - startTime >= timeout) {
           ogLogger.error('com:modal', `Timeout - Formulario "${formId}" no encontrado`);
@@ -261,25 +284,27 @@ class ogModal {
     });
   }
 
-  // Procesar cadenas i18n en contenido (usa i18n.processString)
   static processI18nInString(str) {
     const i18n = ogModule('i18n');
     return i18n ? i18n.processString(str) : str;
   }
+
+  // Método para cambiar el efecto por defecto globalmente
+  static setDefaultEffect(effect) {
+    this.defaultEffect = effect;
+  }
 }
 
-// ✅ Exponer GLOBALMENTE como ogModal (usado en onclick de HTML)
 window.ogModal = ogModal;
 
-// Registrar en ogFramework
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.modal = ogModal;
 }
 
-// Cerrar modal al hacer clic en el overlay
 document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('modal-overlay')) {
+  if (e.target.classList.contains('og-modal-overlay')) {
     const modalId = e.target.id;
-    ogModal.close(modalId);
+    const effect = e.target.dataset.effect || 'slide-up';
+    ogModal.close(modalId, effect);
   }
 });

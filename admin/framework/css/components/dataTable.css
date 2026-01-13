@@ -1,4 +1,8 @@
-/* DataTable actions */
-.table td button + button {
-  margin-left: 0.5rem;
+/* dataTable.css - MODIFICADO */
+.onlygrow-active {
+  .og-datatable-container {
+    td button + button {
+      margin-left: 0.5rem;
+    }
+  }
 }

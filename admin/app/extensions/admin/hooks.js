@@ -59,7 +59,7 @@ class adminHooks {
           </div>
         `
       },
-      
+
       // Hook Component (Widget)
       {
         id: 'admin-panel-stats',

@@ -356,7 +356,7 @@ class ogForm {
 
   static renderGrouper(field, parentPath, index = 0) {
     const mode = field.mode || 'linear';
-    const grouperId = `grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const grouperId = `og-grouper-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Generar fieldPath: usar name si existe, sino usar índice
     let fieldPath;
@@ -386,21 +386,28 @@ class ogForm {
     const collapsible = field.collapsible !== false;
     const openFirst = field.openFirst !== false;
 
-    let html = `<div class="grouper grouper-linear" id="${grouperId}" data-field-path="${fieldPath}">`;
+    // CAMBIAR: .grouper → .og-grouper
+    let html = `<div class="og-grouper og-grouper-linear" id="${grouperId}" data-field-path="${fieldPath}">`;
 
     field.groups.forEach((group, index) => {
       const isOpen = openFirst && index === 0;
       const contentId = `${grouperId}-content-${index}`;
       const processedTitle = this.processI18nTitle(group.title) || `Grupo ${index + 1}`;
 
+      // CAMBIAR: .grouper-section → .og-grouper-section
+      // CAMBIAR: .grouper-header → .og-grouper-header
+      // CAMBIAR: .grouper-title → .og-grouper-title
+      // CAMBIAR: .grouper-toggle → .og-grouper-toggle
+      // CAMBIAR: .grouper-content → .og-grouper-content
+      
       html += `
-        <div class="grouper-section ${isOpen ? 'open' : ''} ${!collapsible ? 'non-collapsible' : ''}" data-group-index="${index}">
-          <div class="grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}"
-               ${collapsible ? `data-toggle="${contentId}"` : ''}>
-            <h3 class="grouper-title">${processedTitle}</h3>
-            ${collapsible ? '<span class="grouper-toggle">▼</span>' : ''}
+        <div class="og-grouper-section ${isOpen ? 'open' : ''} ${!collapsible ? 'non-collapsible' : ''}" data-group-index="${index}">
+          <div class="og-grouper-header ${collapsible ? 'collapsible' : 'non-collapsible'}"
+              ${collapsible ? `data-toggle="${contentId}"` : ''}>
+            <h3 class="og-grouper-title">${processedTitle}</h3>
+            ${collapsible ? '<span class="og-grouper-toggle">▼</span>' : ''}
           </div>
-          <div class="grouper-content" id="${contentId}" ${!isOpen && collapsible ? 'style="display:none"' : ''}>
+          <div class="og-grouper-content" id="${contentId}" ${!isOpen && collapsible ? 'style="display:none"' : ''}>
       `;
 
       if (group.fields && Array.isArray(group.fields)) {
@@ -420,14 +427,19 @@ class ogForm {
   static renderGrouperTabs(field, grouperId, parentPath, fieldPath = "") {
     const activeIndex = field.activeIndex || 0;
 
-    let html = `<div class="grouper grouper-tabs" id="${grouperId}" data-field-path="${fieldPath}">`;
+    // CAMBIAR: .grouper → .og-grouper
+    // CAMBIAR: .grouper-tabs → .og-grouper-tabs
+    let html = `<div class="og-grouper og-grouper-tabs" id="${grouperId}" data-field-path="${fieldPath}">`;
 
-    html += `<div class="grouper-tabs-header">`;
+    // CAMBIAR: .grouper-tabs-header → .og-grouper-tabs-header
+    html += `<div class="og-grouper-tabs-header">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       const processedTitle = this.processI18nTitle(group.title) || `Tab ${index + 1}`;
+      
+      // CAMBIAR: .grouper-tab-btn → .og-grouper-tab-btn
       html += `
-        <button type="button" class="grouper-tab-btn ${isActive ? 'active' : ''}"
+        <button type="button" class="og-grouper-tab-btn ${isActive ? 'active' : ''}"
                 data-tab-index="${index}">
           ${processedTitle}
         </button>
@@ -435,12 +447,15 @@ class ogForm {
     });
     html += `</div>`;
 
-    html += `<div class="grouper-tabs-content">`;
+    // CAMBIAR: .grouper-tabs-content → .og-grouper-tabs-content
+    html += `<div class="og-grouper-tabs-content">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
+      
+      // CAMBIAR: .grouper-tab-panel → .og-grouper-tab-panel
       html += `
-        <div class="grouper-tab-panel ${isActive ? 'active' : ''}"
-             data-panel-index="${index}">
+        <div class="og-grouper-tab-panel ${isActive ? 'active' : ''}"
+            data-panel-index="${index}">
       `;
 
       if (group.fields && Array.isArray(group.fields)) {
@@ -461,12 +476,14 @@ class ogForm {
     if (!container) return;
 
     if (mode === 'linear') {
-      // Para linear: seleccionar solo headers directos del grouper
-      container.querySelectorAll(':scope > .grouper-section > .grouper-header.collapsible').forEach(header => {
+      // CAMBIAR: .grouper-section → .og-grouper-section
+      // CAMBIAR: .grouper-header → .og-grouper-header
+      container.querySelectorAll(':scope > .og-grouper-section > .og-grouper-header.collapsible').forEach(header => {
         header.addEventListener('click', (e) => {
           const targetId = header.dataset.toggle;
           const content = document.getElementById(targetId);
-          const section = header.closest('.grouper-section');
+          // CAMBIAR: .grouper-section → .og-grouper-section
+          const section = header.closest('.og-grouper-section');
 
           if (!content) return;
 
@@ -479,57 +496,45 @@ class ogForm {
             section.classList.add('open');
             content.style.display = 'block';
 
-            // Re-evaluar condiciones al abrir sección
             if (conditions) {
               const formId = container.closest('form')?.id;
               if (formId) {
                 setTimeout(() => {
                   ogModule('conditions')?.evaluate(formId);
                 }, 50);
-              } else {
-                ogLogger?.warn('core:form', '[Linear] No se encontró formId');
               }
-            } else {
-              ogLogger?.warn('core:form', '[Linear] window.conditions no está disponible');
             }
           }
         });
       });
     } else if (mode === 'tabs') {
-      // ✅ FIX: Seleccionar solo botones y panels DIRECTOS de este grouper
-      // No los de groupers anidados
-      const tabButtons = container.querySelectorAll(':scope > .grouper-tabs-header > .grouper-tab-btn');
-      const tabPanels = container.querySelectorAll(':scope > .grouper-tabs-content > .grouper-tab-panel');
+      // CAMBIAR: .grouper-tabs-header → .og-grouper-tabs-header
+      // CAMBIAR: .grouper-tab-btn → .og-grouper-tab-btn
+      // CAMBIAR: .grouper-tabs-content → .og-grouper-tabs-content
+      // CAMBIAR: .grouper-tab-panel → .og-grouper-tab-panel
+      const tabButtons = container.querySelectorAll(':scope > .og-grouper-tabs-header > .og-grouper-tab-btn');
+      const tabPanels = container.querySelectorAll(':scope > .og-grouper-tabs-content > .og-grouper-tab-panel');
 
       tabButtons.forEach(button => {
         button.addEventListener('click', () => {
           const index = parseInt(button.dataset.tabIndex);
 
-          // Remover active de todos los botones de ESTE grouper
           tabButtons.forEach(btn => btn.classList.remove('active'));
           tabPanels.forEach(panel => panel.classList.remove('active'));
 
           button.classList.add('active');
 
-          // Activar el panel correspondiente de ESTE grouper
           if (tabPanels[index]) {
             tabPanels[index].classList.add('active');
 
-            // ✅ Re-evaluar condiciones al cambiar de tab
             if (conditions) {
               const formId = container.closest('form')?.id;
               if (formId) {
                 setTimeout(() => {
                   ogModule('conditions')?.evaluate(formId);
                 }, 50);
-              } else {
-                ogLogger?.warn('core:form', '[Tabs] No se encontró formId');
               }
-            } else {
-              ogLogger?.warn('core:form', '[Tabs] window.conditions no está disponible');
             }
-          } else {
-            ogLogger?.warn('core:form', `[Tabs] Panel ${index} no encontrado`);
           }
         });
       });

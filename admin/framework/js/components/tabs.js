@@ -14,16 +14,20 @@ class ogTabs {
     // Guardar el contexto para este tabs específico
     this.extensionContextMap.set(tabsData.id, extensionContext);
 
+    // CAMBIAR: .tabs-component → .og-tabs-component
+    // CAMBIAR: .tabs-header → .og-tabs-header
+    // CAMBIAR: .tab-btn → .og-tab-btn
+    // CAMBIAR: .tab-content → .og-tab-content
     const tabsHTML = `
-      <div class="tabs-component">
-        <div class="tabs-header">
+      <div class="og-tabs-component">
+        <div class="og-tabs-header">
           ${tabsData.tabs.map(tab => `
-            <button class="tab-btn" data-tab="${tab.id}">
+            <button class="og-tab-btn" data-tab="${tab.id}">
               ${tab.title}
             </button>
           `).join('')}
         </div>
-        <div class="tab-content" id="tab-content-${tabsData.id}"></div>
+        <div class="og-tab-content" id="tab-content-${tabsData.id}"></div>
       </div>
     `;
 
@@ -49,7 +53,8 @@ class ogTabs {
 
   // Detectar overflow en ambos lados
   static checkOverflow(container) {
-    const tabsHeader = container.querySelector('.tabs-header');
+    // CAMBIAR: .tabs-header → .og-tabs-header
+    const tabsHeader = container.querySelector('.og-tabs-header');
     if (!tabsHeader) return;
 
     const updateOverflow = () => {
@@ -127,7 +132,8 @@ class ogTabs {
   }
 
   static bindTabEvents(tabsData, container) {
-    const tabButtons = container.querySelectorAll('.tab-btn');
+    // CAMBIAR: .tab-btn → .og-tab-btn
+    const tabButtons = container.querySelectorAll('.og-tab-btn');
 
     tabButtons.forEach(btn => {
       btn.addEventListener('click', async (e) => {
@@ -149,11 +155,13 @@ class ogTabs {
   }
 
   static async loadTabContent(tabsData, tabId, container) {
-    const tabContent = container.querySelector('.tab-content');
+    // CAMBIAR: .tab-content → .og-tab-content
+    const tabContent = container.querySelector('.og-tab-content');
     const tab = tabsData.tabs.find(t => t.id === tabId);
 
     if (!tab) {
-      tabContent.innerHTML = `<div class="tab-error">${__('com.tabs.not_found')}</div>`;
+      // CAMBIAR: .tab-error → .og-tab-error
+      tabContent.innerHTML = `<div class="og-tab-error">${__('com.tabs.not_found')}</div>`;
       return;
     }
 
@@ -167,7 +175,8 @@ class ogTabs {
       return;
     }
 
-    tabContent.innerHTML = `<div class="tab-loading">${__('com.tabs.loading')}</div>`;
+    // CAMBIAR: .tab-loading → .og-tab-loading
+    tabContent.innerHTML = `<div class="og-tab-loading">${__('com.tabs.loading')}</div>`;
 
     try {
       const renderedContent = this.renderContent(tab.content);
@@ -188,7 +197,8 @@ class ogTabs {
 
     } catch (error) {
       ogLogger.error('com:tabs', `Error cargando tab ${tabId}:`, error);
-      tabContent.innerHTML = `<div class="tab-error">${__('com.tabs.error_loading')}</div>`;
+      // CAMBIAR: .tab-error → .og-tab-error
+      tabContent.innerHTML = `<div class="og-tab-error">${__('com.tabs.error_loading')}</div>`;
     }
   }
 
