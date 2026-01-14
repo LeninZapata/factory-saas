@@ -52,7 +52,8 @@
 
     "form": {
       "repeatable": {
-        "add": "Agregar"
+        "add": "Agregar",
+        "remove": "Eliminar"
       },
       "select": {
         "placeholder": "Selecciona una opción"

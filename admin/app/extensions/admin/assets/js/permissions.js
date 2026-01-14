@@ -22,11 +22,22 @@ class permissions {
 
     const config = window.ogFramework?.activeConfig || window.appConfig;
     const version = config?.version || Date.now();
+    
+    // Normalizar: Si viene con "plugins", convertir a "extensions"
     const permissions = userConfig.permissions || {};
+    if (permissions.plugins && !permissions.extensions) {
+      permissions.extensions = permissions.plugins;
+      delete permissions.plugins;
+    }
+    
     const selectorId = `permissions-${version}`;
 
     // Cargar tabs de todas las vistas
     await this.loadAllViewsTabs(extensionsData, config);
+
+    // Filtrar solo extensiones que deberían mostrarse en el selector
+    // Excluir las que tienen hasMenu: false (son sub-extensiones usadas dentro de otras)
+    const visibleExtensions = extensionsData.filter(ext => ext.hasMenu !== false);
 
     const html = `
       <div class="permissions-selector" id="${selectorId}">
@@ -43,15 +54,15 @@ class permissions {
         </div>
 
         <div class="permissions-list">
-          ${extensionsData.map(extension => this.renderPlugin(extension, permissions, selectorId)).join('')}
+          ${visibleExtensions.map(extension => this.renderPlugin(extension, permissions, selectorId)).join('')}
         </div>
 
-        <input type="hidden" name="config" id="${selectorId}-data" value='${JSON.stringify(config)}'>
+        <input type="hidden" name="config" id="${selectorId}-data" value='${JSON.stringify(userConfig)}'>
       </div>
     `;
 
     container.innerHTML = html;
-    this.instances.set(selectorId, { config, extensionsData });
+    this.instances.set(selectorId, { userConfig, extensionsData: visibleExtensions });
     this.bindEvents(selectorId);
 
     ogLogger.success('com:permissions', 'Renderizado exitosamente');
@@ -392,8 +403,11 @@ class permissions {
     const instance = this.instances.get(selectorId);
     if (!instance) return;
 
-    const newConfig = { ...instance.config };
-    newConfig.permissions = { extensions: {} };
+    // Crear nuevo config solo con permisos y preferencias
+    const newConfig = {
+      permissions: { extensions: {} },
+      preferences: instance.userConfig.preferences || {}
+    };
 
     // Procesar cada extension
     instance.extensionsData.forEach(extension => {
@@ -472,7 +486,7 @@ class permissions {
       preview.textContent = JSON.stringify(newConfig, null, 2);
     }
 
-    instance.config = newConfig;
+    instance.userConfig = newConfig;
   }
 
   /**

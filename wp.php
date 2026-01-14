@@ -41,7 +41,7 @@ if (!$isWP && isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 
 if ($isWP) {
   // Cargar bootstrap para WordPress
   require_once $thePluginPath . '/backend/bootstrap.php';
-  
+
   // Aquí irían tus hooks de WordPress si los necesitas
   // add_action('init', function() { ... });
 }

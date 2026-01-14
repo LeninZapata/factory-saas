@@ -1028,7 +1028,7 @@ class ogForm {
       container.dataset.headerTitle = field.headerTitle;
     }
     if (field.removeText) {
-      container.dataset.removeText = field.removeText;
+      container.dataset.removeText = this.t(field.removeText);
     }
     if (field.accordionSingle !== undefined) {
       container.dataset.accordionSingle = field.accordionSingle;
@@ -1212,7 +1212,7 @@ class ogForm {
     const accordion = container.dataset.accordion === 'true';
     const hasHeader = container.dataset.hasHeader === 'true' || accordion;
     const headerTitle = container.dataset.headerTitle || 'Item #{index}';
-    const removeText = container.dataset.removeText || 'Eliminar';
+    const removeText = container.dataset.removeText || __('core.form.repeatable.remove') || 'Eliminar';
     const accordionSingle = container.dataset.accordionSingle === 'true';
     const sortable = container.dataset.sortable === 'true';
 

@@ -10,7 +10,7 @@
   # ============================================
   # 2. ADMIN - Simple y directo
   # ============================================
-  
+
   # /admin sin slash → /admin/
   RewriteRule ^admin$ admin/ [R=301,L]
 
@@ -19,7 +19,7 @@
 
   # Cualquier otra ruta /admin/* → dejar pasar (archivos estáticos)
   # NO hacer nada, Apache servirá el archivo si existe
-  
+
   # ============================================
   # 3. PUBLIC
   # ============================================

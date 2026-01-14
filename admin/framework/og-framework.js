@@ -239,6 +239,11 @@
         // PASO 2: Cargar hooks de extensiones ANTES del sidebar
         if (this.core.hook) {
           await this.core.hook.loadPluginHooks();
+          
+          // Filtrar extensiones por permisos del usuario
+          if (this.core.auth && this.core.auth.filterExtensionsByPermissions) {
+            this.core.auth.filterExtensionsByPermissions();
+          }
         }
 
         // PASO 3: Inicializar sidebar (ya tiene los menús de extensiones)
