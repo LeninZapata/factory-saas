@@ -25,7 +25,7 @@
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "ejemplos/mock/users-mock.json",
+            "source": "ejemplos|mock/users-mock.json",
             "columns": [
               {
                 "id": {
@@ -164,7 +164,7 @@
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "plugins/ejemplos/mock/format-demo.json",
+            "source": "ejemplos|mock/format-demo.json",
             "columns": [
               {
                 "id": {
@@ -238,7 +238,7 @@
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "plugins/ejemplos/mock/empty.json",
+            "source": "ejemplos|mock/empty.json",
             "columns": [
               {
                 "id": {
@@ -283,7 +283,7 @@
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "plugins/ejemplos/mock/users-mock.json",
+            "source": "ejemplos|mock/users-mock.json",
             "columns": [
               {
                 "id": {

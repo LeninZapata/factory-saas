@@ -1,5 +1,5 @@
 Backend (Framework):
-☐ Mock datos de ejemplos databla ejemplos no funciona no esta obteniendo la ruta que es
+✔ Mock datos de ejemplos databla ejemplos no funciona no esta obteniendo la ruta que es @done(18-01-2026 12:38)
 revisar, parece que simplemente es de ruta de config principal, debes pasarle los archivos
 del index.html para que vea de donde lo arma asi como un ejemplo de archivo de code para que vea
 como obtiene laruta principal.
@@ -14,7 +14,7 @@ se agreguen los hooks en los lugares correspondientess
 ☐ Hooks a nivel de menu, no existe hooks a nivel de menu por ejemplo que un plugin
 agregue un menu a otro o algo asi.
 ☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
-☐ Access por mensaje o visualizacion el contexto del permiso algo como role_context : visible|denegado
+☐ Access por mensaje o visualizacion el contexto del permiso alg comoo role_context : visible|denegado
 debeciones por vista, por ejemplo si quiero que dentro de una vista ese usuaro no pueda crear algo enton valdiarse eso dentro del componente permisos de usuario alli, entonces digamos ese boton debe tener como una espcie de data-attribute
 o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuario tiene permiso o no}
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
