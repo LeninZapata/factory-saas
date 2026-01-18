@@ -1080,6 +1080,9 @@ class ogForm {
     if (field.accordionOpenFirst !== undefined) {
       container.dataset.accordionOpenFirst = field.accordionOpenFirst;
     }
+    if (field.accordionOpenAll !== undefined) {
+      container.dataset.accordionOpenAll = field.accordionOpenAll;
+    }
     if (field.sortable !== undefined) {
       container.dataset.sortable = field.sortable;
     }
@@ -1265,6 +1268,7 @@ class ogForm {
     const accordionSingle = container.dataset.accordionSingle === 'true';
     ogLogger?.debug('core:form', `addRepeatableItem - removeText procesado: "${removeText}"`);
     const accordionOpenFirst = container.dataset.accordionOpenFirst === 'true';
+    const accordionOpenAll = container.dataset.accordionOpenAll === 'true';
     const sortable = container.dataset.sortable === 'true';
 
     // 3. Construir el path del item
@@ -1371,8 +1375,16 @@ class ogForm {
         addedItem.classList.add('collapsed');
       }
 
+      // Si accordionOpenAll está activo, abrir todos los items
+      if (accordionOpenAll) {
+        body.style.display = 'block';
+        if (toggle) {
+          toggle.textContent = '▼';
+        }
+        addedItem.classList.remove('collapsed');
+      }
       // Si accordionOpenFirst está activo y es el primer item (index 0), abrirlo
-      if (accordionOpenFirst && newIndex === 0) {
+      else if (accordionOpenFirst && newIndex === 0) {
         body.style.display = 'block';
         if (toggle) {
           toggle.textContent = '▼';

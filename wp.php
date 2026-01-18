@@ -4,10 +4,10 @@
  * Plugin URI: https://factorysaas.com
  * Plugin ID: factory-saas
  * Plugin prefix: fs
- * Description: API REST para Factory SaaS - Framework híbrido standalone/WordPress
- * Version: 0.1
+ * Description: Sistema automatico de SaaS.
+ * Version: 0.3
  * Author: Lenin Zapata
- * Author URI: https://factorysaas.com
+ * Author URI: http://localhost
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * License: GPL v2 or later

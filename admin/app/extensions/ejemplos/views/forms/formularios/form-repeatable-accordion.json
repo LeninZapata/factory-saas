@@ -394,6 +394,129 @@
       ]
     },
     {
+      "name": "configuraciones_basicas",
+      "label": "⚙️ Configuraciones Básicas (1 Item Inicial)",
+      "type": "repeatable",
+      "description": "Comienza con un item ya agregado por defecto",
+      "accordion": true,
+      "headerTitle": "⚙️ Configuración #{index}",
+      "addText": "➕ Agregar Configuración",
+      "removeText": "🗑️",
+      "initialItems": 1,
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 initialItems: 1</strong><br>Este repeater comienza con un item ya agregado automáticamente</div>"
+        },
+        {
+          "name": "nombre_config",
+          "label": "Nombre de la Configuración",
+          "type": "text",
+          "placeholder": "Ej: Configuración de desarrollo",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "entorno",
+              "label": "Entorno",
+              "type": "select",
+              "options": [
+                { "value": "desarrollo", "label": "🔧 Desarrollo" },
+                { "value": "staging", "label": "🧪 Staging" },
+                { "value": "produccion", "label": "🚀 Producción" }
+              ],
+              "required": true
+            },
+            {
+              "name": "activo",
+              "label": "✅ Activo",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "name": "descripcion",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "Describe la configuración...",
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "name": "alertas_multiples",
+      "label": "🔔 Alertas (3 Items Iniciales - Solo Primera Abierta)",
+      "type": "repeatable",
+      "description": "Comienza con 3 alertas predefinidas, pero solo la primera está expandida",
+      "accordion": true,
+      "headerTitle": "🔔 Alerta #{index}",
+      "addText": "➕ Agregar Alerta",
+      "removeText": "🗑️",
+      "accordionOpenFirst": true,
+      "initialItems": 3,
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fee2e2; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #ef4444; font-size: 0.9rem;'><strong>💡 accordionOpenFirst: true + initialItems: 3</strong><br>Inicia con 3 items pero solo el primero está expandido</div>"
+        },
+        {
+          "name": "titulo_alerta",
+          "label": "Título de la Alerta",
+          "type": "text",
+          "placeholder": "Ej: Error en servidor",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "tipo",
+              "label": "Tipo",
+              "type": "select",
+              "options": [
+                { "value": "info", "label": "ℹ️ Info" },
+                { "value": "warning", "label": "⚠️ Warning" },
+                { "value": "error", "label": "❌ Error" },
+                { "value": "success", "label": "✅ Success" }
+              ],
+              "required": true
+            },
+            {
+              "name": "prioridad",
+              "label": "Prioridad",
+              "type": "select",
+              "options": [
+                { "value": "baja", "label": "🟢 Baja" },
+                { "value": "media", "label": "🟡 Media" },
+                { "value": "alta", "label": "🔴 Alta" },
+                { "value": "critica", "label": "🚨 Crítica" }
+              ],
+              "required": true
+            },
+            {
+              "name": "enviar_email",
+              "label": "📧 Enviar Email",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "name": "mensaje",
+          "label": "Mensaje",
+          "type": "textarea",
+          "placeholder": "Describe la alerta...",
+          "rows": 3,
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "departamentos_anidados",
       "label": "🏢 Departamentos con Equipos (Acordeones Anidados)",
       "type": "repeatable",
@@ -529,6 +652,92 @@
                   "rows": 2
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tareas_abiertas",
+      "label": "📝 Tareas (Todos los Acordeones Abiertos)",
+      "type": "repeatable",
+      "description": "Todos los acordeones comienzan abiertos, pero se pueden cerrar manualmente",
+      "accordion": true,
+      "headerTitle": "📝 Tarea #{index}",
+      "addText": "➕ Agregar Tarea",
+      "removeText": "🗑️",
+      "accordionOpenAll": true,
+      "initialItems": 3,
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #dbeafe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #3b82f6; font-size: 0.9rem;'><strong>💡 accordionOpenAll: true + initialItems: 3</strong><br>Todos los items comienzan expandidos (puedes cerrarlos manualmente)</div>"
+        },
+        {
+          "name": "titulo_tarea",
+          "label": "Título de la Tarea",
+          "type": "text",
+          "placeholder": "Ej: Revisar documentación",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "estado",
+              "label": "Estado",
+              "type": "select",
+              "options": [
+                { "value": "pendiente", "label": "⏳ Pendiente" },
+                { "value": "en_progreso", "label": "🔄 En Progreso" },
+                { "value": "completada", "label": "✅ Completada" },
+                { "value": "cancelada", "label": "❌ Cancelada" }
+              ],
+              "required": true
+            },
+            {
+              "name": "prioridad",
+              "label": "Prioridad",
+              "type": "select",
+              "options": [
+                { "value": "baja", "label": "🟢 Baja" },
+                { "value": "media", "label": "🟡 Media" },
+                { "value": "alta", "label": "🔴 Alta" }
+              ],
+              "required": true
+            },
+            {
+              "name": "asignado",
+              "label": "Asignado a",
+              "type": "text",
+              "placeholder": "Nombre del responsable"
+            }
+          ]
+        },
+        {
+          "name": "descripcion",
+          "label": "Descripción",
+          "type": "textarea",
+          "placeholder": "Describe los detalles de la tarea...",
+          "rows": 3,
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "fecha_inicio",
+              "label": "Fecha de Inicio",
+              "type": "date"
+            },
+            {
+              "name": "fecha_vencimiento",
+              "label": "Fecha de Vencimiento",
+              "type": "date"
             }
           ]
         }
