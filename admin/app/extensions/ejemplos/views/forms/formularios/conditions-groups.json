@@ -1,0 +1,592 @@
+{
+  "id": "form-conditions-groups",
+  "title": "Condiciones con Grupos",
+  "description": "Ejemplos de condiciones que muestran/ocultan grupos completos de campos",
+  "fields": [
+    {
+      "type": "html",
+      "content": "<div style='background: #dbeafe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #3b82f6;'><h3 style='margin: 0 0 1rem;'>🎯 Condiciones con Grupos</h3><p style='margin: 0; line-height: 1.6;'>Los <code>type: \"group\"</code> pueden tener condiciones para mostrar/ocultar múltiples campos a la vez. Especialmente útil dentro de repetables con <code>conditionContext: \"repeatable\"</code>.</p></div>"
+    },
+    {
+      "type": "html",
+      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>📦 Ejemplo 1: Grupo Simple (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Grupo que se muestra cuando seleccionas una opción específica.</p>"
+    },
+    {
+      "name": "tipo_producto",
+      "label": "Tipo de Producto",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "", "label": "Selecciona un tipo..." },
+        { "value": "fisico", "label": "📦 Producto Físico" },
+        { "value": "digital", "label": "💿 Producto Digital" },
+        { "value": "servicio", "label": "🛠️ Servicio" }
+      ]
+    },
+    {
+      "name": "grupo_envio",
+      "type": "group",
+      "columns": 3,
+      "gap": "normal",
+      "condition": [
+        { "field": "tipo_producto", "operator": "==", "value": "fisico" }
+      ],
+      "conditionContext": "form",
+      "fields": [
+        {
+          "name": "peso",
+          "label": "Peso (kg)",
+          "type": "number",
+          "placeholder": "1.5",
+          "min": 0,
+          "step": 0.01
+        },
+        {
+          "name": "dimensiones",
+          "label": "Dimensiones (cm)",
+          "type": "text",
+          "placeholder": "30x20x10"
+        },
+        {
+          "name": "fragil",
+          "label": "🔴 Frágil",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "name": "grupo_descarga",
+      "type": "group",
+      "columns": 2,
+      "gap": "normal",
+      "condition": [
+        { "field": "tipo_producto", "operator": "==", "value": "digital" }
+      ],
+      "conditionContext": "form",
+      "fields": [
+        {
+          "name": "url_descarga",
+          "label": "URL de Descarga",
+          "type": "text",
+          "placeholder": "https://..."
+        },
+        {
+          "name": "tamano_archivo",
+          "label": "Tamaño (MB)",
+          "type": "number",
+          "placeholder": "150",
+          "min": 0
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 3rem 0; border: none; border-top: 2px solid #e2e8f0;'>"
+    },
+    {
+      "type": "html",
+      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🔄 Ejemplo 2: Grupos con Select + Checkbox (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Un select muestra un grupo, y un checkbox dentro de ese grupo muestra otro grupo.</p>"
+    },
+    {
+      "name": "tiene_facturacion",
+      "label": "¿Requiere Facturación?",
+      "type": "select",
+      "options": [
+        { "value": "", "label": "Selecciona..." },
+        { "value": "si", "label": "✅ Sí" },
+        { "value": "no", "label": "❌ No" }
+      ]
+    },
+    {
+      "name": "grupo_facturacion_basica",
+      "type": "group",
+      "columns": 2,
+      "gap": "normal",
+      "condition": [
+        { "field": "tiene_facturacion", "operator": "==", "value": "si" }
+      ],
+      "conditionContext": "form",
+      "fields": [
+        {
+          "name": "ruc",
+          "label": "RUC / NIT",
+          "type": "text",
+          "placeholder": "1234567890001",
+          "required": true
+        },
+        {
+          "name": "razon_social",
+          "label": "Razón Social",
+          "type": "text",
+          "placeholder": "Empresa XYZ S.A.",
+          "required": true
+        },
+        {
+          "name": "es_empresa_grande",
+          "label": "🏢 ¿Es empresa grande? (>100 empleados)",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "name": "grupo_facturacion_avanzada",
+      "type": "group",
+      "columns": 2,
+      "gap": "normal",
+      "condition": [
+        { "field": "tiene_facturacion", "operator": "==", "value": "si" },
+        { "field": "es_empresa_grande", "operator": "==", "value": true }
+      ],
+      "conditionLogic": "AND",
+      "conditionContext": "form",
+      "fields": [
+        {
+          "name": "rep_legal",
+          "label": "Representante Legal",
+          "type": "text",
+          "placeholder": "Juan Pérez"
+        },
+        {
+          "name": "codigo_contable",
+          "label": "Código Contable",
+          "type": "text",
+          "placeholder": "CC-2024-001"
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 3rem 0; border: none; border-top: 2px solid #e2e8f0;'>"
+    },
+    {
+      "type": "html",
+      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🔁 Ejemplo 3: Grupos en Repeatable (conditionContext: \"repeatable\")</h3><p style='color: #64748b; margin-bottom: 1rem;'>Cada item del repeatable evalúa sus condiciones independientemente.</p>"
+    },
+    {
+      "name": "campanas",
+      "label": "📢 Campañas Publicitarias",
+      "type": "repeatable",
+      "accordion": true,
+      "headerTitle": "Campaña #{index}",
+      "addText": "➕ Agregar Campaña",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 conditionContext: \"repeatable\"</strong><br>Las condiciones se evalúan dentro de cada item independientemente</div>"
+        },
+        {
+          "name": "nombre_campana",
+          "label": "Nombre de la Campaña",
+          "type": "text",
+          "placeholder": "Black Friday 2024",
+          "required": true
+        },
+        {
+          "name": "tipo_campana",
+          "label": "Tipo de Campaña",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "", "label": "Selecciona..." },
+            { "value": "email", "label": "📧 Email Marketing" },
+            { "value": "redes", "label": "📱 Redes Sociales" },
+            { "value": "anuncios", "label": "💰 Anuncios Pagados" }
+          ]
+        },
+        {
+          "name": "grupo_email",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_campana", "operator": "==", "value": "email" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "asunto",
+              "label": "Asunto del Email",
+              "type": "text",
+              "placeholder": "¡Ofertas increíbles!"
+            },
+            {
+              "name": "lista_emails",
+              "label": "Lista de Emails",
+              "type": "select",
+              "options": [
+                { "value": "clientes", "label": "Clientes Activos" },
+                { "value": "prospectos", "label": "Prospectos" },
+                { "value": "todos", "label": "Todos" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "grupo_redes",
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_campana", "operator": "==", "value": "redes" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "facebook",
+              "label": "📘 Facebook",
+              "type": "checkbox"
+            },
+            {
+              "name": "instagram",
+              "label": "📷 Instagram",
+              "type": "checkbox"
+            },
+            {
+              "name": "twitter",
+              "label": "🐦 Twitter",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "name": "grupo_anuncios",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_campana", "operator": "==", "value": "anuncios" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "presupuesto_diario",
+              "label": "Presupuesto Diario ($)",
+              "type": "number",
+              "placeholder": "50",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "plataforma_ads",
+              "label": "Plataforma",
+              "type": "select",
+              "options": [
+                { "value": "google", "label": "Google Ads" },
+                { "value": "facebook", "label": "Facebook Ads" },
+                { "value": "linkedin", "label": "LinkedIn Ads" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 3rem 0; border: none; border-top: 2px solid #e2e8f0;'>"
+    },
+    {
+      "type": "html",
+      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🎨 Ejemplo 4: Cascada de Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Select → muestra grupo 1 → checkbox en grupo 1 → muestra grupo 2</p>"
+    },
+    {
+      "name": "acciones_marketing",
+      "label": "🎯 Acciones de Marketing",
+      "type": "repeatable",
+      "accordion": true,
+      "headerTitle": "Acción #{index}",
+      "addText": "➕ Nueva Acción",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 Cascada de condiciones</strong><br>Selecciona \"Aumentar Presupuesto\" → muestra grupo con campos → marca el checkbox → muestra otro grupo</div>"
+        },
+        {
+          "name": "tipo_accion",
+          "label": "Tipo de Acción",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "", "label": "Selecciona una acción..." },
+            { "value": "pausar", "label": "⏸️ Pausar Campaña" },
+            { "value": "aumentar", "label": "📈 Aumentar Presupuesto" },
+            { "value": "reducir", "label": "📉 Reducir Presupuesto" }
+          ]
+        },
+        {
+          "name": "grupo_ajuste_presupuesto",
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_accion", "operator": "any", "value": "aumentar,reducir" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "porcentaje",
+              "label": "Porcentaje (%)",
+              "type": "number",
+              "placeholder": "20",
+              "min": 1,
+              "max": 100,
+              "step": 1
+            },
+            {
+              "name": "limite",
+              "label": "Límite ($)",
+              "type": "number",
+              "placeholder": "500",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "requiere_aprobacion",
+              "label": "🔐 ¿Requiere Aprobación?",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "name": "grupo_aprobacion",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_accion", "operator": "any", "value": "aumentar,reducir" },
+            { "field": "requiere_aprobacion", "operator": "==", "value": true }
+          ],
+          "conditionLogic": "AND",
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "aprobador",
+              "label": "Persona que Aprueba",
+              "type": "select",
+              "options": [
+                { "value": "gerente", "label": "👔 Gerente de Marketing" },
+                { "value": "director", "label": "🎩 Director" },
+                { "value": "ceo", "label": "👑 CEO" }
+              ]
+            },
+            {
+              "name": "justificacion",
+              "label": "Justificación",
+              "type": "textarea",
+              "placeholder": "Explica por qué es necesario este cambio...",
+              "rows": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 3rem 0; border: none; border-top: 2px solid #e2e8f0;'>"
+    },
+    {
+      "type": "html",
+      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🚀 Ejemplo 5: Múltiples Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Diferentes grupos se muestran según la opción seleccionada en el mismo item.</p>"
+    },
+    {
+      "name": "tareas_proyecto",
+      "label": "✅ Tareas del Proyecto",
+      "type": "repeatable",
+      "accordion": true,
+      "sortable": true,
+      "headerTitle": "Tarea #{index}",
+      "addText": "➕ Nueva Tarea",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "name": "nombre_tarea",
+          "label": "Nombre de la Tarea",
+          "type": "text",
+          "placeholder": "Desarrollar módulo de usuarios",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "tipo_tarea",
+              "label": "Tipo de Tarea",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "value": "", "label": "Selecciona..." },
+                { "value": "desarrollo", "label": "💻 Desarrollo" },
+                { "value": "diseno", "label": "🎨 Diseño" },
+                { "value": "testing", "label": "🧪 Testing" },
+                { "value": "documentacion", "label": "📝 Documentación" }
+              ]
+            },
+            {
+              "name": "prioridad",
+              "label": "Prioridad",
+              "type": "select",
+              "options": [
+                { "value": "baja", "label": "🟢 Baja" },
+                { "value": "media", "label": "🟡 Media" },
+                { "value": "alta", "label": "🔴 Alta" },
+                { "value": "critica", "label": "🚨 Crítica" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "grupo_desarrollo",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_tarea", "operator": "==", "value": "desarrollo" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "lenguaje",
+              "label": "Lenguaje",
+              "type": "select",
+              "options": [
+                { "value": "javascript", "label": "JavaScript" },
+                { "value": "python", "label": "Python" },
+                { "value": "java", "label": "Java" },
+                { "value": "php", "label": "PHP" }
+              ]
+            },
+            {
+              "name": "lineas_codigo_estimadas",
+              "label": "Líneas de Código (est.)",
+              "type": "number",
+              "placeholder": "500",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "name": "grupo_diseno",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_tarea", "operator": "==", "value": "diseno" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "herramienta_diseno",
+              "label": "Herramienta",
+              "type": "select",
+              "options": [
+                { "value": "figma", "label": "Figma" },
+                { "value": "sketch", "label": "Sketch" },
+                { "value": "adobe_xd", "label": "Adobe XD" },
+                { "value": "photoshop", "label": "Photoshop" }
+              ]
+            },
+            {
+              "name": "num_pantallas",
+              "label": "Número de Pantallas",
+              "type": "number",
+              "placeholder": "5",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "grupo_testing",
+          "type": "group",
+          "columns": 3,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_tarea", "operator": "==", "value": "testing" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "tipo_testing",
+              "label": "Tipo de Testing",
+              "type": "select",
+              "options": [
+                { "value": "unitario", "label": "Unitario" },
+                { "value": "integracion", "label": "Integración" },
+                { "value": "e2e", "label": "End-to-End" },
+                { "value": "manual", "label": "Manual" }
+              ]
+            },
+            {
+              "name": "cobertura_esperada",
+              "label": "Cobertura (%)",
+              "type": "number",
+              "placeholder": "80",
+              "min": 0,
+              "max": 100
+            },
+            {
+              "name": "automatizado",
+              "label": "✅ Automatizado",
+              "type": "checkbox"
+            }
+          ]
+        },
+        {
+          "name": "grupo_documentacion",
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "condition": [
+            { "field": "tipo_tarea", "operator": "==", "value": "documentacion" }
+          ],
+          "conditionContext": "repeatable",
+          "fields": [
+            {
+              "name": "tipo_doc",
+              "label": "Tipo de Documento",
+              "type": "select",
+              "options": [
+                { "value": "api", "label": "API" },
+                { "value": "usuario", "label": "Manual de Usuario" },
+                { "value": "tecnica", "label": "Documentación Técnica" },
+                { "value": "arquitectura", "label": "Arquitectura" }
+              ]
+            },
+            {
+              "name": "paginas_estimadas",
+              "label": "Páginas (est.)",
+              "type": "number",
+              "placeholder": "10",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "notas",
+          "label": "Notas Adicionales",
+          "type": "textarea",
+          "placeholder": "Cualquier información adicional sobre esta tarea...",
+          "rows": 2
+        }
+      ]
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "💾 Guardar",
+      "action": "submit",
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Datos guardados');"
+    },
+    {
+      "name": "reset",
+      "type": "button",
+      "label": "🔄 Limpiar",
+      "style": "secondary",
+      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
+    }
+  ]
+}

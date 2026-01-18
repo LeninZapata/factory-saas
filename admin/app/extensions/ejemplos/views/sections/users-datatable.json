@@ -96,7 +96,7 @@
           "type": "component",
           "component": "datatable",
           "config": {
-            "source": "api/users",
+            "source": "api/user",
             "columns": [
               {
                 "id": {

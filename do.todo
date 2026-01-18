@@ -1,4 +1,8 @@
 Backend (Framework):
+☐ Mock datos de ejemplos databla ejemplos no funciona no esta obteniendo la ruta que es
+revisar, parece que simplemente es de ruta de config principal, debes pasarle los archivos
+del index.html para que vea de donde lo arma asi como un ejemplo de archivo de code para que vea
+como obtiene laruta principal.
 ☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
 tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
 ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.

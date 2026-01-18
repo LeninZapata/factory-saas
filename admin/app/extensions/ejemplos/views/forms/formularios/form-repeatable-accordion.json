@@ -283,6 +283,64 @@
       ]
     },
     {
+      "name": "faqs_first_open",
+      "label": "❓ FAQs (Primer item abierto)",
+      "type": "repeatable",
+      "description": "El primer item inicia abierto, los demás cerrados - ideal para mostrar la primera pregunta por defecto",
+      "accordion": true,
+      "accordionSingle": true,
+      "accordionOpenFirst": true,
+      "headerTitle": "❓ Pregunta #{index}",
+      "addText": "➕ Agregar Pregunta",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 accordionOpenFirst: true</strong><br>El primer item inicia abierto automáticamente. Los demás empiezan cerrados. Perfecto para cargar datos y mostrar el primer elemento expandido</div>"
+        },
+        {
+          "name": "pregunta",
+          "label": "Pregunta",
+          "type": "text",
+          "placeholder": "¿Cómo empezar?",
+          "required": true
+        },
+        {
+          "name": "respuesta",
+          "label": "Respuesta",
+          "type": "textarea",
+          "placeholder": "Para empezar, primero debes...",
+          "rows": 4,
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "categoria",
+              "label": "Categoría",
+              "type": "select",
+              "options": [
+                { "value": "general", "label": "General" },
+                { "value": "tecnico", "label": "Técnico" },
+                { "value": "facturacion", "label": "Facturación" },
+                { "value": "soporte", "label": "Soporte" }
+              ]
+            },
+            {
+              "name": "orden",
+              "label": "Orden de visualización",
+              "type": "number",
+              "placeholder": "1",
+              "min": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "productos_sin_config",
       "label": "📦 Productos (Sin Header - Original)",
       "type": "repeatable",

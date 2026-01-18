@@ -28,8 +28,8 @@ body[data-view="login-view"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
   padding: 2rem;
+  margin-top: -10vh;
 }
 
 .auth-card {
@@ -70,8 +70,4 @@ body[data-view="login-view"] {
     opacity: 0.9;
     font-size: 0.95rem;
   }
-}
-
-.form-container {
-  padding: 2rem;
 }

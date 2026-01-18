@@ -51,10 +51,19 @@ class ogFramework {
     ];
 
     foreach ($layers as $layer => $basePath) {
-      foreach ($searchOrder as $prefixType) {
-        // Framework solo usa prefijo "og"
-        if ($layer === 'framework' && $prefixType !== 'og') continue;
+      // Definir orden de búsqueda específico según la capa
+      $layerSearchOrder = $searchOrder;
 
+      // Middle: siempre buscar primero sin prefijo, luego con 'og'
+      if ($layer === 'middle') {
+        $layerSearchOrder = ['none', 'og'];
+      }
+      // Framework: solo 'og'
+      elseif ($layer === 'framework') {
+        $layerSearchOrder = ['og'];
+      }
+
+      foreach ($layerSearchOrder as $prefixType) {
         // Construir nombre de clase
         $className = $this->buildClassName($fileName, $suffix, $prefixType);
 
@@ -255,6 +264,7 @@ class ogFramework {
     // Core SIEMPRE con prefijo "og" en framework
     $className = "og" . ucfirst($fileName);
     $coreFile = OG_FRAMEWORK_PATH . "/core/{$subPath}{$className}.php";
+    ogLog::debug("Loading core class: {$className} from {$coreFile}", [], $this->logMeta);
 
     if (!file_exists($coreFile)) {
       throw new Exception("Core class not found: {$name}");
@@ -262,7 +272,7 @@ class ogFramework {
 
     require_once $coreFile;
     if (!class_exists($className)) {
-      throw new Exception("Core class not found: {$className}");
+      throw new Exception("Core class not found.: {$className}");
     }
 
     $this->loaded[$key] = new $className();
@@ -279,12 +289,12 @@ class ogFramework {
     $coreFile = OG_FRAMEWORK_PATH . "/core/{$subPath}{$className}.php";
 
     if (!file_exists($coreFile)) {
-      throw new Exception("Core class not found: {$name}");
+      throw new Exception("Core class not found..: {$name}");
     }
 
     require_once $coreFile;
     if (!class_exists($className)) {
-      throw new Exception("Core class not found: {$className}");
+      throw new Exception("Core class not found...: {$className}");
     }
 
     return true;

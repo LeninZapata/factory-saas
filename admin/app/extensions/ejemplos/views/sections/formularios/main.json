@@ -231,6 +231,20 @@
                     "form_json": "ejemplos|forms/formularios/conditions-repeatable"
                   }
                 ]
+              },
+              {
+                "id": "cond-groups",
+                "title": "Grupos",
+                "content": [
+                  {
+                    "type": "html",
+                    "content": "<h3>📦 Condiciones con Grupos</h3><p>Mostrar/ocultar grupos completos de campos con condiciones. Incluye ejemplos dentro y fuera de repetables.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos|forms/formularios/conditions-groups"
+                  }
+                ]
               }
             ]
           }
