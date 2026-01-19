@@ -44,6 +44,9 @@ quedar en el primer campo obligatorio que falte por llenar
 y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
 y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento
 michos tokens.
+☐ Revisa si carga style y script por tab, actualmente lo hace por menu y submenu pero digamos 
+que se requiera por tab porque digamos sea una tab especial con mucha carga entonces no necesita
+cargar el script en el submenu o menu sino solo en la tab.
 ☐ partir el form.js en 2 o 3 partes para optimizar la carga
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite

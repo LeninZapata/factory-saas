@@ -38,9 +38,18 @@
               "label": "Prioridad",
               "type": "select",
               "options": [
-                { "value": "baja", "label": "🟢 Baja" },
-                { "value": "media", "label": "🟡 Media" },
-                { "value": "alta", "label": "🔴 Alta" }
+                {
+                  "value": "baja",
+                  "label": "🟢 Baja"
+                },
+                {
+                  "value": "media",
+                  "label": "🟡 Media"
+                },
+                {
+                  "value": "alta",
+                  "label": "🔴 Alta"
+                }
               ]
             },
             {
@@ -132,10 +141,22 @@
               "label": "Estado",
               "type": "select",
               "options": [
-                { "value": "planificacion", "label": "📝 Planificación" },
-                { "value": "desarrollo", "label": "⚙️ Desarrollo" },
-                { "value": "testing", "label": "🧪 Testing" },
-                { "value": "completado", "label": "✅ Completado" }
+                {
+                  "value": "planificacion",
+                  "label": "📝 Planificación"
+                },
+                {
+                  "value": "desarrollo",
+                  "label": "⚙️ Desarrollo"
+                },
+                {
+                  "value": "testing",
+                  "label": "🧪 Testing"
+                },
+                {
+                  "value": "completado",
+                  "label": "✅ Completado"
+                }
               ]
             },
             {
@@ -209,9 +230,18 @@
               "label": "Dificultad",
               "type": "select",
               "options": [
-                { "value": "facil", "label": "🟢 Fácil" },
-                { "value": "medio", "label": "🟡 Medio" },
-                { "value": "dificil", "label": "🔴 Difícil" }
+                {
+                  "value": "facil",
+                  "label": "🟢 Fácil"
+                },
+                {
+                  "value": "medio",
+                  "label": "🟡 Medio"
+                },
+                {
+                  "value": "dificil",
+                  "label": "🔴 Difícil"
+                }
               ]
             }
           ]
@@ -265,10 +295,22 @@
               "label": "Categoría",
               "type": "select",
               "options": [
-                { "value": "general", "label": "General" },
-                { "value": "tecnico", "label": "Técnico" },
-                { "value": "facturacion", "label": "Facturación" },
-                { "value": "soporte", "label": "Soporte" }
+                {
+                  "value": "general",
+                  "label": "General"
+                },
+                {
+                  "value": "tecnico",
+                  "label": "Técnico"
+                },
+                {
+                  "value": "facturacion",
+                  "label": "Facturación"
+                },
+                {
+                  "value": "soporte",
+                  "label": "Soporte"
+                }
               ]
             },
             {
@@ -323,10 +365,22 @@
               "label": "Categoría",
               "type": "select",
               "options": [
-                { "value": "general", "label": "General" },
-                { "value": "tecnico", "label": "Técnico" },
-                { "value": "facturacion", "label": "Facturación" },
-                { "value": "soporte", "label": "Soporte" }
+                {
+                  "value": "general",
+                  "label": "General"
+                },
+                {
+                  "value": "tecnico",
+                  "label": "Técnico"
+                },
+                {
+                  "value": "facturacion",
+                  "label": "Facturación"
+                },
+                {
+                  "value": "soporte",
+                  "label": "Soporte"
+                }
               ]
             },
             {
@@ -425,9 +479,18 @@
               "label": "Entorno",
               "type": "select",
               "options": [
-                { "value": "desarrollo", "label": "🔧 Desarrollo" },
-                { "value": "staging", "label": "🧪 Staging" },
-                { "value": "produccion", "label": "🚀 Producción" }
+                {
+                  "value": "desarrollo",
+                  "label": "🔧 Desarrollo"
+                },
+                {
+                  "value": "staging",
+                  "label": "🧪 Staging"
+                },
+                {
+                  "value": "produccion",
+                  "label": "🚀 Producción"
+                }
               ],
               "required": true
             },
@@ -480,10 +543,22 @@
               "label": "Tipo",
               "type": "select",
               "options": [
-                { "value": "info", "label": "ℹ️ Info" },
-                { "value": "warning", "label": "⚠️ Warning" },
-                { "value": "error", "label": "❌ Error" },
-                { "value": "success", "label": "✅ Success" }
+                {
+                  "value": "info",
+                  "label": "ℹ️ Info"
+                },
+                {
+                  "value": "warning",
+                  "label": "⚠️ Warning"
+                },
+                {
+                  "value": "error",
+                  "label": "❌ Error"
+                },
+                {
+                  "value": "success",
+                  "label": "✅ Success"
+                }
               ],
               "required": true
             },
@@ -492,10 +567,22 @@
               "label": "Prioridad",
               "type": "select",
               "options": [
-                { "value": "baja", "label": "🟢 Baja" },
-                { "value": "media", "label": "🟡 Media" },
-                { "value": "alta", "label": "🔴 Alta" },
-                { "value": "critica", "label": "🚨 Crítica" }
+                {
+                  "value": "baja",
+                  "label": "🟢 Baja"
+                },
+                {
+                  "value": "media",
+                  "label": "🟡 Media"
+                },
+                {
+                  "value": "alta",
+                  "label": "🔴 Alta"
+                },
+                {
+                  "value": "critica",
+                  "label": "🚨 Crítica"
+                }
               ],
               "required": true
             },
@@ -590,10 +677,22 @@
                   "label": "Objetivo Principal",
                   "type": "select",
                   "options": [
-                    { "value": "desarrollo", "label": "Desarrollo" },
-                    { "value": "mantenimiento", "label": "Mantenimiento" },
-                    { "value": "innovacion", "label": "Innovación" },
-                    { "value": "soporte", "label": "Soporte" }
+                    {
+                      "value": "desarrollo",
+                      "label": "Desarrollo"
+                    },
+                    {
+                      "value": "mantenimiento",
+                      "label": "Mantenimiento"
+                    },
+                    {
+                      "value": "innovacion",
+                      "label": "Innovación"
+                    },
+                    {
+                      "value": "soporte",
+                      "label": "Soporte"
+                    }
                   ]
                 }
               ]
@@ -624,10 +723,22 @@
                       "label": "Cargo",
                       "type": "select",
                       "options": [
-                        { "value": "junior", "label": "Junior" },
-                        { "value": "mid", "label": "Mid-level" },
-                        { "value": "senior", "label": "Senior" },
-                        { "value": "lead", "label": "Lead" }
+                        {
+                          "value": "junior",
+                          "label": "Junior"
+                        },
+                        {
+                          "value": "mid",
+                          "label": "Mid-level"
+                        },
+                        {
+                          "value": "senior",
+                          "label": "Senior"
+                        },
+                        {
+                          "value": "lead",
+                          "label": "Lead"
+                        }
                       ]
                     },
                     {
@@ -690,10 +801,22 @@
               "label": "Estado",
               "type": "select",
               "options": [
-                { "value": "pendiente", "label": "⏳ Pendiente" },
-                { "value": "en_progreso", "label": "🔄 En Progreso" },
-                { "value": "completada", "label": "✅ Completada" },
-                { "value": "cancelada", "label": "❌ Cancelada" }
+                {
+                  "value": "pendiente",
+                  "label": "⏳ Pendiente"
+                },
+                {
+                  "value": "en_progreso",
+                  "label": "🔄 En Progreso"
+                },
+                {
+                  "value": "completada",
+                  "label": "✅ Completada"
+                },
+                {
+                  "value": "cancelada",
+                  "label": "❌ Cancelada"
+                }
               ],
               "required": true
             },
@@ -702,9 +825,18 @@
               "label": "Prioridad",
               "type": "select",
               "options": [
-                { "value": "baja", "label": "🟢 Baja" },
-                { "value": "media", "label": "🟡 Media" },
-                { "value": "alta", "label": "🔴 Alta" }
+                {
+                  "value": "baja",
+                  "label": "🟢 Baja"
+                },
+                {
+                  "value": "media",
+                  "label": "🟡 Media"
+                },
+                {
+                  "value": "alta",
+                  "label": "🔴 Alta"
+                }
               ],
               "required": true
             },
@@ -740,6 +872,90 @@
               "type": "date"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "notas_header",
+      "label": "📌 Notas con Header (Sin Acordeón)",
+      "type": "repeatable",
+      "description": "Items con header visible pero sin funcionalidad de acordeón - el contenido siempre está visible",
+      "hasHeader": true,
+      "headerTitle": "📌 Nota #{index}",
+      "addText": "➕ Agregar Nota",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 hasHeader: true (sin accordion)</strong><br>El header es solo visual, no se puede colapsar</div>"
+        },
+        {
+          "name": "titulo_nota",
+          "label": "Título",
+          "type": "text",
+          "placeholder": "Título de la nota",
+          "required": true
+        },
+        {
+          "type": "group",
+          "columns": 2,
+          "gap": "normal",
+          "fields": [
+            {
+              "name": "categoria",
+              "label": "Categoría",
+              "type": "select",
+              "options": [
+                {
+                  "value": "personal",
+                  "label": "Personal"
+                },
+                {
+                  "value": "trabajo",
+                  "label": "Trabajo"
+                },
+                {
+                  "value": "ideas",
+                  "label": "Ideas"
+                }
+              ]
+            },
+            {
+              "name": "importante",
+              "label": "⭐ Importante",
+              "type": "checkbox"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "recordatorios_sortable",
+      "label": "⏰ Recordatorios (Header + Sortable)",
+      "type": "repeatable",
+      "description": "Items con header simple y función de ordenamiento - arrastra para reordenar",
+      "hasHeader": true,
+      "sortable": true,
+      "headerTitle": "⏰ Recordatorio #{index}",
+      "addText": "➕ Agregar Recordatorio",
+      "removeText": "🗑️",
+      "fields": [
+        {
+          "type": "html",
+          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 hasHeader: true + sortable: true</strong><br>Header simple (no colapsable) + arrastra ⋮⋮ para reordenar</div>"
+        },
+        {
+          "name": "mensaje",
+          "label": "Mensaje del Recordatorio",
+          "type": "text",
+          "placeholder": "Ej: Llamar al cliente",
+          "required": true
+        },
+        {
+          "name": "hora",
+          "label": "Hora",
+          "type": "time",
+          "required": true
         }
       ]
     }
