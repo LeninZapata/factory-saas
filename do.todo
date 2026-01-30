@@ -9,7 +9,7 @@ ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace d
 
 Frontend (Framework):
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
-de un plugin registrado para cuando se carguen las vistas, form, mdoa, etc...
+de un plugin registrado para cuando se carguen las vistas, form, modal, etc...
 se agreguen los hooks en los lugares correspondientess
 ☐ Hooks a nivel de menu, no existe hooks a nivel de menu por ejemplo que un plugin
 agregue un menu a otro o algo asi.
@@ -48,9 +48,19 @@ michos tokens.
 que se requiera por tab porque digamos sea una tab especial con mucha carga entonces no necesita
 cargar el script en el submenu o menu sino solo en la tab.
 ☐ partir el form.js en 2 o 3 partes para optimizar la carga
+☐ Estados del boton, es decir por ejemplo el de esperar... disabled, etc...
+porque tengo ejemplos que necesita ese estado y actualmente se lo hace de forma manual en js
+☐ en el schema cuando haces esto
+"list": {"method": "GET", "path": "/api/productAdAsset", "middleware": [""]},
+envia un error osea en el middleware [""]
+☐ Si si le quito el auth me aparece NO AUTORIZADO, revisa que paso 
+"list": {"method": "GET", "path": "/api/product", "middleware": []},
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
 parsear todo y luego generar la documentacion automatica actualizados.
 https://chat.deepseek.com/a/chat/s/dbedab39-f8b3-465c-b25d-217bf9787d87
 ☐ Probar esta extension para poder usar webhook rutas agrupados y en secuencia
 https://marketplace.visualstudio.com/items?itemName=VASubasRaj.flashpost
+
+☐ En wordpress existe un plugin que te dice la version de php minuma que necesitas
+https://wordpress.org/plugins/sierotki/ esto deberiamos tambien hacer en los plugins
