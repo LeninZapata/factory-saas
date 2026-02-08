@@ -1,4 +1,4 @@
-.view-toolbar {
+.og-view-toolbar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -20,13 +20,13 @@
     justify-content: space-between;
   }
   
-  .toolbar-left {
+  .og-toolbar-left {
     display: flex;
     gap: 0.5rem;
     align-items: center;
   }
   
-  .toolbar-right {
+  .og-toolbar-right {
     display: flex;
     gap: 0.5rem;
     align-items: center;

@@ -2,8 +2,8 @@
 
 .onlygrow-active {
   /* Variables de tabs */
-  --og-tabs-border: var(--gray-100);
-  --og-tabs-bg: var(--gray-50);
+  --og-tabs-border: var(--og-gray-100);
+  --og-tabs-bg: var(--og-gray-50);
   --og-tabs-btn-color: #6c757d;
   --og-tabs-btn-active-color: var(--accent-primary);
   --og-tabs-btn-active-bg: #fff;

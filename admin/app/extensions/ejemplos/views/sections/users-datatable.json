@@ -9,7 +9,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<div style='background:white;padding:2rem;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);'><h2 style='margin:0 0 1rem;color:#2c3e50;'>📊 DataTable - Componente de Tablas</h2><p style='font-size:1.1rem;color:#555;line-height:1.6;'>Componente para mostrar datos en tablas con acciones y formateo.</p><h3 style='margin:2rem 0 1rem;color:#3b82f6;'>✨ Características</h3><ul style='line-height:1.8;color:#555;'><li><strong>Fuentes de datos:</strong> Mock JSON o API REST</li><li><strong>Columnas configurables:</strong> Ancho, alineación, formato</li><li><strong>Acciones personalizadas:</strong> Editar, eliminar, custom</li><li><strong>Formateo:</strong> date, datetime, money, boolean, uppercase, etc.</li><li><strong>Traducciones:</strong> Soporte i18n para labels</li></ul><h3 style='margin:2rem 0 1rem;color:#10b981;'>📋 Configuración Básica</h3><pre style='background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:6px;overflow-x:auto;'><code>{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"plugins/miPlugin/mock/data.json\",\n    \"columns\": [\n      { \"id\": { \"name\": \"ID\", \"width\": \"80px\" } },\n      { \"nombre\": { \"name\": \"Nombre\" } },\n      { \"email\": { \"name\": \"Email\" } }\n    ],\n    \"actions\": {\n      \"edit\": {\n        \"name\": \"✏️ Editar\",\n        \"onclick\": \"alert('Editar {id}')\"\n      }\n    }\n  }\n}</code></pre><h3 style='margin:2rem 0 1rem;color:#f59e0b;'>🔑 Propiedades de Source</h3><table class='table table-sm table-bordered'><thead><tr><th>Tipo</th><th>Formato</th><th>Ejemplo</th></tr></thead><tbody><tr><td><strong>Mock JSON</strong></td><td>Ruta completa .json</td><td><code>\"plugins/ejemplos/mock/users.json\"</code></td></tr><tr><td><strong>API REST</strong></td><td>Endpoint sin .json</td><td><code>\"api/users\"</code></td></tr></tbody></table></div>"
+          "content": "<div style=''><h2 style=''>📊 DataTable - Componente de Tablas</h2><p style='font-size:1.1rem;color:#555;line-height:1.6;'>Componente para mostrar datos en tablas con acciones y formateo.</p><h3 style='margin:2rem 0 1rem;color:#3b82f6;'>✨ Características</h3><ul style='line-height:1.8;color:#555;'><li><strong>Fuentes de datos:</strong> Mock JSON o API REST</li><li><strong>Columnas configurables:</strong> Ancho, alineación, formato</li><li><strong>Acciones personalizadas:</strong> Editar, eliminar, custom</li><li><strong>Formateo:</strong> date, datetime, money, boolean, uppercase, etc.</li><li><strong>Traducciones:</strong> Soporte i18n para labels</li></ul><h3 style='margin:2rem 0 1rem;color:#10b981;'>📋 Configuración Básica</h3><pre style='background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:6px;overflow-x:auto;'><code>{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"plugins/miPlugin/mock/data.json\",\n    \"columns\": [\n      { \"id\": { \"name\": \"ID\", \"width\": \"80px\" } },\n      { \"nombre\": { \"name\": \"Nombre\" } },\n      { \"email\": { \"name\": \"Email\" } }\n    ],\n    \"actions\": {\n      \"edit\": {\n        \"name\": \"✏️ Editar\",\n        \"onclick\": \"alert('Editar {id}')\"\n      }\n    }\n  }\n}</code></pre><h3 style='margin:2rem 0 1rem;color:#f59e0b;'>🔑 Propiedades de Source</h3><table class='og-table og-table-sm og-table-bordered'><thead><tr><th>Tipo</th><th>Formato</th><th>Ejemplo</th></tr></thead><tbody><tr><td><strong>Mock JSON</strong></td><td>Ruta completa .json</td><td><code>\"plugins/ejemplos/mock/users.json\"</code></td></tr><tr><td><strong>API REST</strong></td><td>Endpoint sin .json</td><td><code>\"api/users\"</code></td></tr></tbody></table></div>"
         }
       ]
     },
@@ -19,7 +19,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>📁 Tabla con Datos Mock (JSON)</h3><p>Carga datos desde un archivo JSON local. Útil para desarrollo y pruebas.</p><div style='background:#e0f2fe;padding:1rem;border-radius:6px;margin:1rem 0;border-left:4px solid #0284c7;'><strong>💡 Tip:</strong> El source debe ser la ruta completa al archivo .json</div>"
+          "content": "<h3>📁 Tabla con Datos Mock (JSON)</h3><p>Carga datos desde un archivo JSON local. Útil para desarrollo y pruebas.</p><div class='alert alert-info alert-border'><strong>💡 Tip:</strong> El source debe ser la ruta completa al archivo .json</div>"
         },
         {
           "type": "component",
@@ -80,7 +80,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='margin-top:2rem;background:#fef3c7;padding:1rem;border-radius:6px;border-left:4px solid #f59e0b;'><h4 style='margin:0 0 0.5rem;'>📝 Estructura del JSON Mock</h4><pre style='background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:6px;overflow-x:auto;font-size:0.85rem;'><code>[\n  {\n    \"id\": 1,\n    \"name\": \"Juan Pérez\",\n    \"email\": \"juan@email.com\",\n    \"role\": \"admin\",\n    \"status\": \"active\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"María García\",\n    \"email\": \"maria@email.com\",\n    \"role\": \"user\",\n    \"status\": \"active\"\n  }\n]</code></pre></div>"
+          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Estructura del JSON Mock</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>[\n  {\n    \"id\": 1,\n    \"name\": \"Juan Pérez\",\n    \"email\": \"juan@email.com\",\n    \"role\": \"admin\",\n    \"status\": \"active\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"María García\",\n    \"email\": \"maria@email.com\",\n    \"role\": \"user\",\n    \"status\": \"active\"\n  }\n]</code></pre><div class='alert-desc'>Ejemplo de estructura de datos para el DataTable con campos básicos</div></div>"
         }
       ]
     },
@@ -90,7 +90,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>🌐 Tabla con Datos desde API</h3><p>Carga datos desde un endpoint REST. El sistema detecta automáticamente rutas que empiezan con 'api/'.</p><div style='background:#dcfce7;padding:1rem;border-radius:6px;margin:1rem 0;border-left:4px solid #16a34a;'><strong>✅ Importante:</strong> El source NO debe terminar en .json cuando es una API</div>"
+          "content": "<h3>🌐 Tabla con Datos desde API</h3><p>Carga datos desde un endpoint REST. El sistema detecta automáticamente rutas que empiezan con 'api/'.</p><div class='alert alert-success alert-border'><strong>✅ Importante:</strong> El source NO debe terminar en .json cuando es una API</div>"
         },
         {
           "type": "component",
@@ -148,7 +148,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='margin-top:2rem;background:#fef3c7;padding:1rem;border-radius:6px;border-left:4px solid #f59e0b;'><h4 style='margin:0 0 0.5rem;'>📝 Respuesta Esperada de la API</h4><pre style='background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:6px;overflow-x:auto;font-size:0.85rem;'><code>// Opción 1: Array directo\n[\n  {\"id\": 1, \"user\": \"admin\", \"email\": \"admin@email.com\", ...},\n  {\"id\": 2, \"user\": \"user1\", \"email\": \"user1@email.com\", ...}\n]\n\n// Opción 2: Objeto con data\n{\n  \"success\": true,\n  \"data\": [\n    {\"id\": 1, \"user\": \"admin\", ...},\n    {\"id\": 2, \"user\": \"user1\", ...}\n  ]\n}</code></pre><p style='margin:0.5rem 0 0;font-size:0.9rem;color:#d97706;'><strong>Nota:</strong> El componente maneja ambos formatos automáticamente</p></div>"
+          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Respuesta Esperada de la API</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>// Opción 1: Array directo\n[\n  {\"id\": 1, \"user\": \"admin\", \"email\": \"admin@email.com\", ...},\n  {\"id\": 2, \"user\": \"user1\", \"email\": \"user1@email.com\", ...}\n]\n\n// Opción 2: Objeto con data\n{\n  \"success\": true,\n  \"data\": [\n    {\"id\": 1, \"user\": \"admin\", ...},\n    {\"id\": 2, \"user\": \"user1\", ...}\n  ]\n}</code></pre><div class='alert-desc'><strong>Nota:</strong> El componente maneja ambos formatos automáticamente</div></div>"
         }
       ]
     },
@@ -222,7 +222,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='margin-top:2rem;'><h4>📋 Formatos Disponibles</h4><table class='table table-sm table-bordered'><thead><tr><th>Formato</th><th>Descripción</th><th>Ejemplo Entrada</th><th>Ejemplo Salida</th></tr></thead><tbody><tr><td><code>date</code></td><td>Fecha corta</td><td>2024-01-15</td><td>15/01/2024</td></tr><tr><td><code>datetime</code></td><td>Fecha y hora</td><td>2024-01-15T10:30:00</td><td>15/01/2024, 10:30:00</td></tr><tr><td><code>money</code></td><td>Formato moneda</td><td>1234.56</td><td>$1,234.56</td></tr><tr><td><code>boolean</code></td><td>Sí/No</td><td>true</td><td>Sí</td></tr><tr><td><code>uppercase</code></td><td>Mayúsculas</td><td>producto</td><td>PRODUCTO</td></tr><tr><td><code>lowercase</code></td><td>Minúsculas</td><td>PRODUCTO</td><td>producto</td></tr><tr><td><code>capitalize</code></td><td>Primera mayúscula</td><td>producto</td><td>Producto</td></tr></tbody></table></div>"
+          "content": "<div class='og-mt-3'><h4>📋 Formatos Disponibles</h4><table class='og-table og-table-sm og-table-bordered'><thead><tr><th>Formato</th><th>Descripción</th><th>Ejemplo Entrada</th><th>Ejemplo Salida</th></tr></thead><tbody><tr><td><code>date</code></td><td>Fecha corta</td><td>2024-01-15</td><td>15/01/2024</td></tr><tr><td><code>datetime</code></td><td>Fecha y hora</td><td>2024-01-15T10:30:00</td><td>15/01/2024, 10:30:00</td></tr><tr><td><code>money</code></td><td>Formato moneda</td><td>1234.56</td><td>$1,234.56</td></tr><tr><td><code>boolean</code></td><td>Sí/No</td><td>true</td><td>Sí</td></tr><tr><td><code>uppercase</code></td><td>Mayúsculas</td><td>producto</td><td>PRODUCTO</td></tr><tr><td><code>lowercase</code></td><td>Minúsculas</td><td>PRODUCTO</td><td>producto</td></tr><tr><td><code>capitalize</code></td><td>Primera mayúscula</td><td>producto</td><td>Producto</td></tr></tbody></table></div>"
         }
       ]
     },
@@ -232,7 +232,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>📭 Tabla Vacía (Sin Datos)</h3><p>Cuando no hay datos, el componente muestra un mensaje automáticamente.</p><div style='background:#fee2e2;padding:1rem;border-radius:6px;margin:1rem 0;border-left:4px solid #ef4444;'><strong>⚠️ Nota:</strong> Este ejemplo usa un archivo que no existe para demostrar el estado vacío</div>"
+          "content": "<h3>📭 Tabla Vacía (Sin Datos)</h3><p>Cuando no hay datos, el componente muestra un mensaje automáticamente.</p><div class='alert alert-danger alert-border'><strong>⚠️ Nota:</strong> Este ejemplo usa un archivo que no existe para demostrar el estado vacío</div>"
         },
         {
           "type": "component",
@@ -267,7 +267,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='margin-top:2rem;background:#fef3c7;padding:1rem;border-radius:6px;border-left:4px solid #f59e0b;'><h4 style='margin:0 0 0.5rem;'>💡 Mensaje Personalizado</h4><p style='margin:0;'>El componente muestra automáticamente: <code>\"No hay datos para mostrar\"</code> cuando:</p><ul style='margin:0.5rem 0 0;padding-left:1.5rem;'><li>El archivo no existe</li><li>El array está vacío: <code>[]</code></li><li>La API devuelve error</li></ul></div>"
+          "content": "<div class='alert alert-tip alert-with-desc og-mt-3'><strong>💡 Mensaje Personalizado</strong><p>El componente muestra automáticamente: <code>\"No hay datos para mostrar\"</code> cuando:</p><div class='alert-desc'><ul style='margin: 0; padding-left: 1.5rem;'><li>El archivo no existe</li><li>El array está vacío: <code>[]</code></li><li>La API devuelve error</li></ul></div></div>"
         }
       ]
     },
@@ -277,7 +277,7 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>🌍 Uso de i18n en DataTable</h3><p>Las columnas y acciones pueden usar traducciones automáticamente.</p><div style='background:#e0f2fe;padding:1rem;border-radius:6px;margin:1rem 0;border-left:4px solid #0284c7;'><strong>💡 Formato:</strong> <code>\"name\": \"i18n:plugin.key\"</code></div>"
+          "content": "<h3>🌍 Uso de i18n en DataTable</h3><p>Las columnas y acciones pueden usar traducciones automáticamente.</p><div class='alert alert-info alert-border'><strong>💡 Formato:</strong> <code>\"name\": \"i18n:plugin.key\"</code></div>"
         },
         {
           "type": "component",
@@ -324,7 +324,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='margin-top:2rem;background:#fef3c7;padding:1rem;border-radius:6px;border-left:4px solid #f59e0b;'><h4 style='margin:0 0 0.5rem;'>📝 Archivo de Traducciones (lang/es.json)</h4><pre style='background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:6px;overflow-x:auto;font-size:0.85rem;'><code>{\n  \"ejemplos.column.id\": \"ID\",\n  \"ejemplos.column.name\": \"Nombre\",\n  \"ejemplos.column.email\": \"Correo\",\n  \"ejemplos.column.role\": \"Rol\",\n  \"ejemplos.action.edit\": \"✏️ Editar\",\n  \"ejemplos.action.delete\": \"🗑️ Eliminar\"\n}</code></pre></div>"
+          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Archivo de Traducciones (lang/es.json)</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>{\n  \"ejemplos.column.id\": \"ID\",\n  \"ejemplos.column.name\": \"Nombre\",\n  \"ejemplos.column.email\": \"Correo\",\n  \"ejemplos.column.role\": \"Rol\",\n  \"ejemplos.action.edit\": \"✏️ Editar\",\n  \"ejemplos.action.delete\": \"🗑️ Eliminar\"\n}</code></pre><div class='alert-desc'>Define las traducciones en el archivo de idioma correspondiente</div></div>"
         }
       ]
     }

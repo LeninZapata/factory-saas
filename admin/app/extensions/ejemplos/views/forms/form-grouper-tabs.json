@@ -185,21 +185,5 @@
         }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar Configuración",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Configuración:', data); ogToast.success('✅ Configuración guardada');"
-    },
-    {
-      "name": "cancel",
-      "type": "button",
-      "label": "❌ Cancelar",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); ogToast.info('Cambios cancelados');"
-    }
   ]
 }

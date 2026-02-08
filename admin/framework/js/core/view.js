@@ -420,26 +420,26 @@ class ogView {
     const extensionAttr = extensionContext ? ` data-extension-context="${extensionContext}"` : '';
 
     return `
-      <div class="view-container" data-view="${viewData.id}"${extensionAttr}>
+      <div class="og-view-container" data-view="${viewData.id}"${extensionAttr}>
         ${hooksBeforeHTML}
 
         ${viewData.header ? `
-          <div class="view-header">
+          <div class="og-view-header">
             ${viewData.header.title ? `<h1>${viewData.header.title}</h1>` : ''}
             ${viewData.header.subtitle ? `<p>${viewData.header.subtitle}</p>` : ''}
           </div>
         ` : ''}
 
         ${viewData.tabs ? `
-          <div class="view-tabs-container" data-view-id="${viewData.id}"></div>
+          <div class="og-view-tabs-container" data-view-id="${viewData.id}"></div>
         ` : `
-          <div class="view-content">
+          <div class="og-view-content">
             ${this.renderContent(viewData.content)}
           </div>
         `}
 
         ${viewData.statusbar ? `
-          <div class="view-statusbar">
+          <div class="og-view-statusbar">
             ${this.renderContent(viewData.statusbar)}
           </div>
         ` : ''}
@@ -463,7 +463,7 @@ class ogView {
 
     await this.renderHookComponents(viewContainer);
     if (viewData.tabs) {
-      const tabsContainer = viewContainer.querySelector('.view-tabs-container');
+      const tabsContainer = viewContainer.querySelector('.og-view-tabs-container');
       if (tabsContainer) {
         await tabs.render(viewData, tabsContainer);
       }
@@ -574,7 +574,7 @@ class ogView {
 
     if (viewData.tabs) {
       const tabs = ogComponent('tabs');
-      const tabsContainer = document.querySelector('.view-tabs-container');
+      const tabsContainer = document.querySelector('.og-view-tabs-container');
       if (tabsContainer) {
         await tabs.render(viewData, tabsContainer);
       }
@@ -644,7 +644,7 @@ class ogView {
 
   static renderError(viewName, container = null) {
     const errorHTML = `
-      <div class="view-error">
+      <div class="og-view-error">
         <h2>Error cargando vista</h2>
         <p>No se pudo cargar la vista: <strong>${viewName}</strong></p>
       </div>

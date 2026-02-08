@@ -5,7 +5,7 @@
   "fields": [
     {
       "type": "html",
-      "content": "<div style='background: #e0f2fe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #0284c7;'><h3 style='margin: 0 0 1rem;'>🎯 Groupers Condicionales</h3><p style='margin: 0;'>Los groupers pueden tener condiciones como cualquier otro campo. Esto permite mostrar/ocultar grupos enteros de campos basándose en valores de otros campos.</p></div>"
+      "content": "<div class='alert alert-info alert-header'><div class='alert-title'>🎯 Groupers Condicionales</div><div class='alert-body'>Los groupers pueden tener condiciones como cualquier otro campo. Esto permite mostrar/ocultar grupos enteros de campos basándose en valores de otros campos.</div></div>"
     },
     {
       "name": "mostrar_grouper_simple",
@@ -27,7 +27,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a;'><strong>✅ Este grouper apareció porque activaste el checkbox</strong></div>"
+              "content": "<div class='alert alert-success alert-border'><strong>✅ Este grouper apareció porque activaste el checkbox</strong></div>"
             },
             {
               "name": "nombre_config",
@@ -66,7 +66,7 @@
     },
     {
       "type": "html",
-      "content": "<hr style='margin: 2rem 0; border: none; border-top: 2px dashed #e5e7eb;'>"
+      "content": "<hr class='og-my-4' style='border: none; border-top: 2px dashed #e5e7eb;'>"
     },
     {
       "name": "tipo_usuario",
@@ -93,7 +93,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #fef3c7; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b;'><strong>⭐ Grouper TABS visible solo para usuarios Premium</strong></div>"
+              "content": "<div class='alert alert-warning alert-border'><strong>⭐ Grouper TABS visible solo para usuarios Premium</strong></div>"
             },
             {
               "name": "almacenamiento_adicional",
@@ -149,7 +149,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #e0f2fe; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7;'><strong>🏢 Grouper LINEAR visible solo para tipo Empresa</strong></div>"
+              "content": "<div class='alert alert-info alert-border'><strong>🏢 Grouper LINEAR visible solo para tipo Empresa</strong></div>"
             },
             {
               "name": "nombre_empresa",
@@ -197,7 +197,7 @@
     },
     {
       "type": "html",
-      "content": "<hr style='margin: 2rem 0; border: none; border-top: 2px dashed #e5e7eb;'><h3>🔁 Groupers en Repetables con Condiciones</h3>"
+      "content": "<hr class='og-my-4' style='border: none; border-top: 2px dashed #e5e7eb;'><h3>🔁 Groupers en Repetables con Condiciones</h3>"
     },
     {
       "name": "productos",
@@ -239,7 +239,7 @@
               "fields": [
                 {
                   "type": "html",
-                  "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>✅ Grouper dentro de REPEATABLE con condición</strong><br>Solo aparece si tipo = Físico</div>"
+                  "content": "<div class='alert alert-success alert-border' style='font-size: 0.9rem;'><strong>✅ Grouper dentro de REPEATABLE con condición</strong><br>Solo aparece si tipo = Físico</div>"
                 },
                 {
                   "type": "group",
@@ -304,7 +304,7 @@
               "fields": [
                 {
                   "type": "html",
-                  "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💾 Grouper TABS en REPEATABLE</strong><br>Solo aparece si tipo = Digital</div>"
+                  "content": "<div class='alert alert-warning alert-border' style='font-size: 0.9rem;'><strong>💾 Grouper TABS en REPEATABLE</strong><br>Solo aparece si tipo = Digital</div>"
                 },
                 {
                   "name": "formato_archivo",
@@ -360,22 +360,6 @@
           "placeholder": "0.00"
         }
       ]
-    }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Configuración guardada');"
-    },
-    {
-      "name": "reset",
-      "type": "button",
-      "label": "🔄 Limpiar",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
     }
   ]
 }

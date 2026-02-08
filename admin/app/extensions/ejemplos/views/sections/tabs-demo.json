@@ -23,7 +23,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #f0f9ff; border-radius: 0.5rem; margin: 1rem 0;'><h4>Sección de Productos (Nivel 1)</h4><p>Aquí se muestran tabs de segundo nivel con el componente tabs:</p></div>"
+                    "content": "<div class='og-p-2 og-bg-blue-50 og-rounded-lg og-my-2'><h4>Sección de Productos (Nivel 1)</h4><p>Aquí se muestran tabs de segundo nivel con el componente tabs:</p></div>"
                   },
                   {
                     "type": "component",
@@ -34,17 +34,17 @@
                         {
                           "id": "prod-electronica",
                           "title": "📱 Electrónica",
-                          "content": "<div style='padding: 1.5rem;'><h5>Productos Electrónicos</h5><ul style='line-height: 1.8;'><li><strong>Smartphones</strong> - $299 - $1,299</li><li><strong>Laptops</strong> - $499 - $2,499</li><li><strong>Tablets</strong> - $199 - $899</li><li><strong>Auriculares</strong> - $29 - $399</li><li><strong>Smartwatches</strong> - $149 - $799</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Productos Electrónicos</h5><ul style='line-height: 1.8;'><li><strong>Smartphones</strong> - $299 - $1,299</li><li><strong>Laptops</strong> - $499 - $2,499</li><li><strong>Tablets</strong> - $199 - $899</li><li><strong>Auriculares</strong> - $29 - $399</li><li><strong>Smartwatches</strong> - $149 - $799</li></ul></div>"
                         },
                         {
                           "id": "prod-ropa",
                           "title": "👕 Ropa",
-                          "content": "<div style='padding: 1.5rem;'><h5>Ropa y Accesorios</h5><ul style='line-height: 1.8;'><li><strong>Camisetas</strong> - $15 - $50</li><li><strong>Pantalones</strong> - $30 - $120</li><li><strong>Zapatos</strong> - $40 - $200</li><li><strong>Accesorios</strong> - $10 - $80</li><li><strong>Chaquetas</strong> - $60 - $250</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Ropa y Accesorios</h5><ul style='line-height: 1.8;'><li><strong>Camisetas</strong> - $15 - $50</li><li><strong>Pantalones</strong> - $30 - $120</li><li><strong>Zapatos</strong> - $40 - $200</li><li><strong>Accesorios</strong> - $10 - $80</li><li><strong>Chaquetas</strong> - $60 - $250</li></ul></div>"
                         },
                         {
                           "id": "prod-alimentos",
                           "title": "🍎 Alimentos",
-                          "content": "<div style='padding: 1.5rem;'><h5>Productos Alimenticios</h5><ul style='line-height: 1.8;'><li><strong>Frutas</strong> - $2 - $8 / kg</li><li><strong>Verduras</strong> - $1 - $6 / kg</li><li><strong>Carnes</strong> - $5 - $20 / kg</li><li><strong>Lácteos</strong> - $1 - $10</li><li><strong>Panadería</strong> - $0.50 - $5</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Productos Alimenticios</h5><ul style='line-height: 1.8;'><li><strong>Frutas</strong> - $2 - $8 / kg</li><li><strong>Verduras</strong> - $1 - $6 / kg</li><li><strong>Carnes</strong> - $5 - $20 / kg</li><li><strong>Lácteos</strong> - $1 - $10</li><li><strong>Panadería</strong> - $0.50 - $5</li></ul></div>"
                         }
                       ]
                     }
@@ -57,7 +57,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #fef3c7; border-radius: 0.5rem; margin: 1rem 0;'><h4>Sección de Servicios (Nivel 1)</h4><p>Tabs de servicios con subcategorías usando componente tabs:</p></div>"
+                    "content": "<div class='og-p-2 og-bg-yellow-100 og-rounded-lg og-my-2'><h4>Sección de Servicios (Nivel 1)</h4><p>Tabs de servicios con subcategorías usando componente tabs:</p></div>"
                   },
                   {
                     "type": "component",
@@ -68,17 +68,17 @@
                         {
                           "id": "serv-consultoria",
                           "title": "💼 Consultoría",
-                          "content": "<div style='padding: 1.5rem;'><h5>Servicios de Consultoría</h5><ul style='line-height: 1.8;'><li><strong>Análisis de negocio</strong> - $1,500/día</li><li><strong>Auditoría de sistemas</strong> - $2,000/día</li><li><strong>Estrategia digital</strong> - $2,500/día</li><li><strong>Optimización de procesos</strong> - $1,800/día</li><li><strong>Transformación digital</strong> - $3,000/día</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Servicios de Consultoría</h5><ul style='line-height: 1.8;'><li><strong>Análisis de negocio</strong> - $1,500/día</li><li><strong>Auditoría de sistemas</strong> - $2,000/día</li><li><strong>Estrategia digital</strong> - $2,500/día</li><li><strong>Optimización de procesos</strong> - $1,800/día</li><li><strong>Transformación digital</strong> - $3,000/día</li></ul></div>"
                         },
                         {
                           "id": "serv-desarrollo",
                           "title": "💻 Desarrollo",
-                          "content": "<div style='padding: 1.5rem;'><h5>Servicios de Desarrollo</h5><ul style='line-height: 1.8;'><li><strong>Desarrollo web</strong> - $50-$150/hora</li><li><strong>Desarrollo móvil</strong> - $60-$180/hora</li><li><strong>Backend API</strong> - $70-$160/hora</li><li><strong>DevOps</strong> - $80-$200/hora</li><li><strong>Cloud Architecture</strong> - $90-$220/hora</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Servicios de Desarrollo</h5><ul style='line-height: 1.8;'><li><strong>Desarrollo web</strong> - $50-$150/hora</li><li><strong>Desarrollo móvil</strong> - $60-$180/hora</li><li><strong>Backend API</strong> - $70-$160/hora</li><li><strong>DevOps</strong> - $80-$200/hora</li><li><strong>Cloud Architecture</strong> - $90-$220/hora</li></ul></div>"
                         },
                         {
                           "id": "serv-soporte",
                           "title": "🛠️ Soporte",
-                          "content": "<div style='padding: 1.5rem;'><h5>Planes de Soporte</h5><ul style='line-height: 1.8;'><li><strong>Soporte básico</strong> - $500/mes</li><li><strong>Soporte premium</strong> - $1,500/mes</li><li><strong>Soporte 24/7</strong> - $3,000/mes</li><li><strong>Mantenimiento</strong> - $800/mes</li><li><strong>SLA Enterprise</strong> - $5,000/mes</li></ul></div>"
+                          "content": "<div class='og-p-3'><h5>Planes de Soporte</h5><ul style='line-height: 1.8;'><li><strong>Soporte básico</strong> - $500/mes</li><li><strong>Soporte premium</strong> - $1,500/mes</li><li><strong>Soporte 24/7</strong> - $3,000/mes</li><li><strong>Mantenimiento</strong> - $800/mes</li><li><strong>SLA Enterprise</strong> - $5,000/mes</li></ul></div>"
                         }
                       ]
                     }
@@ -91,7 +91,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #dcfce7; border-radius: 0.5rem; margin: 1rem 0;'><h4>Sección de Clientes (Nivel 1)</h4><p>Tabs con información de diferentes tipos de clientes usando componente tabs:</p></div>"
+                    "content": "<div class='og-p-2 og-bg-green-100 og-rounded-lg og-my-2'><h4>Sección de Clientes (Nivel 1)</h4><p>Tabs con información de diferentes tipos de clientes usando componente tabs:</p></div>"
                   },
                   {
                     "type": "component",
@@ -102,17 +102,17 @@
                         {
                           "id": "cli-corporativos",
                           "title": "🏢 Corporativos",
-                          "content": "<div style='padding: 1.5rem;'><h5>Clientes Corporativos</h5><table style='width: 100%; border-collapse: collapse; margin-top: 1rem;'><thead><tr style='background: #f3f4f6;'><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Empresa</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Contrato</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Empleados</th></tr></thead><tbody><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Tech Corp SA</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$50,000/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>500</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Global Solutions</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$75,000/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>1,200</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Enterprise Systems</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$120,000/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>2,500</td></tr></tbody></table></div>"
+                          "content": "<div class='og-p-3'><h5>Clientes Corporativos</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Empresa</th><th>Contrato</th><th>Empleados</th></tr></thead><tbody><tr><td>Tech Corp SA</td><td>$50,000/año</td><td>500</td></tr><tr><td>Global Solutions</td><td>$75,000/año</td><td>1,200</td></tr><tr><td>Enterprise Systems</td><td>$120,000/año</td><td>2,500</td></tr></tbody></table></div>"
                         },
                         {
                           "id": "cli-pymes",
                           "title": "🏪 PYMES",
-                          "content": "<div style='padding: 1.5rem;'><h5>Pequeñas y Medianas Empresas</h5><table style='width: 100%; border-collapse: collapse; margin-top: 1rem;'><thead><tr style='background: #f3f4f6;'><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Empresa</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Contrato</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Empleados</th></tr></thead><tbody><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Tienda Digital</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$5,000/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>15</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Restaurante El Sabor</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$3,500/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>8</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Consultora Pro</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$8,000/año</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>25</td></tr></tbody></table></div>"
+                          "content": "<div class='og-p-3'><h5>Pequeñas y Medianas Empresas</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Empresa</th><th>Contrato</th><th>Empleados</th></tr></thead><tbody><tr><td>Tienda Digital</td><td>$5,000/año</td><td>15</td></tr><tr><td>Restaurante El Sabor</td><td>$3,500/año</td><td>8</td></tr><tr><td>Consultora Pro</td><td>$8,000/año</td><td>25</td></tr></tbody></table></div>"
                         },
                         {
                           "id": "cli-individuales",
                           "title": "👤 Individuales",
-                          "content": "<div style='padding: 1.5rem;'><h5>Clientes Individuales</h5><table style='width: 100%; border-collapse: collapse; margin-top: 1rem;'><thead><tr style='background: #f3f4f6;'><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Cliente</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Plan</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #ddd;'>Mensualidad</th></tr></thead><tbody><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Juan Pérez</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>Básico</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$50/mes</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>María González</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>Premium</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$150/mes</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #ddd;'>Carlos Ruiz</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>Pro</td><td style='padding: 0.75rem; border: 1px solid #ddd;'>$300/mes</td></tr></tbody></table></div>"
+                          "content": "<div class='og-p-3'><h5>Clientes Individuales</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Cliente</th><th>Plan</th><th>Mensualidad</th></tr></thead><tbody><tr><td>Juan Pérez</td><td>Básico</td><td>$50/mes</td></tr><tr><td>María González</td><td>Premium</td><td>$150/mes</td></tr><tr><td>Carlos Ruiz</td><td>Pro</td><td>$300/mes</td></tr></tbody></table></div>"
                         }
                       ]
                     }
@@ -124,7 +124,7 @@
         },
         {
           "type": "html",
-          "content": "<div style='background: #e0e7ff; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #4f46e5;'><h4 style='margin: 0 0 0.5rem; color: #3730a3;'>💡 Características de Tabs Anidados:</h4><ul style='margin: 0; color: #3730a3;'><li><strong>Navegación multinivel:</strong> Permite organizar contenido en múltiples niveles de profundidad</li><li><strong>Interfaz limpia:</strong> Solo muestra el contenido activo, ocultando el resto</li><li><strong>Cambio dinámico:</strong> Al hacer clic en un tab, el contenido cambia instantáneamente</li><li><strong>Ideal para:</strong> Categorización de contenido, paneles de control, dashboards complejos</li></ul></div>"
+          "content": "<div class='alert alert-info alert-with-desc og-my-4'><strong>💡 Características de Tabs Anidados:</strong><div class='alert-desc'><ul><li><strong>Navegación multinivel:</strong> Permite organizar contenido en múltiples niveles de profundidad</li><li><strong>Interfaz limpia:</strong> Solo muestra el contenido activo, ocultando el resto</li><li><strong>Cambio dinámico:</strong> Al hacer clic en un tab, el contenido cambia instantáneamente</li><li><strong>Ideal para:</strong> Categorización de contenido, paneles de control, dashboards complejos</li></ul></div></div>"
         }
       ]
     },
@@ -134,7 +134,11 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>Grouper con Formularios Dinámicos</h3><p>El grouper puede cargar formularios completos dentro de cada grupo usando <code>type: 'form'</code> y <code>form_json</code>:</p><div style='background: #e0f2fe; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #0284c7;'><h4 style='margin: 0 0 0.5rem; color: #0c4a6e;'>💡 Ventajas:</h4><ul style='margin: 0; color: #0c4a6e;'><li><strong>Modular:</strong> Cada formulario se mantiene en su propio archivo JSON</li><li><strong>Reutilizable:</strong> El mismo formulario puede usarse en múltiples lugares</li><li><strong>Organizado:</strong> Agrupa formularios relacionados visualmente</li><li><strong>Dinámico:</strong> Los formularios se cargan solo cuando el usuario abre el grupo (en modo linear)</li></ul></div>"
+          "content": "<h3>Grouper con Formularios Dinámicos</h3><p>El grouper puede cargar formularios completos dentro de cada grupo usando <code>type: 'form'</code> y <code>form_json</code>:</p>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='alert alert-info alert-with-desc'><strong>💡 Ventajas:</strong><div class='alert-desc'><ul><li><strong>Modular:</strong> Cada formulario se mantiene en su propio archivo JSON</li><li><strong>Reutilizable:</strong> El mismo formulario puede usarse en múltiples lugares</li><li><strong>Organizado:</strong> Agrupa formularios relacionados visualmente</li><li><strong>Dinámico:</strong> Los formularios se cargan solo cuando el usuario abre el grupo (en modo linear)</li></ul></div></div>"
         },
         {
           "type": "component",
@@ -154,14 +158,14 @@
               },
               {
                 "title": "🌐 Información del Sistema",
-                "content": "<div style='padding: 1rem; background: #f0f9ff; border-radius: 0.5rem;'><h4>Datos del Sistema</h4><p>Este grupo contiene solo HTML estático para comparar:</p><ul><li><strong>Versión:</strong> 1.0.0</li><li><strong>Usuarios activos:</strong> 1,247</li><li><strong>Base de datos:</strong> PostgreSQL 14</li><li><strong>Servidor:</strong> Ubuntu 22.04 LTS</li></ul></div>"
+                "content": "<div class='og-p-2 og-bg-blue-50 og-rounded-lg'><h4>Datos del Sistema</h4><p>Este grupo contiene solo HTML estático para comparar:</p><ul><li><strong>Versión:</strong> 1.0.0</li><li><strong>Usuarios activos:</strong> 1,247</li><li><strong>Base de datos:</strong> PostgreSQL 14</li><li><strong>Servidor:</strong> Ubuntu 22.04 LTS</li></ul></div>"
               }
             ]
           }
         },
         {
           "type": "html",
-          "content": "<h3 style='margin-top: 2rem;'>Grouper en Modo Tabs + Formularios</h3><p>También funciona en modo tabs:</p>"
+          "content": "<h3 class='og-mt-4'>Grouper en Modo Tabs + Formularios</h3><p>También funciona en modo tabs:</p>"
         },
         {
           "type": "component",
@@ -180,14 +184,14 @@
               },
               {
                 "title": "📄 Info",
-                "content": "<div style='padding: 1.5rem; background: #fef3c7; border-radius: 0.5rem;'><h4>Notas importantes</h4><ul><li>Los formularios se cargan dinámicamente</li><li>Cada formulario mantiene su propia validación</li><li>Los datos se mantienen independientes entre grupos</li><li>Puedes tener múltiples formularios en la misma vista</li></ul></div>"
+                "content": "<div class='og-p-3 og-bg-yellow-100 og-rounded-lg'><h4>Notas importantes</h4><ul><li>Los formularios se cargan dinámicamente</li><li>Cada formulario mantiene su propia validación</li><li>Los datos se mantienen independientes entre grupos</li><li>Puedes tener múltiples formularios en la misma vista</li></ul></div>"
               }
             ]
           }
         },
         {
           "type": "html",
-          "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #16a34a;'><h4 style='margin: 0 0 0.5rem; color: #14532d;'>✅ Estructura del content con formularios:</h4><pre style='background: white; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"title\": \"📝 Mi Formulario\",\n  \"content\": \"&lt;div class='dynamic-form' data-form-json='plugin/ruta/formulario'&gt;&lt;/div&gt;\"\n}</pre><p style='margin: 0.5rem 0 0 0; color: #14532d;'><strong>Importante:</strong> El sistema detectará automáticamente los <code>dynamic-form</code> y cargará los formularios correspondientes.</p></div>"
+          "content": "<div class='alert alert-success alert-with-desc og-my-4'><strong>✅ Estructura del content con formularios:</strong><div class='alert-desc'><pre style='font-size: 0.85rem;'>{\n  \"title\": \"📝 Mi Formulario\",\n  \"content\": \"&lt;div class='dynamic-form' data-form-json='plugin/ruta/formulario'&gt;&lt;/div&gt;\"\n}</pre><p class='og-mt-2'><strong>Importante:</strong> El sistema detectará automáticamente los <code>dynamic-form</code> y cargará los formularios correspondientes.</p></div></div>"
         }
       ]
     },
@@ -197,7 +201,19 @@
       "content": [
         {
           "type": "html",
-          "content": "<h3>⚡ Precarga Total de Tabs</h3><p>Esta funcionalidad permite cargar <strong>todas las tabs de una sola vez</strong> en lugar de hacerlo bajo demanda:</p><div style='display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;'><div style='background: #dcfce7; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid #16a34a;'><h4 style='margin: 0 0 0.5rem; color: #14532d;'>⚡ Con Precarga</h4><ul style='margin: 0.5rem 0; color: #14532d; font-size: 0.95rem;'><li>✅ Todas las tabs cargan al inicio</li><li>✅ Cambio instantáneo entre tabs</li><li>✅ Sin tiempo de espera</li><li>✅ Ideal para vistas pequeñas</li><li>⚠️ Mayor tiempo de carga inicial</li></ul></div><div style='background: #fef3c7; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid #f59e0b;'><h4 style='margin: 0 0 0.5rem; color: #92400e;'>🔄 Bajo Demanda (Default)</h4><ul style='margin: 0.5rem 0; color: #92400e; font-size: 0.95rem;'><li>✅ Solo carga la tab activa</li><li>✅ Carga inicial más rápida</li><li>✅ Ahorra recursos</li><li>✅ Ideal para vistas grandes</li><li>⚠️ Pequeña espera al cambiar tab</li></ul></div></div><div style='background: #e0f2fe; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #0284c7;'><h4 style='margin: 0 0 0.5rem; color: #0c4a6e;'>🎯 Configuración:</h4><p style='margin: 0.5rem 0; color: #0c4a6e;'>Agregar <code>preloadAllTabs: true</code> en el config del componente tabs:</p><pre style='background: white; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0;'>{\n  \"type\": \"component\",\n  \"component\": \"tabs\",\n  \"config\": {\n    \"id\": \"mi-tabs\",\n    \"preloadAllTabs\": true,  // ← Precarga todas las tabs\n    \"tabs\": [...]\n  }\n}</pre></div><div style='background: #fff3cd; border: 2px solid #ffc107; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;'><strong>📋 Ejemplo en Acción:</strong><br>Las siguientes tabs fueron <strong>todas precargadas</strong> al momento de abrir este ejemplo. Puedes cambiar entre ellas instantáneamente sin tiempo de carga:</div>"
+          "content": "<h3>⚡ Precarga Total de Tabs</h3><p>Esta funcionalidad permite cargar <strong>todas las tabs de una sola vez</strong> en lugar de hacerlo bajo demanda:</p>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='og-grid og-cols-2 og-gap-lg og-my-3'><div class='og-p-3 og-bg-green-100 og-rounded-lg og-border-l-4 og-border-green-500'><h4 class='og-text-green-700 og-mb-1'>⚡ Con Precarga</h4><ul style='font-size: 0.95rem;'><li>✅ Todas las tabs cargan al inicio</li><li>✅ Cambio instantáneo entre tabs</li><li>✅ Sin tiempo de espera</li><li>✅ Ideal para vistas pequeñas</li><li>⚠️ Mayor tiempo de carga inicial</li></ul></div><div class='og-p-3 og-bg-yellow-100 og-rounded-lg og-border-l-4 og-border-yellow-500'><h4 class='og-text-yellow-700 og-mb-1'>🔄 Bajo Demanda (Default)</h4><ul style='font-size: 0.95rem;'><li>✅ Solo carga la tab activa</li><li>✅ Carga inicial más rápida</li><li>✅ Ahorra recursos</li><li>✅ Ideal para vistas grandes</li><li>⚠️ Pequeña espera al cambiar tab</li></ul></div></div>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='alert alert-info alert-with-desc'><strong>🎯 Configuración:</strong><p>Agregar <code>preloadAllTabs: true</code> en el config del componente tabs:</p><div class='alert-desc'><pre style='overflow-x: auto;'>{\n  \"type\": \"component\",\n  \"component\": \"tabs\",\n  \"config\": {\n    \"id\": \"mi-tabs\",\n    \"preloadAllTabs\": true,  // ← Precarga todas las tabs\n    \"tabs\": [...]\n  }\n}</pre></div></div>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='alert alert-warning alert-border og-my-3'><strong>📋 Ejemplo en Acción:</strong> Las siguientes tabs fueron <strong>todas precargadas</strong> al momento de abrir este ejemplo. Puedes cambiar entre ellas instantáneamente sin tiempo de carga:</div>"
         },
         {
           "type": "component",
@@ -212,7 +228,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #dcfce7; border-radius: 0.5rem; margin-bottom: 1rem;'><h4 style='margin: 0 0 0.5rem;'>✅ Esta tab fue precargada</h4><p style='margin: 0;'>Este formulario se cargó automáticamente al inicio, no cuando hiciste click en esta tab.</p></div>"
+                    "content": "<div class='alert alert-success alert-border'><strong>✅ Esta tab fue precargada:</strong> Este formulario se cargó automáticamente al inicio, no cuando hiciste click en esta tab.</div>"
                   },
                   {
                     "type": "form",
@@ -226,7 +242,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #dcfce7; border-radius: 0.5rem; margin-bottom: 1rem;'><h4 style='margin: 0 0 0.5rem;'>✅ Esta tab también fue precargada</h4><p style='margin: 0;'>Cambiaste de tab instantáneamente porque el contenido ya estaba cargado.</p></div>"
+                    "content": "<div class='alert alert-success alert-border'><strong>✅ Esta tab también fue precargada:</strong> Cambiaste de tab instantáneamente porque el contenido ya estaba cargado.</div>"
                   },
                   {
                     "type": "form",
@@ -240,7 +256,11 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<div style='padding: 1rem; background: #dcfce7; border-radius: 0.5rem; margin-bottom: 1rem;'><h4 style='margin: 0 0 0.5rem;'>✅ Tercera tab precargada</h4><p style='margin: 0;'>Todas las tabs se cargaron en paralelo al inicio.</p></div><div style='padding: 1.5rem; background: #f0f9ff; border-radius: 0.5rem;'><h4>📊 Ventajas de la Precarga</h4><table style='width: 100%; border-collapse: collapse; margin-top: 1rem;'><thead><tr style='background: #dbeafe;'><th style='padding: 0.75rem; text-align: left; border: 1px solid #93c5fd;'>Aspecto</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #93c5fd;'>Bajo Demanda</th><th style='padding: 0.75rem; text-align: left; border: 1px solid #93c5fd;'>Precarga Total</th></tr></thead><tbody><tr><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'><strong>Carga inicial</strong></td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>⚡ Rápida</td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>🐢 Más lenta</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'><strong>Cambio de tab</strong></td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>🐢 Con espera</td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>⚡ Instantáneo</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'><strong>Uso de memoria</strong></td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>💚 Bajo</td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>⚠️ Alto</td></tr><tr><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'><strong>Mejor uso</strong></td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>Vistas grandes, muchas tabs</td><td style='padding: 0.75rem; border: 1px solid #bfdbfe;'>Vistas pequeñas, 3-5 tabs</td></tr></tbody></table></div>"
+                    "content": "<div class='alert alert-success alert-border'><strong>✅ Tercera tab precargada:</strong> Todas las tabs se cargaron en paralelo al inicio.</div>"
+                  },
+                  {
+                    "type": "html",
+                    "content": "<div class='og-p-3 og-bg-blue-50 og-rounded-lg'><h4>📊 Ventajas de la Precarga</h4><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Aspecto</th><th>Bajo Demanda</th><th>Precarga Total</th></tr></thead><tbody><tr><td><strong>Carga inicial</strong></td><td>⚡ Rápida</td><td>🐢 Más lenta</td></tr><tr><td><strong>Cambio de tab</strong></td><td>🐢 Con espera</td><td>⚡ Instantáneo</td></tr><tr><td><strong>Uso de memoria</strong></td><td>💚 Bajo</td><td>⚠️ Alto</td></tr><tr><td><strong>Mejor uso</strong></td><td>Vistas grandes, muchas tabs</td><td>Vistas pequeñas, 3-5 tabs</td></tr></tbody></table></div>"
                   }
                 ]
               }
@@ -249,7 +269,11 @@
         },
         {
           "type": "html",
-          "content": "<div style='background: #e0e7ff; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #4f46e5;'><h4 style='margin: 0 0 0.5rem; color: #3730a3;'>🔍 ¿Cómo saber si funcionó?</h4><ol style='margin: 0.5rem 0; color: #3730a3;'><li>Abre la <strong>consola del navegador</strong> (F12)</li><li>Busca logs de <code>com:tabs</code></li><li>Verás: <code>Precargando todas las tabs (3 tabs)</code></li><li>Luego: <code>Tab X precargada</code> para cada una</li><li>Al cambiar de tab: <code>Mostrando tab desde caché</code> (instantáneo)</li></ol></div><div style='background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #f59e0b;'><h4 style='margin: 0 0 0.5rem; color: #92400e;'>⚠️ Cuándo NO usar precarga:</h4><ul style='margin: 0.5rem 0; color: #92400e;'><li>Tabs con mucho contenido (>5 formularios grandes)</li><li>Tabs con imágenes pesadas o videos</li><li>Tabs con componentes que hacen peticiones al servidor</li><li>Vistas con más de 7-8 tabs</li><li>En dispositivos móviles con conexión lenta</li></ul></div>"
+          "content": "<div class='alert alert-tip alert-with-desc og-my-4'><strong>🔍 ¿Cómo saber si funcionó?</strong><div class='alert-desc'><ol><li>Abre la <strong>consola del navegador</strong> (F12)</li><li>Busca logs de <code>com:tabs</code></li><li>Verás: <code>Precargando todas las tabs (3 tabs)</code></li><li>Luego: <code>Tab X precargada</code> para cada una</li><li>Al cambiar de tab: <code>Mostrando tab desde caché</code> (instantáneo)</li></ol></div></div>"
+        },
+        {
+          "type": "html",
+          "content": "<div class='alert alert-warning alert-with-desc'><strong>⚠️ Cuándo NO usar precarga:</strong><div class='alert-desc'><ul><li>Tabs con mucho contenido (>5 formularios grandes)</li><li>Tabs con imágenes pesadas o videos</li><li>Tabs con componentes que hacen peticiones al servidor</li><li>Vistas con más de 7-8 tabs</li><li>En dispositivos móviles con conexión lenta</li></ul></div></div>"
         }
       ]
     },
@@ -271,30 +295,30 @@
             "groups": [
               {
                 "title": "📊 Información General",
-                "content": "<div style='padding: 1rem;'><h4>Datos del Sistema</h4><ul><li><strong>Versión:</strong> 1.0.0</li><li><strong>Usuarios activos:</strong> 1,247</li><li><strong>Transacciones hoy:</strong> 3,842</li><li><strong>Almacenamiento usado:</strong> 45.2 GB / 100 GB</li></ul></div>"
+                "content": "<div class='og-p-2'><h4>Datos del Sistema</h4><ul><li><strong>Versión:</strong> 1.0.0</li><li><strong>Usuarios activos:</strong> 1,247</li><li><strong>Transacciones hoy:</strong> 3,842</li><li><strong>Almacenamiento usado:</strong> 45.2 GB / 100 GB</li></ul></div>"
               },
               {
                 "title": "🔧 Configuración",
-                "content": "<div style='padding: 1rem;'><h4>Opciones del Sistema</h4><div style='display: flex; flex-direction: column; gap: 0.5rem;'><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox' checked> Notificaciones por email</label><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox' checked> Modo oscuro</label><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox'> Actualización automática</label><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox' checked> Backup automático</label></div></div>"
+                "content": "<div class='og-p-2'><h4>Opciones del Sistema</h4><div class='og-flex og-column og-gap-sm'><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox' checked> Notificaciones por email</label><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox' checked> Modo oscuro</label><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox'> Actualización automática</label><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox' checked> Backup automático</label></div></div>"
               },
               {
                 "title": "📈 Estadísticas",
-                "content": "<div style='padding: 1rem;'><h4>Métricas del mes</h4><table style='width: 100%; border-collapse: collapse;'><thead><tr style='background: #f3f4f6;'><th style='padding: 0.5rem; text-align: left; border: 1px solid #ddd;'>Métrica</th><th style='padding: 0.5rem; text-align: right; border: 1px solid #ddd;'>Valor</th><th style='padding: 0.5rem; text-align: right; border: 1px solid #ddd;'>Cambio</th></tr></thead><tbody><tr><td style='padding: 0.5rem; border: 1px solid #ddd;'>Ventas</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd;'>$125,430</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd; color: green;'>+12.5%</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #ddd;'>Nuevos usuarios</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd;'>342</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd; color: green;'>+8.3%</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #ddd;'>Tickets resueltos</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd;'>1,854</td><td style='padding: 0.5rem; text-align: right; border: 1px solid #ddd; color: red;'>-3.2%</td></tr></tbody></table></div>"
+                "content": "<div class='og-p-2'><h4>Métricas del mes</h4><table class='og-table og-table-bordered'><thead><tr><th>Métrica</th><th style='text-align: right;'>Valor</th><th style='text-align: right;'>Cambio</th></tr></thead><tbody><tr><td>Ventas</td><td style='text-align: right;'>$125,430</td><td style='text-align: right; color: green;'>+12.5%</td></tr><tr><td>Nuevos usuarios</td><td style='text-align: right;'>342</td><td style='text-align: right; color: green;'>+8.3%</td></tr><tr><td>Tickets resueltos</td><td style='text-align: right;'>1,854</td><td style='text-align: right; color: red;'>-3.2%</td></tr></tbody></table></div>"
               },
               {
                 "title": "👥 Equipo",
-                "content": "<div style='padding: 1rem;'><h4>Miembros del equipo</h4><div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;'><div style='padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem;'><div style='font-weight: bold;'>Juan Pérez</div><div style='color: #666; font-size: 0.9rem;'>Desarrollador Senior</div><div style='font-size: 0.8rem; margin-top: 0.5rem;'>juan@empresa.com</div></div><div style='padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem;'><div style='font-weight: bold;'>María González</div><div style='color: #666; font-size: 0.9rem;'>Diseñadora UX</div><div style='font-size: 0.8rem; margin-top: 0.5rem;'>maria@empresa.com</div></div><div style='padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem;'><div style='font-weight: bold;'>Carlos Ruiz</div><div style='color: #666; font-size: 0.9rem;'>Project Manager</div><div style='font-size: 0.8rem; margin-top: 0.5rem;'>carlos@empresa.com</div></div></div></div>"
+                "content": "<div class='og-p-2'><h4>Miembros del equipo</h4><div class='og-grid og-auto-fit-sm og-gap-md'><div class='og-p-2 og-border og-rounded-md'><div style='font-weight: bold;'>Juan Pérez</div><div style='color: #666; font-size: 0.9rem;'>Desarrollador Senior</div><div style='font-size: 0.8rem;' class='og-mt-1'>juan@empresa.com</div></div><div class='og-p-2 og-border og-rounded-md'><div style='font-weight: bold;'>María González</div><div style='color: #666; font-size: 0.9rem;'>Diseñadora UX</div><div style='font-size: 0.8rem;' class='og-mt-1'>maria@empresa.com</div></div><div class='og-p-2 og-border og-rounded-md'><div style='font-weight: bold;'>Carlos Ruiz</div><div style='color: #666; font-size: 0.9rem;'>Project Manager</div><div style='font-size: 0.8rem;' class='og-mt-1'>carlos@empresa.com</div></div></div></div>"
               }
             ]
           }
         },
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #f59e0b;'><h4 style='margin: 0 0 0.5rem; color: #92400e;'>⚖️ Diferencias clave: Tabs vs Grouper</h4><table style='width: 100%; border-collapse: collapse; margin-top: 1rem;'><thead><tr style='background: #fde68a;'><th style='padding: 0.5rem; text-align: left; border: 1px solid #d97706;'>Característica</th><th style='padding: 0.5rem; text-align: left; border: 1px solid #d97706;'>Tabs</th><th style='padding: 0.5rem; text-align: left; border: 1px solid #d97706;'>Grouper (Linear)</th></tr></thead><tbody><tr><td style='padding: 0.5rem; border: 1px solid #d97706;'><strong>Visibilidad</strong></td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Solo 1 sección visible</td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Múltiples secciones visibles</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #d97706;'><strong>Navegación</strong></td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Click para cambiar</td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Click para expandir/colapsar</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #d97706;'><strong>Espacio</strong></td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Ahorra espacio vertical</td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Usa más espacio vertical</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #d97706;'><strong>Uso ideal</strong></td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Categorías mutuamente excluyentes</td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Información que se puede ver simultáneamente</td></tr><tr><td style='padding: 0.5rem; border: 1px solid #d97706;'><strong>Impresión</strong></td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Solo imprime tab activo</td><td style='padding: 0.5rem; border: 1px solid #d97706;'>Puede imprimir todo expandido</td></tr></tbody></table></div>"
+          "content": "<div class='alert alert-warning alert-header og-my-4'><div class='alert-title'>⚖️ Diferencias clave: Tabs vs Grouper</div><div class='alert-body'><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Característica</th><th>Tabs</th><th>Grouper (Linear)</th></tr></thead><tbody><tr><td><strong>Visibilidad</strong></td><td>Solo 1 sección visible</td><td>Múltiples secciones visibles</td></tr><tr><td><strong>Navegación</strong></td><td>Click para cambiar</td><td>Click para expandir/colapsar</td></tr><tr><td><strong>Espacio</strong></td><td>Ahorra espacio vertical</td><td>Usa más espacio vertical</td></tr><tr><td><strong>Uso ideal</strong></td><td>Categorías mutuamente excluyentes</td><td>Información que se puede ver simultáneamente</td></tr><tr><td><strong>Impresión</strong></td><td>Solo imprime tab activo</td><td>Puede imprimir todo expandido</td></tr></tbody></table></div></div>"
         },
         {
           "type": "html",
-          "content": "<h3 style='margin-top: 2rem;'>Grouper - Modo Tabs</h3><p>El grouper también puede funcionar en modo tabs, similar al componente tabs pero con diferente implementación:</p>"
+          "content": "<h3 class='og-mt-4'>Grouper - Modo Tabs</h3><p>El grouper también puede funcionar en modo tabs, similar al componente tabs pero con diferente implementación:</p>"
         },
         {
           "type": "component",
@@ -305,33 +329,33 @@
             "groups": [
               {
                 "title": "🏠 Inicio",
-                "content": "<div style='padding: 2rem; text-align: center;'><h3>Bienvenido al Panel de Control</h3><p style='margin: 1rem 0; color: #666;'>Este es un ejemplo de grouper en modo tabs</p><div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem;'><div style='padding: 1.5rem; background: #dbeafe; border-radius: 0.5rem;'><div style='font-size: 2rem;'>📊</div><div style='font-weight: bold; margin: 0.5rem 0;'>125</div><div style='color: #666; font-size: 0.9rem;'>Proyectos activos</div></div><div style='padding: 1.5rem; background: #dcfce7; border-radius: 0.5rem;'><div style='font-size: 2rem;'>👥</div><div style='font-weight: bold; margin: 0.5rem 0;'>1,247</div><div style='color: #666; font-size: 0.9rem;'>Usuarios</div></div><div style='padding: 1.5rem; background: #fef3c7; border-radius: 0.5rem;'><div style='font-size: 2rem;'>💰</div><div style='font-weight: bold; margin: 0.5rem 0;'>$125K</div><div style='color: #666; font-size: 0.9rem;'>Ingresos mensuales</div></div></div></div>"
+                "content": "<div class='og-p-4 og-text-center'><h3>Bienvenido al Panel de Control</h3><p class='og-my-2' style='color: #666;'>Este es un ejemplo de grouper en modo tabs</p><div class='og-grid og-cols-3 og-gap-md og-mt-4'><div class='og-p-3 og-bg-blue-100 og-rounded-lg'><div style='font-size: 2rem;'>📊</div><div style='font-weight: bold;' class='og-my-1'>125</div><div style='color: #666; font-size: 0.9rem;'>Proyectos activos</div></div><div class='og-p-3 og-bg-green-100 og-rounded-lg'><div style='font-size: 2rem;'>👥</div><div style='font-weight: bold;' class='og-my-1'>1,247</div><div style='color: #666; font-size: 0.9rem;'>Usuarios</div></div><div class='og-p-3 og-bg-yellow-100 og-rounded-lg'><div style='font-size: 2rem;'>💰</div><div style='font-weight: bold;' class='og-my-1'>$125K</div><div style='color: #666; font-size: 0.9rem;'>Ingresos mensuales</div></div></div></div>"
               },
               {
                 "title": "📊 Reportes",
-                "content": "<div style='padding: 1.5rem;'><h3>Reportes del Sistema</h3><div style='margin-top: 1rem;'><h4>Últimos reportes generados:</h4><ul style='list-style: none; padding: 0;'><li style='padding: 0.75rem; margin: 0.5rem 0; background: #f9fafb; border-left: 3px solid #3b82f6; border-radius: 0.25rem;'><strong>Reporte de ventas Q4 2024</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-12-01 | Tamaño: 2.4 MB</span></li><li style='padding: 0.75rem; margin: 0.5rem 0; background: #f9fafb; border-left: 3px solid #10b981; border-radius: 0.25rem;'><strong>Análisis de usuarios activos</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-11-28 | Tamaño: 1.8 MB</span></li><li style='padding: 0.75rem; margin: 0.5rem 0; background: #f9fafb; border-left: 3px solid #f59e0b; border-radius: 0.25rem;'><strong>Métricas de rendimiento</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-11-25 | Tamaño: 3.1 MB</span></li></ul></div></div>"
+                "content": "<div class='og-p-3'><h3>Reportes del Sistema</h3><div class='og-mt-2'><h4>Últimos reportes generados:</h4><ul style='list-style: none; padding: 0;'><li class='og-p-2 og-my-1 og-bg-gray-50 og-border-l-4 og-border-blue-500 og-rounded'><strong>Reporte de ventas Q4 2024</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-12-01 | Tamaño: 2.4 MB</span></li><li class='og-p-2 og-my-1 og-bg-gray-50 og-border-l-4 og-border-green-500 og-rounded'><strong>Análisis de usuarios activos</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-11-28 | Tamaño: 1.8 MB</span></li><li class='og-p-2 og-my-1 og-bg-gray-50 og-border-l-4 og-border-yellow-500 og-rounded'><strong>Métricas de rendimiento</strong><br><span style='color: #666; font-size: 0.9rem;'>Generado: 2024-11-25 | Tamaño: 3.1 MB</span></li></ul></div></div>"
               },
               {
                 "title": "⚙️ Configuración",
-                "content": "<div style='padding: 1.5rem;'><h3>Configuración del Sistema</h3><form style='max-width: 500px; margin-top: 1rem;'><div style='margin-bottom: 1rem;'><label style='display: block; font-weight: bold; margin-bottom: 0.5rem;'>Nombre del sistema:</label><input type='text' value='Mi Sistema' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div style='margin-bottom: 1rem;'><label style='display: block; font-weight: bold; margin-bottom: 0.5rem;'>URL base:</label><input type='text' value='https://misistema.com' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div style='margin-bottom: 1rem;'><label style='display: block; font-weight: bold; margin-bottom: 0.5rem;'>Email de contacto:</label><input type='email' value='contacto@misistema.com' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div style='margin-bottom: 1rem;'><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox' checked> Habilitar notificaciones</label><label style='display: flex; align-items: center; gap: 0.5rem;'><input type='checkbox' checked> Modo mantenimiento</label></div><button type='button' style='padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.25rem; cursor: pointer;'>Guardar cambios</button></form></div>"
+                "content": "<div class='og-p-3'><h3>Configuración del Sistema</h3><form style='max-width: 500px;' class='og-mt-2'><div class='og-mb-2'><label style='display: block; font-weight: bold;' class='og-mb-1'>Nombre del sistema:</label><input type='text' value='Mi Sistema' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div class='og-mb-2'><label style='display: block; font-weight: bold;' class='og-mb-1'>URL base:</label><input type='text' value='https://misistema.com' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div class='og-mb-2'><label style='display: block; font-weight: bold;' class='og-mb-1'>Email de contacto:</label><input type='email' value='contacto@misistema.com' style='width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem;'></div><div class='og-mb-2'><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox' checked> Habilitar notificaciones</label><label class='og-flex og-gap-sm' style='align-items: center;'><input type='checkbox' checked> Modo mantenimiento</label></div><button type='button' class='btn btn-primary'>Guardar cambios</button></form></div>"
               }
             ]
           }
         },
         {
           "type": "html",
-          "content": "<div style='background: #e0e7ff; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0; border-left: 4px solid #4f46e5;'><h4 style='margin: 0 0 0.5rem; color: #3730a3;'>💡 ¿Cuándo usar cada uno?</h4><ul style='margin: 0; color: #3730a3;'><li><strong>Usa Tabs cuando:</strong> El contenido son categorías diferentes y el usuario solo necesita ver una a la vez (ej: Perfil, Configuración, Historial)</li><li><strong>Usa Grouper Linear cuando:</strong> Necesitas mostrar secciones relacionadas que el usuario puede querer ver simultáneamente (ej: FAQ, Panel de configuraciones múltiples)</li><li><strong>Usa Grouper Tabs cuando:</strong> Quieres la funcionalidad de tabs pero con diferente estilo o implementación específica del sistema</li></ul></div>"
+          "content": "<div class='alert alert-tip alert-with-desc og-my-4'><strong>💡 ¿Cuándo usar cada uno?</strong><div class='alert-desc'><ul><li><strong>Usa Tabs cuando:</strong> El contenido son categorías diferentes y el usuario solo necesita ver una a la vez (ej: Perfil, Configuración, Historial)</li><li><strong>Usa Grouper Linear cuando:</strong> Necesitas mostrar secciones relacionadas que el usuario puede querer ver simultáneamente (ej: FAQ, Panel de configuraciones múltiples)</li><li><strong>Usa Grouper Tabs cuando:</strong> Quieres la funcionalidad de tabs pero con diferente estilo o implementación específica del sistema</li></ul></div></div>"
         }
       ]
     },
     {
       "id": "onload-demo",
       "title": "⚡ Onload",
-      "onLoad": "(function(){ var div = document.getElementById('onload-demo-info'); if(div){ var msg = '<div style=\"margin-top:1rem;padding:1rem;background:#e0f2fe;border-radius:0.5rem;border-left:4px solid #0284c7\"><b>¡Script ejecutado por onLoad!</b><br>Este mensaje fue inyectado dinámicamente. Puedes usar este atributo para inicializar widgets, cargar datos, o cualquier JS personalizado al mostrar la tab.</div>'; div.insertAdjacentHTML('beforeend', msg); } })()",
+      "onLoad": "(function(){ var div = document.getElementById('onload-demo-info'); if(div){ var msg = '<div class=\"alert alert-info alert-border og-mt-2\"><b>¡Script ejecutado por onLoad!</b><br>Este mensaje fue inyectado dinámicamente. Puedes usar este atributo para inicializar widgets, cargar datos, o cualquier JS personalizado al mostrar la tab.</div>'; div.insertAdjacentHTML('beforeend', msg); } })()",
       "content": [
         {
           "type": "html",
-          "content": "<div id='onload-demo-info' style='padding: 1.5rem; background: #f0f9ff; border-radius: 0.5rem;'><h3>⚡ Uso de <code>onLoad</code> en Tabs</h3><p style='margin: 1rem 0;'>El atributo <code>onLoad</code> permite ejecutar código JavaScript automáticamente cuando se muestra la tab por primera vez.</p><h4 style='margin-top: 1.5rem;'>🎯 ¿Para qué sirve?</h4><ul style='line-height: 1.8;'><li>Inicializar widgets o componentes complejos</li><li>Cargar datos dinámicos desde una API</li><li>Ejecutar animaciones o efectos visuales</li><li>Configurar eventos o listeners específicos</li><li>Cualquier acción personalizada en JavaScript</li></ul><h4 style='margin-top: 1.5rem;'>💻 Ejemplo de uso:</h4><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"onLoad\": \"miModulo.inicializar()\",\n  \"content\": [...]\n}</pre><p style='margin-top: 1rem; padding: 1rem; background: #fef3c7; border-radius: 0.5rem; border-left: 4px solid #f59e0b;'><strong>⚠️ Nota:</strong> Esta tab tiene un <code>onLoad</code> que inyecta un mensaje debajo de este texto. ¡Observa cómo aparece!</p></div>"
+          "content": "<div id='onload-demo-info' class='og-p-3 og-bg-blue-50 og-rounded-lg'><h3>⚡ Uso de <code>onLoad</code> en Tabs</h3><p class='og-my-2'>El atributo <code>onLoad</code> permite ejecutar código JavaScript automáticamente cuando se muestra la tab por primera vez.</p><h4 class='og-mt-3'>🎯 ¿Para qué sirve?</h4><ul style='line-height: 1.8;'><li>Inicializar widgets o componentes complejos</li><li>Cargar datos dinámicos desde una API</li><li>Ejecutar animaciones o efectos visuales</li><li>Configurar eventos o listeners específicos</li><li>Cualquier acción personalizada en JavaScript</li></ul><h4 class='og-mt-3'>💻 Ejemplo de uso:</h4><pre class='og-bg-gray-900 og-text-white og-p-2 og-rounded og-mt-2' style='overflow-x: auto;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"onLoad\": \"miModulo.inicializar()\",\n  \"content\": [...]\n}</pre><div class='alert alert-warning alert-border og-mt-2'><strong>⚠️ Nota:</strong> Esta tab tiene un <code>onLoad</code> que inyecta un mensaje debajo de este texto. ¡Observa cómo aparece!</div></div>"
         }
       ]
     }

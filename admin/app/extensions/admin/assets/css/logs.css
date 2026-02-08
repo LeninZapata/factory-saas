@@ -8,7 +8,7 @@ body[data-view="admin-logs"] {
     }
     & .og-content {
       background-color: #141b21;
-      & .view-toolbar{
+      & .og-view-toolbar{
         border: 1px solid #19232e;
         border-bottom: 1px solid #1c2f43;
       }

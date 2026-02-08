@@ -11,62 +11,92 @@
     "order": 99,
     "items": [
       {
-        "id": "ejemplos-forms",
+        "id": "ejemplos-formularios",
         "title": "Formularios",
         "icon": "📝",
-        "view": "sections/formularios/main",
-        "order": 1
-      },
-      {
-        "id": "ejemplos-graficos",
-        "title": "Scripts (bajo demanda)",
-        "icon": "📊",
-        "view": "sections/script-bajo-demanda",
-        "order": 2,
-        "styles": [
-          "ejemplos/assets/css/chart.css"
+        "order": 1,
+        "items": [
+          {
+            "id": "ejemplos-forms-main",
+            "title": "Galería de Formularios",
+            "icon": "📋",
+            "view": "sections/formularios/main",
+            "order": 1
+          },
+          {
+            "id": "ejemplos-grouper",
+            "title": "Grouper",
+            "icon": "📁",
+            "view": "sections/grouper-demo",
+            "order": 2
+          }
         ]
       },
       {
-        "id": "ejemplos-datatable",
-        "title": "DataTable",
-        "icon": "📋",
-        "view": "sections/users-datatable",
-        "order": 3
-      },
-      {
-        "id": "ejemplos-widgets",
-        "title": "Widgets",
+        "id": "ejemplos-componentes",
+        "title": "Componentes UI",
         "icon": "🧩",
-        "view": "sections/widgets-demo",
-        "order": 4
-      },
-      {
-        "id": "ejemplos-toast",
-        "title": "Toast",
-        "icon": "🔔",
-        "view": "sections/toast-demo",
-        "order": 5
-      },
-      {
-        "id": "ejemplos-grouper",
-        "title": "Grouper",
-        "icon": "📁",
-        "view": "sections/grouper-demo",
-        "order": 6
-      },
-      {
-        "id": "ejemplos-tabs",
-        "title": "Tabs",
-        "icon": "📑",
-        "view": "sections/tabs-demo",
-        "order": 7
+        "order": 2,
+        "items": [
+          {
+            "id": "ejemplos-comp-interaccion",
+            "title": "Interacción",
+            "icon": "🎯",
+            "order": 1,
+            "items": [
+              {
+                "id": "ejemplos-toast",
+                "title": "Toast (Notificaciones)",
+                "icon": "🔔",
+                "view": "sections/toast-demo",
+                "order": 1
+              },
+              {
+                "id": "ejemplos-widgets",
+                "title": "Widgets",
+                "icon": "🧩",
+                "view": "sections/widgets-demo",
+                "order": 2
+              }
+            ]
+          },
+          {
+            "id": "ejemplos-comp-navegacion",
+            "title": "Navegación",
+            "icon": "🧭",
+            "order": 2,
+            "items": [
+              {
+                "id": "ejemplos-tabs",
+                "title": "Tabs",
+                "icon": "📑",
+                "view": "sections/tabs-demo",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "id": "ejemplos-comp-datos",
+            "title": "Datos",
+            "icon": "📊",
+            "order": 3,
+            "items": [
+              {
+                "id": "ejemplos-datatable",
+                "title": "DataTable",
+                "icon": "📋",
+                "view": "sections/users-datatable",
+                "order": 1
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "ejemplos-utilidades",
-        "title": "Utilidades",
+        "title": "Sistema de Utilidades",
         "icon": "🛠️",
-        "order": 8,
+        "order": 3,
         "items": [
           {
             "id": "ejemplos-utils-alerts",
@@ -74,36 +104,85 @@
             "icon": "📢",
             "view": "sections/utils-alerts",
             "order": 1
+          },
+          {
+            "id": "ejemplos-utils-grids",
+            "title": "Grids y Layouts",
+            "icon": "📐",
+            "view": "sections/utils-grids",
+            "order": 2
           }
         ]
       },
       {
-        "id": "ejemplos-hooks-caso1",
-        "title": "Hooks (Caso 1)",
-        "icon": "🎯",
-        "view": "sections/hooks-caso1",
-        "order": 9
+        "id": "ejemplos-avanzados",
+        "title": "Características Avanzadas",
+        "icon": "⚡",
+        "order": 4,
+        "items": [
+          {
+            "id": "ejemplos-hooks",
+            "title": "Sistema de Hooks",
+            "icon": "🎯",
+            "order": 1,
+            "items": [
+              {
+                "id": "ejemplos-hooks-caso1",
+                "title": "Caso 1: Hook en Vista",
+                "icon": "🎯",
+                "view": "sections/hooks-caso1",
+                "order": 1
+              },
+              {
+                "id": "ejemplos-hooks-caso2",
+                "title": "Caso 2: Hook en Dashboard",
+                "icon": "🎯",
+                "view": "sections/hooks-caso2",
+                "order": 2
+              }
+            ]
+          },
+          {
+            "id": "ejemplos-graficos",
+            "title": "Scripts Bajo Demanda",
+            "icon": "📊",
+            "view": "sections/script-bajo-demanda",
+            "order": 2,
+            "styles": [
+              "ejemplos/assets/css/chart.css"
+            ]
+          }
+        ]
       },
       {
-        "id": "ejemplos-hooks-caso2",
-        "title": "Hooks (Caso 2)",
-        "icon": "🎯",
-        "view": "sections/hooks-caso2",
-        "order": 10
+        "id": "ejemplos-integraciones",
+        "title": "Integraciones",
+        "icon": "🔗",
+        "order": 5,
+        "items": [
+          {
+            "id": "ejemplos-react-native",
+            "title": "React Native",
+            "icon": "📱",
+            "view": "sections/react-native/main",
+            "order": 1
+          }
+        ]
       },
       {
-        "id": "ejemplos-react-native",
-        "title": "React Native",
-        "icon": "📱",
-        "view": "sections/react-native/main",
-        "order": 11
-      },
-      {
-        "id": "ejemplos-no-view",
-        "title": "Vista No Disponible",
-        "icon": "⚠️",
-        "view": "sections/no-view",
-        "order": 12
+        "id": "ejemplos-pruebas",
+        "title": "Pruebas y Debug",
+        "icon": "🧪",
+        "order": 6,
+        "items": [
+          {
+            "id": "ejemplos-no-view",
+            "title": "Vista No Disponible",
+            "icon": "⚠️",
+            "view": "sections/no-view",
+            "order": 1
+          }
+        ]
       }
     ]
   },

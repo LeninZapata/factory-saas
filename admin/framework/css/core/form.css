@@ -6,11 +6,11 @@
   --og-form-input-border: #ddd;
   --og-form-input-focus: var(--accent-primary);
   --og-form-input-bg: #fff;
-  --og-form-hint-color: var(--gray-700);
+  --og-form-hint-color: var(--og-gray-700);
   --og-form-error-color: #dc3545;
   --og-form-error-bg: #fff5f5;
-  --og-form-repeatable-bg: var(--gray-25);
-  --og-form-repeatable-border: var(--gray-100);
+  --og-form-repeatable-bg: var(--og-gray-25);
+  --og-form-repeatable-border: var(--og-gray-100);
   --og-form-repeatable-item-bg: #fff;
 
   /* Contenedor de formulario */
@@ -226,7 +226,7 @@
     &.og-collapsed .og-repeatable-item-header {
       border-radius: 0.375rem;
       /*border-bottom: none;*/
-      border: 1px solid var(--gray-300);
+      border: 1px solid var(--og-gray-300);
     }
 
     &.og-collapsed .og-repeatable-item-body {
@@ -283,10 +283,10 @@
   .og-repeatable-item-header {
     display: flex;
     align-items: center;
-    border: 1px solid var(--gray-100);
+    border: 1px solid var(--og-gray-100);
     justify-content: space-between;
     padding: 0.2rem 1rem;
-    background: var(--gray-50);
+    background: var(--og-gray-50);
     border-radius: 0.375rem 0.375rem 0 0;
 
     &.og-clickable {

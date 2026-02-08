@@ -4,7 +4,7 @@
   /* Variables de sidebar */
   --og-sidebar-bg: #fff;
   --og-sidebar-text: #333;
-  --og-sidebar-border: var(--gray-100); /*#e0e0e0*/;
+  --og-sidebar-border: var(--og-gray-100); /*#e0e0e0*/;
   --og-sidebar-hover-bg: #f5f5f5;
   --og-sidebar-active-bg: #fafafa;
   --og-sidebar-active-border: var(--accent-primary-dark, rgb(56, 93, 138));
@@ -76,16 +76,29 @@
       display: block;
     }
 
+    /* MEJORADO: Mayor indentación para mostrar mejor la jerarquía */
     &.level-1 {
-      padding-left: 2rem;
+      padding-left: 2.5rem;
+      
+      &.active {
+        padding-left: calc(2.5rem - 2px);
+      }
     }
 
     &.level-2 {
-      padding-left: 3rem;
+      padding-left: 4rem;
+      
+      &.active {
+        padding-left: calc(4rem - 2px);
+      }
     }
 
     &.level-3 {
-      padding-left: 4rem;
+      padding-left: 5.5rem;
+      
+      &.active {
+        padding-left: calc(5.5rem - 2px);
+      }
     }
   }
 
@@ -116,11 +129,13 @@
     background: var(--og-sidebar-bg);
 
     .og-menu-item {
-      padding: 0.6rem 1rem 0.6rem 2rem;
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+      /* NO sobreescribir padding-left, dejar que level-X lo controle */
 
       &.active {
         border-left: 2px solid var(--og-sidebar-active-border);
-        padding-left: calc(2rem - 2px);
+        /* El padding-left se ajusta automáticamente por level-X.active */
       }
     }
   }

@@ -41,6 +41,7 @@
     line-height: 1.5;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    background-color: var(--og-gray-50);
 
     strong {
       font-weight: 600;
@@ -62,7 +63,7 @@
 
     /* Variante 1: Solo border izquierdo */
     &.alert-border {
-      background: transparent;
+      background: var(--og-gray-50);
       border-left: var(--og-alert-border-width) solid;
       padding-left: 1rem;
     }
@@ -319,6 +320,13 @@
           color: var(--og-alert-tip-text);
         }
       }
+    }
+  }
+
+  /* Utils */
+  .og-view-content{
+    & .alert {
+      margin-top: 0;
     }
   }
 }

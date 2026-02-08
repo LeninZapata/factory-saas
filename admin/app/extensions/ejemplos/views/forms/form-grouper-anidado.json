@@ -13,7 +13,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #e0f2fe; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #0284c7;'><strong>💡 Este tab contiene un GROUPER LINEAR dentro</strong><br>Modo: Tabs → Linear (no colapsable)</div>"
+              "content": "<div class='alert alert-info alert-border'><strong>💡 Este tab contiene un GROUPER LINEAR dentro</strong><br>Modo: Tabs → Linear (no colapsable)</div>"
             },
             {
               "type": "grouper",
@@ -100,7 +100,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;'><strong>💡 Este tab contiene un GROUPER LINEAR COLAPSABLE dentro</strong><br>Modo: Tabs → Linear (acordeón)</div>"
+              "content": "<div class='alert alert-warning alert-border'><strong>💡 Este tab contiene un GROUPER LINEAR COLAPSABLE dentro</strong><br>Modo: Tabs → Linear (acordeón)</div>"
             },
             {
               "type": "grouper",
@@ -212,7 +212,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #dcfce7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #16a34a;'><strong>💡 Este tab contiene OTRO GROUPER TABS dentro</strong><br>Modo: Tabs → Tabs (anidado)</div>"
+              "content": "<div class='alert alert-success alert-border'><strong>💡 Este tab contiene OTRO GROUPER TABS dentro</strong><br>Modo: Tabs → Tabs (anidado)</div>"
             },
             {
               "type": "grouper",
@@ -302,7 +302,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #fce7f3; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #db2777;'><strong>💡 Este tab contiene campos normales con grupos de columnas</strong><br>Sin grouper anidado, solo grupos de columnas</div>"
+              "content": "<div class='alert alert-danger alert-border'><strong>💡 Este tab contiene campos normales con grupos de columnas</strong><br>Sin grouper anidado, solo grupos de columnas</div>"
             },
             {
               "name": "auto_reports",
@@ -349,7 +349,7 @@
           "fields": [
             {
               "type": "html",
-              "content": "<div style='background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #22c55e;'><strong>💡 Este tab contiene un GROUPER LINEAR con REPEATER dentro</strong><br>Cada grupo del grouper tiene un campo de texto + un repeater con varios campos</div>"
+              "content": "<div class='alert alert-success alert-filled'><strong>💡 Este tab contiene un GROUPER LINEAR con REPEATER dentro</strong><br>Cada grupo del grouper tiene un campo de texto + un repeater con varios campos</div>"
             },
             {
               "type": "grouper",
@@ -521,22 +521,6 @@
           ]
         }
       ]
-    }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar Todo",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Configuración guardada');"
-    },
-    {
-      "name": "reset",
-      "type": "button",
-      "label": "🔄 Restablecer",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario restablecido');"
     }
   ]
 }
