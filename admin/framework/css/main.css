@@ -11,6 +11,7 @@
 
 
 /* Components */
+@import url('./components/alerts.css');
 @import url('./components/tabs.css');
 @import url('./components/modal.css');
 @import url('./components/dataTable.css');

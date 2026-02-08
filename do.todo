@@ -8,6 +8,8 @@ tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se pu
 ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
 
 Frontend (Framework):
+☐ En el hosting para que se actualice el formulario json tuve que cerar y entrar
+parece que tiene caaceh de session, esto deberia tener cache de version...
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
 de un plugin registrado para cuando se carguen las vistas, form, modal, etc...
 se agreguen los hooks en los lugares correspondientess

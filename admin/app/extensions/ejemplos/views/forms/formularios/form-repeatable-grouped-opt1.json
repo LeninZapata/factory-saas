@@ -117,13 +117,5 @@
         }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "submit",
-      "label": "Guardar",
-      "class": "btn-primary"
-    }
   ]
 }

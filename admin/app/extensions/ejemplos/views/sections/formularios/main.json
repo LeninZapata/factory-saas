@@ -21,7 +21,7 @@
                 "title": "Inputs Normales",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "no_show_html",
                     "content": "<h3>Tipos de Inputs Disponibles</h3>"
                   },
                   {
@@ -35,7 +35,7 @@
                 "title": "Agrupados",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>Agrupación de Campos en Columnas</h3><p>Organiza campos en grupos de 2, 3 o 4 columnas con diseño responsive.</p>"
                   },
                   {
@@ -49,7 +49,7 @@
                 "title": "Overflow",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>🔽 Prueba de Overflow en Columnas</h3><p>Comportamiento cuando hay más campos que columnas.</p>"
                   },
                   {
@@ -63,7 +63,7 @@
                 "title": "Valores por Defecto",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>⭐ Valores por Defecto</h3><p>Campos con valores iniciales normales y tokens especiales que generan valores únicos.</p>"
                   },
                   {
@@ -92,7 +92,7 @@
                 "title": "Básicos",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>Campos Repetibles</h3><p>Agrega y elimina grupos de campos dinámicamente.</p>"
                   },
                   {
@@ -106,7 +106,7 @@
                 "title": "Agrupados",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>Repetibles con Columnas</h3><h4>Opción 1: Columnas en repeatable</h4>"
                   },
                   {
@@ -114,7 +114,7 @@
                     "form_json": "ejemplos|forms/formularios/form-repeatable-grouped-opt1"
                   },
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<hr style='margin: 2rem 0;'><h4>Opción 2: Groups dentro del repeatable</h4>"
                   },
                   {
@@ -143,7 +143,7 @@
                 "content": [
                   {
                     "type": "html",
-                    "content": "<h3>🎯 Repetibles con Acordeón</h3><p>Items con headers colapsables para organizar mejor los formularios largos.</p><div style='background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #f59e0b;'><strong>💡 Características:</strong><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem;'><li><code>hasHeader: true</code> - Muestra un header en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón clickeable</li><li><code>headerTitle</code> - Personaliza el título (usa {index} para el número)</li></ul></div>"
+                    "content": "<h3>🎯 Repetibles con Acordeón</h3><p>Items con headers colapsables para organizar mejor los formularios largos.</p><div class='alert alert-warning alert-header'><div class='alert-title'>💡 Características</div><div class='alert-body'><ul style='margin: 0.5rem 0 0; padding-left: 1.5rem;'><li><code>hasHeader: true</code> - Muestra un header en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón clickeable</li><li><code>headerTitle</code> - Personaliza el título (usa {index} para el número)</li></ul></div></div>"
                   },
                   {
                     "type": "form",
@@ -181,7 +181,7 @@
                 "title": "Simple",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "no_show_html",
                     "content": "<h3>🎯 Condiciones Simples</h3><p>Mostrar/ocultar campos basados en un valor.</p>"
                   },
                   {
@@ -195,7 +195,7 @@
                 "title": "Múltiples",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>🔗 Condiciones Múltiples (AND)</h3><p>El campo aparece solo si TODAS las condiciones se cumplen.</p>"
                   },
                   {
@@ -209,7 +209,7 @@
                 "title": "Avanzado",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>⚡ Operadores Avanzados</h3><p>Ejemplos: <code>any</code>, <code>></code>, <code><</code>, <code>contains</code>, etc.</p>"
                   },
                   {
@@ -223,7 +223,7 @@
                 "title": "Repetibles",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>🔄 Condiciones en Repetibles</h3><p>Condiciones dentro de cada instancia del repeatable usando <code>conditionContext: 'repeatable'</code>.</p>"
                   },
                   {
@@ -237,7 +237,7 @@
                 "title": "Grupos",
                 "content": [
                   {
-                    "type": "html",
+                    "type": "not_show_html",
                     "content": "<h3>📦 Condiciones con Grupos</h3><p>Mostrar/ocultar grupos completos de campos con condiciones. Incluye ejemplos dentro y fuera de repetables.</p>"
                   },
                   {

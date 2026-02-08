@@ -14,7 +14,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 Posición del botón: TOP (arriba)</strong><br>El botón está en el header junto al título (posición por defecto)</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 Posición del botón: TOP (arriba)</strong><br>El botón está en el header junto al título (posición por defecto)</div>"
         },
         {
           "name": "nombre",
@@ -48,7 +48,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 Posición del botón: BOTTOM (abajo)</strong><br>El botón aparece debajo de todos los items repetidos</div>"
+          "content": "<div class='alert alert-warning alert-filled'><strong>💡 Posición del botón: BOTTOM (abajo)</strong><br>El botón aparece debajo de todos los items repetidos</div>"
         },
         {
           "name": "tipo",
@@ -83,7 +83,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 Posición del botón: MIDDLE (en medio)</strong><br>El botón está entre el header y los items, separado del título</div>"
+          "content": "<div class='alert alert-success alert-filled'><strong>💡 Posición del botón: MIDDLE (en medio)</strong><br>El botón está entre el header y los items, separado del título</div>"
         },
         {
           "name": "empresa",
@@ -137,7 +137,7 @@
     },
     {
       "name": "credenciales",
-      "label": "🔑 Credenciales API",
+      "label": "🔐 Credenciales API",
       "type": "repeatable",
       "description": "Configura las credenciales de APIs externas que utilizarás en tu aplicación. Cada credencial debe tener un servicio y su API Key correspondiente.",
       "buttonPosition": "top",
@@ -147,7 +147,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fae8ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #a855f7; font-size: 0.9rem;'><strong>💡 Con item inicial (initialItems: 1)</strong><br>Este repeatable muestra automáticamente 1 item al cargar el formulario, útil para campos que requieren al menos 1 valor</div>"
+          "content": "<div class='alert alert-tip alert-filled'><strong>💡 Con item inicial (initialItems: 1)</strong><br>Este repeatable muestra automáticamente 1 item al cargar el formulario, útil para campos que requieren al menos 1 valor</div>"
         },
         {
           "name": "servicio",

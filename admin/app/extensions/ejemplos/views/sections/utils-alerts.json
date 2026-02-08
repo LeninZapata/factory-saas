@@ -1,0 +1,109 @@
+{
+  "id": "utils-alerts",
+  "title": "📢 Sistema de Alertas",
+  "type": "html",
+  "content": [
+    "<h2>Sistema de Alertas y Notas</h2>",
+    "<p>Sistema minimalista de alertas con 3 variantes y 6 tipos diferentes.</p>",
+    
+    "<h3 style='margin-top: 2rem;'>Variante 1: Solo Border Izquierdo (.alert-border)</h3>",
+    "<p>Sin fondo, solo un borde izquierdo de color.</p>",
+    
+    "<div class='alert alert-info alert-border'><strong>💡 Info</strong>Esta es una nota informativa sin fondo de color.</div>",
+    "<div class='alert alert-success alert-border'><strong>✅ Success</strong>Operación completada exitosamente.</div>",
+    "<div class='alert alert-warning alert-border'><strong>⚠️ Warning</strong>Ten cuidado con esta acción.</div>",
+    "<div class='alert alert-danger alert-border'><strong>❌ Danger</strong>Esta acción es peligrosa.</div>",
+    "<div class='alert alert-note alert-border'><strong>📝 Note</strong>Una nota general de referencia.</div>",
+    "<div class='alert alert-tip alert-border'><strong>💜 Tip</strong>Un consejo útil para el usuario.</div>",
+    
+    "<h3 style='margin-top: 2rem;'>Variante 2: Fondo con Border (.alert-filled)</h3>",
+    "<p>Fondo de color con borde izquierdo más oscuro (estilo por defecto).</p>",
+    
+    "<div class='alert alert-info alert-filled'><strong>💡 Posición del botón: TOP (arriba)</strong>El botón está en el header junto al título (posición por defecto)</div>",
+    "<div class='alert alert-success alert-filled'><strong>✅ Guardado exitoso</strong>Todos los cambios han sido guardados correctamente en la base de datos.</div>",
+    "<div class='alert alert-warning alert-filled'><strong>⚠️ Important</strong>VersionPress is a lot more involved than most other WordPress plugins. Please pay attention to this section before proceeding with installation.</div>",
+    "<div class='alert alert-danger alert-filled'><strong>❌ Error crítico</strong>No se pudo conectar con el servidor. Intenta nuevamente más tarde.</div>",
+    "<div class='alert alert-note alert-filled'><strong>📝 Note</strong>The info below might not be entirely complete as there are lots of details for various content types. Consider it a brief overview.</div>",
+    "<div class='alert alert-tip alert-filled'><strong>💜 Tip</strong>Usa atajos de teclado para trabajar más rápido: Ctrl+S para guardar, Ctrl+Z para deshacer.</div>",
+    
+    "<h3 style='margin-top: 2rem;'>Variante 3: Con Descripción (.alert-with-desc)</h3>",
+    "<p>Fondo de color con borde, más una sección de descripción en la parte inferior.</p>",
+    
+    "<div class='alert alert-info alert-with-desc'><strong>💡 VALORES POR DEFECTO</strong><p>Los campos se llenan automáticamente con valores por defecto. Los tokens especiales generan valores únicos.</p><div class='alert-desc'>Triggers: defaultValue en JSON, tokens como {hash:10}, {uuid}, {timestamp}</div></div>",
+    
+    "<div class='alert alert-success alert-with-desc'><strong>✅ Formulario enviado</strong><p>Tu formulario ha sido procesado correctamente y recibirás una confirmación por email.</p><div class='alert-desc'>ID de confirmación: #2024-12345 | Enviado el 07/02/2026 a las 15:30</div></div>",
+    
+    "<div class='alert alert-warning alert-with-desc'><strong>⚠️ Cambios sin guardar</strong><p>Tienes cambios pendientes que no han sido guardados. Si sales ahora perderás estos cambios.</p><div class='alert-desc'>Última modificación: hace 3 minutos | Auto-guardado: desactivado</div></div>",
+    
+    "<div class='alert alert-danger alert-with-desc'><strong>❌ Validación fallida</strong><p>El formulario contiene 3 errores que deben ser corregidos antes de continuar.</p><div class='alert-desc'>Errores: Email inválido (línea 15), Teléfono requerido (línea 23), Fecha fuera de rango (línea 42)</div></div>",
+    
+    "<div class='alert alert-note alert-with-desc'><strong>📝 Condiciones en Repetibles</strong><p>Condiciones dentro de cada instancia del repeatable usando conditionContext: 'repeatable'.</p><div class='alert-desc'>Ver documentación completa en /docs/conditions/repeatable-context</div></div>",
+    
+    "<div class='alert alert-tip alert-with-desc'><strong>💜 Tip</strong><p>The <code>vp apply-changes</code> command can also be used outside of the conflict resolution scenario. For example, if you do a Git revert manually or edit some file in <code>vpdb</code>, you can then run <code>vp apply-changes</code> to see them reflected in the database and the running site.</p><div class='alert-desc'>Documentación completa: docs.versionpress.net/commands</div></div>",
+    
+    "<h3 style='margin-top: 2rem;'>Variante 4: Header de Color con Cuerpo Blanco (.alert-header)</h3>",
+    "<p>Header con fondo de color y cuerpo con fondo blanco (estilo card).</p>",
+    
+    "<div class='alert alert-info alert-header'><div class='alert-title'>💡 Note</div><div class='alert-body'>The info below might not be entirely complete as there are lots of details for various content types. Consider it a brief overview.</div></div>",
+    
+    "<div class='alert alert-success alert-header'><div class='alert-title'>✅ Operación Exitosa</div><div class='alert-body'>Todos los registros han sido actualizados correctamente. Se procesaron 1,234 elementos sin errores.</div></div>",
+    
+    "<div class='alert alert-warning alert-header'><div class='alert-title'>⚠️ Important</div><div class='alert-body'>VersionPress is a lot more involved than most other WordPress plugins. Please pay attention to this section before proceeding with installation.</div></div>",
+    
+    "<div class='alert alert-danger alert-header'><div class='alert-title'>❌ Error de Conexión</div><div class='alert-body'>No se pudo establecer conexión con el servidor de base de datos. Verifica tus credenciales y vuelve a intentar.</div></div>",
+    
+    "<div class='alert alert-note alert-header'><div class='alert-title'>📝 Documentación</div><div class='alert-body'>Para más información sobre este tema, consulta la documentación oficial en docs.framework.com/api/reference</div></div>",
+    
+    "<div class='alert alert-tip alert-header'><div class='alert-title'>💜 Pro Tip</div><div class='alert-body'>Usa el atajo Ctrl+Shift+P para abrir la paleta de comandos rápidamente y aumentar tu productividad.</div></div>",
+    
+    "<div class='alert alert-info alert-header'><div class='alert-title'>💡 Con Descripción</div><div class='alert-body'><p>Este es un ejemplo de alert-header con una sección de descripción adicional en el cuerpo.</p><div class='alert-desc'>La descripción se separa con un border superior sutil y tiene menor opacidad para diferenciarla del contenido principal.</div></div></div>",
+    
+    "<h3 style='margin-top: 2rem;'>Uso en JSON</h3>",
+    "<p>Ejemplos de cómo usar en archivos JSON de formularios:</p>",
+    "<pre style='background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem;'>",
+    "// Variante 1: Solo border\n",
+    "{\n",
+    "  \"type\": \"html\",\n",
+    "  \"content\": \"<div class='alert alert-info alert-border'><strong>💡 Info</strong>Texto informativo</div>\"\n",
+    "}\n\n",
+    "// Variante 2: Con fondo (defecto)\n",
+    "{\n",
+    "  \"type\": \"html\",\n",
+    "  \"content\": \"<div class='alert alert-warning alert-filled'><strong>⚠️ Warning</strong>Mensaje de advertencia</div>\"\n",
+    "}\n\n",
+    "// Variante 3: Con descripción\n",
+    "{\n",
+    "  \"type\": \"html\",\n",
+    "  \"content\": \"<div class='alert alert-success alert-with-desc'><strong>✅ Success</strong><p>Contenido principal</p><div class='alert-desc'>Descripción adicional</div></div>\"\n",
+    "}\n\n",
+    "// Variante 4: Header con cuerpo blanco\n",
+    "{\n",
+    "  \"type\": \"html\",\n",
+    "  \"content\": \"<div class='alert alert-note alert-header'><div class='alert-title'>📝 Note</div><div class='alert-body'>Contenido del mensaje</div></div>\"\n",
+    "}\n\n",
+    "// Variante 4 con descripción:\n",
+    "{\n",
+    "  \"type\": \"html\",\n",
+    "  \"content\": \"<div class='alert alert-info alert-header'><div class='alert-title'>💡 Info</div><div class='alert-body'><p>Contenido principal</p><div class='alert-desc'>Descripción adicional</div></div></div>\"\n",
+    "}",
+    "</pre>",
+    
+    "<h3 style='margin-top: 2rem;'>Tipos Disponibles</h3>",
+    "<ul>",
+    "<li><code>.alert-info</code> - Azul - Información general</li>",
+    "<li><code>.alert-success</code> - Verde - Éxito, confirmación</li>",
+    "<li><code>.alert-warning</code> - Amarillo - Advertencia, cuidado</li>",
+    "<li><code>.alert-danger</code> - Rojo - Error, peligro</li>",
+    "<li><code>.alert-note</code> - Gris - Notas, referencias</li>",
+    "<li><code>.alert-tip</code> - Morado - Tips, consejos</li>",
+    "</ul>",
+    
+    "<h3 style='margin-top: 2rem;'>Variantes Disponibles</h3>",
+    "<ul>",
+    "<li><code>.alert-border</code> - Solo borde izquierdo, sin fondo</li>",
+    "<li><code>.alert-filled</code> - Fondo de color con borde izquierdo</li>",
+    "<li><code>.alert-with-desc</code> - Con sección de descripción abajo</li>",
+    "<li><code>.alert-header</code> - Header de color con cuerpo blanco</li>",
+    "</ul>"
+  ]
+}

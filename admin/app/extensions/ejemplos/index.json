@@ -13,12 +13,14 @@
       {
         "id": "ejemplos-forms",
         "title": "Formularios",
+        "icon": "📝",
         "view": "sections/formularios/main",
         "order": 1
       },
       {
         "id": "ejemplos-graficos",
         "title": "Scripts (bajo demanda)",
+        "icon": "📊",
         "view": "sections/script-bajo-demanda",
         "order": 2,
         "styles": [
@@ -28,56 +30,80 @@
       {
         "id": "ejemplos-datatable",
         "title": "DataTable",
+        "icon": "📋",
         "view": "sections/users-datatable",
         "order": 3
       },
       {
         "id": "ejemplos-widgets",
         "title": "Widgets",
+        "icon": "🧩",
         "view": "sections/widgets-demo",
         "order": 4
       },
       {
         "id": "ejemplos-toast",
         "title": "Toast",
+        "icon": "🔔",
         "view": "sections/toast-demo",
         "order": 5
       },
       {
         "id": "ejemplos-grouper",
         "title": "Grouper",
+        "icon": "📁",
         "view": "sections/grouper-demo",
         "order": 6
       },
       {
         "id": "ejemplos-tabs",
         "title": "Tabs",
+        "icon": "📑",
         "view": "sections/tabs-demo",
         "order": 7
       },
       {
+        "id": "ejemplos-utilidades",
+        "title": "Utilidades",
+        "icon": "🛠️",
+        "order": 8,
+        "items": [
+          {
+            "id": "ejemplos-utils-alerts",
+            "title": "Alertas",
+            "icon": "📢",
+            "view": "sections/utils-alerts",
+            "order": 1
+          }
+        ]
+      },
+      {
         "id": "ejemplos-hooks-caso1",
-        "title": "🎯 Hooks (Caso 1)",
+        "title": "Hooks (Caso 1)",
+        "icon": "🎯",
         "view": "sections/hooks-caso1",
-        "order": 1
+        "order": 9
       },
       {
         "id": "ejemplos-hooks-caso2",
-        "title": "🎯 Hooks (Caso 2)",
+        "title": "Hooks (Caso 2)",
+        "icon": "🎯",
         "view": "sections/hooks-caso2",
-        "order": 2
+        "order": 10
       },
       {
         "id": "ejemplos-react-native",
-        "title": "📱 React Native",
+        "title": "React Native",
+        "icon": "📱",
         "view": "sections/react-native/main",
-        "order": 10
+        "order": 11
       },
       {
         "id": "ejemplos-no-view",
         "title": "Vista No Disponible",
+        "icon": "⚠️",
         "view": "sections/no-view",
-        "order": 10
+        "order": 12
       }
     ]
   },

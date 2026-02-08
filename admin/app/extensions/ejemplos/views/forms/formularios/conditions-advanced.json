@@ -117,20 +117,5 @@
         { "field": "buscar_texto", "operator": "contains", "value": "admin" }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "debug_conditions",
-      "type": "button",
-      "label": "🐛 Debug Condiciones",
-      "onclick": "event.preventDefault(); conditions.debug(this.closest('form').id);"
-    },
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Guardado');"
-    }
   ]
 }

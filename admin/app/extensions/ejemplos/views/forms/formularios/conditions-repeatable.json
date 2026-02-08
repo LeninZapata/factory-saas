@@ -191,20 +191,5 @@
         }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "info",
-      "type": "button",
-      "label": "💡 Cómo funciona",
-      "onclick": ""
-    },
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar Proyectos",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Proyectos:', data); ogToast.success('✅ Proyectos guardados');"
-    }
   ]
 }

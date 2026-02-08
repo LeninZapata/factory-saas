@@ -251,6 +251,57 @@ class OgLogic
     return call_user_func_array($operation, $values);
   }
 
+    
+  /**
+   * Evalúa una expresión lógica y devuelve detalles de la evaluación
+   * 
+   * @param array|mixed $logic Expresión lógica a evaluar
+   * @param array $data Datos contra los cuales evaluar
+   * @return array [
+   *   'result' => bool,           // Resultado final (true/false)
+   *   'details' => array,         // Detalles de cada parte evaluada
+   *   'matched_rules' => array    // Qué reglas/grupos cumplieron
+   * ]
+   */
+  public static function evaluate($logic = [], $data = []) {
+    if (is_object($logic)) {
+      $logic = (array)$logic;
+    }
+
+    // Si no es lógica, evaluar directamente
+    if (!self::isLogic($logic)) {
+      $result = self::apply($logic, $data);
+      return [
+        'result' => self::truthy($result),
+        'details' => ['value' => $result],
+        'matched_rules' => []
+      ];
+    }
+
+    $op = self::getOp($logic);
+    $values = self::getValues($logic);
+
+    // Operadores lógicos principales (AND, OR)
+    if ($op === 'and') {
+      return self::evaluateAnd($values, $data);
+    }
+
+    if ($op === 'or') {
+      return self::evaluateOr($values, $data);
+    }
+
+    // Para otros operadores, usar apply normal
+    $result = self::apply($logic, $data);
+    return [
+      'result' => self::truthy($result),
+      'details' => [
+        'operator' => $op,
+        'value' => $result
+      ],
+      'matched_rules' => []
+    ];
+  }
+
   public static function addOp($name, $callable)
   {
     self::$customOps[$name] = $callable;
@@ -278,4 +329,141 @@ class OgLogic
 
     return array_unique($collection);
   }
+
+    
+  /**
+   * Evalúa un AND con detalles
+   * Retorna true solo si TODAS las condiciones se cumplen
+   */
+  private static function evaluateAnd($conditions, $data) {
+    $details = [];
+    $allMet = true;
+    $matchedRules = [];
+
+    foreach ($conditions as $index => $condition) {
+      $conditionEval = self::evaluate($condition, $data);
+      
+      $details[] = [
+        'index' => $index,
+        'condition' => $condition,
+        'result' => $conditionEval['result'],
+        'details' => $conditionEval['details']
+      ];
+
+      if (!$conditionEval['result']) {
+        $allMet = false;
+      }
+    }
+
+    if ($allMet && count($details) > 0) {
+      $matchedRules[] = [
+        'operator' => 'and',
+        'conditions' => $details
+      ];
+    }
+
+    return [
+      'result' => $allMet,
+      'details' => $details,
+      'matched_rules' => $matchedRules
+    ];
+  }
+
+  /**
+   * Evalúa un OR con detalles
+   * Retorna true si AL MENOS UNA condición se cumple
+   */
+  private static function evaluateOr($conditions, $data) {
+    $details = [];
+    $anyMet = false;
+    $matchedRules = [];
+
+    foreach ($conditions as $index => $condition) {
+      $conditionEval = self::evaluate($condition, $data);
+      
+      $details[] = [
+        'index' => $index,
+        'condition' => $condition,
+        'result' => $conditionEval['result'],
+        'details' => $conditionEval['details']
+      ];
+
+      if ($conditionEval['result']) {
+        $anyMet = true;
+        
+        // Guardar qué condición cumplió
+        $matchedRules[] = [
+          'index' => $index,
+          'operator' => 'or',
+          'condition' => $condition,
+          'details' => $conditionEval['details']
+        ];
+      }
+    }
+
+    return [
+      'result' => $anyMet,
+      'details' => $details,
+      'matched_rules' => $matchedRules
+    ];
+  }
+
+  /**
+   * Evalúa una condición de comparación y devuelve detalles
+   * Ej: {">": [{"var": "roas"}, 2.5]}
+   */
+  private static function evaluateComparison($operator, $values, $data) {
+    $left = self::apply($values[0] ?? null, $data);
+    $right = self::apply($values[1] ?? null, $data);
+    
+    $ops = [
+      '==' => fn($a, $b) => $a == $b,
+      '===' => fn($a, $b) => $a === $b,
+      '!=' => fn($a, $b) => $a != $b,
+      '!==' => fn($a, $b) => $a !== $b,
+      '>' => fn($a, $b) => $a > $b,
+      '>=' => fn($a, $b) => $a >= $b,
+      '<' => fn($a, $b) => $a < $b,
+      '<=' => fn($a, $b) => $a <= $b,
+    ];
+
+    $result = isset($ops[$operator]) ? $ops[$operator]($left, $right) : false;
+
+    return [
+      'result' => $result,
+      'details' => [
+        'operator' => $operator,
+        'left' => $left,
+        'right' => $right,
+        'met' => $result
+      ],
+      'matched_rules' => []
+    ];
+  }
+
 }
+/**
+ * EJEMPLO DE USO Y ESTRUCTURA DE RETORNO:
+ * * $logic = [
+ * 'or' => [
+ * ['and' => [['>', ['var' => 'roas'], 4], ['<', ['var' => 'cpa'], 10]]], // Regla A (Rentabilidad)
+ * ['and' => [['>', ['var' => 'volumen'], 50], ['<', ['var' => 'cpa'], 15]]] // Regla B (Volumen)
+ * ]
+ * ];
+ * * $data = ['roas' => 2, 'volumen' => 60, 'cpa' => 12];
+ * * // Usamos evaluate() para obtener el "por qué"
+ * $evaluation = OgLogic::evaluate($logic, $data);
+ * * // ESTRUCTURA RESULTANTE (Ideal para depuración o IA):
+ * [
+ *   'result' => true,
+ *   'matched_rules' => [
+ *     [
+ *       'index' => 1,  // Indica que cumplió el segundo bloque del OR (Regla B)
+ *       'operator' => 'or',
+ *       'condition' => [... array de la condición ...],
+ *       'details' => [ ... detalles internos del AND ... ]
+ *     ]
+ *   ],
+ *   'details' => [...] // Traza completa de evaluación
+ * ]
+ */

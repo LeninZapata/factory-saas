@@ -41,7 +41,7 @@ class ogConditions {
 
     // Función recursiva para observar todos los contenedores de repetibles
     const observeRepeatableContainers = (rootElement) => {
-      const repeatableContainers = rootElement.querySelectorAll('.repeatable-items');
+      const repeatableContainers = rootElement.querySelectorAll('.og-repeatable-items');
 
       repeatableContainers.forEach(container => {
         // Verificar si ya está siendo observado para evitar duplicados
@@ -58,7 +58,7 @@ class ogConditions {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
               mutation.addedNodes.forEach(node => {
                 // Solo procesar elementos (no nodos de texto)
-                if (node.nodeType === 1 && node.classList.contains('repeatable-item')) {
+                if (node.nodeType === 1 && node.classList.contains('og-repeatable-item')) {
                   // Solo observar repetibles anidados sin evaluar condiciones
                   observeRepeatableContainers(node);
                 }
@@ -256,7 +256,7 @@ class ogConditions {
     const repeatablePath = pathParts.slice(0, -1).join('.');
 
     // Buscar TODOS los contenedores que coincidan con este path
-    const allContainers = formEl.querySelectorAll('.repeatable-items[data-path]');
+    const allContainers = formEl.querySelectorAll('.og-repeatable-items[data-path]');
     const repeatableContainers = Array.from(allContainers).filter(container => {
       const dataPath = container.getAttribute('data-path');
       // Eliminar índices para comparar: proyectos[0].fases[1] -> proyectos.fases
@@ -271,7 +271,7 @@ class ogConditions {
     // Iterar sobre cada contenedor (uno por cada item del repeatable padre)
     repeatableContainers.forEach((repeatableContainer) => {
       // Buscar items solo dentro de este repeatable específico
-      const repeatableItems = repeatableContainer.querySelectorAll(':scope > .repeatable-item');
+      const repeatableItems = repeatableContainer.querySelectorAll(':scope > .og-repeatable-item');
 
       if (repeatableItems.length === 0) {
         return;
@@ -287,7 +287,7 @@ class ogConditions {
 
         // Si no se encuentra por name, buscar por data-field-path (repeatables anidados o groupers)
         if (!targetField) {
-          const allFieldPaths = item.querySelectorAll('.form-repeatable[data-field-path], .og-grouper[data-field-path], .form-group-cols[data-field-path]');
+          const allFieldPaths = item.querySelectorAll('.og-form-repeatable[data-field-path], .og-grouper[data-field-path], .og-form-group-cols[data-field-path]');
           const candidates = Array.from(allFieldPaths).filter(el => {
             const fieldPath = el.getAttribute('data-field-path');
             // Eliminar índices para comparar: productos[0].grouper_envio_fisico -> productos.grouper_envio_fisico
@@ -307,7 +307,7 @@ class ogConditions {
         }
 
         if (targetField) {
-          const fieldElement = targetField.closest('.form-group, .form-checkbox, .form-repeatable, .og-grouper, .form-group-cols');
+          const fieldElement = targetField.closest('.og-form-group, .og-form-checkbox, .og-form-repeatable, .og-grouper, .og-form-group-cols');
 
           if (fieldElement) {
             if (shouldShow) {
@@ -338,7 +338,7 @@ class ogConditions {
     const matchingFields = formEl.querySelectorAll(`[name*=".${fieldName}"]`);
 
     matchingFields.forEach(field => {
-      const fieldElement = field.closest('.form-group, .form-checkbox');
+      const fieldElement = field.closest('.og-form-group, .og-form-checkbox');
 
       if (fieldElement) {
         if (shouldShow) {
@@ -366,11 +366,11 @@ class ogConditions {
       fieldElement.style.display = '';
       fieldElement.classList.remove('wpfw-depend-on');
 
-      // Si es un grouper, remover form-hidden de los form-groups internos
-      if (fieldElement.classList.contains('grouper')) {
-        const formGroups = fieldElement.querySelectorAll('.form-group, .form-checkbox');
+      // Si es un grouper, remover og-form-hidden de los og-form-groups internos
+      if (fieldElement.classList.contains('og-grouper')) {
+        const formGroups = fieldElement.querySelectorAll('.og-form-group, .og-form-checkbox');
         formGroups.forEach(group => {
-          group.classList.remove('form-hidden');
+          group.classList.remove('og-form-hidden');
         });
       }
 
@@ -382,11 +382,11 @@ class ogConditions {
       fieldElement.style.display = 'none';
       fieldElement.classList.add('wpfw-depend-on');
 
-      // Si es un grouper, agregar form-hidden a los form-groups internos
-      if (fieldElement.classList.contains('grouper')) {
-        const formGroups = fieldElement.querySelectorAll('.form-group, .form-checkbox');
+      // Si es un grouper, agregar og-form-hidden a los og-form-groups internos
+      if (fieldElement.classList.contains('og-grouper')) {
+        const formGroups = fieldElement.querySelectorAll('.og-form-group, .og-form-checkbox');
         formGroups.forEach(group => {
-          group.classList.add('form-hidden');
+          group.classList.add('og-form-hidden');
         });
       }
 
@@ -434,7 +434,7 @@ class ogConditions {
     let fieldEl = null;
 
     // Si el contexto es un repeatable-item, buscar solo dentro de él
-    if (context.classList && context.classList.contains('repeatable-item')) {
+    if (context.classList && context.classList.contains('og-repeatable-item')) {
       // Buscar por el nombre del campo (puede o no tener punto antes)
       let fields = context.querySelectorAll(`[name*=".${field}"]`);
       fieldEl = fields.length > 0 ? fields[0] : null;
@@ -579,7 +579,7 @@ class ogConditions {
         // Dentro del repeatable más cercano
         const targetField = this.findFieldElement(formEl, targetFieldPath);
         if (targetField) {
-          const repeatable = targetField.closest('.repeatable-item');
+          const repeatable = targetField.closest('.og-repeatable-item');
           return repeatable || formEl;
         }
         return formEl;
@@ -588,7 +588,7 @@ class ogConditions {
         // Dentro del grupo más cercano (si existe)
         const targetFieldGroup = this.findFieldElement(formEl, targetFieldPath);
         if (targetFieldGroup) {
-          const group = targetFieldGroup.closest('.form-group-container, .repeatable-item');
+          const group = targetFieldGroup.closest('.og-form-group-container, .og-repeatable-item');
           return group || formEl;
         }
         return formEl;
@@ -601,15 +601,15 @@ class ogConditions {
   static findFieldElement(formEl, fieldPath) {
     // Intentar encontrar por name exacto
     let field = formEl.querySelector(`[name="${fieldPath}"]`);
-    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
+    if (field) return field.closest('.og-form-group, .og-form-checkbox, .og-form-html-wrapper, .og-form-repeatable');
     
     // Buscar group por data-field-path exacto
-    let group = formEl.querySelector(`.form-group-cols[data-field-path="${fieldPath}"]`);
+    let group = formEl.querySelector(`.og-form-group-cols[data-field-path="${fieldPath}"]`);
     if (group) return group;
     
     // Buscar group considerando índices de repeatables
     if (fieldPath.includes('.')) {
-      const allGroups = formEl.querySelectorAll('.form-group-cols[data-field-path]');
+      const allGroups = formEl.querySelectorAll('.og-form-group-cols[data-field-path]');
       for (const g of allGroups) {
         const gPath = g.getAttribute('data-field-path');
         // Comparar removiendo índices: "actions[0].budget_fields_group" → "actions.budget_fields_group"
@@ -621,7 +621,7 @@ class ogConditions {
     }
 
     // Buscar wrapper HTML por data-field-name
-    let htmlWrapper = formEl.querySelector(`.form-html-wrapper[data-field-name="${fieldPath}"]`);
+    let htmlWrapper = formEl.querySelector(`.og-form-html-wrapper[data-field-name="${fieldPath}"]`);
     if (htmlWrapper) return htmlWrapper;
 
     // Buscar grouper por data-field-path (clase correcta: .og-grouper)
@@ -637,13 +637,13 @@ class ogConditions {
       const fields = formEl.querySelectorAll(`[name*=".${baseField}"]`);
       if (fields.length > 0) {
         // Si hay múltiples, devolver el contenedor del primero
-        return fields[0].closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
+        return fields[0].closest('.og-form-group, .og-form-checkbox, .og-form-html-wrapper, .og-form-repeatable');
       }
     }
 
     // Buscar por name parcial (fallback)
     field = formEl.querySelector(`[name*="${fieldPath}"]`);
-    if (field) return field.closest('.form-group, .form-checkbox, .form-html-wrapper, .form-repeatable');
+    if (field) return field.closest('.og-form-group, .og-form-checkbox, .og-form-html-wrapper, .og-form-repeatable');
 
     ogLogger?.warn('core:conditions', `[findFieldElement] ❌ NO se encontró elemento para: "${fieldPath}"`);
     return null;

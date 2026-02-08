@@ -112,20 +112,5 @@
         }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar Proyectos",
-      "action": "submit"
-    },
-    {
-      "name": "reset",
-      "type": "button",
-      "label": "🔄 Limpiar",
-      "style": "secondary",
-      "action": "reset"
-    }
   ]
 }

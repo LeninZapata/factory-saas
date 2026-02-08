@@ -234,9 +234,9 @@ class ogForm {
   static render(schema) {
     const realId = schema.id.split('-')[0]; // Extraer el id original sin timestamp
     return `
-      <div class="form-container">
+      <div class="og-form-container">
         ${schema.title ? `<h2>${this.t(schema.title)}</h2>` : ''}
-        ${schema.description ? `<p class="form-desc">${this.t(schema.description)}</p>` : ''}
+        ${schema.description ? `<p class="og-form-desc">${this.t(schema.description)}</p>` : ''}
 
         <form id="${schema.id}" data-form-id="${schema.id}" data-real-id="${realId}" method="post">
           ${schema.toolbar ? this.renderToolbar(schema.toolbar) : ''}
@@ -259,10 +259,10 @@ class ogForm {
       }
     });
 
-    const leftHtml = leftItems.length > 0 ? `<div class="toolbar-left">${this.renderFields(leftItems)}</div>` : '';
-    const rightHtml = rightItems.length > 0 ? `<div class="toolbar-right">${this.renderFields(rightItems)}</div>` : '';
+    const leftHtml = leftItems.length > 0 ? `<div class="og-toolbar-left">${this.renderFields(leftItems)}</div>` : '';
+    const rightHtml = rightItems.length > 0 ? `<div class="og-toolbar-right">${this.renderFields(rightItems)}</div>` : '';
 
-    return `<div class="form-toolbar">${leftHtml}${rightHtml}</div>`;
+    return `<div class="og-form-toolbar">${leftHtml}${rightHtml}</div>`;
   }
 
   static renderStatusbar(items) {
@@ -277,10 +277,10 @@ class ogForm {
       }
     });
 
-    const leftHtml = leftItems.length > 0 ? `<div class="statusbar-left">${this.renderFields(leftItems)}</div>` : '';
-    const rightHtml = rightItems.length > 0 ? `<div class="statusbar-right">${this.renderFields(rightItems)}</div>` : '';
+    const leftHtml = leftItems.length > 0 ? `<div class="og-statusbar-left">${this.renderFields(leftItems)}</div>` : '';
+    const rightHtml = rightItems.length > 0 ? `<div class="og-statusbar-right">${this.renderFields(rightItems)}</div>` : '';
 
-    return `<div class="form-statusbar">${leftHtml}${rightHtml}</div>`;
+    return `<div class="og-form-statusbar">${leftHtml}${rightHtml}</div>`;
   }
 
   static renderFields(fields, path = '') {
@@ -313,21 +313,21 @@ class ogForm {
 
     // ✅ Agregar description si existe
     const description = field.description
-      ? `<p class="repeatable-description">${this.t(field.description)}</p>`
+      ? `<p class="og-repeatable-description">${this.t(field.description)}</p>`
       : '';
 
     ogLogger?.debug('core:form', `renderRepeatable - addText original: "${addText}"`);
     const processedAddText = this.processI18nTitle(addText);
     ogLogger?.debug('core:form', `renderRepeatable - addText procesado: "${processedAddText}"`);
     const addButton = `
-      <button type="button" class="btn btn-primary btn-sm repeatable-add" data-path="${path}">
+      <button type="button" class="btn btn-primary btn-sm og-repeatable-add" data-path="${path}">
         ${processedAddText}
       </button>
     `;
 
     // ✅ Envolver h4 y description en un div para que queden verticalmente
     const headerContent = `
-      <div class="repeatable-header-content">
+      <div class="og-repeatable-header-content">
         <h4>${this.t(field.label)}</h4>
         ${description}
       </div>
@@ -335,24 +335,24 @@ class ogForm {
 
     if (buttonPosition === 'middle') {
       return `
-        <div class="form-repeatable" data-field-path="${path}">
-          <div class="repeatable-header">
+        <div class="og-form-repeatable" data-field-path="${path}">
+          <div class="og-repeatable-header">
             ${headerContent}
           </div>
-          <div class="repeatable-add-container" style="margin: 0.5rem 0;">
+          <div class="og-repeatable-add-container" style="margin: 0.5rem 0;">
             ${addButton}
           </div>
-          <div class="repeatable-items" data-path="${path}"></div>
+          <div class="og-repeatable-items" data-path="${path}"></div>
         </div>
       `;
     } else if (buttonPosition === 'bottom') {
       return `
-        <div class="form-repeatable" data-field-path="${path}">
-          <div class="repeatable-header">
+        <div class="og-form-repeatable" data-field-path="${path}">
+          <div class="og-repeatable-header">
             ${headerContent}
           </div>
-          <div class="repeatable-items" data-path="${path}"></div>
-          <div class="repeatable-add-container" style="margin: 0.5rem 0; text-align: center;">
+          <div class="og-repeatable-items" data-path="${path}"></div>
+          <div class="og-repeatable-add-container" style="margin: 0.5rem 0; text-align: center;">
             ${addButton}
           </div>
         </div>
@@ -360,12 +360,12 @@ class ogForm {
     } else {
       // top (default)
       return `
-        <div class="form-repeatable" data-field-path="${path}">
-          <div class="repeatable-header">
+        <div class="og-form-repeatable" data-field-path="${path}">
+          <div class="og-repeatable-header">
             ${headerContent}
             ${addButton}
           </div>
-          <div class="repeatable-items" data-path="${path}"></div>
+          <div class="og-repeatable-items" data-path="${path}"></div>
         </div>
       `;
     }
@@ -380,7 +380,7 @@ class ogForm {
     const groupFieldPath = field.name ? (basePath ? `${basePath}.${field.name}` : field.name) : '';
     const dataPath = groupFieldPath ? `data-field-path="${groupFieldPath}"` : '';
 
-    const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+    const groupClass = `og-form-group-cols og-form-group-cols-${columns} og-form-group-gap-${gap}`;
 
     return `
       <div class="${groupClass}" ${dataPath}>
@@ -658,14 +658,14 @@ class ogForm {
     if (field.type === 'html') {
       // ✅ Envolver HTML en contenedor para soportar condiciones
       const htmlId = path ? `data-field-name="${path}"` : '';
-      return `<div class="form-html-wrapper" ${htmlId}>${field.content || ''}</div>`;
+      return `<div class="og-form-html-wrapper" ${htmlId}>${field.content || ''}</div>`;
     }
 
     const label = this.t(field.label) || path;
     const labelI18n = field.label?.startsWith('i18n:') ? `data-i18n="${field.label.replace('i18n:', '')}"` : '';
     // Verificar si es requerido por campo required o por validation
     const isRequired = field.required || (field.validation && field.validation.includes('required'));
-    const requiredAsterisk = isRequired ? '<span class="form-required">*</span>' : '';
+    const requiredAsterisk = isRequired ? '<span class="og-form-required">*</span>' : '';
 
     // ✅ Obtener clases de transform (explícitas + auto-detectadas)
     const transformClasses = this.getTransformClasses(field);
@@ -772,50 +772,50 @@ class ogForm {
           }, 10);
         }
 
-        const selectHint = field.hint ? `<small class="form-hint">${this.t(field.hint)}</small>` : '';
+        const selectHint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
         return `
-          <div class="form-group">
+          <div class="og-form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <select id="${selectId}" ${common} ${styleAttr} ${propsAttr} ${hasSource} ${sourceData}>
               ${staticOptions}
             </select>
             ${selectHint}
-            <span class="form-error"></span>
+            <span class="og-form-error"></span>
           </div>`;
 
 
 
 
       case 'textarea':
-        const textareaHint = field.hint ? `<small class="form-hint">${this.t(field.hint)}</small>` : '';
+        const textareaHint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
         return `
-          <div class="form-group">
+          <div class="og-form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <textarea ${common} ${styleAttr} ${propsAttr}></textarea>
             ${textareaHint}
-            <span class="form-error"></span>
+            <span class="og-form-error"></span>
           </div>`;
 
       case 'checkbox':
-        const checkboxHint = field.hint ? `<small class="form-hint">${this.t(field.hint)}</small>` : '';
+        const checkboxHint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
         return `
-          <div class="form-group form-checkbox">
+          <div class="og-form-group og-form-checkbox">
             <label ${labelI18n}>
               <input type="checkbox" name="${path}" ${field.required ? 'required' : ''} ${styleAttr} ${propsAttr}>
               ${label}${requiredAsterisk}
             </label>
             ${checkboxHint}
-            <span class="form-error"></span>
+            <span class="og-form-error"></span>
           </div>`;
 
       default:
-        const hint = field.hint ? `<small class="form-hint">${this.t(field.hint)}</small>` : '';
+        const hint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
         return `
-          <div class="form-group">
+          <div class="og-form-group">
             <label ${labelI18n}>${label}${requiredAsterisk}</label>
             <input type="${field.type}" ${common} ${styleAttr} ${propsAttr}>
             ${hint}
-            <span class="form-error"></span>
+            <span class="og-form-error"></span>
           </div>`;
     }
   }
@@ -826,54 +826,54 @@ class ogForm {
     }
 
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('repeatable-add')) {
+      if (e.target.classList.contains('og-repeatable-add')) {
         const path = e.target.dataset.path;
         // ✅ Pasar el botón clickeado como contexto
         this.addRepeatableItem(path, e.target);
       }
 
-      if (e.target.classList.contains('repeatable-remove')) {
+      if (e.target.classList.contains('og-btn-repeatable-remove')) {
         e.stopPropagation(); // Evitar que dispare el toggle del acordeón
-        const item = e.target.closest('.repeatable-item');
+        const item = e.target.closest('.og-repeatable-item');
         if (item && confirm('¿Eliminar este elemento?')) {
           item.remove();
         }
       }
 
       // Toggle de acordeón en repeatable items
-      const header = e.target.closest('.repeatable-item-header');
+      const header = e.target.closest('.og-repeatable-item-header');
       if (header && header.dataset.toggle === 'accordion') {
         // No hacer nada si se clickeó el botón eliminar o el drag handle
-        if (e.target.classList.contains('repeatable-remove') ||
-            e.target.closest('.repeatable-remove') ||
-            e.target.classList.contains('repeatable-drag-handle') ||
-            e.target.closest('.repeatable-drag-handle')) {
+        if (e.target.classList.contains('og-btn-repeatable-remove') ||
+            e.target.closest('.og-repeatable-remove') ||
+            e.target.classList.contains('og-repeatable-drag-handle') ||
+            e.target.closest('.og-repeatable-drag-handle')) {
           return;
         }
 
-        const item = header.closest('.repeatable-item');
-        const body = item.querySelector('.repeatable-item-body');
-        const toggle = header.querySelector('.repeatable-toggle');
+        const item = header.closest('.og-repeatable-item');
+        const body = item.querySelector('.og-repeatable-item-body');
+        const toggle = header.querySelector('.og-repeatable-toggle');
 
         if (body) {
           const isOpen = body.style.display !== 'none';
 
           // Si accordionSingle está activo, cerrar todos los otros del mismo nivel
-          const container = item.closest('.repeatable-items');
+          const container = item.closest('.og-repeatable-items');
           if (container && container.dataset.accordionSingle === 'true' && !isOpen) {
-            const allItems = container.querySelectorAll(':scope > .repeatable-item');
+            const allItems = container.querySelectorAll(':scope > .og-repeatable-item');
 
             allItems.forEach(otherItem => {
               if (otherItem !== item) {
-                const otherBody = otherItem.querySelector('.repeatable-item-body');
-                const otherToggle = otherItem.querySelector('.repeatable-toggle');
+                const otherBody = otherItem.querySelector('.og-repeatable-item-body');
+                const otherToggle = otherItem.querySelector('.og-repeatable-toggle');
 
                 if (otherBody && otherBody.style.display !== 'none') {
                   otherBody.style.display = 'none';
                   if (otherToggle) {
                     otherToggle.textContent = '▶';
                   }
-                  otherItem.classList.add('collapsed');
+                  otherItem.classList.add('og-collapsed');
                 }
               }
             });
@@ -884,7 +884,7 @@ class ogForm {
           if (toggle) {
             toggle.textContent = isOpen ? '▶' : '▼';
           }
-          item.classList.toggle('collapsed', isOpen);
+          item.classList.toggle('og-collapsed', isOpen);
         }
       }
     });
@@ -894,16 +894,16 @@ class ogForm {
     let draggedContainer = null;
 
     document.addEventListener('dragstart', (e) => {
-      const dragHandle = e.target.closest('.repeatable-drag-handle');
+      const dragHandle = e.target.closest('.og-repeatable-drag-handle');
       if (!dragHandle) return;
 
-      const item = dragHandle.closest('.repeatable-item');
-      const container = item?.closest('.repeatable-items');
+      const item = dragHandle.closest('.og-repeatable-item');
+      const container = item?.closest('.og-repeatable-items');
 
       if (item && container && container.dataset.sortable === 'true') {
         draggedItem = item;
         draggedContainer = container;
-        item.classList.add('dragging');
+        item.classList.add('og-dragging');
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', item.innerHTML);
       }
@@ -925,7 +925,7 @@ class ogForm {
     document.addEventListener('dragend', (e) => {
       if (!draggedItem) return;
 
-      draggedItem.classList.remove('dragging');
+      draggedItem.classList.remove('og-dragging');
 
       // Recalcular índices y títulos
       if (draggedContainer) {
@@ -958,7 +958,7 @@ class ogForm {
 
   // Helper para calcular dónde insertar el item arrastrado
   static getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll(':scope > .repeatable-item:not(.dragging)')];
+    const draggableElements = [...container.querySelectorAll(':scope > .og-repeatable-item:not(.dragging)')];
 
     return draggableElements.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
@@ -1034,7 +1034,7 @@ class ogForm {
     const topLevelRepeatables = repeatables.filter(r => r.level === 0);
 
     topLevelRepeatables.forEach(({ field, path }) => {
-      const container = formEl.querySelector(`.repeatable-items[data-path="${path}"]`);
+      const container = formEl.querySelector(`.og-repeatable-items[data-path="${path}"]`);
 
       if (container) {
         this.initRepeatableContainer(container, field, path);
@@ -1232,19 +1232,19 @@ class ogForm {
       // Buscar dentro del formulario que contiene el botón clickeado
       const form = buttonElement.closest('form');
       if (form) {
-        container = form.querySelector(`.repeatable-items[data-path="${path}"]`);
+        container = form.querySelector(`.og-repeatable-items[data-path="${path}"]`);
       } else {
         // Si no hay form, buscar en el contenedor padre más cercano
-        const parentContainer = buttonElement.closest('.repeatable-items');
+        const parentContainer = buttonElement.closest('.og-repeatable-items');
         if (parentContainer) {
-          container = parentContainer.querySelector(`.repeatable-items[data-path="${path}"]`);
+          container = parentContainer.querySelector(`.og-repeatable-items[data-path="${path}"]`);
         }
       }
     }
 
     // Fallback: búsqueda global (para compatibilidad con código legacy)
     if (!container) {
-      container = document.querySelector(`.repeatable-items[data-path="${path}"]`);
+      container = document.querySelector(`.og-repeatable-items[data-path="${path}"]`);
     }
 
     if (!container) {
@@ -1299,7 +1299,7 @@ class ogForm {
     // 5. Si el repeatable tiene columns, envolver los fields en un div con clases de grupo
     let contentHtml;
     if (columns) {
-      const groupClass = `form-group-cols form-group-cols-${columns} form-group-gap-${gap}`;
+      const groupClass = `og-form-group-cols og-form-group-cols-${columns} og-form-group-gap-${gap}`;
       contentHtml = `<div class="${groupClass}">${itemFields}</div>`;
     } else {
       contentHtml = itemFields;
@@ -1314,19 +1314,19 @@ class ogForm {
 
     if (hasHeader) {
       // Con header (puede ser acordeón o no)
-      const headerClass = accordion ? 'repeatable-item-accordion' : 'repeatable-item-with-header';
-      const contentClass = accordion ? 'repeatable-item-body' : 'repeatable-content';
+      const headerClass = accordion ? 'og-repeatable-item-accordion' : 'og-repeatable-item-with-header';
+      const contentClass = accordion ? 'og-repeatable-item-body' : 'og-repeatable-content';
 
       // Icono drag si sortable está activo (3 columnas de puntos para que sea más fácil clickear)
-      const dragIcon = sortable ? '<span class="repeatable-drag-handle" draggable="true">⋮⋮⋮</span>' : '';
+      const dragIcon = sortable ? '<span class="og-repeatable-drag-handle" draggable="true">⋮⋮⋮</span>' : '';
 
       // Botón eliminar siempre en el header cuando hay header
-      const removeButton = `<button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>`;
-      const toggleIcon = accordion ? '<span class="repeatable-toggle">▼</span>' : '';
+      const removeButton = `<button type="button" class="btn btn-sm btn-danger og-btn-repeatable-remove">${removeText}</button>`;
+      const toggleIcon = accordion ? '<span class="og-repeatable-toggle">▼</span>' : '';
 
       // Orden: drag, eliminar, toggle
       const headerActions = `
-        <div class="repeatable-item-header-actions">
+        <div class="og-repeatable-item-header-actions">
           ${dragIcon}
           ${removeButton}
           ${toggleIcon}
@@ -1334,9 +1334,9 @@ class ogForm {
       `;
 
       itemHtml = `
-        <div class="repeatable-item ${headerClass}" data-index="${newIndex}">
-          <div class="repeatable-item-header ${accordion ? 'clickable' : ''}" ${accordion ? 'data-toggle="accordion"' : ''}>
-            <span class="repeatable-item-title">${processedTitle}</span>
+        <div class="og-repeatable-item ${headerClass}" data-index="${newIndex}">
+          <div class="og-repeatable-item-header ${accordion ? 'og-clickable' : ''}" ${accordion ? 'data-toggle="accordion"' : ''}>
+            <span class="og-repeatable-item-title">${processedTitle}</span>
             ${headerActions}
           </div>
           <div class="${contentClass}" ${accordion ? 'style="display:none"' : ''}>
@@ -1347,12 +1347,12 @@ class ogForm {
     } else {
       // Sin header (comportamiento original)
       itemHtml = `
-        <div class="repeatable-item" data-index="${newIndex}">
-          <div class="repeatable-content">
+        <div class="og-repeatable-item" data-index="${newIndex}">
+          <div class="og-repeatable-content">
             ${contentHtml}
           </div>
-          <div class="repeatable-remove">
-            <button type="button" class="btn btn-sm btn-danger repeatable-remove">${removeText}</button>
+          <div class="og-repeatable-remove">
+            <button type="button" class="btn btn-sm btn-danger og-btn-repeatable-remove">${removeText}</button>
           </div>
         </div>
       `;
@@ -1367,15 +1367,15 @@ class ogForm {
 
     // Cerrar el item recién agregado (por defecto todos empiezan cerrados)
     if (accordion && addedItem) {
-      const body = addedItem.querySelector('.repeatable-item-body');
-      const toggle = addedItem.querySelector('.repeatable-toggle');
+      const body = addedItem.querySelector('.og-repeatable-item-body');
+      const toggle = addedItem.querySelector('.og-repeatable-toggle');
 
       if (body) {
         body.style.display = 'none';
         if (toggle) {
           toggle.textContent = '▶';
         }
-        addedItem.classList.add('collapsed');
+        addedItem.classList.add('og-collapsed');
       }
 
       // Si accordionOpenAll está activo, abrir todos los items
@@ -1384,7 +1384,7 @@ class ogForm {
         if (toggle) {
           toggle.textContent = '▼';
         }
-        addedItem.classList.remove('collapsed');
+        addedItem.classList.remove('og-collapsed');
       }
       // Si accordionOpenFirst está activo y es el primer item (index 0), abrirlo
       else if (accordionOpenFirst && newIndex === 0) {
@@ -1392,7 +1392,7 @@ class ogForm {
         if (toggle) {
           toggle.textContent = '▼';
         }
-        addedItem.classList.remove('collapsed');
+        addedItem.classList.remove('og-collapsed');
       }
     }
 
@@ -1431,12 +1431,12 @@ class ogForm {
     const formId = container.closest('form')?.id;
     if (formId) {
       setTimeout(() => {
-        if (addedItem && addedItem.classList.contains('repeatable-item')) {
+        if (addedItem && addedItem.classList.contains('og-repeatable-item')) {
           const nestedRepeatables = this.findNestedRepeatables(fieldSchema, itemPath);
 
           if (nestedRepeatables.length > 0) {
             nestedRepeatables.forEach(({ field, path: nestedPath }) => {
-              const nestedContainer = addedItem.querySelector(`.repeatable-items[data-path="${nestedPath}"]`);
+              const nestedContainer = addedItem.querySelector(`.og-repeatable-items[data-path="${nestedPath}"]`);
 
               if (nestedContainer) {
                 this.initRepeatableContainer(nestedContainer, field, nestedPath);
@@ -1461,7 +1461,7 @@ class ogForm {
   // ============================================================================
 
   static reindexRepeatableItems(container) {
-    const items = container.querySelectorAll(':scope > .repeatable-item');
+    const items = container.querySelectorAll(':scope > .og-repeatable-item');
     const headerTitle = container.dataset.headerTitle || 'Item #{index}';
     const path = container.dataset.path;
 
@@ -1471,7 +1471,7 @@ class ogForm {
 
       // Actualizar título si tiene {index}
       if (headerTitle.includes('{index}')) {
-        const titleEl = item.querySelector('.repeatable-item-title');
+        const titleEl = item.querySelector('.og-repeatable-item-title');
         if (titleEl) {
           const newTitle = headerTitle.replace('{index}', (index + 1).toString());
           titleEl.textContent = this.processI18nTitle(newTitle);
@@ -1643,9 +1643,9 @@ class ogForm {
           // ✅ Procesar selects dentro de repeatables EXISTENTES sin recrearlos
           const repeatableData = data[field.name];
           if (Array.isArray(repeatableData) && repeatableData.length > 0) {
-            const itemsContainer = formEl.querySelector(`.repeatable-items[data-path="${field.name}"]`);
+            const itemsContainer = formEl.querySelector(`.og-repeatable-items[data-path="${field.name}"]`);
             if (itemsContainer) {
-              const items = itemsContainer.querySelectorAll('.repeatable-item');
+              const items = itemsContainer.querySelectorAll('.og-repeatable-item');
               items.forEach((item, index) => {
                 const itemData = repeatableData[index];
                 if (itemData && field.fields) {
@@ -1803,9 +1803,9 @@ class ogForm {
     }
 
     // Encontrar botón "Agregar"
-    let addButton = container.querySelector(`.repeatable-add[data-path="${fullPath}"]`);
+    let addButton = container.querySelector(`.og-repeatable-add[data-path="${fullPath}"]`);
     if (!addButton) {
-      addButton = container.querySelector(`.repeatable-add[data-path="${fieldName}"]`);
+      addButton = container.querySelector(`.og-repeatable-add[data-path="${fieldName}"]`);
     }
 
     if (!addButton) {
@@ -1815,9 +1815,9 @@ class ogForm {
     }
 
     // Encontrar contenedor de items
-    let itemsContainer = container.querySelector(`.repeatable-items[data-path="${fullPath}"]`);
+    let itemsContainer = container.querySelector(`.og-repeatable-items[data-path="${fullPath}"]`);
     if (!itemsContainer) {
-      itemsContainer = container.querySelector(`.repeatable-items[data-path="${fieldName}"]`);
+      itemsContainer = container.querySelector(`.og-repeatable-items[data-path="${fieldName}"]`);
     }
 
     if (!itemsContainer) {
@@ -1848,20 +1848,20 @@ class ogForm {
             ogLogger?.debug('core:form', `🔍 accordionOpenFirst=${accordionOpenFirst}, totalItems=${totalItems}`);
 
             if (accordionOpenFirst && totalItems > 0) {
-              const firstItem = itemsContainer.querySelector('.repeatable-item[data-index="0"]');
+              const firstItem = itemsContainer.querySelector('.og-repeatable-item[data-index="0"]');
               ogLogger?.debug('core:form', `🔍 firstItem encontrado: ${!!firstItem}`);
 
               if (firstItem) {
-                const body = firstItem.querySelector('.repeatable-item-body');
-                const header = firstItem.querySelector('.repeatable-item-header');
-                const toggle = header ? header.querySelector('.repeatable-toggle') : null;
+                const body = firstItem.querySelector('.og-repeatable-item-body');
+                const header = firstItem.querySelector('.og-repeatable-item-header');
+                const toggle = header ? header.querySelector('.og-repeatable-toggle') : null;
 
-                ogLogger?.debug('core:form', `🔍 body=${!!body}, toggle=${!!toggle}, collapsed=${firstItem.classList.contains('collapsed')}`);
+                ogLogger?.debug('core:form', `🔍 body=${!!body}, toggle=${!!toggle}, collapsed=${firstItem.classList.contains('og-collapsed')}`);
 
                 if (body && header) {
                   body.style.display = 'block';
                   if (toggle) toggle.textContent = '▼';
-                  firstItem.classList.remove('collapsed');
+                  firstItem.classList.remove('og-collapsed');
                   ogLogger?.debug('core:form', `✅ Primer accordion abierto por accordionOpenFirst`);
                 }
               }
@@ -1923,7 +1923,7 @@ class ogForm {
   // Nota: isLastItem se mantiene por compatibilidad pero ya no se usa
   static fillRepeatableItem(container, fieldName, index, itemData, fieldSchema, parentPath, isLastItem = false) {
     // Obtener el item recién agregado
-    const items = container.querySelectorAll('.repeatable-item');
+    const items = container.querySelectorAll('.og-repeatable-item');
     const currentItem = items[items.length - 1];
 
     if (!currentItem) {
@@ -2045,9 +2045,9 @@ class ogForm {
         // Recursivo: procesar repeatables anidados
         const nestedData = itemData[subField.name];
         if (Array.isArray(nestedData) && nestedData.length > 0) {
-          const nestedContainer = item.querySelector(`.repeatable-items[data-path="${itemPath}.${subField.name}"]`);
+          const nestedContainer = item.querySelector(`.og-repeatable-items[data-path="${itemPath}.${subField.name}"]`);
           if (nestedContainer) {
-            const nestedItems = nestedContainer.querySelectorAll('.repeatable-item');
+            const nestedItems = nestedContainer.querySelectorAll('.og-repeatable-item');
             nestedItems.forEach((nestedItem, nestedIndex) => {
               const nestedItemData = nestedData[nestedIndex];
               if (nestedItemData && subField.fields) {
@@ -2128,11 +2128,11 @@ class ogForm {
     const errors = [];
     const formData = this.getData(formId);
 
-    formEl.querySelectorAll('.form-error').forEach(el => {
+    formEl.querySelectorAll('.og-form-error').forEach(el => {
       el.textContent = '';
       el.style.display = 'none';
     });
-    formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+    formEl.querySelectorAll('.og-form-group').forEach(el => el.classList.remove('og-has-error'));
 
     const getValueByPath = (obj, path) => {
       const keys = path.replace(/\[/g, '.').replace(/\]/g, '').split('.');
@@ -2150,13 +2150,13 @@ class ogForm {
       // ✅ VALIDACIÓN: Saltar campos ocultos por condiciones
       const input = formEl.querySelector(`[name="${fieldPath}"]`);
       if (input) {
-        const fieldContainer = input.closest('.form-group, .form-checkbox, .form-html-wrapper');
+        const fieldContainer = input.closest('.form-group, .og-form-checkbox, .form-html-wrapper');
 
         // Si el campo está oculto (por condiciones o cualquier otro motivo), no validar
         if (fieldContainer && (
           fieldContainer.classList.contains('wpfw-depend-on') ||
           fieldContainer.classList.contains('og-hidden') ||
-          fieldContainer.classList.contains('form-hidden') ||
+          fieldContainer.classList.contains('og-form-hidden') ||
           fieldContainer.style.display === 'none' ||
           window.getComputedStyle(fieldContainer).display === 'none'
         )) {
@@ -2252,10 +2252,10 @@ class ogForm {
 
         const input = formEl.querySelector(`[name="${fieldPath}"]`);
         if (input) {
-          const formGroup = input.closest('.form-group');
+          const formGroup = input.closest('.og-form-group');
           if (formGroup) {
-            formGroup.classList.add('has-error');
-            const errorEl = formGroup.querySelector('.form-error');
+            formGroup.classList.add('og-has-error');
+            const errorEl = formGroup.querySelector('.og-form-error');
             if (errorEl) {
               errorEl.textContent = fieldErrors[0];
               errorEl.style.display = 'block';
@@ -2324,11 +2324,11 @@ class ogForm {
     const formEl = document.getElementById(formId);
     if (formEl) {
       formEl.reset();
-      formEl.querySelectorAll('.form-error').forEach(el => {
+      formEl.querySelectorAll('.og-form-error').forEach(el => {
         el.textContent = '';
         el.style.display = 'none';
       });
-      formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+      formEl.querySelectorAll('.og-form-group').forEach(el => el.classList.remove('og-has-error'));
     }
   }
 
@@ -2406,11 +2406,11 @@ class ogForm {
     const input = formEl.querySelector(`[name="${fieldName}"]`);
     if (!input) return;
 
-    const formGroup = input.closest('.form-group');
+    const formGroup = input.closest('.og-form-group');
     if (!formGroup) return;
 
-    formGroup.classList.add('has-error');
-    const errorEl = formGroup.querySelector('.form-error');
+    formGroup.classList.add('og-has-error');
+    const errorEl = formGroup.querySelector('.og-form-error');
     if (errorEl) {
       errorEl.textContent = errorMessage;
       errorEl.style.display = 'block';
@@ -2426,11 +2426,11 @@ class ogForm {
     const input = formEl.querySelector(`[name="${fieldName}"]`);
     if (!input) return;
 
-    const formGroup = input.closest('.form-group');
+    const formGroup = input.closest('.og-form-group');
     if (!formGroup) return;
 
-    formGroup.classList.remove('has-error');
-    const errorEl = formGroup.querySelector('.form-error');
+    formGroup.classList.remove('og-has-error');
+    const errorEl = formGroup.querySelector('.og-form-error');
     if (errorEl) {
       errorEl.textContent = '';
       errorEl.style.display = 'none';
@@ -2443,11 +2443,11 @@ class ogForm {
     const formEl = document.querySelector(`[data-real-id="${formId}"]`) || document.getElementById(formId);
     if (!formEl) return;
 
-    formEl.querySelectorAll('.form-error').forEach(el => {
+    formEl.querySelectorAll('.og-form-error').forEach(el => {
       el.textContent = '';
       el.style.display = 'none'
     });
-    formEl.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+    formEl.querySelectorAll('.og-form-group').forEach(el => el.classList.remove('og-has-error'));
   }
 
   static async loadSelectFromAPI(selectId, source, valueField, labelField) {

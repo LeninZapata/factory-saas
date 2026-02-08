@@ -46,20 +46,5 @@
         { "field": "datos_envio", "operator": "not-empty", "value": "" }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "debug",
-      "type": "button",
-      "label": "🔍 Ver Datos",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('📋 Datos del formulario:', data); ogToast.info('Ver consola del navegador');"
-    },
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "✅ Enviar",
-      "action": "submit",
-      "onclick": "event.preventDefault(); ogToast.success('Formulario enviado correctamente');"
-    }
   ]
 }

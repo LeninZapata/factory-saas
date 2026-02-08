@@ -5,7 +5,7 @@
   "fields": [
     {
       "type": "html",
-      "content": "<div style='background: #e0f2fe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #0284c7;'><h3 style='margin: 0 0 1rem;'>🎯 Opciones de Acordeón</h3><ul style='margin: 0; line-height: 1.8;'><li><code>hasHeader: true</code> - Muestra un header con título en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón click able</li><li><code>headerTitle: \"Item #{index}\"</code> - Personaliza el título (usa {index})</li></ul></div>"
+      "content": "<div class='alert alert-info alert-header'><div class='alert-title'>🎯 Opciones de Acordeón</div><div class='alert-body'><ul style='margin: 0; line-height: 1.8;'><li><code>hasHeader: true</code> - Muestra un header con título en cada item</li><li><code>accordion: true</code> - Convierte el header en acordeón clickable</li><li><code>headerTitle: \"Item #{index}\"</code> - Personaliza el título (usa {index})</li></ul></div></div>"
     },
     {
       "name": "tareas_basicas",
@@ -19,7 +19,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 hasHeader: true, accordion: false</strong><br>Tiene header pero NO es acordeón (siempre visible)</div>"
+          "content": "<div class='alert alert-warning alert-filled'><strong>💡 hasHeader: true, accordion: false</strong><br>Tiene header pero NO es acordeón (siempre visible)</div>"
         },
         {
           "name": "titulo",
@@ -73,7 +73,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 accordion: true</strong><br>Haz clic en el header para colapsar/expandir</div>"
+          "content": "<div class='alert alert-success alert-filled'><strong>💡 accordion: true</strong><br>Haz clic en el header para colapsar/expandir</div>"
         },
         {
           "name": "nombre",
@@ -122,7 +122,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fae8ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #a855f7; font-size: 0.9rem;'><strong>💡 headerTitle personalizado</strong><br>Usa <code>{index}</code> para incluir el número del item</div>"
+          "content": "<div class='alert alert-tip alert-filled'><strong>💡 headerTitle personalizado</strong><br>Usa <code>{index}</code> para incluir el número del item</div>"
         },
         {
           "name": "nombre_proyecto",
@@ -196,7 +196,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 sortable: true</strong><br>Arrastra el icono ⋮⋮ para reordenar. Los índices y títulos se actualizan automáticamente</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 sortable: true</strong><br>Arrastra el icono ⋮⋮ para reordenar. Los índices y títulos se actualizan automáticamente</div>"
         },
         {
           "name": "titulo_paso",
@@ -268,7 +268,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 accordionSingle: true</strong><br>Solo un acordeón puede estar abierto a la vez. Al abrir uno, los demás se cierran automáticamente</div>"
+          "content": "<div class='alert alert-warning alert-with-desc'><strong>💡 accordionSingle: true</strong><p>Solo un acordeón puede estar abierto a la vez. Al abrir uno, los demás se cierran automáticamente</p><div class='alert-desc'>Ideal para FAQs donde quieres que el usuario se enfoque en una respuesta a la vez</div></div>"
         },
         {
           "name": "pregunta",
@@ -338,7 +338,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #dcfce7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #16a34a; font-size: 0.9rem;'><strong>💡 accordionOpenFirst: true</strong><br>El primer item inicia abierto automáticamente. Los demás empiezan cerrados. Perfecto para cargar datos y mostrar el primer elemento expandido</div>"
+          "content": "<div class='alert alert-success alert-with-desc'><strong>💡 accordionOpenFirst: true</strong><p>El primer item inicia abierto automáticamente. Los demás empiezan cerrados.</p><div class='alert-desc'>Perfecto para cargar datos y mostrar el primer elemento expandido</div></div>"
         },
         {
           "name": "pregunta",
@@ -404,7 +404,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #f3f4f6; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #6b7280; font-size: 0.9rem;'><strong>💡 Sin configuración especial</strong><br>Comportamiento original (sin hasHeader ni accordion)</div>"
+          "content": "<div class='alert alert-note alert-filled'><strong>📝 Sin configuración especial</strong><br>Repeatable básico sin header, acordeón ni sortable - el más simple posible</div>"
         },
         {
           "type": "group",
@@ -460,7 +460,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 initialItems: 1</strong><br>Este repeater comienza con un item ya agregado automáticamente</div>"
+          "content": "<div class='alert alert-warning alert-filled'><strong>💡 initialItems: 1</strong><br>Este repeater comienza con un item ya agregado automáticamente</div>"
         },
         {
           "name": "nombre_config",
@@ -524,7 +524,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fee2e2; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #ef4444; font-size: 0.9rem;'><strong>💡 accordionOpenFirst: true + initialItems: 3</strong><br>Inicia con 3 items pero solo el primero está expandido</div>"
+          "content": "<div class='alert alert-danger alert-filled'><strong>💡 accordionOpenFirst: true + initialItems: 3</strong><br>Inicia con 3 items pero solo el primero está expandido</div>"
         },
         {
           "name": "titulo_alerta",
@@ -615,7 +615,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #f0f9ff; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0ea5e9; font-size: 0.9rem;'><strong>💡 Acordeones Anidados</strong><br>Cada departamento puede tener equipos (también en acordeón), y cada equipo puede tener miembros</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 Acordeones Anidados</strong><br>Cada departamento puede tener equipos (también en acordeón), y cada equipo puede tener miembros</div>"
         },
         {
           "name": "nombre_depto",
@@ -782,7 +782,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #dbeafe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #3b82f6; font-size: 0.9rem;'><strong>💡 accordionOpenAll: true + initialItems: 3</strong><br>Todos los items comienzan expandidos (puedes cerrarlos manualmente)</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 accordionOpenAll: true + initialItems: 3</strong><br>Todos los items comienzan expandidos (puedes cerrarlos manualmente)</div>"
         },
         {
           "name": "titulo_tarea",
@@ -887,7 +887,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 hasHeader: true (sin accordion)</strong><br>El header es solo visual, no se puede colapsar</div>"
+          "content": "<div class='alert alert-warning alert-filled'><strong>💡 hasHeader: true (sin accordion)</strong><br>El header es solo visual, no se puede colapsar</div>"
         },
         {
           "name": "titulo_nota",
@@ -942,7 +942,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 hasHeader: true + sortable: true</strong><br>Header simple (no colapsable) + arrastra ⋮⋮ para reordenar</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 hasHeader: true + sortable: true</strong><br>Header simple (no colapsable) + arrastra ⋮⋮ para reordenar</div>"
         },
         {
           "name": "mensaje",
@@ -958,22 +958,6 @@
           "required": true
         }
       ]
-    }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar Todo",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Datos guardados');"
-    },
-    {
-      "name": "reset",
-      "type": "button",
-      "label": "🔄 Limpiar",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
     }
   ]
 }

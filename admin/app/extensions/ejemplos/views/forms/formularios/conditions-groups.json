@@ -5,11 +5,11 @@
   "fields": [
     {
       "type": "html",
-      "content": "<div style='background: #dbeafe; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #3b82f6;'><h3 style='margin: 0 0 1rem;'>🎯 Condiciones con Grupos</h3><p style='margin: 0; line-height: 1.6;'>Los <code>type: \"group\"</code> pueden tener condiciones para mostrar/ocultar múltiples campos a la vez. Especialmente útil dentro de repetables con <code>conditionContext: \"repeatable\"</code>.</p></div>"
+      "content": "<div class='alert alert-info alert-header'><div class='alert-title'>🎯 Condiciones con Grupos</div><div class='alert-body'><p>Los <code>type: \"group\"</code> pueden tener condiciones para mostrar/ocultar múltiples campos a la vez. Especialmente útil dentro de repetables con <code>conditionContext: \"repeatable\"</code>.</p></div></div>"
     },
     {
       "type": "html",
-      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>📦 Ejemplo 1: Grupo Simple (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Grupo que se muestra cuando seleccionas una opción específica.</p>"
+      "content": "<h3 style='margin: 2rem 0 1rem;'>📦 Ejemplo 1: Grupo Simple (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Grupo que se muestra cuando seleccionas una opción específica.</p>"
     },
     {
       "name": "tipo_producto",
@@ -17,10 +17,22 @@
       "type": "select",
       "required": true,
       "options": [
-        { "value": "", "label": "Selecciona un tipo..." },
-        { "value": "fisico", "label": "📦 Producto Físico" },
-        { "value": "digital", "label": "💿 Producto Digital" },
-        { "value": "servicio", "label": "🛠️ Servicio" }
+        {
+          "value": "",
+          "label": "Selecciona un tipo..."
+        },
+        {
+          "value": "fisico",
+          "label": "📦 Producto Físico"
+        },
+        {
+          "value": "digital",
+          "label": "💿 Producto Digital"
+        },
+        {
+          "value": "servicio",
+          "label": "🛠️ Servicio"
+        }
       ]
     },
     {
@@ -29,7 +41,11 @@
       "columns": 3,
       "gap": "normal",
       "condition": [
-        { "field": "tipo_producto", "operator": "==", "value": "fisico" }
+        {
+          "field": "tipo_producto",
+          "operator": "==",
+          "value": "fisico"
+        }
       ],
       "conditionContext": "form",
       "fields": [
@@ -60,7 +76,11 @@
       "columns": 2,
       "gap": "normal",
       "condition": [
-        { "field": "tipo_producto", "operator": "==", "value": "digital" }
+        {
+          "field": "tipo_producto",
+          "operator": "==",
+          "value": "digital"
+        }
       ],
       "conditionContext": "form",
       "fields": [
@@ -85,16 +105,25 @@
     },
     {
       "type": "html",
-      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🔄 Ejemplo 2: Grupos con Select + Checkbox (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Un select muestra un grupo, y un checkbox dentro de ese grupo muestra otro grupo.</p>"
+      "content": "<h3 style='margin: 2rem 0 1rem;'>🔄 Ejemplo 2: Grupos con Select + Checkbox (Fuera de Repeatable)</h3><p style='color: #64748b; margin-bottom: 1rem;'>Un select muestra un grupo, y un checkbox dentro de ese grupo muestra otro grupo.</p>"
     },
     {
       "name": "tiene_facturacion",
       "label": "¿Requiere Facturación?",
       "type": "select",
       "options": [
-        { "value": "", "label": "Selecciona..." },
-        { "value": "si", "label": "✅ Sí" },
-        { "value": "no", "label": "❌ No" }
+        {
+          "value": "",
+          "label": "Selecciona..."
+        },
+        {
+          "value": "si",
+          "label": "✅ Sí"
+        },
+        {
+          "value": "no",
+          "label": "❌ No"
+        }
       ]
     },
     {
@@ -103,7 +132,11 @@
       "columns": 2,
       "gap": "normal",
       "condition": [
-        { "field": "tiene_facturacion", "operator": "==", "value": "si" }
+        {
+          "field": "tiene_facturacion",
+          "operator": "==",
+          "value": "si"
+        }
       ],
       "conditionContext": "form",
       "fields": [
@@ -134,8 +167,16 @@
       "columns": 2,
       "gap": "normal",
       "condition": [
-        { "field": "tiene_facturacion", "operator": "==", "value": "si" },
-        { "field": "es_empresa_grande", "operator": "==", "value": true }
+        {
+          "field": "tiene_facturacion",
+          "operator": "==",
+          "value": "si"
+        },
+        {
+          "field": "es_empresa_grande",
+          "operator": "==",
+          "value": true
+        }
       ],
       "conditionLogic": "AND",
       "conditionContext": "form",
@@ -160,7 +201,7 @@
     },
     {
       "type": "html",
-      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🔁 Ejemplo 3: Grupos en Repeatable (conditionContext: \"repeatable\")</h3><p style='color: #64748b; margin-bottom: 1rem;'>Cada item del repeatable evalúa sus condiciones independientemente.</p>"
+      "content": "<h3 style='margin: 2rem 0 1rem;'>🔁 Ejemplo 3: Grupos en Repeatable (conditionContext: \"repeatable\")</h3><p style='color: #64748b; margin-bottom: 1rem;'>Cada item del repeatable evalúa sus condiciones independientemente.</p>"
     },
     {
       "name": "campanas",
@@ -173,7 +214,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #fef3c7; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #f59e0b; font-size: 0.9rem;'><strong>💡 conditionContext: \"repeatable\"</strong><br>Las condiciones se evalúan dentro de cada item independientemente</div>"
+          "content": "<div class='alert alert-warning alert-filled'><strong>💡 conditionContext: \"repeatable\"</strong><br>Las condiciones se evalúan dentro de cada item independientemente</div>"
         },
         {
           "name": "nombre_campana",
@@ -188,10 +229,22 @@
           "type": "select",
           "required": true,
           "options": [
-            { "value": "", "label": "Selecciona..." },
-            { "value": "email", "label": "📧 Email Marketing" },
-            { "value": "redes", "label": "📱 Redes Sociales" },
-            { "value": "anuncios", "label": "💰 Anuncios Pagados" }
+            {
+              "value": "",
+              "label": "Selecciona..."
+            },
+            {
+              "value": "email",
+              "label": "📧 Email Marketing"
+            },
+            {
+              "value": "redes",
+              "label": "📱 Redes Sociales"
+            },
+            {
+              "value": "anuncios",
+              "label": "💰 Anuncios Pagados"
+            }
           ]
         },
         {
@@ -200,7 +253,11 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_campana", "operator": "==", "value": "email" }
+            {
+              "field": "tipo_campana",
+              "operator": "==",
+              "value": "email"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -215,9 +272,18 @@
               "label": "Lista de Emails",
               "type": "select",
               "options": [
-                { "value": "clientes", "label": "Clientes Activos" },
-                { "value": "prospectos", "label": "Prospectos" },
-                { "value": "todos", "label": "Todos" }
+                {
+                  "value": "clientes",
+                  "label": "Clientes Activos"
+                },
+                {
+                  "value": "prospectos",
+                  "label": "Prospectos"
+                },
+                {
+                  "value": "todos",
+                  "label": "Todos"
+                }
               ]
             }
           ]
@@ -228,7 +294,11 @@
           "columns": 3,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_campana", "operator": "==", "value": "redes" }
+            {
+              "field": "tipo_campana",
+              "operator": "==",
+              "value": "redes"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -255,7 +325,11 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_campana", "operator": "==", "value": "anuncios" }
+            {
+              "field": "tipo_campana",
+              "operator": "==",
+              "value": "anuncios"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -272,9 +346,18 @@
               "label": "Plataforma",
               "type": "select",
               "options": [
-                { "value": "google", "label": "Google Ads" },
-                { "value": "facebook", "label": "Facebook Ads" },
-                { "value": "linkedin", "label": "LinkedIn Ads" }
+                {
+                  "value": "google",
+                  "label": "Google Ads"
+                },
+                {
+                  "value": "facebook",
+                  "label": "Facebook Ads"
+                },
+                {
+                  "value": "linkedin",
+                  "label": "LinkedIn Ads"
+                }
               ]
             }
           ]
@@ -287,7 +370,7 @@
     },
     {
       "type": "html",
-      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🎨 Ejemplo 4: Cascada de Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Select → muestra grupo 1 → checkbox en grupo 1 → muestra grupo 2</p>"
+      "content": "<h3 style='margin: 2rem 0 1rem;'>🎨 Ejemplo 4: Cascada de Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Select → muestra grupo 1 → checkbox en grupo 1 → muestra grupo 2</p>"
     },
     {
       "name": "acciones_marketing",
@@ -300,7 +383,7 @@
       "fields": [
         {
           "type": "html",
-          "content": "<div style='background: #e0f2fe; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid #0284c7; font-size: 0.9rem;'><strong>💡 Cascada de condiciones</strong><br>Selecciona \"Aumentar Presupuesto\" → muestra grupo con campos → marca el checkbox → muestra otro grupo</div>"
+          "content": "<div class='alert alert-info alert-filled'><strong>💡 Cascada de condiciones</strong><br>Selecciona \"Aumentar Presupuesto\" → muestra grupo con campos → marca el checkbox → muestra otro grupo</div>"
         },
         {
           "name": "tipo_accion",
@@ -308,10 +391,22 @@
           "type": "select",
           "required": true,
           "options": [
-            { "value": "", "label": "Selecciona una acción..." },
-            { "value": "pausar", "label": "⏸️ Pausar Campaña" },
-            { "value": "aumentar", "label": "📈 Aumentar Presupuesto" },
-            { "value": "reducir", "label": "📉 Reducir Presupuesto" }
+            {
+              "value": "",
+              "label": "Selecciona una acción..."
+            },
+            {
+              "value": "pausar",
+              "label": "⏸️ Pausar Campaña"
+            },
+            {
+              "value": "aumentar",
+              "label": "📈 Aumentar Presupuesto"
+            },
+            {
+              "value": "reducir",
+              "label": "📉 Reducir Presupuesto"
+            }
           ]
         },
         {
@@ -320,7 +415,11 @@
           "columns": 3,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_accion", "operator": "any", "value": "aumentar,reducir" }
+            {
+              "field": "tipo_accion",
+              "operator": "any",
+              "value": "aumentar,reducir"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -354,8 +453,16 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_accion", "operator": "any", "value": "aumentar,reducir" },
-            { "field": "requiere_aprobacion", "operator": "==", "value": true }
+            {
+              "field": "tipo_accion",
+              "operator": "any",
+              "value": "aumentar,reducir"
+            },
+            {
+              "field": "requiere_aprobacion",
+              "operator": "==",
+              "value": true
+            }
           ],
           "conditionLogic": "AND",
           "conditionContext": "repeatable",
@@ -365,9 +472,18 @@
               "label": "Persona que Aprueba",
               "type": "select",
               "options": [
-                { "value": "gerente", "label": "👔 Gerente de Marketing" },
-                { "value": "director", "label": "🎩 Director" },
-                { "value": "ceo", "label": "👑 CEO" }
+                {
+                  "value": "gerente",
+                  "label": "👔 Gerente de Marketing"
+                },
+                {
+                  "value": "director",
+                  "label": "🎩 Director"
+                },
+                {
+                  "value": "ceo",
+                  "label": "👑 CEO"
+                }
               ]
             },
             {
@@ -387,7 +503,7 @@
     },
     {
       "type": "html",
-      "content": "<h3 style='margin: 2rem 0 1rem; color: #1e293b;'>🚀 Ejemplo 5: Múltiples Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Diferentes grupos se muestran según la opción seleccionada en el mismo item.</p>"
+      "content": "<h3 style='margin: 2rem 0 1rem;'>🚀 Ejemplo 5: Múltiples Grupos en Repeatable</h3><p style='color: #64748b; margin-bottom: 1rem;'>Diferentes grupos se muestran según la opción seleccionada en el mismo item.</p>"
     },
     {
       "name": "tareas_proyecto",
@@ -417,11 +533,26 @@
               "type": "select",
               "required": true,
               "options": [
-                { "value": "", "label": "Selecciona..." },
-                { "value": "desarrollo", "label": "💻 Desarrollo" },
-                { "value": "diseno", "label": "🎨 Diseño" },
-                { "value": "testing", "label": "🧪 Testing" },
-                { "value": "documentacion", "label": "📝 Documentación" }
+                {
+                  "value": "",
+                  "label": "Selecciona..."
+                },
+                {
+                  "value": "desarrollo",
+                  "label": "💻 Desarrollo"
+                },
+                {
+                  "value": "diseno",
+                  "label": "🎨 Diseño"
+                },
+                {
+                  "value": "testing",
+                  "label": "🧪 Testing"
+                },
+                {
+                  "value": "documentacion",
+                  "label": "📝 Documentación"
+                }
               ]
             },
             {
@@ -429,10 +560,22 @@
               "label": "Prioridad",
               "type": "select",
               "options": [
-                { "value": "baja", "label": "🟢 Baja" },
-                { "value": "media", "label": "🟡 Media" },
-                { "value": "alta", "label": "🔴 Alta" },
-                { "value": "critica", "label": "🚨 Crítica" }
+                {
+                  "value": "baja",
+                  "label": "🟢 Baja"
+                },
+                {
+                  "value": "media",
+                  "label": "🟡 Media"
+                },
+                {
+                  "value": "alta",
+                  "label": "🔴 Alta"
+                },
+                {
+                  "value": "critica",
+                  "label": "🚨 Crítica"
+                }
               ]
             }
           ]
@@ -443,7 +586,11 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_tarea", "operator": "==", "value": "desarrollo" }
+            {
+              "field": "tipo_tarea",
+              "operator": "==",
+              "value": "desarrollo"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -452,10 +599,22 @@
               "label": "Lenguaje",
               "type": "select",
               "options": [
-                { "value": "javascript", "label": "JavaScript" },
-                { "value": "python", "label": "Python" },
-                { "value": "java", "label": "Java" },
-                { "value": "php", "label": "PHP" }
+                {
+                  "value": "javascript",
+                  "label": "JavaScript"
+                },
+                {
+                  "value": "python",
+                  "label": "Python"
+                },
+                {
+                  "value": "java",
+                  "label": "Java"
+                },
+                {
+                  "value": "php",
+                  "label": "PHP"
+                }
               ]
             },
             {
@@ -473,7 +632,11 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_tarea", "operator": "==", "value": "diseno" }
+            {
+              "field": "tipo_tarea",
+              "operator": "==",
+              "value": "diseno"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -482,10 +645,22 @@
               "label": "Herramienta",
               "type": "select",
               "options": [
-                { "value": "figma", "label": "Figma" },
-                { "value": "sketch", "label": "Sketch" },
-                { "value": "adobe_xd", "label": "Adobe XD" },
-                { "value": "photoshop", "label": "Photoshop" }
+                {
+                  "value": "figma",
+                  "label": "Figma"
+                },
+                {
+                  "value": "sketch",
+                  "label": "Sketch"
+                },
+                {
+                  "value": "adobe_xd",
+                  "label": "Adobe XD"
+                },
+                {
+                  "value": "photoshop",
+                  "label": "Photoshop"
+                }
               ]
             },
             {
@@ -503,7 +678,11 @@
           "columns": 3,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_tarea", "operator": "==", "value": "testing" }
+            {
+              "field": "tipo_tarea",
+              "operator": "==",
+              "value": "testing"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -512,10 +691,22 @@
               "label": "Tipo de Testing",
               "type": "select",
               "options": [
-                { "value": "unitario", "label": "Unitario" },
-                { "value": "integracion", "label": "Integración" },
-                { "value": "e2e", "label": "End-to-End" },
-                { "value": "manual", "label": "Manual" }
+                {
+                  "value": "unitario",
+                  "label": "Unitario"
+                },
+                {
+                  "value": "integracion",
+                  "label": "Integración"
+                },
+                {
+                  "value": "e2e",
+                  "label": "End-to-End"
+                },
+                {
+                  "value": "manual",
+                  "label": "Manual"
+                }
               ]
             },
             {
@@ -539,7 +730,11 @@
           "columns": 2,
           "gap": "normal",
           "condition": [
-            { "field": "tipo_tarea", "operator": "==", "value": "documentacion" }
+            {
+              "field": "tipo_tarea",
+              "operator": "==",
+              "value": "documentacion"
+            }
           ],
           "conditionContext": "repeatable",
           "fields": [
@@ -548,10 +743,22 @@
               "label": "Tipo de Documento",
               "type": "select",
               "options": [
-                { "value": "api", "label": "API" },
-                { "value": "usuario", "label": "Manual de Usuario" },
-                { "value": "tecnica", "label": "Documentación Técnica" },
-                { "value": "arquitectura", "label": "Arquitectura" }
+                {
+                  "value": "api",
+                  "label": "API"
+                },
+                {
+                  "value": "usuario",
+                  "label": "Manual de Usuario"
+                },
+                {
+                  "value": "tecnica",
+                  "label": "Documentación Técnica"
+                },
+                {
+                  "value": "arquitectura",
+                  "label": "Arquitectura"
+                }
               ]
             },
             {
@@ -571,22 +778,6 @@
           "rows": 2
         }
       ]
-    }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Datos guardados');"
-    },
-    {
-      "name": "reset",
-      "type": "button",
-      "label": "🔄 Limpiar",
-      "style": "secondary",
-      "onclick": "event.preventDefault(); this.closest('form').reset(); ogToast.info('Formulario limpiado');"
     }
   ]
 }

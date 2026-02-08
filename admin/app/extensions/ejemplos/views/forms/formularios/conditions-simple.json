@@ -45,14 +45,5 @@
         { "field": "tipo_contacto", "operator": "==", "value": "whatsapp" }
       ]
     }
-  ],
-  "statusbar": [
-    {
-      "name": "submit",
-      "type": "button",
-      "label": "💾 Guardar",
-      "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Formulario enviado');"
-    }
   ]
 }
