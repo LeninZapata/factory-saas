@@ -87,18 +87,18 @@ class ogView {
     // Prioridad de búsqueda: context explícito > extension > core
     if (viewContext === 'middle') {
       basePath = 'middle/views';
-      cacheKey = `middle_view_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `middle_view_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
     }
     else if (extensionContext) {
       // extensionsPath ya incluye baseUrl completo
       const extensionsBase = config.extensionsPath || `${config.baseUrl}app/extensions/`;
       basePath = `${extensionsBase}${extensionContext}/views`;
-      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `extension_view_${extensionContext}_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
     }
     else if (viewName.startsWith('core:')) {
       viewName = viewName.replace('core:', '');
       basePath = config.routes?.coreViews || `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
     }
     else if (viewName.includes('/')) {
       const parts = viewName.split('/');
@@ -124,17 +124,17 @@ class ogView {
         
         const restPath = parts.slice(1).join('/');
         viewName = restPath || viewName;
-        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}`;
+        cacheKey = `extension_view_${firstPart}_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
         extensionContext = firstPart;
       } else {
         ogLogger?.warn('core:view', `⚠️ "${firstPart}" NO es extensión, usando core`);
         basePath = config.routes?.coreViews || `${frameworkPath}/js/views`;
-        cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+        cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
       }
     }
     else {
       basePath = config.routes?.coreViews || `${frameworkPath}/js/views`;
-      cacheKey = `core_view_${viewName.replace(/\//g, '_')}`;
+      cacheKey = `core_view_${viewName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
     }
 
     try {

@@ -94,7 +94,7 @@ class ogForm {
     const hook = ogModule('hook');
     const conditions = ogModule('conditions');
     const config = this.getConfig();
-    const cacheKey = `form_${formName.replace(/\//g, '_')}`;
+    const cacheKey = `form_${formName.replace(/\//g, '_')}_v${config.version || '1.0.0'}`;
     let schema = cache?.get(cacheKey);
 
     if (!schema) {
@@ -807,6 +807,39 @@ class ogForm {
             ${checkboxHint}
             <span class="og-form-error"></span>
           </div>`;
+      case 'button_group':
+      case 'button_set':
+        const buttonGroupHint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
+        const buttonGroupSize = field.size === 'sm' ? 'btn-sm' : field.size === 'lg' ? 'btn-lg' : '';
+        
+        const buttonGroupOptions = (field.options || []).map((opt, index) => {
+          const optionId = `${path.replace(/\./g, '-')}-${index}`;
+          const isChecked = opt.checked || (field.defaultValue && field.defaultValue === opt.value) || (index === 0 && !field.defaultValue);
+          
+          return `
+            <input type="radio" 
+                   name="${path}" 
+                   id="${optionId}" 
+                   value="${opt.value}" 
+                   class="btn-group-input"
+                   ${isChecked ? 'checked' : ''}
+                   ${field.required ? 'required' : ''}>
+            <label class="btn btn-group-item ${buttonGroupSize}" data-input-id="${optionId}">
+              ${this.t(opt.label)}
+            </label>
+          `;
+        }).join('');
+        
+        return `
+          <div class="og-form-group">
+            <label ${labelI18n}>${label}${requiredAsterisk}</label>
+            <div class="btn-group" role="group">
+              ${buttonGroupOptions}
+            </div>
+            ${buttonGroupHint}
+            <span class="og-form-error"></span>
+          </div>`;
+
 
       default:
         const hint = field.hint ? `<small class="og-form-hint">${this.t(field.hint)}</small>` : '';
@@ -826,6 +859,7 @@ class ogForm {
     }
 
     document.addEventListener('click', (e) => {
+
       if (e.target.classList.contains('og-repeatable-add')) {
         const path = e.target.dataset.path;
         // ✅ Pasar el botón clickeado como contexto
@@ -952,6 +986,24 @@ class ogForm {
         input.dataset.userModified = 'true';
       }
     });
+
+
+    // Manejar button groups con ogEvents
+    if (window.ogEvents) {
+      ogEvents.on('.btn-group-item', 'click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const inputId = this.dataset.inputId;
+        if (inputId) {
+          const input = document.getElementById(inputId);
+          if (input && !input.checked) {
+            input.checked = true;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      });
+    }
 
     this.registeredEvents.add('form-events');
   }

@@ -14,7 +14,8 @@
       "label": "Input Email",
       "type": "email",
       "placeholder": "tu@email.com",
-      "required": true
+      "required": true,
+      "help": "Ingresa un correo electrónico válido. Lo usaremos para enviarte notificaciones importantes."
     },
     {
       "name": "password",
@@ -47,38 +48,88 @@
     },
     {
       "name": "textarea",
-      "label": "Textarea Normal (sin rows)",
+      "label": "Textarea",
       "type": "textarea",
-      "placeholder": "Texto largo sin especificar rows..."
-    },
-    {
-      "name": "textarea_rows_10",
-      "label": "Textarea con 10 filas",
-      "type": "textarea",
-      "placeholder": "Este textarea tiene rows=10 para textos más largos",
-      "rows": 10
-    },
-    {
-      "name": "textarea_full",
-      "label": "Textarea con rows y cols",
-      "type": "textarea",
-      "placeholder": "Este tiene rows=5 y cols=50",
-      "rows": 5,
-      "cols": 50
+      "placeholder": "Escribe un texto largo...",
+      "rows": 4
     },
     {
       "name": "checkbox",
-      "label": "Acepto términos y condiciones",
-      "type": "checkbox"
+      "label": "Checkbox",
+      "type": "checkbox",
+      "checkboxLabel": "Acepto los términos y condiciones"
+    },
+    {
+      "name": "radio",
+      "label": "Radio Buttons",
+      "type": "radio",
+      "options": [
+        { "value": "r1", "label": "Opción 1", "checked": true },
+        { "value": "r2", "label": "Opción 2" },
+        { "value": "r3", "label": "Opción 3" }
+      ]
+    },
+    {
+      "type": "separator",
+      "label": "Button Groups (Radio Buttons Estilizados)"
+    },
+    {
+      "name": "plan",
+      "label": "Selecciona un Plan",
+      "type": "button_group",
+      "hint": "Elige el plan que mejor se ajuste a tus necesidades",
+      "required": true,
+      "options": [
+        { "value": "basic", "label": "Básico" },
+        { "value": "pro", "label": "Pro", "checked": true },
+        { "value": "enterprise", "label": "Enterprise" }
+      ]
+    },
+    {
+      "name": "billing",
+      "label": "Periodicidad de Pago",
+      "type": "button_group",
+      "hint": "Ahorra 20% con plan anual",
+      "options": [
+        { "value": "monthly", "label": "Mensual" },
+        { "value": "annual", "label": "Anual", "checked": true }
+      ]
+    },
+    {
+      "name": "view_mode",
+      "label": "Modo de Visualización",
+      "type": "button_group",
+      "size": "sm",
+      "hint": "Ejemplo de button group con tamaño pequeño (btn-sm)",
+      "options": [
+        { "value": "list", "label": "📋 Lista", "checked": true },
+        { "value": "grid", "label": "📊 Grid" },
+        { "value": "kanban", "label": "📌 Kanban" },
+        { "value": "calendar", "label": "📅 Calendario" }
+      ]
+    },
+    {
+      "name": "size",
+      "label": "Talla",
+      "type": "button_set",
+      "required": true,
+      "hint": "Selecciona tu talla (campo requerido)",
+      "options": [
+        { "value": "xs", "label": "XS" },
+        { "value": "s", "label": "S" },
+        { "value": "m", "label": "M", "checked": true },
+        { "value": "l", "label": "L" },
+        { "value": "xl", "label": "XL" }
+      ]
     }
   ],
   "statusbar": [
     {
       "name": "submit",
       "type": "button",
-      "label": "✅ Enviar",
+      "label": "✅ Enviar Formulario",
       "action": "submit",
-      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos:', data); ogToast.success('✅ Formulario enviado');"
+      "onclick": "event.preventDefault(); const data = form.getData(this.closest('form').id); console.log('Datos del formulario:', data); ogToast.success('✅ Formulario enviado correctamente');"
     },
     {
       "name": "reset",

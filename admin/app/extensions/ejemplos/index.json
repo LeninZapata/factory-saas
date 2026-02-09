@@ -111,6 +111,13 @@
             "icon": "📐",
             "view": "sections/utils-grids",
             "order": 2
+          },
+          {
+            "id": "ejemplos-utils-buttons",
+            "title": "Botones",
+            "icon": "🔘",
+            "view": "sections/utils-buttons",
+            "order": 3
           }
         ]
       },

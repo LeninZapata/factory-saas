@@ -4,11 +4,12 @@
 class ejemplos {
   static getModules() {
     return {
-      modal: window.ogFramework?.components?.modal, //  ogModule('modal'),
+      modal: window.ogFramework?.components?.modal,
       form: window.ogFramework?.core?.form,
       toast: window.ogFramework?.components?.toast
     };
   }
+
   /**
    * Abrir modal de repetibles anidados con datos pre-cargados
    */
@@ -64,12 +65,9 @@ class ejemplos {
    */
   static async loadRepeatableMockData() {
     try {
-      // Usar mock COMPLETO con 3 niveles (proyectos + tareas + subtareas + miembros)
-      //const url = `${window.BASE_URL}extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
       const url = `admin/app/extensions/ejemplos/mock/repetibles-3-niveles-mock.json`;
       const cacheBuster = `?v=${window.VERSION}`;
 
-      // Obtener respuesta (podría ser un Response de fetch o un objeto ya parseado)
       const response = await ogApi.get(url + cacheBuster);
 
       if (!response) {
@@ -78,17 +76,14 @@ class ejemplos {
 
       let data;
 
-      // Si es un objeto y no tiene el metodo json(), asumimos que ya está parseado
       if (typeof response === 'object' && typeof response.json !== 'function') {
         data = response;
       } else if (response && typeof response.json === 'function') {
-        // Es una Response-like (fetch), validar status y parsear JSON
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         data = await response.json();
       } else {
-        // Fallback: devolver lo que venga
         data = response;
       }
 
@@ -99,6 +94,60 @@ class ejemplos {
       ogLogger.error('ext:ejemplos', 'Error cargando mock data:', error);
       return null;
     }
+  }
+
+  /**
+   * Demo de transición de estados de botón
+   * Simula: Normal → Loading → Success → Normal
+   */
+  static demoButtonStates(buttonElement) {
+    const originalText = buttonElement.textContent;
+    const originalClasses = buttonElement.className;
+
+    // Estado 1: Loading
+    buttonElement.textContent = 'Guardando...';
+    buttonElement.classList.add('btn-loading');
+    buttonElement.disabled = true;
+
+    setTimeout(() => {
+      // Estado 2: Success
+      buttonElement.classList.remove('btn-loading');
+      buttonElement.classList.add('btn-success-temp');
+      buttonElement.textContent = '✓ Guardado';
+
+      setTimeout(() => {
+        // Estado 3: Volver a normal
+        buttonElement.classList.remove('btn-success-temp');
+        buttonElement.className = originalClasses;
+        buttonElement.textContent = originalText;
+        buttonElement.disabled = false;
+      }, 2000);
+    }, 2000);
+  }
+
+  /**
+   * Demo de estado de error
+   */
+  static demoButtonError(buttonElement) {
+    const originalText = buttonElement.textContent;
+    const originalClasses = buttonElement.className;
+
+    buttonElement.textContent = 'Procesando...';
+    buttonElement.classList.add('btn-loading');
+    buttonElement.disabled = true;
+
+    setTimeout(() => {
+      buttonElement.classList.remove('btn-loading');
+      buttonElement.classList.add('btn-error-temp');
+      buttonElement.textContent = '✕ Error';
+
+      setTimeout(() => {
+        buttonElement.classList.remove('btn-error-temp');
+        buttonElement.className = originalClasses;
+        buttonElement.textContent = originalText;
+        buttonElement.disabled = false;
+      }, 2000);
+    }, 1500);
   }
 }
 
