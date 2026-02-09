@@ -136,29 +136,21 @@
   .btn-loading {
     pointer-events: none;
     opacity: 0.9;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent 0,
-        transparent 8px,
-        rgba(255, 255, 255, 0.25) 8px,
-        rgba(255, 255, 255, 0.25) 16px
-      );
-      animation: btn-loading-stripes 0.8s linear infinite;
-    }
   }
 
-  @keyframes btn-loading-stripes {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 32px 32px;
-    }
+  .btn-loading::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 10px,
+      rgba(255, 255, 255, 0.3) 10px,
+      rgba(255, 255, 255, 0.3) 20px
+    );
+    background-size: 28px 28px;
+    animation: og-btn-loadicng-stripes 0.8s linear infinite;
   }
 
   /* Estado Processing (alternativa con puntos) */
@@ -169,14 +161,8 @@
       content: '...';
       position: absolute;
       right: 0.5rem;
-      animation: btn-processing-dots 1.5s steps(4) infinite;
+      animation: og-btn-processing-dots 1.5s steps(4) infinite;
     }
-  }
-
-  @keyframes btn-processing-dots {
-    0%, 20% { content: '.'; }
-    40% { content: '..'; }
-    60%, 100% { content: '...'; }
   }
 
   /* Estado Success temporal */
@@ -227,6 +213,7 @@
     margin: 0;
     border-right: none;
     transition: none;
+    border-radius: 0;
   }
 
   /* Primer botón */
@@ -276,18 +263,18 @@
      CONTEXTOS ESPECÍFICOS
      ======================================== */
 
-  .form-statusbar .btn {
+  .og-form-statusbar .btn {
     min-width: 100px;
   }
 
-  .table-actions {
-    display: flex;
-    gap: 0.25rem;
+}
 
-    .btn {
-      --og-btn-padding-x: 0.5rem;
-      --og-btn-padding-y: 0.25rem;
-      --og-btn-font-size: var(--og-font-xs);
-    }
-  }
+@keyframes og-btn-processing-dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+@keyframes og-btn-loadicng-stripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 0px 28px; }
 }

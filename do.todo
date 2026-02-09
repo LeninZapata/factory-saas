@@ -1,6 +1,6 @@
 Backend (Framework):
-☐ partir el form.js en 2 o 3 partes para optimizar la carga
-☐ Estados del boton, es decir por ejemplo el de esperar... disabled, etc...
+✔ partir el form.js en 2 o 3 partes para optimizar la carga @done(09-02-2026 14:39)
+✔ Estados del boton, es decir por ejemplo el de esperar... disabled, etc... @done(09-02-2026 15:00)
 porque tengo ejemplos que necesita ese estado y actualmente se lo hace de forma manual en js
 ✔ Mock datos de ejemplos databla ejemplos no funciona no esta obteniendo la ruta que es @done(18-01-2026 12:38)
 revisar, parece que simplemente es de ruta de config principal, debes pasarle los archivos
