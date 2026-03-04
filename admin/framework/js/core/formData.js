@@ -56,17 +56,24 @@ class ogFormData {
       return;
     }
 
+    // Pausar evaluaciones de condiciones mientras se llena el formulario
+    const conditions = ogModule('conditions');
+    if (conditions) {
+      conditions.pauseEvaluations();
+      ogLogger?.info('core:form', `⏸️ Condiciones pausadas para llenar formulario ${formId}`);
+    }
+
     if (!formEl.dataset.formData) {
       formEl.dataset.formData = JSON.stringify(data);
     }
     
     formEl.dataset.hasFillData = 'true';
 
-    // Contar repetibles a llenar
+    // Contar repetibles a llenar (solo si tienen al menos 1 item)
     const countRepeatables = (fields) => {
       let count = 0;
       fields?.forEach(field => {
-        if (field.type === 'repeatable' && data[field.name]) {
+        if (field.type === 'repeatable' && Array.isArray(data[field.name]) && data[field.name].length > 0) {
           count++;
         } else if (field.type === 'group' && field.fields) {
           count += countRepeatables(field.fields);
@@ -107,11 +114,23 @@ class ogFormData {
 
     fillSimpleFields(schema.fields, formEl);
 
+    // Llenar campos del statusbar
+    if (schema.statusbar && Array.isArray(schema.statusbar)) {
+      schema.statusbar.forEach(field => {
+        if (field.name && data[field.name] !== undefined) {
+          const input = formEl.querySelector(`[name="${field.name}"]`);
+          if (input) {
+            this.setInputValue(input, data[field.name], true);
+          }
+        }
+      });
+    }
+
     // Llenar repetibles
     if (!skipRepeatables) {
       const fillRepeatableFields = (fields, targetContainer) => {
         fields?.forEach(field => {
-          if (field.type === 'repeatable' && data[field.name]) {
+          if (field.type === 'repeatable' && Array.isArray(data[field.name]) && data[field.name].length > 0) {
             setTimeout(() => {
               this.fillRepeatable(targetContainer, field, data, '');
             }, 100);
@@ -126,6 +145,26 @@ class ogFormData {
       };
 
       fillRepeatableFields(schema.fields, formEl);
+      
+      // Si no hay repetibles para llenar, reanudar condiciones inmediatamente
+      if (repeatablesToFill === 0) {
+        const conditions = ogModule('conditions');
+        if (conditions) {
+          setTimeout(() => {
+            conditions.resumeEvaluations(formId);
+            ogLogger?.info('core:form', `▶️ Condiciones reanudadas (sin repetibles) para ${formId}`);
+          }, 150);
+        }
+      }
+    } else {
+      // Si se saltaron los repetibles, reanudar condiciones
+      const conditions = ogModule('conditions');
+      if (conditions) {
+        setTimeout(() => {
+          conditions.resumeEvaluations(formId);
+          ogLogger?.info('core:form', `▶️ Condiciones reanudadas (skip repetibles) para ${formId}`);
+        }, 150);
+      }
     }
   }
 
@@ -180,7 +219,10 @@ class ogFormData {
           const total = parseInt(formEl.dataset.repeatablesToFill);
           if (filled >= total) {
             if (conditions) {
-              setTimeout(() => conditions.resumeEvaluations(formEl.id), 100);
+              setTimeout(() => {
+                conditions.resumeEvaluations(formEl.id);
+                ogLogger?.info('core:form', `▶️ Condiciones reanudadas (repetibles completos) para ${formEl.id}`);
+              }, 100);
             }
           }
         }
@@ -256,11 +298,16 @@ class ogFormData {
         }
       });
     } else if (input.tagName === 'SELECT') {
-      if (input.dataset.source && !isFilling) {
-        input.addEventListener('select:afterLoad', function handler() {
-          input.value = value;
-          input.removeEventListener('select:afterLoad', handler);
-        }, { once: true });
+      if (input.dataset.source) {
+        // Intentar inmediatamente (funciona si las opciones ya cargaron de caché)
+        input.value = String(value);
+        // Si el select aún no tiene opciones (carga asíncrona pendiente), esperar al evento
+        if (input.value !== String(value)) {
+          input.addEventListener('select:afterLoad', function handler() {
+            input.value = value;
+            input.removeEventListener('select:afterLoad', handler);
+          }, { once: true });
+        }
       } else {
         input.value = value;
       }

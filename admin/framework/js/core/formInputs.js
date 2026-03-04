@@ -104,7 +104,12 @@ class ogFormInputs {
 
     if (field.type === 'html') {
       const htmlId = path ? `data-field-name="${path}"` : '';
-      return `<div class="og-form-html-wrapper" ${htmlId}>${field.content || ''}</div>`;
+      let processedContent = field.content || '';
+      
+      // Procesar traducciones usando el método centralizado de formCore
+      processedContent = core?.processI18nInString(processedContent) || processedContent;
+      
+      return `<div class="og-form-html-wrapper" ${htmlId}>${processedContent}</div>`;
     }
 
     const label = core?.t(field.label) || path;
@@ -350,6 +355,8 @@ class ogFormInputs {
     const firstOption = selectEl.querySelector('option[value=""]');
     const placeholder = firstOption ? firstOption.cloneNode(true) : null;
 
+    // Usar URL completa (con query params) como cache key para evitar colisiones entre selects con mismo endpoint pero distinto filtro
+    const baseSource = this.getBaseUrl(source);
     const cacheKey = `${source}|${valueField}|${labelField}`;
     if (core?.selectCache?.has(cacheKey)) {
       const cachedData = core.selectCache.get(cacheKey);
@@ -405,6 +412,20 @@ class ogFormInputs {
     if (currentValue) {
       selectEl.value = currentValue;
     }
+  }
+
+  /**
+   * Extrae la URL base sin query params y normaliza slashes
+   * Ejemplo: 'api/productAdAsset?per_page=1000' -> '/api/productAdAsset'
+   */
+  static getBaseUrl(url) {
+    if (!url) return '';
+    
+    // Remover query params
+    const baseUrl = url.split('?')[0].split('#')[0];
+    
+    // Normalizar: agregar slash inicial si no existe
+    return baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl;
   }
 }
 

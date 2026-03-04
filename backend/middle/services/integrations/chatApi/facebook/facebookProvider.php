@@ -14,7 +14,6 @@ class facebookProvider extends baseChatApiProvider {
     $this->instance = '';
     $this->baseUrl = '';
 
-    // Validar config específico de Facebook
     $this->validateFacebookConfig();
   }
 
@@ -22,7 +21,11 @@ class facebookProvider extends baseChatApiProvider {
     return 'whatsapp-cloud-api';
   }
 
-  // Validación específica de Facebook (no sobrescribe validateConfig)
+  // Facebook usa números limpios sin sufijo @s.whatsapp.net
+  protected function formatNumber(string $number): string {
+    return preg_replace('/[^0-9]/', '', $number);
+  }
+
   private function validateFacebookConfig(): void {
     if (empty($this->apiKey)) {
       ogLog::throwError("validateFacebookConfig - access_token requerido", [], ['module' => 'facebookProvider']);
@@ -33,101 +36,139 @@ class facebookProvider extends baseChatApiProvider {
     }
   }
 
-  function sendMessage(string $number, string $message, string $url = ''): array {
+  private function postToGraph(array $payload): array {
+    $endpoint = "https://graph.facebook.com/v21.0/{$this->phoneNumberId}/messages";
+    $http = ogApp()->helper('http');
 
+    $response = $http::post($endpoint, $payload, [
+      'headers' => [
+        'Authorization: Bearer ' . $this->apiKey,
+        'Content-Type: application/json'
+      ]
+    ]);
+
+    if (!$response['success']) {
+      ogLog::error('facebookProvider.postToGraph - HTTP error', ['error' => $response['error'] ?? null, 'payload' => $payload], self::$logMeta);
+      return $this->errorResponse($response['error'] ?? 'HTTP error al llamar Graph API');
+    }
+
+    $data = $response['data'];
+
+    // Graph API retorna error en el body con código 200 a veces
+    if (isset($data['error'])) {
+      ogLog::error('facebookProvider.postToGraph - Graph API error', ['graph_error' => $data['error'], 'payload' => $payload], self::$logMeta);
+      return $this->errorResponse($data['error']['message'] ?? 'Graph API error', $data['error']['code'] ?? null);
+    }
+
+    if (isset($data['messages'][0]['id'])) {
+      return $this->successResponse([
+        'message_id' => $data['messages'][0]['id'],
+        'timestamp'  => time()
+      ]);
+    }
+
+    return $this->errorResponse('Graph API - respuesta inesperada: ' . json_encode($data));
+  }
+
+  function sendMessage(string $number, string $message, string $url = ''): array {
     $number = $this->formatNumber($number);
     $mediaType = $this->detectMediaType($url);
 
-    // URL base de Graph API
-    $endpoint = "https://graph.facebook.com/v21.0/{$this->phoneNumberId}/messages";
-
-    // Payload base
     $payload = [
       'messaging_product' => 'whatsapp',
-      'recipient_type' => 'individual',
-      'to' => $number
+      'recipient_type'    => 'individual',
+      'to'                => $number
     ];
 
     if ($mediaType === 'text') {
-      // Mensaje de texto simple
       $payload['type'] = 'text';
       $payload['text'] = ['body' => $message];
+    } elseif ($mediaType === 'audio') {
+      $payload['type']  = 'audio';
+      $payload['audio'] = ['link' => $url];
+    } elseif ($mediaType === 'voice') {
+      // ogg/opus con voice:true → llega como nota de voz grabada
+      $payload['type']  = 'audio';
+      $payload['audio'] = ['link' => $url, 'voice' => true];
+    } elseif ($mediaType === 'image') {
+      $media = ['link' => $url];
+      if ($message) $media['caption'] = $message; // omitir si vacío, null rompe Graph API
+      $payload['type']  = 'image';
+      $payload['image'] = $media;
+    } elseif ($mediaType === 'video') {
+      $media = ['link' => $url];
+      if ($message) $media['caption'] = $message;
+      $payload['type']  = 'video';
+      $payload['video'] = $media;
     } else {
-      // Media (image, video, document, audio)
-      $payload['type'] = $mediaType;
-
-      if ($mediaType === 'audio') {
-        $payload['audio'] = ['link' => $url];
-      } elseif ($mediaType === 'image') {
-        $payload['image'] = [
-          'link' => $url,
-          'caption' => $message ?: null
-        ];
-      } elseif ($mediaType === 'video') {
-        $payload['video'] = [
-          'link' => $url,
-          'caption' => $message ?: null
-        ];
-      } elseif ($mediaType === 'document') {
-        $payload['document'] = [
-          'link' => $url,
-          'caption' => $message ?: null,
-          'filename' => $this->extractFilename($url)
-        ];
-      }
+      $media = ['link' => $url, 'filename' => $this->extractFilename($url)];
+      if ($message) $media['caption'] = $message;
+      $payload['type']     = 'document';
+      $payload['document'] = $media;
     }
 
+    ogLog::debug('facebookProvider.sendMessage - payload', ['media_type' => $mediaType, 'payload' => $payload], self::$logMeta);
+
+    // Con media: reintentar hasta 3 veces si Graph API falla (hosting lento)
+    $maxAttempts = !empty($url) ? 3 : 1;
+    $retryDelay  = 4; // segundos entre reintentos
+    $lastResult  = null;
+
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+      try {
+        $result = $this->postToGraph($payload);
+        if ($result['success']) return $result;
+
+        $lastResult = $result;
+        ogLog::warning('facebookProvider.sendMessage - Intento fallido', [
+          'attempt'    => $attempt,
+          'max'        => $maxAttempts,
+          'media_type' => $mediaType,
+          'error'      => $result['error'] ?? 'unknown'
+        ], self::$logMeta);
+      } catch (Exception $e) {
+        $lastResult = $this->errorResponse($e->getMessage());
+        ogLog::warning('facebookProvider.sendMessage - Excepción intento', [
+          'attempt' => $attempt,
+          'error'   => $e->getMessage()
+        ], self::$logMeta);
+      }
+
+      if ($attempt < $maxAttempts) sleep($retryDelay);
+    }
+
+    return $lastResult ?? $this->errorResponse('Sin respuesta de Graph API');
+  }
+
+  // $interactive: objeto completo del campo "interactive" del payload de Facebook
+  function sendInteractive(string $number, array $interactive): array {
+    $number = $this->formatNumber($number);
+
+    $payload = [
+      'messaging_product' => 'whatsapp',
+      'recipient_type'    => 'individual',
+      'to'                => $number,
+      'type'              => 'interactive',
+      'interactive'       => $interactive
+    ];
+
     try {
-      $http = ogApp()->helper('http');
-      $response = $http::post($endpoint, $payload, [
-        'headers' => [
-          'Authorization: Bearer ' . $this->apiKey,
-          'Content-Type: application/json'
-        ]
-      ]);
-
-      if (!$response['success']) {
-        return $this->errorResponse(
-          $response['error'] ?? __('services.facebook.send_message.http_error')
-        );
-      }
-
-      $data = $response['data'];
-
-      if (isset($data['messages'][0]['id'])) {
-        return $this->successResponse([
-          'message_id' => $data['messages'][0]['id'],
-          'timestamp' => time()
-        ]);
-      }
-
-      return $this->errorResponse(__('services.facebook.send_message.unexpected_response'));
-
+      return $this->postToGraph($payload);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
 
   function sendPresence(string $number, string $presenceType, int $delay = 1200): array {
-    // Facebook no soporta typing indicators directamente por API
-    // Retornar éxito silenciosamente (solo hacer sleep si es necesario)
-    if ($delay > 0) {
-      usleep($delay * 1000); // Convertir ms a microsegundos
-    }
-
+    // Facebook no soporta typing indicators, solo simulamos el delay
+    if ($delay > 0) usleep($delay * 1000);
     return $this->successResponse(['presence_sent' => false, 'note' => 'Facebook API does not support typing indicators']);
   }
 
   function sendArchive(string $chatNumber, string $lastMessageId = 'archive', bool $archive = true): array {
-    // Facebook no tiene endpoint directo para archivar chats
-    // Retornar éxito silenciosamente
-    return $this->successResponse([
-      'archived' => false,
-      'note' => 'Facebook API does not support chat archiving via API'
-    ]);
+    return $this->successResponse(['archived' => false, 'note' => 'Facebook API does not support chat archiving via API']);
   }
 
-  // Helper: Extraer filename de URL
   private function extractFilename(string $url): string {
     $parsedUrl = parse_url($url, PHP_URL_PATH);
     $filename = pathinfo($parsedUrl, PATHINFO_BASENAME);

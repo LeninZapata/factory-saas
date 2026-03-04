@@ -6,15 +6,27 @@ porque tengo ejemplos que necesita ese estado y actualmente se lo hace de forma 
 revisar, parece que simplemente es de ruta de config principal, debes pasarle los archivos
 del index.html para que vea de donde lo arma asi como un ejemplo de archivo de code para que vea
 como obtiene laruta principal.
-☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
-tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
-ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
 ☐ en el schema cuando haces esto
 "list": {"method": "GET", "path": "/api/productAdAsset", "middleware": [""]},
 envia un error osea en el middleware [""]
-☐ Si si le quito el auth me aparece NO AUTORIZADO, revisa que paso 
-"list": {"method": "GET", "path": "/api/product", "middleware": []},
+☐ Si si le quito el auth me aparece NO AUTORIZADO, revisa que paso
+"list": {"method": "GET", "path": "/api/product", "middleware": []}
+☐ PROVOCAR LENTITUD EN LA respuesta del servidor para ver como se comporta el sistema en el frontend para cada peticion
+esto hara tener una CLARIDAD mayor a nivel de experiencia de usuario y asi poder identificar problemas de rendimiento y solucionarlos antes de que los usuarios los experimenten, esto es importante para garantizar una buena experiencia de usuario y evitar que los usuarios se frustren por la lentitud del sistema, esto se puede hacer agregando un retraso artificial en el servidor para simular una respuesta lenta y luego monitorear el comportamiento del sistema en el frontend para identificar cualquier problema de rendimiento y solucionarlo antes de que los usuarios lo experimenten.
+
+
+
 Frontend (Framework):
+☐ Hay un scroll que no se de donde sale pero es nivel de sistema completo...
+☐ Crear el boton link....
+☐ Seguir puliendo el diseño completo de UI (CSS mas que todo hay un modelo a seguir)
+☐ el modal hacerlo que sean como paneles que aparenzan a los lados, agregar claramente la funcionalidad de que no se cierra dandole clc en el body
+☐ hacer que el modal tenga atributos dinamos al titulo, ejemplo cuando se abra que el titulo sea un nombre de los campos internos creo que seria mejor asi pero es opcional
+☐ los grupos fields no son responsive, hacerlos responsive
+☐ La tabla creo que no async se esta ejecutando cuando sus data esta cargada la cual es mal pero el tema de table hay que cambiarla de ley porque hay que hacer un minisupabase asi que esto l ocambia todo 
+  a nivel de componente de talbe
+☐ Hacer que la carga de los repeater tenguna un loading... para evitar que se vea como que se va armando 1x1
+☐ aLGO PAS CON el cache y delos diseños revisar el mundo de los cache, deben todo ser por parte de la VERSION
 ✔ En el hosting para que se actualice el formulario json tuve que cerar y entrar @done(08-02-2026 17:20)
 parece que tiene caaceh de session, esto deberia tener cache de version...
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
@@ -56,6 +68,17 @@ michos tokens.
 ☐ Revisa si carga style y script por tab, actualmente lo hace por menu y submenu pero digamos 
 que se requiera por tab porque digamos sea una tab especial con mucha carga entonces no necesita
 cargar el script en el submenu o menu sino solo en la tab.
+☐ Los logs deben primero borrarse del sistema la mayoria y dejar los necesarios para...
+_ hacer que solo muestre los logs de errores y no los de info o debug
+_ crer unos info pero en configuracion hacer que luego de se dejen de ejecutar los info
+y asi para poder cada vez quitarle mas logs y que no se llene el sistema de logs y se vuelva lento
+_ lo que me interesa es agruparlos, por el momento la los listos pero tengo que pedirle a la 
+IA que me ayude agruparlos, porque ejemplo un grupo puede ser el inicio de chat entonces me gustaria 
+ver lo que paso dentro de ese grupo, creo que si se puede tal vez dandole un ID que recorra todo el proceso
+entonces este lo puede agrupar y yo revisar, esto seria genial prque actualmente lo lista por order y 
+tiene un medio secuencia pero no agrupa esto me ayudaria identificar problemas en el proceso, por ejemplo si el cliente se queja de que no le llego el mensaje de upsell, yo puedo revisar ese grupo y ver que paso ahi, o si se queja de que no le llego el mensaje de bienvenida, yo puedo revisar ese grupo y ver que paso ahi, esto me ayudaria a identificar problemas en el proceso y solucionarlos mas rapido
+
+
 
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
@@ -65,3 +88,23 @@ https://chat.deepseek.com/a/chat/s/dbedab39-f8b3-465c-b25d-217bf9787d87
 https://marketplace.visualstudio.com/items?itemName=VASubasRaj.flashpost
 ☐ En wordpress existe un plugin que te dice la version de php minuma que necesitas
 https://wordpress.org/plugins/sierotki/ esto deberiamos tambien hacer en los plugins
+☐ Tener varias cuenas de copiloto con el mismo github https://www.google.com/search?q=como+agregar+varias+cuentas+de+copilot+en+vscode&sca_esv=190a96a9d156750b&sxsrf=ANbL-n6_xmW-h-ndj1nsOm-Z_po0yjnrQQ%3A1771016744303&udm=50&fbs=ADc_l-bpk8W4E-qsVlOvbGJcDwpn75JLSqV3j_xbkySF4grw51H30IP-0-FgEAUalWuLGReuPxwY1XJn-KcoPw8-j7gPmDhIlzW26CnVSGeGlpeLqqRzcnYbVaxCwe1cZuC6K9LEItujwZhN_-uqW4TyOOfEvMjVGovmuJouBaZrBdUWVEeT9SXYp74N0i0ejHq82GcpgX311zLb03PqMgzprhD4qxT4Jw&aep=1&ntc=1&sa=X&ved=2ahUKEwjmyr2_r9eSAxVATDABHRGaAEcQ2J8OegQICRAE&biw=1393&bih=902&dpr=1&mstk=AUtExfDJzYWquRKB48yd5aWicm4nw2-Omly6jmw75MpIEU9kuEBs8MM14aPgT9bKUv7-d92iFate9xa82kahHVBJM4YBhxFb6KsupNbOHoFE5r-uhdQmcopLmPBQxv-ARc8gqBLEDmNzVTMnoM0XSGF-ihyOAgfUjAjTG0a0UuiFoolWGXnrPVOVBZZS8CS-gdx_wcNTJ-r0RDlxFZYKBXqe8X4ax20L33uZSNVezFyKDNIWfZ6QPsb5XRDrSrBp8JhUAH0frCB5Mcfjfzl2ZMzfyPEJRGnzAu4nt7NzszMiMB750QaGD9OH6qFABy8YHAzEH61wqn56U1SADw&csuir=1&mtid=KpKPafLTJKq3wt0P9OeuwAQ
+☐ el componente de los permisos no funciona tan bien revisa eso por tabs @BUG del que existe
+
+
+MiniApp:
+☐ Crear un sistema mas logico de logs para dev
+  ☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
+  tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
+  ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
+☐ Crear un sistema de salud de software, quiere decir que registre cada cierto tiempo el la pagina esta bien o mal 
+con espera de tiempo y todo porque a veces puede haber problemas con el hosting. Esto tambien debe tener alertas.
+☐ necesito crear un miniSupaBase, que pueda guardar rapidamente tablas un configuraciones para que la
+IA me pueda enteder rapido porque solo copiaria y pegaria tabla o respuestas rapidas como PRE-PLANTILLAS
+con eso ya puedo tener una base de datos rapida para que la IA me pueda ayudar a generar codigo mas rapido, esto me ayudaria a ser mas productivo y a generar codigo de mejor calidad, esto se puede hacer creando una base de datos rapida que pueda guardar tablas y configuraciones para que la IA me pueda entender rapido y asi poder generar codigo mas rapido y de mejor calidad.
+☐ Ejecutador de de rutas rapido interno sin problemas, debe ser mas rapido que el de vscode.
+Crear dentro en endpoints donde se pueda ejecutar un endpoint inclusive con variables
+asi se ejecuta basado el auth actual ya que no puedo ejecutar en la url porque tengo que quitar el auth acada momento..
+☐ Crwear un sistema de CRONs basado en orden de ejecucion y parametros....
+osea endpoint funicona como esta actualmente, pero debe haber al menos en desaroollo
+un sistem de grupos de webhook que se ejecuten para hacer prueba demasiadsas rapidas

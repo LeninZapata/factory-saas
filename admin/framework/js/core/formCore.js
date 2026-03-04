@@ -76,6 +76,28 @@ class ogFormCore {
     return i18n?.t(key) || key;
   }
 
+  static processI18nInString(str) {
+    const i18n = ogModule('i18n');
+
+    if (!str || typeof str !== 'string') return str;
+
+    // Reemplazar {i18n:key} o {i18n:key|param1:value1|param2:value2}
+    return str.replace(/\{i18n:([^}]+)\}/g, (match, content) => {
+      const parts = content.split('|');
+      const key = parts[0];
+      const params = {};
+
+      for (let i = 1; i < parts.length; i++) {
+        const [paramKey, paramValue] = parts[i].split(':');
+        if (paramKey && paramValue) {
+          params[paramKey] = paramValue;
+        }
+      }
+
+      return i18n ? i18n.t(key, params) : key;
+    });
+  }
+
   static async load(formName, container = null, data = null, isCore = null, afterRender = null) {
     const cache = ogModule('cache');
     const hook = ogModule('hook');
@@ -308,12 +330,22 @@ class ogFormCore {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
+  /**
+   * Limpia el cache de selects que coincidan con la URL base
+   * Normaliza la URL para que coincida correctamente
+   */
   static clearSelectCache(source) {
     if (!this.selectCache) return 0;
 
+    // Normalizar URL del input: quitar query params y agregar slash inicial
+    const baseSource = this.normalizeUrlForCache(source);
+
     const keysToDelete = [];
     this.selectCache.forEach((value, key) => {
-      if (key.includes(source)) {
+      // La clave tiene formato: "url_completa|valueField|labelField"
+      // Normalizar también la URL de la key para comparar solo la base
+      const keyUrl = this.normalizeUrlForCache(key.split('|')[0]);
+      if (keyUrl === baseSource) {
         keysToDelete.push(key);
       }
     });
@@ -324,6 +356,19 @@ class ogFormCore {
     });
 
     return keysToDelete.length;
+  }
+
+  /**
+   * Normaliza URL para cache: remueve query params y normaliza slashes
+   */
+  static normalizeUrlForCache(url) {
+    if (!url) return '';
+    
+    // Remover query params
+    const baseUrl = url.split('?')[0].split('#')[0];
+    
+    // Normalizar: agregar slash inicial si no existe
+    return baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl;
   }
 }
 

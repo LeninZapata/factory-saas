@@ -46,6 +46,14 @@
   --og-purple-600: #9333ea;
   --og-purple-700: #7e22ce;
   
+  /* Indigos */
+  --og-indigo-50: #eef2ff;
+  --og-indigo-100: #e0e7ff;
+  --og-indigo-200: #c7d2fe;
+  --og-indigo-500: #6366f1;
+  --og-indigo-600: #4f46e5;
+  --og-indigo-700: #4338ca;
+  
   /* Pinks */
   --og-pink-50: #fdf2f8;
   --og-pink-100: #fce7f3;
@@ -69,6 +77,18 @@
   --og-orange-500: #f97316;
   --og-orange-600: #ea580c;
   --og-orange-700: #c2410c;
+  
+  /* Grays */
+  --og-gray-50: #f9fafb;
+  --og-gray-100: #f3f4f6;
+  --og-gray-200: #e5e7eb;
+  --og-gray-300: #d1d5db;
+  --og-gray-400: #9ca3af;
+  --og-gray-500: #6b7280;
+  --og-gray-600: #4b5563;
+  --og-gray-700: #374151;
+  --og-gray-800: #1f2937;
+  --og-gray-900: #111827;
 }
 
 .onlygrow-active {
@@ -111,6 +131,13 @@
   .og-bg-purple-500 { background-color: var(--og-purple-500); }
   .og-bg-purple-600 { background-color: var(--og-purple-600); }
   
+  /* Indigos */
+  .og-bg-indigo-50 { background-color: var(--og-indigo-50); }
+  .og-bg-indigo-100 { background-color: var(--og-indigo-100); }
+  .og-bg-indigo-200 { background-color: var(--og-indigo-200); }
+  .og-bg-indigo-500 { background-color: var(--og-indigo-500); }
+  .og-bg-indigo-600 { background-color: var(--og-indigo-600); }
+  
   /* Pinks */
   .og-bg-pink-50 { background-color: var(--og-pink-50); }
   .og-bg-pink-100 { background-color: var(--og-pink-100); }
@@ -137,6 +164,12 @@
   .og-bg-gray-100 { background-color: var(--og-gray-100); }
   .og-bg-gray-200 { background-color: var(--og-gray-200); }
   .og-bg-gray-300 { background-color: var(--og-gray-300); }
+  .og-bg-gray-400 { background-color: var(--og-gray-400); }
+  .og-bg-gray-500 { background-color: var(--og-gray-500); }
+  .og-bg-gray-600 { background-color: var(--og-gray-600); }
+  .og-bg-gray-700 { background-color: var(--og-gray-700); }
+  .og-bg-gray-800 { background-color: var(--og-gray-800); }
+  .og-bg-gray-900 { background-color: var(--og-gray-900); }
   
   /* White & Black */
   .og-bg-white { background-color: #fff; }
@@ -162,7 +195,12 @@
   
   /* Reds */
   .og-text-red-500 { color: var(--og-red-500); }
-  .og-text-red-600 { color: var(--og-red-600); }
+  .ogIndigos */
+  .og-text-indigo-500 { color: var(--og-indigo-500); }
+  .og-text-indigo-600 { color: var(--og-indigo-600); }
+  .og-text-indigo-700 { color: var(--og-indigo-700); }
+  
+  /* -text-red-600 { color: var(--og-red-600); }
   .og-text-red-700 { color: var(--og-red-700); }
   
   /* Purples */
@@ -170,9 +208,11 @@
   .og-text-purple-700 { color: var(--og-purple-700); }
   
   /* Grays */
+  .og-text-gray-400 { color: var(--og-gray-400); }
   .og-text-gray-500 { color: var(--og-gray-500); }
-  .og-text-gray-600 { color: #6b7280; }
+  .og-text-gray-600 { color: var(--og-gray-600); }
   .og-text-gray-700 { color: var(--og-gray-700); }
+  .og-text-gray-800 { color: var(--og-gray-800); }
   .og-text-gray-900 { color: var(--og-gray-900); }
   
   /* White & Black */

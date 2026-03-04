@@ -3,10 +3,14 @@ class ogFormRender {
     const core = ogModule('formCore');
     const realId = schema.id.split('-')[0];
     
+    // Procesar título y descripción para soportar tanto i18n:key como {i18n:key}
+    const title = schema.title ? core?.processI18nInString(core?.t(schema.title)) : '';
+    const description = schema.description ? core?.processI18nInString(core?.t(schema.description)) : '';
+    
     return `
       <div class="og-form-container">
-        ${schema.title ? `<h2>${core?.t(schema.title)}</h2>` : ''}
-        ${schema.description ? `<p class="og-form-desc">${core?.t(schema.description)}</p>` : ''}
+        ${title ? `<h2>${title}</h2>` : ''}
+        ${description ? `<p class="og-form-desc">${description}</p>` : ''}
 
         <form id="${schema.id}" data-form-id="${schema.id}" data-real-id="${realId}" method="post">
           ${schema.toolbar ? this.renderToolbar(schema.toolbar) : ''}
@@ -29,10 +33,10 @@ class ogFormRender {
       }
     });
 
-    const leftHtml = leftItems.length > 0 ? `<div class="og-toolbar-left">${this.renderFields(leftItems)}</div>` : '';
-    const rightHtml = rightItems.length > 0 ? `<div class="og-toolbar-right">${this.renderFields(rightItems)}</div>` : '';
+    const leftHtml = leftItems.length > 0 ? `<div class="og-flex og-gap-sm">${this.renderFields(leftItems)}</div>` : '';
+    const rightHtml = rightItems.length > 0 ? `<div class="og-flex og-gap-sm">${this.renderFields(rightItems)}</div>` : '';
 
-    return `<div class="og-form-toolbar">${leftHtml}${rightHtml}</div>`;
+    return `<div class="og-form-toolbar og-flex og-between">${leftHtml}${rightHtml}</div>`;
   }
 
   static renderStatusbar(items) {
@@ -106,6 +110,24 @@ class ogFormRender {
     // Serializar el schema de fields para guardar en data-field-schema
     const fieldSchemaJson = JSON.stringify(field.fields || []).replace(/"/g, '&quot;');
 
+    // Serializar TODAS las propiedades del repeatable para repeatables anidados
+    const dataAttributes = `
+      data-path="${path}"
+      data-field-schema="${fieldSchemaJson}"
+      ${field.columns ? `data-columns="${field.columns}"` : ''}
+      ${field.gap ? `data-gap="${field.gap}"` : ''}
+      ${field.accordion !== undefined ? `data-accordion="${field.accordion}"` : ''}
+      ${field.hasHeader !== undefined ? `data-has-header="${field.hasHeader}"` : ''}
+      ${field.headerTitle ? `data-header-title="${field.headerTitle}"` : ''}
+      ${field.removeText ? `data-remove-text="${field.removeText}"` : ''}
+      ${field.accordionSingle !== undefined ? `data-accordion-single="${field.accordionSingle}"` : ''}
+      ${field.accordionOpenFirst !== undefined ? `data-accordion-open-first="${field.accordionOpenFirst}"` : ''}
+      ${field.accordionOpenAll !== undefined ? `data-accordion-open-all="${field.accordionOpenAll}"` : ''}
+      ${field.sortable !== undefined ? `data-sortable="${field.sortable}"` : ''}
+      ${field.initialItems !== undefined ? `data-initial-items="${field.initialItems}"` : ''}
+      ${field.buttonPosition ? `data-button-position="${field.buttonPosition}"` : ''}
+    `.trim().replace(/\s+/g, ' ');
+
     if (buttonPosition === 'middle') {
       return `
         <div class="og-form-repeatable" data-field-path="${path}">
@@ -115,7 +137,7 @@ class ogFormRender {
           <div class="og-repeatable-add-container" style="margin: 0.5rem 0;">
             ${addButton}
           </div>
-          <div class="og-repeatable-items" data-path="${path}" data-field-schema="${fieldSchemaJson}"></div>
+          <div class="og-repeatable-items" ${dataAttributes}></div>
         </div>
       `;
     } else if (buttonPosition === 'bottom') {
@@ -124,7 +146,7 @@ class ogFormRender {
           <div class="og-repeatable-header">
             ${headerContent}
           </div>
-          <div class="og-repeatable-items" data-path="${path}" data-field-schema="${fieldSchemaJson}"></div>
+          <div class="og-repeatable-items" ${dataAttributes}></div>
           <div class="og-repeatable-add-container" style="margin: 0.5rem 0; text-align: center;">
             ${addButton}
           </div>
@@ -137,7 +159,7 @@ class ogFormRender {
             ${headerContent}
             ${addButton}
           </div>
-          <div class="og-repeatable-items" data-path="${path}" data-field-schema="${fieldSchemaJson}"></div>
+          <div class="og-repeatable-items" ${dataAttributes}></div>
         </div>
       `;
     }

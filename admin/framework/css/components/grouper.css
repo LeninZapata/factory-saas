@@ -75,6 +75,10 @@
   /* Contenido */
   .og-grouper-content {
     padding: 1rem;
+
+    & .og-repeatable-item{
+      border: 1px solid var(--og-form-repeatable-border);
+    }
   }
 
   /* ==========================================================================

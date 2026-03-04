@@ -934,7 +934,7 @@
       "label": "⏰ Recordatorios (Header + Sortable)",
       "type": "repeatable",
       "description": "Items con header simple y función de ordenamiento - arrastra para reordenar",
-      "hasHeader": true,
+      "hasHeader": false,
       "sortable": true,
       "headerTitle": "⏰ Recordatorio #{index}",
       "addText": "➕ Agregar Recordatorio",

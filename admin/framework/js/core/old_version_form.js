@@ -259,10 +259,10 @@ class ogForm {
       }
     });
 
-    const leftHtml = leftItems.length > 0 ? `<div class="og-toolbar-left">${this.renderFields(leftItems)}</div>` : '';
-    const rightHtml = rightItems.length > 0 ? `<div class="og-toolbar-right">${this.renderFields(rightItems)}</div>` : '';
+    const leftHtml = leftItems.length > 0 ? `<div class="og-flex og-gap-sm">${this.renderFields(leftItems)}</div>` : '';
+    const rightHtml = rightItems.length > 0 ? `<div class="og-flex og-gap-sm">${this.renderFields(rightItems)}</div>` : '';
 
-    return `<div class="og-form-toolbar">${leftHtml}${rightHtml}</div>`;
+    return `<div class="og-form-toolbar og-flex og-between">${leftHtml}${rightHtml}</div>`;
   }
 
   static renderStatusbar(items) {

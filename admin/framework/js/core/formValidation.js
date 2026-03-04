@@ -5,13 +5,27 @@ class ogFormValidation {
     
     if (!formEl) {
       ogLogger?.warn('core:form', `Formulario ${formId} no encontrado`);
-      return false;
+      return {
+        success: false,
+        message: 'Formulario no encontrado',
+        data: null
+      };
     }
 
     const schema = core?.schemas?.get(formId);
-    if (!schema || !schema.fields) return true;
+    if (!schema || !schema.fields) {
+      const dataModule = ogModule('formData');
+      const formData = dataModule?.getData(formId) || {};
+      
+      return {
+        success: true,
+        message: 'Sin campos para validar',
+        data: formData
+      };
+    }
 
     let isValid = true;
+    const errors = [];
 
     this.clearAllErrors(formId);
 
@@ -27,8 +41,14 @@ class ogFormValidation {
           return;
         } else if (field.name) {
           const fieldPath = parentPath ? `${parentPath}.${field.name}` : field.name;
-          if (!this.validateField(formEl, field, fieldPath)) {
+          const fieldResult = this.validateField(formEl, field, fieldPath);
+          
+          if (!fieldResult.isValid) {
             isValid = false;
+            errors.push({
+              field: fieldPath,
+              message: fieldResult.message
+            });
           }
         }
       });
@@ -36,17 +56,46 @@ class ogFormValidation {
 
     validateFields(schema.fields);
 
-    return isValid;
+    if (!isValid) {
+      const firstError = errors[0];
+      return {
+        success: false,
+        message: firstError ? firstError.message : 'Errores de validación',
+        errors: errors,
+        data: null
+      };
+    }
+
+    const dataModule = ogModule('formData');
+    const formData = dataModule?.getData(formId) || {};
+
+    return {
+      success: true,
+      message: 'Validación exitosa',
+      data: formData,
+      errors: []
+    };
   }
 
   static validateField(formEl, field, fieldPath) {
     const input = formEl.querySelector(`[name="${fieldPath}"]`);
-    if (!input) return true;
+    if (!input) return { isValid: true, message: null };
+
+    // Verificar si el campo está oculto por conditions
+    const formGroup = input.closest('.og-form-group, .og-form-checkbox, .og-form-repeatable, .og-grouper');
+    if (formGroup) {
+      // Si el campo tiene la clase wpfw-depend-on o está oculto por display:none, saltarlo
+      if (formGroup.classList.contains('wpfw-depend-on') || 
+          formGroup.style.display === 'none' ||
+          input.disabled) {
+        return { isValid: true, message: null };
+      }
+    }
 
     const value = this.getFieldValue(input);
     const validation = field.validation;
 
-    if (!validation) return true;
+    if (!validation) return { isValid: true, message: null };
 
     const rules = validation.split('|');
 
@@ -56,67 +105,71 @@ class ogFormValidation {
       if (ruleName === 'required') {
         if (!this.validateRequired(value)) {
           this.showFieldError(formEl, fieldPath, 'Este campo es requerido');
-          return false;
+          return { isValid: false, message: 'Este campo es requerido' };
         }
       }
 
       if (ruleName === 'email') {
         if (value && !this.validateEmail(value)) {
           this.showFieldError(formEl, fieldPath, 'Email inválido');
-          return false;
+          return { isValid: false, message: 'Email inválido' };
         }
       }
 
       if (ruleName === 'min') {
         const minLength = parseInt(ruleValue);
         if (value && value.length < minLength) {
-          this.showFieldError(formEl, fieldPath, `Mínimo ${minLength} caracteres`);
-          return false;
+          const msg = `Mínimo ${minLength} caracteres`;
+          this.showFieldError(formEl, fieldPath, msg);
+          return { isValid: false, message: msg };
         }
       }
 
       if (ruleName === 'max') {
         const maxLength = parseInt(ruleValue);
         if (value && value.length > maxLength) {
-          this.showFieldError(formEl, fieldPath, `Máximo ${maxLength} caracteres`);
-          return false;
+          const msg = `Máximo ${maxLength} caracteres`;
+          this.showFieldError(formEl, fieldPath, msg);
+          return { isValid: false, message: msg };
         }
       }
 
       if (ruleName === 'minValue') {
         const minValue = parseFloat(ruleValue);
         if (value && parseFloat(value) < minValue) {
-          this.showFieldError(formEl, fieldPath, `Valor mínimo: ${minValue}`);
-          return false;
+          const msg = `Valor mínimo: ${minValue}`;
+          this.showFieldError(formEl, fieldPath, msg);
+          return { isValid: false, message: msg };
         }
       }
 
       if (ruleName === 'maxValue') {
         const maxValue = parseFloat(ruleValue);
         if (value && parseFloat(value) > maxValue) {
-          this.showFieldError(formEl, fieldPath, `Valor máximo: ${maxValue}`);
-          return false;
+          const msg = `Valor máximo: ${maxValue}`;
+          this.showFieldError(formEl, fieldPath, msg);
+          return { isValid: false, message: msg };
         }
       }
 
       if (ruleName === 'numeric') {
         if (value && !/^\d+$/.test(value)) {
           this.showFieldError(formEl, fieldPath, 'Solo números');
-          return false;
+          return { isValid: false, message: 'Solo números' };
         }
       }
 
       if (ruleName === 'decimal') {
         if (value && !/^\d+(\.\d+)?$/.test(value)) {
           this.showFieldError(formEl, fieldPath, 'Solo números decimales');
-          return false;
+          return { isValid: false, message: 'Solo números decimales' };
         }
       }
 
       if (ruleName === 'alpha_num') {
         if (value && !/^[a-zA-Z0-9]+$/.test(value)) {
           this.showFieldError(formEl, fieldPath, 'Solo letras y números');
-          return false;
+          return { isValid: false, message: 'Solo letras y números' };
         }
       }
 
@@ -124,12 +177,19 @@ class ogFormValidation {
         const pattern = new RegExp(ruleValue);
         if (value && !pattern.test(value)) {
           this.showFieldError(formEl, fieldPath, 'Formato inválido');
-          return false;
+          return { isValid: false, message: 'Formato inválido' };
+        }
+      }
+
+      if (ruleName === 'url') {
+        if (value && !this.validateUrl(value)) {
+          this.showFieldError(formEl, fieldPath, 'URL inválida');
+          return { isValid: false, message: 'URL inválida' };
         }
       }
     }
 
-    return true;
+    return { isValid: true, message: null };
   }
 
   static validateRequired(value) {
@@ -141,6 +201,15 @@ class ogFormValidation {
   static validateEmail(value) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(value);
+  }
+
+  static validateUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
   }
 
   static getFieldValue(input) {

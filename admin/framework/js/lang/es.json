@@ -19,6 +19,15 @@
     "next": "Siguiente",
     "previous": "Anterior",
 
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+
+    "field": {
+      "status": "✅ Activo"
+    },
+
     "api": {
       "error": "Error en la conexión",
       "success": "Operación exitosa",
@@ -85,7 +94,7 @@
     "layout": {
       "system_title": "Sistema",
       "loading": "Cargando...",
-      "footer": "© 2024 - Sistema"
+      "footer": "© 202X - Sistema"
     },
 
     "sidebar": {

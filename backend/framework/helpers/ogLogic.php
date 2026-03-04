@@ -442,28 +442,46 @@ class OgLogic
   }
 
 }
+
+
 /**
- * EJEMPLO DE USO Y ESTRUCTURA DE RETORNO:
- * * $logic = [
- * 'or' => [
- * ['and' => [['>', ['var' => 'roas'], 4], ['<', ['var' => 'cpa'], 10]]], // Regla A (Rentabilidad)
- * ['and' => [['>', ['var' => 'volumen'], 50], ['<', ['var' => 'cpa'], 15]]] // Regla B (Volumen)
- * ]
+ * EJEMPLO DE USO:
+ * 
+ * $logic = [
+ *   'or' => [
+ *     ['and' => [
+ *       ['<=', [['var' => 'cost_per_result'], 18]],
+ *       ['>=', [['var' => 'results'], 1]]
+ *     ]],
+ *     ['>=', [['var' => 'roas'], 2.5]]
+ *   ]
  * ];
- * * $data = ['roas' => 2, 'volumen' => 60, 'cpa' => 12];
- * * // Usamos evaluate() para obtener el "por qué"
+ * 
+ * $data = [
+ *   'cost_per_result' => 0.31,
+ *   'results' => 4,
+ *   'roas' => 4.88
+ * ];
+ * 
  * $evaluation = OgLogic::evaluate($logic, $data);
- * * // ESTRUCTURA RESULTANTE (Ideal para depuración o IA):
+ * 
+ * Resultado:
  * [
  *   'result' => true,
+ *   'details' => [...],
  *   'matched_rules' => [
  *     [
- *       'index' => 1,  // Indica que cumplió el segundo bloque del OR (Regla B)
+ *       'index' => 0,
  *       'operator' => 'or',
- *       'condition' => [... array de la condición ...],
- *       'details' => [ ... detalles internos del AND ... ]
+ *       'condition' => [...],
+ *       'details' => [...]
+ *     ],
+ *     [
+ *       'index' => 1,
+ *       'operator' => 'or',
+ *       'condition' => [...],
+ *       'details' => [...]
  *     ]
- *   ],
- *   'details' => [...] // Traza completa de evaluación
+ *   ]
  * ]
  */

@@ -8,7 +8,7 @@
     },
     {
       "type": "html",
-      "content": "<div class='og-view-toolbar'><button class='btn btn-primary' onclick=\"modal.open('user/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px'})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button></div>"
+      "content": "<div class='view-toolbar'><button class='btn btn-primary' onclick=\"modal.open('user/user-form', {title: '👤 Nuevo Usuario', width: '90%', maxWidth: '900px'})\">➕ Nuevo Usuario</button><button class='btn btn-secondary' onclick='location.reload()'>🔄 Actualizar</button></div>"
     },
     {
       "type": "component",
