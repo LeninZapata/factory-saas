@@ -1,0 +1,349 @@
+{
+  "type": "tabs",
+  "id": "modal-demo-tabs",
+  "scripts": [
+    "ejemplos/assets/js/ejemplos.js"
+  ],
+  "tabs": [
+    {
+      "id": "modal-basico",
+      "title": "Básico",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h4 style='margin-bottom:8px'>Modal</h4><p class='text-muted' style='margin-bottom:24px'>El componente <code>ogModal</code> permite abrir cualquier contenido (HTML, vistas, formularios) dentro de una capa flotante. A continuación se muestran los casos de uso más comunes.</p>"
+        },
+        {
+          "type": "section",
+          "title": "Modal con contenido HTML",
+          "description": "Abre un modal pasando HTML directamente como recurso con la opción <code>html: true</code>.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><h4>¡Hola desde HTML!</h4><p>Este contenido fue pasado directamente como string HTML.</p><ul><li>Elemento 1</li><li>Elemento 2</li><li>Elemento 3</li></ul></div>', { html: true, title: '🎉 Modal HTML Básico' })\">Básico</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><div class=\\'alert alert-info\\'><strong>Información importante</strong><p>Este modal tiene footer personalizado con botones de acción.</p></div></div>', { html: true, title: '📋 Con Footer Personalizado', footer: '<button class=\\'btn btn-success\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>✅ Aceptar</button><button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cancelar</button>' })\">Con footer personalizado</button><button class='btn btn-info' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px;text-align:center\\'><div style=\\'font-size:48px;margin-bottom:8px\\'>⚠️</div><h4>¿Confirmar acción?</h4><p>Esta acción no se puede deshacer.</p></div>', { html: true, title: 'Confirmar', width: '400px', maxWidth: '400px', showFooter: false })\">Compacto (sin footer)</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Modal HTML básico\nogComponent('modal').open('<h4>Hola!</h4><p>Contenido HTML</p>', {\n  html: true,\n  title: 'Mi Modal'\n});\n\n// Con footer personalizado\nogComponent('modal').open('<p>Contenido</p>', {\n  html: true,\n  title: 'Confirmación',\n  footer: '<button class=\"btn btn-success\" onclick=\"ogComponent(\\'modal\\').closeAll()\">Aceptar</button>'\n});\n\n// Compacto sin footer\nogComponent('modal').open('<p>Mensaje</p>', {\n  html: true,\n  title: 'Aviso',\n  width: '400px',\n  maxWidth: '400px',\n  showFooter: false\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Modal con formulario",
+          "description": "Carga un formulario JSON existente dentro del modal. El recurso se pasa como <code>\"extension|forms/nombre\"</code>.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('ejemplos|forms/formularios/form-inputs-normales', { title: '📝 Formulario en Modal', width: '680px', maxWidth: '720px' })\">Formulario básico</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('ejemplos|forms/formularios/form-inputs-required', { title: '✅ Formulario con campos requeridos', width: '700px', maxWidth: '750px' })\">Con campos requeridos</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Abrir un formulario JSON dentro de un modal\n// Formato: 'extension|forms/nombre-del-formulario'\nogComponent('modal').open('ejemplos|forms/formularios/form-inputs-normales', {\n  title: '📝 Formulario en Modal',\n  width: '680px',\n  maxWidth: '720px'\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Efectos de animación",
+          "description": "El modal soporta tres efectos de entrada/salida. El efecto por defecto es <code>slide-up</code>.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>slide-up</strong> (por defecto)</p>', { html: true, title: '↑ Slide Up', effect: 'slide-up' })\">slide-up (default)</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>fade-scale</strong> — aparece desde el centro</p>', { html: true, title: '🔍 Fade Scale', effect: 'fade-scale' })\">fade-scale</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>slide-right</strong> — entra desde la derecha</p>', { html: true, title: '→ Slide Right', effect: 'slide-right' })\">slide-right</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Opciones de efecto: 'slide-up' | 'fade-scale' | 'slide-right'\nogComponent('modal').open('<p>Contenido</p>', {\n  html: true,\n  title: 'Modal animado',\n  effect: 'fade-scale'\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Control de tamaño",
+          "description": "Usa <code>width</code> y <code>maxWidth</code> para controlar las dimensiones. Por defecto: <code>width: 80%, maxWidth: 900px</code>.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal pequeño — ideal para confirmaciones</p>', { html: true, title: 'Pequeño', width: '380px', maxWidth: '400px' })\">Pequeño (400px)</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal mediano (por defecto)</p>', { html: true, title: 'Mediano (default)' })\">Mediano (900px)</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal grande — ideal para formularios complejos o tablas</p>', { html: true, title: 'Grande', width: '95%', maxWidth: '1400px' })\">Grande (95% / 1400px)</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Pequeño\nogComponent('modal').open(resource, { width: '380px', maxWidth: '400px' });\n\n// Mediano (valores por defecto)\nogComponent('modal').open(resource, {});\n\n// Grande\nogComponent('modal').open(resource, { width: '95%', maxWidth: '1400px' });"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Múltiples modales apilados",
+          "description": "Se pueden abrir varios modales al mismo tiempo. <code>ogModal.closeAll()</code> los cierra todos.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick='ejemplos.openStackedModal()'>Abrir Modal 1</button><button class='btn btn-danger' onclick=\"ogComponent('modal').closeAll()\">Cerrar todos</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Abrir múltiples modales\nogComponent('modal').open(resource1, { title: 'Modal 1' });\nogComponent('modal').open(resource2, { title: 'Modal 2' });\n\n// Cerrar todos\nogComponent('modal').closeAll();"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modal-medio",
+      "title": "Medio",
+      "content": [
+        {
+          "type": "html",
+          "content": "<h4 style='margin-bottom:8px'>Modal avanzado</h4><p class='text-muted' style='margin-bottom:24px'>Características de personalización: footer dividido, control de cierre y header enriquecido.</p>"
+        },
+        {
+          "type": "section",
+          "title": "Footer dividido (izquierda / derecha)",
+          "description": "Usa <code>footerLeft</code> y <code>footerRight</code> para distribuir botones en ambos lados. El footer siempre queda fijo; el contenido hace scroll.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><p>Footer con botones a la izquierda (secundarios) y a la derecha (primarios).</p></div>', { html: true, title: 'Footer dividido', footerLeft: '<button class=\\'btn btn-outline-danger\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>🗑 Eliminar</button>', footerRight: '<button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cancelar</button><button class=\\'btn btn-primary\\'>Guardar</button>' })\">Footer izq / der</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'>' + '<p>'.repeat(1) + 'Línea de contenido. '.repeat(40) + '</p></div>', { html: true, title: 'Footer fijo con scroll', footerLeft: '<span style=\\'color:#6c757d;font-size:13px\\'>* El footer permanece fijo</span>', footerRight: '<button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cerrar</button><button class=\\'btn btn-primary\\'>Aceptar</button>', width: '500px', maxWidth: '520px' })\">Footer fijo + scroll</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Footer dividido: izquierda y derecha\nogComponent('modal').open(resource, {\n  title: 'Confirmación',\n  footerLeft: '<button class=\"btn btn-outline-danger\">🗑 Eliminar</button>',\n  footerRight: '<button class=\"btn btn-secondary\" onclick=\"ogComponent(\\'modal\\').closeAll()\">Cancelar</button><button class=\"btn btn-primary\">Guardar</button>'\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Control de cierre",
+          "description": "Tres variantes: cierre por overlay (default), solo ESC, o solo con el botón ✕.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Comportamiento por defecto: cierra con clic en overlay, con ESC y con ✕.</p>', { html: true, title: '✅ Default (todo cierra)' })\">Default</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Solo se cierra con la tecla ESC. El clic en el overlay no hace nada.</p>', { html: true, title: '⌨️ Solo ESC', closeOnOverlay: false })\">Solo ESC</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Solo se cierra con el botón ✕. Ni el overlay ni ESC lo cierran.</p>', { html: true, title: '✕ Solo botón X', closeOnOverlay: false, closeOnEsc: false })\">Solo botón X</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Default: cierra con overlay + ESC + X\nogComponent('modal').open(resource, { title: 'Default' });\n\n// Solo ESC y X (no cierra con clic en overlay)\nogComponent('modal').open(resource, {\n  title: 'Solo ESC',\n  closeOnOverlay: false\n});\n\n// Solo con el botón X\nogComponent('modal').open(resource, {\n  title: 'Solo X',\n  closeOnOverlay: false,\n  closeOnEsc: false\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Header enriquecido",
+          "description": "Agrega texto complementario bajo el título con <code>headerExtra</code>. Útil para badges, estados o metadatos del contexto abierto.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>El header muestra un badge de estado bajo el título principal.</p>', { html: true, title: 'Detalles del usuario', headerExtra: '🟢 Activo &nbsp;·&nbsp; Administrador' })\">Con badge de estado</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Puedes combinar texto, spans y pequeños iconos en headerExtra.</p>', { html: true, title: 'Ver pedido', headerExtra: '#0042 &nbsp;<span style=\\'background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:11px\\'>⏳ Pendiente</span>' })\">Con badge pill</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// headerExtra: texto/HTML pequeño bajo el título\nogComponent('modal').open(resource, {\n  title: 'Detalles del usuario',\n  headerExtra: '🟢 Activo · Administrador'\n});"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Header dinámico al editar",
+          "description": "Al abrir un modal para editar, inyecta el nombre del registro en el header con <code>headerExtra</code> via <code>afterRender</code> o directamente en <code>open()</code>. Así siempre sabes qué estás editando sin importar el scroll del contenido.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ejemplos.openEditDemo(42, 'Proceso de facturación')\">Editar registro #42</button><button class='btn btn-secondary' onclick=\"ejemplos.openEditDemo(7, 'Exportar reportes mensuales')\">Editar registro #7</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Al abrir el modal de edición, pasa el nombre del registro\nstatic async openEdit(id) {\n  const data = await this.get(id);\n  if (!data) return;\n\n  ogComponent('modal').open('miext|forms/mi-form', {\n    title: 'Editar workflow',\n    headerExtra: `✏️ ${data.name} <span style=\"opacity:.5\">#${data.id}</span>`,\n    width: '700px',\n    afterRender: (formId) => {\n      ogModule('form').fill(formId, data);\n    }\n  });\n}\n\n// También puedes actualizar el título de un modal ya abierto:\nogModal.updateTitle(modalId, 'Nuevo título', 'subtexto extra');"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Antes y después del título",
+          "description": "Usa <code>beforeTitle</code> para colocar contenido a la izquierda del título (icono, indicador visual) y <code>afterTitle</code> a la derecha (badge, contador, estado). Ambos viven en la misma fila inline del título, sin afectar el <code>headerExtra</code> que sigue bajo ellos.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Icono a la izquierda del título con beforeTitle.</p>', { html: true, title: 'Configuración OAuth', beforeTitle: '🔐' })\">beforeTitle (icono)</button><button class='btn btn-outline-success' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Badge de estado a la derecha del título con afterTitle.</p>', { html: true, title: 'Base de datos', afterTitle: '<span style=\\'background:#d1fae5;color:#065f46;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600\\'>● Conectada</span>' })\">afterTitle (badge)</button><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Los tres combinados: icono antes, badge después y descripción bajo el título.</p>', { html: true, title: 'Canal WhatsApp', beforeTitle: '💬', afterTitle: '<span style=\\'background:#fef9c3;color:#854d0e;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600\\'>3 pendientes</span>', headerExtra: 'API v2 · Webhook activo', width: '520px' })\">before + after + extra</button></div>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Solo icono antes del título\nogComponent('modal').open(resource, {\n  title: 'Configuración OAuth',\n  beforeTitle: '🔐'\n});\n\n// Badge de estado después del título\nogComponent('modal').open(resource, {\n  title: 'Base de datos',\n  afterTitle: '<span class=\\'badge-pill\\'>● Conectada</span>'\n});\n\n// Combinado: before + after + extra (sub-línea bajo el título)\nogComponent('modal').open(resource, {\n  title: 'Canal WhatsApp',\n  beforeTitle: '💬',\n  afterTitle: '<span class=\\'badge-pill\\'>3 pendientes</span>',\n  headerExtra: 'API v2 · Webhook activo'\n});\n\n// Actualizar before/after en un modal ya abierto:\nogModal.updateTitle(modalId, 'Nuevo título', 'extra', '🟢', 'nuevo after');"
+            }
+          ]
+        }
+      ]
+},
+{
+  "id": "modal-avanzado",
+  "title": "Avanzado",
+  "content": [
+    {
+      "type": "html",
+      "content": "<h4 style='margin-bottom:8px'>Paneles</h4><p class='text-muted' style='margin-bottom:24px'>Un panel es el mismo modal pero anclado a un borde de la pantalla: aparece deslizándose desde ese lado. Ideal para filtros, detalles, configuraciones y drawers tipo mobile.</p>"
+    },
+    {
+      "type": "section",
+      "title": "Posiciones",
+      "description": "Cuatro direcciones disponibles con la opción <code>panel</code>: <code>'right'</code> (defecto), <code>'left'</code>, <code>'top'</code> y <code>'bottom'</code>.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Panel desde la derecha. Útil para detalles, configuraciones y formularios laterales.</p>', { html: true, title: '→ Panel derecha', panel: 'right' })\">Desde la derecha</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Panel desde la izquierda. Útil para menús, índices y navegación secundaria.</p>', { html: true, title: '← Panel izquierda', panel: 'left' })\">Desde la izquierda</button><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Panel desde arriba. Útil para alertas, búsquedas globales y banners interactivos.</p>', { html: true, title: '↑ Panel arriba', panel: 'top' })\">Desde arriba</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Panel desde abajo. Patrón tipo drawer mobile para acciones rápidas o formularios cortos.</p>', { html: true, title: '↓ Panel abajo', panel: 'bottom' })\">Desde abajo</button></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Panel desde la derecha (por defecto)\nogComponent('modal').open(resource, { panel: 'right', title: 'Filtros' });\n\n// Panel desde la izquierda\nogComponent('modal').open(resource, { panel: 'left', title: 'Navegación' });\n\n// Drawer desde abajo (estilo mobile)\nogComponent('modal').open(resource, { panel: 'bottom', title: 'Acciones' });\n\n// Panel desde arriba\nogComponent('modal').open(resource, { panel: 'top', title: 'Búsqueda' });"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Tamaños",
+      "description": "Con <code>panelSize</code> controlas el <strong>ancho</strong> en todos los paneles: laterales (right/left) y horizontales (top/bottom). Los paneles que no ocupan el ancho completo se centran automáticamente en su eje. Valores: <code>'sm'</code>, <code>'md'</code> (defecto), <code>'lg'</code>, <code>'full'</code>.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px'><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>→ Derecha — ancho</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>300px de ancho.</p>', { html: true, title: '→ sm · 300px', panel: 'right', panelSize: 'sm' })\">sm</button><button class='btn btn-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>440px de ancho (default).</p>', { html: true, title: '→ md · 440px', panel: 'right', panelSize: 'md' })\">md</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>640px de ancho.</p>', { html: true, title: '→ lg · 640px', panel: 'right', panelSize: 'lg' })\">lg</button><button class='btn btn-outline-danger btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Ancho completo.</p>', { html: true, title: '→ full', panel: 'right', panelSize: 'full' })\">full</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>← Izquierda — ancho</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>300px de ancho.</p>', { html: true, title: '← sm · 300px', panel: 'left', panelSize: 'sm' })\">sm</button><button class='btn btn-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>440px de ancho (default).</p>', { html: true, title: '← md · 440px', panel: 'left', panelSize: 'md' })\">md</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>640px de ancho.</p>', { html: true, title: '← lg · 640px', panel: 'left', panelSize: 'lg' })\">lg</button><button class='btn btn-outline-danger btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Ancho completo.</p>', { html: true, title: '← full', panel: 'left', panelSize: 'full' })\">full</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↑ Arriba — ancho (centrado)</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>300px de ancho, centrado horizontalmente.</p>', { html: true, title: '↑ sm · 300px', panel: 'top', panelSize: 'sm' })\">sm</button><button class='btn btn-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>440px de ancho (default).</p>', { html: true, title: '↑ md · 440px', panel: 'top', panelSize: 'md' })\">md</button><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>640px de ancho.</p>', { html: true, title: '↑ lg · 640px', panel: 'top', panelSize: 'lg' })\">lg</button><button class='btn btn-outline-danger btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Ancho completo.</p>', { html: true, title: '↑ full', panel: 'top', panelSize: 'full' })\">full</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↓ Abajo — ancho (centrado)</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>300px de ancho, centrado horizontalmente.</p>', { html: true, title: '↓ sm · 300px', panel: 'bottom', panelSize: 'sm' })\">sm</button><button class='btn btn-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>440px de ancho (default).</p>', { html: true, title: '↓ md · 440px', panel: 'bottom', panelSize: 'md' })\">md</button><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>640px de ancho.</p>', { html: true, title: '↓ lg · 640px', panel: 'bottom', panelSize: 'lg' })\">lg</button><button class='btn btn-outline-danger btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Ancho completo.</p>', { html: true, title: '↓ full', panel: 'bottom', panelSize: 'full' })\">full</button></div></div></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Todos los paneles: panelSize controla el ANCHO\n// Laterales (right/left): se anclan al borde, alto = 100%\nogComponent('modal').open(resource, { panel: 'right', panelSize: 'sm' });  // 300px\nogComponent('modal').open(resource, { panel: 'right', panelSize: 'md' });  // 440px (default)\nogComponent('modal').open(resource, { panel: 'right', panelSize: 'lg' });  // 640px\nogComponent('modal').open(resource, { panel: 'right', panelSize: 'full' }); // 100%\n\n// Horizontales (top/bottom): se centran horizontalmente\nogComponent('modal').open(resource, { panel: 'bottom', panelSize: 'sm' });  // 300px, centrado\nogComponent('modal').open(resource, { panel: 'bottom', panelSize: 'md' });  // 440px, centrado\nogComponent('modal').open(resource, { panel: 'bottom', panelSize: 'full' }); // 100%"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Ancho en porcentaje (panelSize %)",
+      "description": "Además de los tamaños fijos, puedes usar <code>'w90'</code>, <code>'w80'</code>, <code>'w70'</code> o <code>'w50'</code> como valor de <code>panelSize</code> para definir el ancho como porcentaje de la pantalla. Funciona igual en los 4 paneles.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px'><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↓ Abajo — ancho en %</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del ancho de pantalla desde abajo.</p>', { html: true, title: '↓ bottom w90', panel: 'bottom', panelSize: 'w90' })\">w90</button><button class='btn btn-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho desde abajo, centrado.</p>', { html: true, title: '↓ bottom w80', panel: 'bottom', panelSize: 'w80' })\">w80</button><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>70% del ancho desde abajo.</p>', { html: true, title: '↓ bottom w70', panel: 'bottom', panelSize: 'w70' })\">w70</button><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho desde abajo.</p>', { html: true, title: '↓ bottom w50', panel: 'bottom', panelSize: 'w50' })\">w50</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↑ Arriba — ancho en %</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del ancho desde arriba.</p>', { html: true, title: '↑ top w90', panel: 'top', panelSize: 'w90' })\">w90</button><button class='btn btn-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho desde arriba.</p>', { html: true, title: '↑ top w80', panel: 'top', panelSize: 'w80' })\">w80</button><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>70% del ancho desde arriba.</p>', { html: true, title: '↑ top w70', panel: 'top', panelSize: 'w70' })\">w70</button><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho desde arriba.</p>', { html: true, title: '↑ top w50', panel: 'top', panelSize: 'w50' })\">w50</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>→ Derecha — ancho en %</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del ancho lateral.</p>', { html: true, title: '→ right w90', panel: 'right', panelSize: 'w90' })\">w90</button><button class='btn btn-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho lateral.</p>', { html: true, title: '→ right w80', panel: 'right', panelSize: 'w80' })\">w80</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>70% del ancho.</p>', { html: true, title: '→ right w70', panel: 'right', panelSize: 'w70' })\">w70</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho.</p>', { html: true, title: '→ right w50', panel: 'right', panelSize: 'w50' })\">w50</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>← Izquierda — ancho en %</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del ancho.</p>', { html: true, title: '← left w90', panel: 'left', panelSize: 'w90' })\">w90</button><button class='btn btn-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho.</p>', { html: true, title: '← left w80', panel: 'left', panelSize: 'w80' })\">w80</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>70% del ancho.</p>', { html: true, title: '← left w70', panel: 'left', panelSize: 'w70' })\">w70</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho.</p>', { html: true, title: '← left w50', panel: 'left', panelSize: 'w50' })\">w50</button></div></div></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Ancho en %: funciona en los 4 paneles\nogComponent('modal').open(resource, { panel: 'bottom', panelSize: 'w80' }); // 80% ancho, centrado\nogComponent('modal').open(resource, { panel: 'top',    panelSize: 'w70' }); // 70% ancho, centrado\nogComponent('modal').open(resource, { panel: 'right',  panelSize: 'w90' }); // 90% ancho\nogComponent('modal').open(resource, { panel: 'left',   panelSize: 'w50' }); // 50% ancho\n\n// Valores disponibles: 'w90' | 'w80' | 'w70' | 'w50'\n// Para top/bottom se centran horizontalmente automáticamente"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Panel flotante (panelSpan)",
+      "description": "Con <code>panelSpan</code> el panel no ocupa de punta a punta su eje: se centra en él dejando espacio. En paneles laterales controla el <strong>alto</strong>; en paneles horizontales controla el <strong>ancho</strong>. Acepta cualquier valor CSS: porcentaje, píxeles, etc.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px'><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>→ Derecha — controla el alto</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del alto, centrado verticalmente.</p>', { html: true, title: '→ right · 90%', panel: 'right', panelSpan: '90%' })\">90%</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del alto. Margen visible arriba y abajo.</p>', { html: true, title: '→ right · 80%', panel: 'right', panelSpan: '80%' })\">80%</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del alto. Flota centrado.</p>', { html: true, title: '→ right · 50%', panel: 'right', panelSpan: '50%' })\">50%</button><button class='btn btn-outline-primary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>400px de alto fijo.</p>', { html: true, title: '→ right · 400px', panel: 'right', panelSpan: '400px' })\">400px</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>← Izquierda — controla el alto</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>90% del alto desde la izquierda.</p>', { html: true, title: '← left · 90%', panel: 'left', panelSpan: '90%' })\">90%</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del alto.</p>', { html: true, title: '← left · 80%', panel: 'left', panelSpan: '80%' })\">80%</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del alto, centrado.</p>', { html: true, title: '← left · 50%', panel: 'left', panelSpan: '50%' })\">50%</button><button class='btn btn-outline-secondary btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>400px fijo.</p>', { html: true, title: '← left · 400px', panel: 'left', panelSpan: '400px' })\">400px</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↑ Arriba — controla el ancho</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho, centrado horizontalmente desde arriba.</p>', { html: true, title: '↑ top · 80%', panel: 'top', panelSpan: '80%' })\">80%</button><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho desde arriba.</p>', { html: true, title: '↑ top · 50%', panel: 'top', panelSpan: '50%' })\">50%</button><button class='btn btn-outline-info btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>600px fijo desde arriba.</p>', { html: true, title: '↑ top · 600px', panel: 'top', panelSpan: '600px' })\">600px</button></div></div><div><div style='margin-bottom:8px;font-size:13px;color:#6c757d;font-weight:600'>↓ Abajo — controla el ancho</div><div style='display:flex;gap:8px;flex-wrap:wrap'><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>80% del ancho, centrado horizontalmente desde abajo.</p>', { html: true, title: '↓ bottom · 80%', panel: 'bottom', panelSpan: '80%' })\">80%</button><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>50% del ancho desde abajo.</p>', { html: true, title: '↓ bottom · 50%', panel: 'bottom', panelSpan: '50%' })\">50%</button><button class='btn btn-outline-warning btn-sm' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>600px fijo desde abajo.</p>', { html: true, title: '↓ bottom · 600px', panel: 'bottom', panelSpan: '600px' })\">600px</button></div></div></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Laterales (right/left): panelSpan controla el alto → centra verticalmente\nogComponent('modal').open(resource, { panel: 'right', panelSpan: '80%' });\nogComponent('modal').open(resource, { panel: 'left',  panelSpan: '50%' });\nogComponent('modal').open(resource, { panel: 'right', panelSpan: '400px' });\n\n// Horizontales (top/bottom): panelSpan controla el ancho → centra horizontalmente\nogComponent('modal').open(resource, { panel: 'top',    panelSpan: '80%' });\nogComponent('modal').open(resource, { panel: 'bottom', panelSpan: '600px' });\n\n// Combinado con panelSize\nogComponent('modal').open(resource, {\n  panel: 'right',\n  panelSize: 'sm',   // ancho: 300px\n  panelSpan: '60%'   // alto: 60%, centrado verticalmente\n});"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Combinado con otras opciones",
+      "description": "Los paneles son compatibles con todas las opciones del modal: <code>closeOnOverlay</code>, <code>closeOnEsc</code>, <code>footerLeft</code>/<code>footerRight</code>, <code>headerExtra</code>, etc.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<div style=\\'padding:12px\\'><p>Panel de filtros con footer dividido: limpiar a la izquierda, aplicar a la derecha.</p><p style=\\'margin-top:8px;color:#6c757d;font-size:13px\\'>Ideal para filtros de tabla, búsquedas avanzadas y configuraciones con preview.</p></div>', { html: true, title: 'Filtros avanzados', panel: 'right', panelSize: 'md', headerExtra: '3 filtros activos', footerLeft: '<button class=\\'btn btn-outline-secondary btn-sm\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Limpiar todo</button>', footerRight: '<button class=\\'btn btn-secondary\\'  onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cancelar</button><button class=\\'btn btn-primary\\'>Aplicar filtros</button>' })\">Panel filtros completo</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:12px\\'>Solo se cierra con el botón ✕ — ni ESC ni clic en overlay funcionan. Útil cuando hay datos sin guardar.</p>', { html: true, title: 'Panel bloqueado', panel: 'right', closeOnOverlay: false, closeOnEsc: false })\">Panel sin cierre fácil</button></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Panel de filtros completo\nogComponent('modal').open('miext|sections/filtros', {\n  panel: 'right',\n  panelSize: 'md',\n  title: 'Filtros avanzados',\n  headerExtra: '3 filtros activos',\n  footerLeft: '<button class=\"btn btn-outline-secondary\">Limpiar todo</button>',\n  footerRight: '<button class=\"btn btn-primary\">Aplicar</button>'\n});\n\n// Panel que requiere acción explícita para cerrar\nogComponent('modal').open(resource, {\n  panel: 'right',\n  closeOnOverlay: false,\n  closeOnEsc: false\n});"
+        }
+      ]
+    }
+  ]
+},
+{
+  "id": "modal-mixed",
+  "title": "Mixed",
+  "content": [
+    {
+      "type": "html",
+      "content": "<h4 style='margin-bottom:8px'>Modal cargando vistas completas</h4><p class='text-muted' style='margin-bottom:24px'>El modal puede cargar cualquier vista, sección o formulario del sistema — incluyendo los que tienen tabs, sub-paneles, repetibles y JSON parts anidados. Aquí se demuestra su verdadero poder como contenedor universal.</p>"
+    },
+    {
+      "type": "section",
+      "title": "Galería de formularios completa",
+      "description": "Abre <code>sections/formularios/main</code> dentro de un modal al 90% de ancho. La vista contiene tabs anidados con múltiples formularios, repetibles, condiciones y más — todo renderizado dentro del modal como si fuera una página.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('ejemplos|sections/formularios/main', { title: '📋 Galería de Formularios', width: '90%', maxWidth: '1400px' })\">Abrir Galería de Formularios</button><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('ejemplos|sections/formularios/main', { title: '📋 Formularios — Panel', panel: 'right', panelSize: 'w90' })\">Como panel lateral 90%</button></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Modal centrado al 90% de ancho\nogComponent('modal').open('ejemplos|sections/formularios/main', {\n  title: 'Galería de Formularios',\n  width: '90%',\n  maxWidth: '1400px'\n});\n\n// O como panel lateral\nogComponent('modal').open('ejemplos|sections/formularios/main', {\n  title: 'Formularios',\n  panel: 'right',\n  panelSize: 'w90'\n});"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Vista Grouper",
+      "description": "Carga <code>sections/grouper-demo</code> — una vista con tabs, ejemplos de agrupación visual y sub-componentes. Demuestra que cualquier sección del menú puede abrirse en un modal sin cambios.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('ejemplos|sections/grouper-demo', { title: '📁 Grouper — Agrupación Visual', width: '85%', maxWidth: '1200px' })\">Abrir Grouper</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('ejemplos|sections/grouper-demo', { title: '📁 Grouper', panel: 'right', panelSize: 'lg' })\">Como panel lateral</button></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "ogComponent('modal').open('ejemplos|sections/grouper-demo', {\n  title: 'Grouper — Agrupación Visual',\n  width: '85%',\n  maxWidth: '1200px'\n});"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "JSON Parts",
+      "description": "Abre <code>sections/caracteristicas-json-parts</code> — una vista que a su vez carga partes externas (<code>json_part</code>) en tiempo de renderizado. El modal los resuelve y muestra el resultado ensamblado, demostrando que la composición de vistas funciona igual dentro de un modal.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', { title: '📦 JSON Parts — División de Vistas', width: '80%', maxWidth: '1100px' })\">Abrir JSON Parts</button><button class='btn btn-info' onclick=\"ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', { title: '📦 JSON Parts', panel: 'bottom', panelSize: 'w80' })\">Como panel inferior 80%</button></div>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', {\n  title: 'JSON Parts — División de Vistas',\n  width: '80%',\n  maxWidth: '1100px'\n});"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "¿Qué puedes abrir en un modal?",
+      "description": "Resumen de todos los tipos de recursos compatibles con <code>ogComponent('modal').open()</code>.",
+      "content": [
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Vista de una extensión\nogComponent('modal').open('miext|sections/mi-vista', { title: '...' });\n\n// Formulario de una extensión\nogComponent('modal').open('miext|forms/mi-form', { title: '...' });\n\n// Vista del framework o middle\nogComponent('modal').open('middle:sections/mi-vista', { title: '...' });\n\n// Formulario del framework\nogComponent('modal').open('core:forms/mi-form', { title: '...' });\n\n// HTML directo (sin carga)\nogComponent('modal').open('<p>Contenido inline</p>', { html: true, title: '...' });"
+        }
+      ]
+    }
+  ]
+}
+  ]
+}

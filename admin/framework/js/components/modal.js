@@ -13,16 +13,41 @@ class ogModal {
     const effect = options.effect || this.defaultEffect;
     overlay.dataset.effect = effect;
 
+    // Opciones de comportamiento
+    const closeOnOverlay = options.closeOnOverlay !== false;
+    const closeOnEsc = options.closeOnEsc !== false;
+    if (closeOnOverlay) overlay.dataset.closeOnOverlay = '1';
+    if (closeOnEsc) overlay.dataset.closeOnEsc = '1';
+
     const container = document.createElement('div');
     container.className = 'og-modal-container';
-    container.style.width = options.width || '80%';
-    container.style.maxWidth = options.maxWidth || '900px';
+
+    // Modo panel: modal anclado a un borde (right|left|top|bottom)
+    if (options.panel) {
+      overlay.dataset.panel = options.panel;
+      overlay.dataset.panelSize = options.panelSize || 'md';
+      // panelSpan: limita la dimensión perpendicular (alto en laterales, ancho en horizontales)
+      // y centra el panel en ese eje, dejándolo flotante
+      if (options.panelSpan) {
+        overlay.dataset.panelSpan = '1';
+        container.style.setProperty('--og-panel-span', options.panelSpan);
+      }
+    } else {
+      container.style.width = options.width || '80%';
+      container.style.maxWidth = options.maxWidth || '900px';
+    }
 
     const header = document.createElement('div');
     header.className = 'og-modal-header';
     const processedTitle = this.processI18nInString(options.title) || __('com.modal.title');
+    const headerExtraHtml = options.headerExtra ? `<span class="og-modal-header-extra">${this.processI18nInString(options.headerExtra)}</span>` : '';
+    const beforeTitleHtml = options.beforeTitle ? `<span class="og-modal-title-before">${this.processI18nInString(options.beforeTitle)}</span>` : '';
+    const afterTitleHtml = options.afterTitle ? `<span class="og-modal-title-after">${this.processI18nInString(options.afterTitle)}</span>` : '';
     header.innerHTML = `
-      <h3>${processedTitle}</h3>
+      <div class="og-modal-header-left">
+        <div class="og-modal-title-row">${beforeTitleHtml}<h3 class="og-modal-title">${processedTitle}</h3>${afterTitleHtml}</div>
+        ${headerExtraHtml}
+      </div>
       <button class="og-modal-close" onclick="ogModal.close('${modalId}', '${effect}')">&times;</button>
     `;
 
@@ -35,6 +60,12 @@ class ogModal {
 
     if (options.footer) {
       footer.innerHTML = this.processI18nInString(options.footer);
+    } else if (options.footerLeft || options.footerRight) {
+      // Footer dividido con secciones izquierda y derecha
+      const leftHtml = options.footerLeft ? this.processI18nInString(options.footerLeft) : '';
+      const rightHtml = options.footerRight ? this.processI18nInString(options.footerRight) : '';
+      footer.innerHTML = `<div class="og-modal-footer-left">${leftHtml}</div><div class="og-modal-footer-right">${rightHtml}</div>`;
+      footer.classList.add('og-modal-footer-split');
     } else if (options.showFooter !== false) {
       footer.innerHTML = `
         <button class="btn btn-secondary" onclick="ogModal.close('${modalId}', '${effect}')">${__('com.modal.close')}</button>
@@ -71,11 +102,15 @@ class ogModal {
 
       const container = overlay.querySelector('.og-modal-container');
       if (container) {
-        let exitAnimation = 'og-modal-slide-up-out';
-        if (effect === 'fade-scale') {
+        let exitAnimation;
+        if (overlay.dataset.panel) {
+          exitAnimation = `og-panel-slide-out-${overlay.dataset.panel}`;
+        } else if (effect === 'fade-scale') {
           exitAnimation = 'og-modal-fade-scale-out';
         } else if (effect === 'slide-right') {
           exitAnimation = 'og-modal-slide-right-out';
+        } else {
+          exitAnimation = 'og-modal-slide-up-out';
         }
 
         container.style.animation = `${exitAnimation} ${exitDuration}s ${exitTiming} forwards`;
@@ -293,6 +328,37 @@ class ogModal {
   static setDefaultEffect(effect) {
     this.defaultEffect = effect;
   }
+
+  // Actualiza el título (y opcionalmente before/after/extra) de un modal abierto
+  static updateTitle(modalId, title, extra = null, before = null, after = null) {
+    const overlay = this.modals.get(modalId);
+    if (!overlay) return;
+    const titleEl = overlay.querySelector('.og-modal-title');
+    if (titleEl) titleEl.textContent = this.processI18nInString(title);
+    if (extra !== null) {
+      let extraEl = overlay.querySelector('.og-modal-header-extra');
+      if (!extraEl) {
+        extraEl = document.createElement('span');
+        extraEl.className = 'og-modal-header-extra';
+        overlay.querySelector('.og-modal-header-left')?.appendChild(extraEl);
+      }
+      extraEl.innerHTML = this.processI18nInString(extra);
+    }
+    if (before !== null) {
+      const el = overlay.querySelector('.og-modal-title-before');
+      if (el) el.innerHTML = this.processI18nInString(before);
+    }
+    if (after !== null) {
+      const el = overlay.querySelector('.og-modal-title-after');
+      if (el) el.innerHTML = this.processI18nInString(after);
+    }
+  }
+
+  // Obtiene el modalId del modal más reciente abierto
+  static getLastModalId() {
+    const keys = [...this.modals.keys()];
+    return keys[keys.length - 1] || null;
+  }
 }
 
 window.ogModal = ogModal;
@@ -302,9 +368,23 @@ if (typeof window.ogFramework !== 'undefined') {
 }
 
 document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('og-modal-overlay')) {
+  if (e.target.classList.contains('og-modal-overlay') && e.target.dataset.closeOnOverlay) {
     const modalId = e.target.id;
     const effect = e.target.dataset.effect || 'slide-up';
     ogModal.close(modalId, effect);
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  // Cierra solo el último modal activo que tenga closeOnEsc
+  const keys = [...ogModal.modals.keys()];
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const overlay = ogModal.modals.get(keys[i]);
+    if (overlay && overlay.dataset.closeOnEsc) {
+      const effect = overlay.dataset.effect || ogModal.defaultEffect;
+      ogModal.close(keys[i], effect);
+      break;
+    }
   }
 });

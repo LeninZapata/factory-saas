@@ -57,6 +57,13 @@
                 "icon": "🧩",
                 "view": "sections/widgets-demo",
                 "order": 2
+              },
+              {
+                "id": "ejemplos-modal",
+                "title": "Modal",
+                "icon": "🪟",
+                "view": "sections/modal-demo",
+                "order": 3
               }
             ]
           },

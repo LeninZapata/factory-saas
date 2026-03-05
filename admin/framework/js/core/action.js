@@ -26,7 +26,7 @@ class ogAction {
     const [type, ...valueParts] = fullAction.split(':');
     const value = valueParts.join(':');
 
-    if (!type || !value) {
+    if (!type || (!value && type.toLowerCase() !== 'submit')) {
       ogLogger.warn('core:action', 'Formato inválido:', action);
       return;
     }
@@ -144,6 +144,12 @@ class ogAction {
     }
 
     const formId = form.id;
+
+    // Sin handler: disparar submit nativo (formCore lo captura y valida)
+    if (!handler) {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      return;
+    }
 
     const parts = handler.split('.');
 

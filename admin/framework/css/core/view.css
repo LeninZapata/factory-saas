@@ -32,6 +32,52 @@
     font-style: italic;
   }
 
+  /* type: section */
+  .og-content-section {
+    margin-bottom: 28px;
+    padding: 20px 24px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;
+    background: var(--surface-color, #fff);
+  }
+
+  .og-content-section + .og-content-section {
+    margin-top: 0;
+  }
+
+  .og-section-title {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary, #1a202c);
+  }
+
+  .og-section-description {
+    margin: 0 0 16px;
+    font-size: 13.5px;
+    color: var(--text-muted, #64748b);
+    line-height: 1.6;
+  }
+
+  /* type: code */
+  .og-code-block {
+    margin: 12px 0 0;
+    padding: 14px 18px;
+    background: var(--code-bg, #f8fafc);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .og-code-block code {
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    color: var(--code-color, #334155);
+    white-space: pre;
+  }
+
+  
   /* Mobile */
   @media (max-width: 768px) {
     .og-view-container {

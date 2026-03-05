@@ -620,6 +620,22 @@ class ogView {
       return this.processI18nInString(item.content || '');
     }
 
+    if (item.type === 'section') {
+      const title = item.title ? `<h5 class="og-section-title">${this.processI18nInString(item.title)}</h5>` : '';
+      const desc = item.description ? `<p class="og-section-description">${this.processI18nInString(item.description)}</p>` : '';
+      const inner = item.content ? this.renderContent(item.content) : '';
+      return `<div class="og-content-section">${title}${desc}${inner}</div>`;
+    }
+
+    if (item.type === 'code') {
+      const lang = item.lang || '';
+      const escaped = (item.content || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      return `<pre class="og-code-block"><code class="language-${lang}">${escaped}</code></pre>`;
+    }
+
     return '';
   }
 

@@ -96,6 +96,21 @@ class ejemplos {
     }
   }
 
+  // Demo de modales apilados
+  static openStackedModal() {
+    const html1 = `
+      <p style="padding:8px">Modal 1 — haz clic en el botón para abrir otro</p>
+      <div style="text-align:right">
+        <button class="btn btn-secondary" onclick="ejemplos.openModal2()">Abrir Modal 2</button>
+      </div>
+    `;
+    ogComponent('modal').open(html1, { html: true, title: 'Modal 1', width: '500px' });
+  }
+
+  static openModal2() {
+    ogComponent('modal').open('<p style="padding:8px">Modal 2 apilado encima del 1</p>', { html: true, title: 'Modal 2' });
+  }
+
   // Valida el formulario y muestra toast según resultado
   static submitRequired(formId) {
     const validation = ogModule('form').validate(formId);
@@ -155,6 +170,20 @@ class ejemplos {
         buttonElement.disabled = false;
       }, 2000);
     }, 1500);
+  }
+
+  // Demo: modal con header dinámico — simula abrir un "editar registro"
+  static openEditDemo(id, name) {
+    const { modalId } = ogComponent('modal').open(
+      '<p style="padding:8px">Aquí iría el formulario del registro. Aunque el contenido sea muy largo y requiera scroll, el header siempre muestra qué registro estás editando.</p>',
+      {
+        html: true,
+        title: 'Editar workflow',
+        headerExtra: `✏️ ${name} <span style="opacity:.5">#${id}</span>`,
+        width: '600px'
+      }
+    );
+    return modalId;
   }
 }
 
