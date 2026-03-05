@@ -165,6 +165,7 @@ class ogView {
         }
 
         viewData = await response.json();
+        viewData = await this.resolveJsonParts(viewData, basePath, config);
 
         ogLogger?.success('core:view', `✅ Vista cargada desde servidor: "${viewName}"`);
 
@@ -363,6 +364,78 @@ class ogView {
       } catch (error) {
         ogLogger?.error('core:view', 'Error cargando recursos:', error);
       }
+    }
+  }
+
+  // Resuelve recursivamente todos los items de tipo json_part antes de renderizar
+  static async resolveJsonParts(viewData, basePath, config) {
+    const resolveItems = async (items) => {
+      if (!Array.isArray(items)) return items;
+      const out = [];
+      for (const item of items) {
+        if (item?.type === 'json_part' && item.src) {
+          const partData = await this.loadJsonPart(item.src, basePath, config);
+          if (partData) {
+            // El part puede ser { content: [...] } o un array o un item directo
+            const parts = Array.isArray(partData) ? partData
+              : Array.isArray(partData.content) ? partData.content
+              : [partData];
+            out.push(...await resolveItems(parts));
+          }
+        } else {
+          if (Array.isArray(item?.content)) item.content = await resolveItems(item.content);
+          if (Array.isArray(item?.tabs)) {
+            for (const tab of item.tabs) {
+              if (Array.isArray(tab.content)) tab.content = await resolveItems(tab.content);
+            }
+          }
+          if (Array.isArray(item?.config?.tabs)) {
+            for (const tab of item.config.tabs) {
+              if (Array.isArray(tab.content)) tab.content = await resolveItems(tab.content);
+            }
+          }
+          out.push(item);
+        }
+      }
+      return out;
+    };
+
+    if (Array.isArray(viewData.content)) viewData.content = await resolveItems(viewData.content);
+    if (Array.isArray(viewData.tabs)) {
+      for (const tab of viewData.tabs) {
+        if (Array.isArray(tab.content)) tab.content = await resolveItems(tab.content);
+      }
+    }
+    return viewData;
+  }
+
+  // Carga un archivo JSON de parte — soporta notación "extension|path" o ruta relativa al basePath actual
+  static async loadJsonPart(src, basePath, config) {
+    let partBasePath = basePath;
+    let partPath = src;
+
+    if (src.includes('|')) {
+      const [extName, path] = src.split('|');
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}app/extensions/`;
+      partBasePath = `${extensionsBase}${extName}/views`;
+      partPath = path;
+    }
+
+    try {
+      const cacheBuster = `?t=${config.version || '1.0.0'}`;
+      const url = partBasePath.startsWith('/') || partBasePath.startsWith('http')
+        ? `${partBasePath}/${partPath}.json${cacheBuster}`
+        : `${config.baseUrl || '/'}${partBasePath}/${partPath}.json${cacheBuster}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        ogLogger?.warn('core:view', `json_part no encontrado: ${url}`);
+        return null;
+      }
+      return await response.json();
+    } catch (e) {
+      ogLogger?.error('core:view', `Error cargando json_part "${src}":`, e);
+      return null;
     }
   }
 

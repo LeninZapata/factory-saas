@@ -36,6 +36,15 @@
     "  <button class='btn btn-outline btn-success'>Success Outline</button>",
     "</div>",
     
+    "<h3 style='margin-top: 2rem;'>Botones Link</h3>",
+    "<p>Botones con apariencia de enlace, ideales para acciones secundarias o contextos minimalistas.</p>",
+    "<div class='og-flex og-wrap og-gap-md' style='margin-bottom: 1rem; align-items: center;'>",
+    "  <button class='btn btn-link'>Acción secundaria</button>",
+    "  <button class='btn btn-link btn-sm'>Acción pequeña</button>",
+    "  <button class='btn btn-link btn-lg'>Acción grande</button>",
+    "  <button class='btn btn-link' disabled>Deshabilitado</button>",
+    "</div>",
+
     "<h3 style='margin-top: 2rem;'>Estados de Botones</h3>",
     "<p>Botones con estados interactivos: loading, processing, success, error.</p>",
     
@@ -189,6 +198,7 @@
     "<h4>Variantes</h4>",
     "<ul>",
     "  <li><code>.btn-outline</code> - Borde con fondo transparente</li>",
+    "  <li><code>.btn-link</code> - Apariencia de enlace, sin fondo ni borde</li>",
     "</ul>",
     
     "<h4>Estados</h4>",

@@ -1,34 +1,12 @@
 Backend (Framework):
-✔ partir el form.js en 2 o 3 partes para optimizar la carga @done(09-02-2026 14:39)
-✔ Estados del boton, es decir por ejemplo el de esperar... disabled, etc... @done(09-02-2026 15:00)
-porque tengo ejemplos que necesita ese estado y actualmente se lo hace de forma manual en js
-✔ Mock datos de ejemplos databla ejemplos no funciona no esta obteniendo la ruta que es @done(18-01-2026 12:38)
-revisar, parece que simplemente es de ruta de config principal, debes pasarle los archivos
-del index.html para que vea de donde lo arma asi como un ejemplo de archivo de code para que vea
-como obtiene laruta principal.
-☐ en el schema cuando haces esto
-"list": {"method": "GET", "path": "/api/productAdAsset", "middleware": [""]},
-envia un error osea en el middleware [""]
-☐ Si si le quito el auth me aparece NO AUTORIZADO, revisa que paso
-"list": {"method": "GET", "path": "/api/product", "middleware": []}
-☐ PROVOCAR LENTITUD EN LA respuesta del servidor para ver como se comporta el sistema en el frontend para cada peticion
-esto hara tener una CLARIDAD mayor a nivel de experiencia de usuario y asi poder identificar problemas de rendimiento y solucionarlos antes de que los usuarios los experimenten, esto es importante para garantizar una buena experiencia de usuario y evitar que los usuarios se frustren por la lentitud del sistema, esto se puede hacer agregando un retraso artificial en el servidor para simular una respuesta lenta y luego monitorear el comportamiento del sistema en el frontend para identificar cualquier problema de rendimiento y solucionarlo antes de que los usuarios lo experimenten.
-
 
 
 Frontend (Framework):
-☐ Hay un scroll que no se de donde sale pero es nivel de sistema completo...
-☐ Crear el boton link....
-☐ Seguir puliendo el diseño completo de UI (CSS mas que todo hay un modelo a seguir)
 ☐ el modal hacerlo que sean como paneles que aparenzan a los lados, agregar claramente la funcionalidad de que no se cierra dandole clc en el body
 ☐ hacer que el modal tenga atributos dinamos al titulo, ejemplo cuando se abra que el titulo sea un nombre de los campos internos creo que seria mejor asi pero es opcional
-☐ los grupos fields no son responsive, hacerlos responsive
 ☐ La tabla creo que no async se esta ejecutando cuando sus data esta cargada la cual es mal pero el tema de table hay que cambiarla de ley porque hay que hacer un minisupabase asi que esto l ocambia todo 
   a nivel de componente de talbe
-☐ Hacer que la carga de los repeater tenguna un loading... para evitar que se vea como que se va armando 1x1
-☐ aLGO PAS CON el cache y delos diseños revisar el mundo de los cache, deben todo ser por parte de la VERSION
-✔ En el hosting para que se actualice el formulario json tuve que cerar y entrar @done(08-02-2026 17:20)
-parece que tiene caaceh de session, esto deberia tener cache de version...
+
 ☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
 de un plugin registrado para cuando se carguen las vistas, form, modal, etc...
 se agreguen los hooks en los lugares correspondientess
@@ -46,7 +24,6 @@ una persona normal no podria ver X tab pero si un admin.
 ☐ El type submit el label de json debe ser su value para que cambie el txto del boton
 actualmente si pones un type : "submit" crea un boton con el texto "enviar" y label se coloca
 en una extraña posicion en si.
-✔ crear el ejemplo de un menu de 3 niveles porque si lo hace @done(08-02-2026 17:21)
 ☐ en react native quedo pendiente seguir con el tema de la navegacion
 link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
 ☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
@@ -59,33 +36,14 @@ Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todo
 actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
 (PARECE QUE ESTO YA EXISTE CON ROLE ADMIN EL CAMPO SE MUESTRA O NO, SOLO FALTARIA LLENARLO CON UN ENDPOINT
 Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
-☐ si un formularo tiene un campo obligatorio, entonces el scroll debe llenar hasta alli para verlo y el focus debe
-quedar en el primer campo obligatorio que falte por llenar
-☐ Parte los JSON por ejemplo existe JSON muy extensos entonces puede que se partan en viaras partes
-y que haya un item de tipo:json_part que cargue esa parte del json en especifico llamando no mas la ubicacion
-y asi opdemos partir las vistas , porque por ejemplo la vista de CRUD de producto es muy grande en realidad esta consumiento
-michos tokens.
-☐ Revisa si carga style y script por tab, actualmente lo hace por menu y submenu pero digamos 
-que se requiera por tab porque digamos sea una tab especial con mucha carga entonces no necesita
-cargar el script en el submenu o menu sino solo en la tab.
-☐ Los logs deben primero borrarse del sistema la mayoria y dejar los necesarios para...
-_ hacer que solo muestre los logs de errores y no los de info o debug
-_ crer unos info pero en configuracion hacer que luego de se dejen de ejecutar los info
-y asi para poder cada vez quitarle mas logs y que no se llene el sistema de logs y se vuelva lento
-_ lo que me interesa es agruparlos, por el momento la los listos pero tengo que pedirle a la 
-IA que me ayude agruparlos, porque ejemplo un grupo puede ser el inicio de chat entonces me gustaria 
-ver lo que paso dentro de ese grupo, creo que si se puede tal vez dandole un ID que recorra todo el proceso
-entonces este lo puede agrupar y yo revisar, esto seria genial prque actualmente lo lista por order y 
-tiene un medio secuencia pero no agrupa esto me ayudaria identificar problemas en el proceso, por ejemplo si el cliente se queja de que no le llego el mensaje de upsell, yo puedo revisar ese grupo y ver que paso ahi, o si se queja de que no le llego el mensaje de bienvenida, yo puedo revisar ese grupo y ver que paso ahi, esto me ayudaria a identificar problemas en el proceso y solucionarlos mas rapido
 
+☐ Seguir puliendo el diseño completo de UI (CSS mas que todo hay un modelo a seguir)
 
 
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
 parsear todo y luego generar la documentacion automatica actualizados.
 https://chat.deepseek.com/a/chat/s/dbedab39-f8b3-465c-b25d-217bf9787d87
-✔ Probar esta extension para poder usar webhook rutas agrupados y en secuencia @done(08-02-2026 17:23)
-https://marketplace.visualstudio.com/items?itemName=VASubasRaj.flashpost
 ☐ En wordpress existe un plugin que te dice la version de php minuma que necesitas
 https://wordpress.org/plugins/sierotki/ esto deberiamos tambien hacer en los plugins
 ☐ Tener varias cuenas de copiloto con el mismo github https://www.google.com/search?q=como+agregar+varias+cuentas+de+copilot+en+vscode&sca_esv=190a96a9d156750b&sxsrf=ANbL-n6_xmW-h-ndj1nsOm-Z_po0yjnrQQ%3A1771016744303&udm=50&fbs=ADc_l-bpk8W4E-qsVlOvbGJcDwpn75JLSqV3j_xbkySF4grw51H30IP-0-FgEAUalWuLGReuPxwY1XJn-KcoPw8-j7gPmDhIlzW26CnVSGeGlpeLqqRzcnYbVaxCwe1cZuC6K9LEItujwZhN_-uqW4TyOOfEvMjVGovmuJouBaZrBdUWVEeT9SXYp74N0i0ejHq82GcpgX311zLb03PqMgzprhD4qxT4Jw&aep=1&ntc=1&sa=X&ved=2ahUKEwjmyr2_r9eSAxVATDABHRGaAEcQ2J8OegQICRAE&biw=1393&bih=902&dpr=1&mstk=AUtExfDJzYWquRKB48yd5aWicm4nw2-Omly6jmw75MpIEU9kuEBs8MM14aPgT9bKUv7-d92iFate9xa82kahHVBJM4YBhxFb6KsupNbOHoFE5r-uhdQmcopLmPBQxv-ARc8gqBLEDmNzVTMnoM0XSGF-ihyOAgfUjAjTG0a0UuiFoolWGXnrPVOVBZZS8CS-gdx_wcNTJ-r0RDlxFZYKBXqe8X4ax20L33uZSNVezFyKDNIWfZ6QPsb5XRDrSrBp8JhUAH0frCB5Mcfjfzl2ZMzfyPEJRGnzAu4nt7NzszMiMB750QaGD9OH6qFABy8YHAzEH61wqn56U1SADw&csuir=1&mtid=KpKPafLTJKq3wt0P9OeuwAQ
@@ -97,6 +55,30 @@ MiniApp:
   ☐ Poder validar que solo X tag o module pueda registrar tags desde la configuracion entonces con esto no se registran
   tantos logs ademas de poder mas adelante solo ver los necesarios, con esot se puede quitar logs sin remover el codigo
   ya que solo estas mostrando registrando por tags, layer o modulo, esto lo hace dinamico.
+  _ https://stackify.com/php-monolog-tutorial/
+  _ https://www.google.com/search?sca_esv=ad175a4a610f2e0b&sxsrf=ANbL-n4nRnsOtDZm_fc1VR0RRskSDDaE3w:1772651047045&udm=2&fbs=ADc_l-bpk8W4E-qsVlOvbGJcDwpn75JLSqV3j_xbkySF4grw5yCIMmSyTgSz5ZtcVyKZOkycUccp2XmL2m1Q23Lw1A4JADNDmqPANT-lyDliXldAI0Q0HgbXBSQu8nC23EGBooJpJ_tqWyEwoelVw3BrofnWRAdjYGWdA-OPtuP8L6Rono-z-btC4XE8zdk7wTazXoapSuO_RmO3AdZchO3nrHH7bmrc7A&q=Monolog+Logger&sa=X&ved=2ahUKEwi-3uDf94aTAxWRSTABHfE7CAsQtKgLegQIFRAB&biw=1428&bih=843&dpr=1#sv=CAMSVhoyKhBlLWRCR1hQcW1CSnRGdGZNMg5kQkdYUHFtQkp0RnRmTToOblBWMTFGcTdjOHJCVU0gBCocCgZtb3NhaWMSEGUtZEJHWFBxbUJKdEZ0Zk0YADABGAcg3f_p5QwwAjoASggQAhgCIAIoAg
+  _ https://betterstack.com/community/guides/logging/how-to-start-logging-with-monolog/
+  _ https://betterstack.com/log-management
+  _ https://openobserve.ai/blog/php-monolog/
+  _ https://docs.pimcore.com/platform/next/Pimcore/Tools_and_Features/Application_Logger/
+  _ https://www.datadoghq.com/blog/php-logging-guide/
+  _ https://www.datadoghq.com/blog/php-logging-guide/
+  _ https://www.datadoghq.com/product/sensitive-data-scanner/
+  _ https://www.datadoghq.com/resources/logging-without-limits/
+  _ https://www.datadoghq.com/product/log-management/
+  _ https://monitive.com/blog/2021-03-07-laravel-monolog-handler-for-logflare/
+  _ https://monitive.com/blog/dossinth-ai-where-were-at/
+  _ https://api.logflare.app/
+
+  ☐ Los logs deben primero borrarse del sistema la mayoria y dejar los necesarios para...
+  _ hacer que solo muestre los logs de errores y no los de info o debug
+  _ crer unos info pero en configuracion hacer que luego de se dejen de ejecutar los info
+  y asi para poder cada vez quitarle mas logs y que no se llene el sistema de logs y se vuelva lento
+  _ lo que me interesa es agruparlos, por el momento la los listos pero tengo que pedirle a la 
+  IA que me ayude agruparlos, porque ejemplo un grupo puede ser el inicio de chat entonces me gustaria 
+  ver lo que paso dentro de ese grupo, creo que si se puede tal vez dandole un ID que recorra todo el proceso
+  entonces este lo puede agrupar y yo revisar, esto seria genial prque actualmente lo lista por order y 
+tiene un medio secuencia pero no agrupa esto me ayudaria identificar problemas en el proceso, por ejemplo si el cliente se queja de que no le llego el mensaje de upsell, yo puedo revisar ese grupo y ver que paso ahi, o si se queja de que no le llego el mensaje de bienvenida, yo puedo revisar ese grupo y ver que paso ahi, esto me ayudaria a identificar problemas en el proceso y solucionarlos mas rapido
 ☐ Crear un sistema de salud de software, quiere decir que registre cada cierto tiempo el la pagina esta bien o mal 
 con espera de tiempo y todo porque a veces puede haber problemas con el hosting. Esto tambien debe tener alertas.
 ☐ necesito crear un miniSupaBase, que pueda guardar rapidamente tablas un configuraciones para que la

@@ -358,6 +358,20 @@
           "content": "<div id='onload-demo-info' class='og-p-3 og-bg-blue-50 og-rounded-lg'><h3>⚡ Uso de <code>onLoad</code> en Tabs</h3><p class='og-my-2'>El atributo <code>onLoad</code> permite ejecutar código JavaScript automáticamente cuando se muestra la tab por primera vez.</p><h4 class='og-mt-3'>🎯 ¿Para qué sirve?</h4><ul style='line-height: 1.8;'><li>Inicializar widgets o componentes complejos</li><li>Cargar datos dinámicos desde una API</li><li>Ejecutar animaciones o efectos visuales</li><li>Configurar eventos o listeners específicos</li><li>Cualquier acción personalizada en JavaScript</li></ul><h4 class='og-mt-3'>💻 Ejemplo de uso:</h4><pre class='og-bg-gray-900 og-text-white og-p-2 og-rounded og-mt-2' style='overflow-x: auto;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"onLoad\": \"miModulo.inicializar()\",\n  \"content\": [...]\n}</pre><div class='alert alert-warning alert-border og-mt-2'><strong>⚠️ Nota:</strong> Esta tab tiene un <code>onLoad</code> que inyecta un mensaje debajo de este texto. ¡Observa cómo aparece!</div></div>"
         }
       ]
+    },
+    {
+      "id": "load-scripts-demo",
+      "title": "📦 Load Scripts",
+      "styles": [
+        "ejemplos/assets/css/tab-demo.css"
+      ],
+      "onLoad": "(function(){ var el = document.getElementById('load-scripts-status'); if(el){ el.innerHTML = '<span class=\"demo-badge\">✅ tab-demo.css cargado al presionar esta tab</span>'; } })()",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div id='tab-load-scripts-demo'><div class='demo-box'>Este bloque tiene sus estilos aplicados desde <code>tab-demo.css</code>.<br><span id='load-scripts-status'>Cargando CSS...</span></div><h3>📦 Scripts y Styles por Tab</h3><p>Las tabs soportan los atributos <code>scripts</code> y <code>styles</code>. Los recursos se inyectan <strong>solo cuando el usuario hace clic en esa tab</strong>, la primera vez que la visita.</p><h4 class='og-mt-3'>💡 Diferencia con scripts de menú</h4><ul style='line-height:1.8'><li><strong>Scripts de menú/submenu:</strong> se cargan al navegar al ítem del sidebar</li><li><strong>Scripts de tab:</strong> se cargan al hacer clic en una tab específica dentro de una vista</li><li>En ambos casos, el recurso se carga <strong>una sola vez</strong> (no se recarga al volver)</li></ul><h4 class='og-mt-3'>💻 Configuración</h4><pre style='background:#f5f5f5;padding:1rem;border-radius:6px;overflow-x:auto;font-size:0.85rem;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"scripts\": [\n    \"mi-extension/assets/js/mi-modulo.js\"\n  ],\n  \"styles\": [\n    \"mi-extension/assets/css/mi-estilo.css\"\n  ],\n  \"onLoad\": \"miModulo.init()\",\n  \"content\": [...]\n}</pre><div class='alert alert-info alert-border og-mt-3'><strong>ℹ️ Este ejemplo</strong> carga <code>ejemplos/assets/css/tab-demo.css</code> al presionar esta tab. Los estilos del recuadro azul de arriba provienen de ese archivo.</div></div>"
+        }
+      ]
     }
   ]
 }

@@ -96,6 +96,13 @@ class ejemplos {
     }
   }
 
+  // Valida el formulario y muestra toast según resultado
+  static submitRequired(formId) {
+    const validation = ogModule('form').validate(formId);
+    if (!validation.success) return ogComponent('toast').error(validation.message);
+    ogComponent('toast').success('✅ Formulario enviado correctamente');
+  }
+
   /**
    * Demo de transición de estados de botón
    * Simula: Normal → Loading → Success → Normal

@@ -1,6 +1,11 @@
 <?php
 // framework/routes/api.php - Compositor de rutas (framework + middle + app)
 
+// Simular latencia via ?_delay=N (solo en dev) para pruebas de frontend
+if (OG_IS_DEV && isset($_GET['_delay']) && (int) $_GET['_delay'] > 0) {
+  sleep((int) $_GET['_delay']);
+}
+
 // Obtener router desde ogApp
 $router = ogApp()->core('router');
 
@@ -84,6 +89,18 @@ if ($module) {
 
     $globalMw = $config['middleware'] ?? [];
 
+    // Normalizar routes: soportar formato array [{name, ...}] o objeto {list: {...}}
+    $rawRoutes = $config['routes'] ?? [];
+    $routesMap = [];
+    if (isset($rawRoutes[0])) {
+      // Formato array: indexar por name
+      foreach ($rawRoutes as $r) {
+        if (isset($r['name'])) $routesMap[$r['name']] = $r;
+      }
+    } else {
+      $routesMap = $rawRoutes;
+    }
+
     // Rutas CRUD siempre en camelCase
     $crudRoutes = [
       'list'   => ['get',    "/api/{$moduleCamelCase}",      'list'],
@@ -96,14 +113,14 @@ if ($module) {
     foreach ($crudRoutes as $key => $routeData) {
       list($method, $routePath, $action) = $routeData;
 
-      $routeConfig = $config['routes'][$key] ?? [];
+      $routeConfig = $routesMap[$key] ?? [];
 
       // Si la ruta no está habilitada, saltarla
       if (isset($routeConfig['enabled']) && $routeConfig['enabled'] === false) {
         continue;
       }
 
-      $routeMw = array_merge($globalMw, $routeConfig['middleware'] ?? []);
+      $routeMw = array_values(array_filter(array_merge($globalMw, $routeConfig['middleware'] ?? []), fn($m) => $m !== ''));
 
       // Registrar ruta CRUD
       $route = $router->$method($routePath, [$ctrl, $action]);

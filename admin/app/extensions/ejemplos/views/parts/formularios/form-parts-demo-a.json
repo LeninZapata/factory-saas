@@ -1,0 +1,15 @@
+{
+  "fields": [
+    {
+      "type": "group",
+      "label": "Información Personal",
+      "cols": 2,
+      "fields": [
+        { "name": "nombre", "label": "Nombre", "type": "text", "required": true, "validation": "required|min:2" },
+        { "name": "apellido", "label": "Apellido", "type": "text" },
+        { "name": "email", "label": "Email", "type": "email", "validation": "email" },
+        { "name": "telefono", "label": "Teléfono", "type": "text" }
+      ]
+    }
+  ]
+}

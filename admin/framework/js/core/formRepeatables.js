@@ -67,6 +67,8 @@ class ogFormRepeatables {
     if (field.accordionOpenFirst !== undefined) container.dataset.accordionOpenFirst = field.accordionOpenFirst;
     if (field.accordionOpenAll !== undefined) container.dataset.accordionOpenAll = field.accordionOpenAll;
     if (field.sortable !== undefined) container.dataset.sortable = field.sortable;
+    if (field.loading !== undefined) container.dataset.loading = field.loading;
+    if (field.loadingText) container.dataset.loadingText = field.loadingText;
 
     const formEl = container.closest('form');
     const hasFillData = formEl?.dataset.hasFillData === 'true';

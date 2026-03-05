@@ -208,10 +208,26 @@ class ogFormData {
 
     const formEl = container.closest('form');
 
+    // Mostrar loading si está habilitado (por defecto true)
+    const loadingEnabled = itemsContainer.dataset.loading !== 'false';
+    let loadingEl = null;
+    if (loadingEnabled && items.length > 0) {
+      const loadingText = itemsContainer.dataset.loadingText || 'Cargando...';
+      loadingEl = document.createElement('div');
+      loadingEl.className = 'og-repeatable-loading';
+      loadingEl.innerHTML = `<span>${loadingText}</span>`;
+      itemsContainer.parentElement.insertBefore(loadingEl, itemsContainer);
+      itemsContainer.style.display = 'none';
+    }
+
     // Procesar cada item secuencialmente
     const processItem = (index) => {
       if (index >= items.length) {
-        // Todos completados
+        // Ocultar loading y mostrar contenido
+        if (loadingEl) {
+          loadingEl.remove();
+          itemsContainer.style.display = '';
+        }
         if (formEl && formEl.dataset.repeatablesToFill) {
           const filled = parseInt(formEl.dataset.repeatablesFilled || 0) + 1;
           formEl.dataset.repeatablesFilled = filled;

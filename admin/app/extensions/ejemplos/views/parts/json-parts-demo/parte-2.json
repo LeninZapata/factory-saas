@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "html",
+      "content": "<div class='alert alert-success alert-header'><div class='alert-title'>🔗 Parte 2 — desde <code>parts/json-parts-demo/parte-2.json</code></div><div class='alert-body'><p>Esta es la segunda parte, también independiente. Cualquier número de partes puede ser importado por el JSON padre en el orden que se necesite.</p><p>Las partes pueden reutilizarse en distintas vistas: si varias secciones necesitan el mismo bloque, apuntan al mismo archivo y se mantiene en un solo lugar.</p></div></div>"
+    }
+  ]
+}

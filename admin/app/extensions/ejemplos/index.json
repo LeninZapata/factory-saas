@@ -4,7 +4,7 @@
   "enabled": true,
   "hasHooks": true,
   "hasViews": true,
-  "hasMenu": true,
+  "hasMenu": false,
   "menu": {
     "title": "Ejemplos",
     "icon": "📚",
@@ -158,6 +158,13 @@
             "styles": [
               "ejemplos/assets/css/chart.css"
             ]
+          },
+          {
+            "id": "ejemplos-json-parts",
+            "title": "JSON Parts",
+            "icon": "🧩",
+            "view": "sections/caracteristicas-json-parts",
+            "order": 3
           }
         ]
       },

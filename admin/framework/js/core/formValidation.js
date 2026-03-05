@@ -58,6 +58,17 @@ class ogFormValidation {
 
     if (!isValid) {
       const firstError = errors[0];
+
+      // Scroll al primer campo con error y foco
+      if (firstError) {
+        const firstInput = formEl.querySelector(`[name="${firstError.field}"]`);
+        if (firstInput) {
+          const target = firstInput.closest('.og-form-group, .og-form-checkbox') || firstInput;
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => firstInput.focus({ preventScroll: true }), 350);
+        }
+      }
+
       return {
         success: false,
         message: firstError ? firstError.message : 'Errores de validación',

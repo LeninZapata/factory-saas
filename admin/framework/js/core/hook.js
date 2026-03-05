@@ -166,6 +166,17 @@ class ogHook {
   static processMenuItems(items, parentPlugin = '', extensionScripts = [], extensionStyles = []) {
     return items
       .map(item => {
+        // Si delega a otra extensión, marcar para resolución en getMenuItems()
+        if (item.delegate) {
+          return {
+            id: item.id,
+            title: item.title,
+            icon: item.icon || '',
+            order: item.order ?? 999,
+            delegate: item.delegate
+          };
+        }
+
         const processedItem = {
           id: item.id,
           title: item.title,
@@ -200,6 +211,32 @@ class ogHook {
       .sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
   }
 
+  // Resolver items con delegate al momento de construir el menú
+  static resolveMenuDelegates(items) {
+    const resolved = [];
+    for (const item of items) {
+      if (item.delegate) {
+        const delegateConfig = this.pluginRegistry.get(item.delegate);
+        if (delegateConfig?.menu?.items?.length > 0) {
+          resolved.push({
+            id: item.id,
+            title: item.title,
+            icon: item.icon,
+            order: item.order ?? 999,
+            items: this.resolveMenuDelegates(delegateConfig.menu.items)
+          });
+        } else {
+          ogLogger?.warn('core:hook', `⚠️ delegate "${item.delegate}" no encontrado o sin items`);
+        }
+      } else if (item.items?.length > 0) {
+        resolved.push({ ...item, items: this.resolveMenuDelegates(item.items) });
+      } else {
+        resolved.push(item);
+      }
+    }
+    return resolved;
+  }
+
   static getMenuItems() {
     const menuItems = [];
 
@@ -223,7 +260,7 @@ class ogHook {
         }
 
         if (pluginConfig.menu.items?.length > 0) {
-          menuItem.items = pluginConfig.menu.items;
+          menuItem.items = this.resolveMenuDelegates(pluginConfig.menu.items);
         } else if (pluginConfig.menu.view) {
           menuItem.view = pluginConfig.menu.view;
           if (pluginConfig.scripts) menuItem.scripts = pluginConfig.scripts;

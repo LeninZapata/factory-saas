@@ -1,0 +1,31 @@
+{
+  "id": "ejemplos-json-parts",
+  "title": "JSON Parts — División de Vistas",
+  "type": "content",
+  "content": [
+    {
+      "type": "html",
+      "content": "<h3>📦 ¿Qué es un <code>json_part</code>?</h3><p>Permite importar fragmentos JSON externos dentro de cualquier vista. El sistema los carga y fusiona <strong>antes de renderizar</strong>, de forma transparente.</p><p>Ideal para partir vistas grandes en archivos pequeños y mantenibles, o reutilizar bloques comunes entre varias vistas.</p>"
+    },
+    {
+      "type": "json_part",
+      "src": "parts/json-parts-demo/parte-1"
+    },
+    {
+      "type": "json_part",
+      "src": "parts/json-parts-demo/parte-2"
+    },
+    {
+      "type": "html",
+      "content": "<h4 style='margin-top: 1.5rem'>Estructura de archivos de este ejemplo</h4><pre style='background:#f5f5f5;padding:1rem;border-radius:0.5rem;font-size:0.85rem;'>views/\n  sections/\n    caracteristicas-json-parts.json  ← este archivo\n  parts/                             ← carpeta única de partes\n    json-parts-demo/\n      parte-1.json                   ← cargado via json_part en la vista\n      parte-2.json                   ← cargado via json_part en la vista\n    formularios/\n      form-parts-demo-a.json         ← campos del form (parte A)\n      form-parts-demo-b.json         ← campos del form (parte B)\n  forms/\n    formularios/\n      form-parts-demo.json           ← form que une 2 partes via json_part</pre><h4 style='margin-top: 1.5rem'>Sintaxis en vistas</h4><pre style='background:#f5f5f5;padding:1rem;border-radius:0.5rem;font-size:0.85rem;'>// content[] de una vista:\n{ \"type\": \"json_part\", \"src\": \"parts/mi-carpeta/mi-parte\" }\n\n// Desde otra extensión:\n{ \"type\": \"json_part\", \"src\": \"otra-extension|parts/mi-parte\" }</pre><h4 style='margin-top: 0.75rem'>Sintaxis en formularios (fields[])</h4><pre style='background:#f5f5f5;padding:1rem;border-radius:0.5rem;font-size:0.85rem;'>// fields[] de un form JSON:\n{ \"type\": \"json_part\", \"src\": \"parts/formularios/mi-parte\" }\n\n// El archivo de parte retorna: { \"fields\": [...] } o directamente [...]</pre><p style='margin-top:0.75rem'><strong>Reglas:</strong> todas las partes viven bajo <code>views/parts/</code>, independientemente de si son partes de vistas o de formularios. Se resuelven de forma recursiva. Un part puede contener otros parts.</p>"
+    },
+    {
+      "type": "html",
+      "content": "<hr style='margin: 2rem 0'><h3>🧩 Form partido en 2 archivos</h3><p>Un solo formulario (<code>form-parts-demo.json</code>) cuyo <code>fields[]</code> importa dos archivos de partes con <code>json_part</code>. El resultado es un único form unificado.</p>"
+    },
+    {
+      "type": "form",
+      "form_json": "ejemplos|forms/formularios/form-parts-demo"
+    }
+  ]
+}

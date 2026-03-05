@@ -1,0 +1,22 @@
+{
+  "id": "form-parts-demo",
+  "title": "Formulario partido en 2 archivos",
+  "fields": [
+    {
+      "type": "json_part",
+      "src": "parts/formularios/form-parts-demo-a"
+    },
+    {
+      "type": "json_part",
+      "src": "parts/formularios/form-parts-demo-b"
+    }
+  ],
+  "statusbar": [
+    {
+      "name": "submit",
+      "type": "button",
+      "label": "Guardar",
+      "onclick": "event.preventDefault(); const v = ogModule('form').validate(this.closest('form').id); if(v.success) ogComponent('toast').success('✅ Formulario enviado'); else ogComponent('toast').error(v.message);"
+    }
+  ]
+}

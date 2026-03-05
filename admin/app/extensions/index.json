@@ -1,12 +1,7 @@
 {
   "extensions": [
-    {
-      "name": "ejemplos",
-      "description": "Ejemplos de uso del sistema"
-    },
-    {
-      "name": "admin",
-      "description": "Administración del sistema"
-    }
+    { "name": "ejemplos", "description": "Ejemplos de uso del sistema" },
+    { "name": "admin", "description": "Administración del sistema" },
+    { "name": "dev", "description": "Herramientas de desarrollo" }
   ]
 }

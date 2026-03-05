@@ -1,0 +1,23 @@
+{
+  "name": "dev",
+  "version": "1.0.0",
+  "enabled": true,
+  "hasHooks": false,
+  "hasViews": false,
+  "hasMenu": true,
+  "menu": {
+    "title": "Developer",
+    "icon": "🛠️",
+    "order": 99,
+    "items": [
+      {
+        "id": "dev-ejemplos",
+        "title": "Ejemplos",
+        "icon": "📚",
+        "order": 1,
+        "delegate": "ejemplos"
+      }
+    ]
+  },
+  "description": "Herramientas de desarrollo"
+}

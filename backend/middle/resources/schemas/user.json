@@ -4,34 +4,13 @@
   "timestamps": false,
   "middleware": ["throttle:100,1"],
 
-  "routes": {
-    "list": {
-      "method": "GET",
-      "path": "/api/user/",
-      "middleware": ["auth"]
-    },
-    "show": {
-      "method": "GET",
-      "path": "/api/user/{id}",
-      "middleware": ["auth"]
-    },
-    "create": {
-      "method": "POST",
-      "path": "/api/user",
-      "middleware": ["json"],
-      "example": {"user": "john_doe", "pass": "mypassword123", "email": "john@example.com", "role": "user"}
-    },
-    "update": {
-      "method": "PUT",
-      "path": "/api/user/{id}",
-      "middleware": ["auth", "json"]
-    },
-    "delete": {
-      "method": "DELETE",
-      "path": "/api/user/{id}",
-      "middleware": ["auth"]
-    }
-  },
+  "routes": [
+    { "name": "list", "method": "GET", "path": "/api/user/", "middleware": ["auth"] },
+    { "name": "show", "method": "GET", "path": "/api/user/{id}", "middleware": ["auth"] },
+    { "name": "create", "method": "POST", "path": "/api/user", "middleware": ["json"], "example": {"user": "john_doe", "pass": "mypassword123", "email": "john@example.com", "role": "user"} },
+    { "name": "update", "method": "PUT", "path": "/api/user/{id}", "middleware": ["auth", "json"] },
+    { "name": "delete", "method": "DELETE", "path": "/api/user/{id}", "middleware": ["auth"] }
+  ],
 
   "fields": [
     { "name": "user", "type": "string", "required": true, "unique": true, "maxLength": 50 },

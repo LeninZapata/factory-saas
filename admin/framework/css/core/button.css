@@ -128,6 +128,28 @@
     }
   }
 
+  /* Variante link */
+  .btn-link {
+    --og-btn-bg: transparent;
+    --og-btn-border: transparent;
+    --og-btn-text: var(--og-accent-primary, rgb(79, 129, 189));
+    padding-left: 0;
+    padding-right: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover {
+      --og-btn-bg: transparent;
+      --og-btn-border: transparent;
+      --og-btn-text: var(--og-accent-primary-dark, rgb(56, 93, 138));
+      text-decoration: underline;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
   /* ========================================
      ESTADOS DE BOTÓN
      ======================================== */

@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "html",
+      "content": "<div class='alert alert-info alert-header'><div class='alert-title'>📄 Parte 1 — desde <code>parts/json-parts-demo/parte-1.json</code></div><div class='alert-body'><p>Este bloque de contenido vive en su propio archivo independiente. Puede contener cualquier tipo de item que normalmente iría en un <code>content[]</code>: HTML, formularios, componentes, etc.</p><p>Al cargarse, se fusiona en línea exactamente donde está el <code>json_part</code> en el JSON padre, como si siempre hubiera estado ahí.</p></div></div>"
+    }
+  ]
+}

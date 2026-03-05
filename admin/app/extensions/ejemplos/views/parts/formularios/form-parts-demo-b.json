@@ -1,0 +1,20 @@
+{
+  "fields": [
+    {
+      "type": "group",
+      "label": "Dirección",
+      "cols": 3,
+      "fields": [
+        { "name": "pais", "label": "País", "type": "select", "defaultValue": "mx", "options": [
+          { "value": "mx", "label": "🇲🇽 México" },
+          { "value": "co", "label": "🇨🇴 Colombia" },
+          { "value": "ar", "label": "🇦🇷 Argentina" },
+          { "value": "es", "label": "🇪🇸 España" }
+        ]},
+        { "name": "ciudad", "label": "Ciudad", "type": "text" },
+        { "name": "codigo_postal", "label": "Código Postal", "type": "text" }
+      ]
+    },
+    { "name": "direccion", "label": "Dirección Completa", "type": "textarea", "rows": 2 }
+  ]
+}

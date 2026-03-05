@@ -71,6 +71,20 @@
                     "form_json": "ejemplos|forms/formularios/form-inputs-defaults"
                   }
                 ]
+              },
+              {
+                "id": "requerido",
+                "title": "Requerido",
+                "content": [
+                  {
+                    "type": "not_show_html",
+                    "content": "<h3>✅ Campo Requerido</h3><p>Solo el primer campo es obligatorio. Mueve el scroll hasta él y muestra el foco si falta.</p>"
+                  },
+                  {
+                    "type": "form",
+                    "form_json": "ejemplos|forms/formularios/form-inputs-required"
+                  }
+                ]
               }
             ]
           }

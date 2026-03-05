@@ -1,4 +1,4 @@
-/* form.css - Sistema de formularios minimalista */
+﻿/* form.css - Sistema de formularios minimalista */
 
 .onlygrow-active {
   /* Variables de formularios */
@@ -200,7 +200,7 @@
       opacity: 0.3;
     }
 
-    /* Botón eliminar en esquina superior derecha */
+    /* BotÃ³n eliminar en esquina superior derecha */
     .og-repeatable-remove {
       position: absolute;
       top: 0;
@@ -215,7 +215,7 @@
       }
     }
 
-    /* Acordeón */
+    /* AcordeÃ³n */
     &.og-repeatable-item-accordion,
     &.og-repeatable-item-with-header {
       flex-direction: column;
@@ -359,7 +359,7 @@
     }
   }
 
-  /* Botones específicos de repetables */
+  /* Botones especÃ­ficos de repetables */
   .btn-sm {
     padding: 0.5rem 1rem;
     font-size: var(--og-font-sm);
@@ -375,6 +375,18 @@
     &:hover {
       background: #c0392b;
     }
+  }
+
+  /* Estado loading de repeatable */
+  .og-repeatable-loading {
+    padding: 1.25rem;
+    text-align: center;
+    color: var(--og-form-hint-color, #888);
+    font-size: var(--og-font-sm, 0.875rem);
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    animation: og-repeatable-pulse 1.2s ease-in-out infinite;
   }
 
   /* Grupos de campos */
@@ -412,54 +424,60 @@
   }
 
   /* Responsive */
-  @media (max-width: 1024px) {
-    .og-form-group-cols-4,
-    .og-form-group-cols-3 {
-      grid-template-columns: repeat(2, 1fr);
-    }
+}
 
-    .og-repeatable-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-
-      .btn {
-        width: 100%;
-      }
-    }
+@media (max-width: 1024px) {
+  .onlygrow-active .og-form-group-cols.og-form-group-cols-4 {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (max-width: 768px) {
-    .og-form-group-cols-2,
-    .og-form-group-cols-3,
-    .og-form-group-cols-4 {
-      grid-template-columns: 1fr;
-    }
-
-    .og-form-group-cols > .og-form-group {
-      margin-bottom: 1rem;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    & .og-form-group {
-      input,
-      select,
-      textarea {
-        padding: 0.3rem 0.5rem;
-      }
-    }
+  .onlygrow-active .og-form-group-cols.og-form-group-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 480px) {
-    .og-form-group-gap-large {
-      gap: 1rem;
-    }
-
-    .og-form-group-gap-normal {
-      gap: 0.75rem;
-    }
+  .onlygrow-active .og-repeatable-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
+
+  .onlygrow-active .og-repeatable-header .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .onlygrow-active .og-form-group-cols.og-form-group-cols-2,
+  .onlygrow-active .og-form-group-cols.og-form-group-cols-3,
+  .onlygrow-active .og-form-group-cols.og-form-group-cols-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .onlygrow-active .og-form-group-cols > .og-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .onlygrow-active .og-form-group-cols > .og-form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .onlygrow-active .og-form-group input,
+  .onlygrow-active .og-form-group select,
+  .onlygrow-active .og-form-group textarea {
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .onlygrow-active .og-form-group-gap-large {
+    gap: 1rem;
+  }
+
+  .onlygrow-active .og-form-group-gap-normal {
+    gap: 0.75rem;
+  }
+}
+@keyframes og-repeatable-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

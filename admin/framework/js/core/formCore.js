@@ -98,6 +98,63 @@ class ogFormCore {
     });
   }
 
+  // Resuelve recursivamente json_part dentro de fields[] antes de renderizar
+  static async resolveFieldParts(schema, baseUrl, config) {
+    const resolveFields = async (fields) => {
+      if (!Array.isArray(fields)) return fields;
+      const out = [];
+      for (const field of fields) {
+        if (field?.type === 'json_part' && field.src) {
+          const partFields = await this.loadFieldPart(field.src, baseUrl, config);
+          if (Array.isArray(partFields)) out.push(...await resolveFields(partFields));
+        } else {
+          if (Array.isArray(field?.fields)) field.fields = await resolveFields(field.fields);
+          out.push(field);
+        }
+      }
+      return out;
+    };
+
+    if (Array.isArray(schema.fields)) schema.fields = await resolveFields(schema.fields);
+    return schema;
+  }
+
+  // Carga un archivo de parte y retorna su array de fields
+  static async loadFieldPart(src, formUrl, config) {
+    let url;
+
+    if (src.includes('|')) {
+      const [extName, path] = src.split('|');
+      const extensionsBase = config.extensionsPath || `${config.baseUrl}app/extensions/`;
+      url = `${extensionsBase}${extName}/views/${path}.json`;
+    } else {
+      // Resolver desde la raíz views/ de la extensión (mismo nivel que parts/, sections/, forms/)
+      const viewsMatch = formUrl.match(/^(.*\/views\/)/);
+      if (viewsMatch) {
+        url = `${viewsMatch[1]}${src}.json`;
+      } else {
+        // Fallback: relativo a la carpeta del form actual
+        const baseDir = formUrl.replace(/\/[^/]+\.json.*$/, '');
+        url = `${baseDir}/${src}.json`;
+      }
+    }
+
+    try {
+      const cacheBuster = url.includes('?') ? '' : `?t=${config.version || '1.0.0'}`;
+      const response = await fetch(url + cacheBuster);
+      if (!response.ok) {
+        ogLogger?.warn('core:form', `json_part no encontrado: ${url}`);
+        return [];
+      }
+      const data = await response.json();
+      // El archivo puede ser { fields: [...] } o directamente [...]
+      return Array.isArray(data) ? data : (data.fields || []);
+    } catch (e) {
+      ogLogger?.error('core:form', `Error cargando field part "${src}":`, e);
+      return [];
+    }
+  }
+
   static async load(formName, container = null, data = null, isCore = null, afterRender = null) {
     const cache = ogModule('cache');
     const hook = ogModule('hook');
@@ -165,6 +222,7 @@ class ogFormCore {
       }
 
       schema = await response.json();
+      schema = await this.resolveFieldParts(schema, url, config);
       cache?.set(cacheKey, schema);
     }
 

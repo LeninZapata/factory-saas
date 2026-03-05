@@ -38,10 +38,11 @@ class ogI18n {
     const globalConfig = this.getConfig();
     const currentVersion = globalConfig.version || "1.0.0";
     const slug = globalConfig.slug || 'default';
+    const space = globalConfig.space || 'default';
     let cleaned = 0;
 
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(`cache_${slug}_i18n_core_`) || key.startsWith(`cache_${slug}_i18n_extension_`)) {
+      if (key.startsWith(`cache_${slug}_${space}_i18n_core_`) || key.startsWith(`cache_${slug}_${space}_i18n_extension_`)) {
         const hasCurrentVersion = key.includes(`_v${currentVersion}`);
 
         if (!hasCurrentVersion) {
@@ -61,7 +62,7 @@ class ogI18n {
     const globalConfig = this.getConfig();
     const version = globalConfig.version || "1.0.0" || Date.now();
 
-    const cacheKey = `i18n_core_${lang}`;
+    const cacheKey = `i18n_core_${lang}_v${version}`;
     let data = cache?.get(cacheKey);
 
     if (!data) {
@@ -103,7 +104,7 @@ class ogI18n {
     const version = globalConfig.version || "1.0.0" || Date.now();
     const cache = ogModule('cache');
 
-    const cacheKey = `i18n_extension_${extensionName}_${lang}`;
+    const cacheKey = `i18n_extension_${extensionName}_${lang}_v${version}`;
     let data = cache.get(cacheKey);
 
     if (!data) {
