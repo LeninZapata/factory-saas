@@ -22,12 +22,14 @@ class ogTabs {
     // CAMBIAR: .tab-content → .og-tab-content
     const tabsHTML = `
       <div class="og-tabs-component">
-        <div class="og-tabs-header">
-          ${tabsData.tabs.map(tab => `
-            <button class="og-tab-btn" data-tab="${tab.id}">
-              ${tab.title}
-            </button>
-          `).join('')}
+        <div class="og-tabs-header-wrap">
+          <div class="og-tabs-header">
+            ${tabsData.tabs.map(tab => `
+              <button class="og-tab-btn" data-tab="${tab.id}">
+                ${tab.title}
+              </button>
+            `).join('')}
+          </div>
         </div>
         <div class="og-tab-content" id="tab-content-${tabsData.id}"></div>
       </div>
@@ -56,47 +58,30 @@ class ogTabs {
 
   // Detectar overflow en ambos lados
   static checkOverflow(container) {
-    // CAMBIAR: .tabs-header → .og-tabs-header
     const tabsHeader = container.querySelector('.og-tabs-header');
     if (!tabsHeader) return;
+    const wrap = tabsHeader.closest('.og-tabs-header-wrap') || tabsHeader;
 
     const updateOverflow = () => {
       const scrollLeft = tabsHeader.scrollLeft;
       const scrollWidth = tabsHeader.scrollWidth;
       const clientWidth = tabsHeader.clientWidth;
 
-      // Hay overflow si el contenido es más ancho que el contenedor
       const hasOverflow = scrollWidth > clientWidth;
 
       if (!hasOverflow) {
-        tabsHeader.classList.remove('has-overflow-left', 'has-overflow-right');
+        wrap.classList.remove('has-overflow-left', 'has-overflow-right');
         return;
       }
 
-      // Detectar si está al inicio (no hay scroll a la izquierda)
       const isAtStart = scrollLeft <= 5;
-
-      // Detectar si está al final (no hay más contenido a la derecha)
       const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 5;
 
-      // Agregar/quitar clases según posición
-      if (isAtStart) {
-        tabsHeader.classList.remove('has-overflow-left');
-      } else {
-        tabsHeader.classList.add('has-overflow-left');
-      }
-
-      if (isAtEnd) {
-        tabsHeader.classList.remove('has-overflow-right');
-      } else {
-        tabsHeader.classList.add('has-overflow-right');
-      }
+      wrap.classList.toggle('has-overflow-left', !isAtStart);
+      wrap.classList.toggle('has-overflow-right', !isAtEnd);
     };
 
-    // Ejecutar al cargar
     updateOverflow();
-
-    // Actualizar en scroll
     tabsHeader.addEventListener('scroll', updateOverflow);
   }
 

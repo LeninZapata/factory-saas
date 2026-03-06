@@ -1,0 +1,258 @@
+{
+  "content": [
+    {
+      "type": "section",
+      "title": "Columna fija en scroll horizontal",
+      "description": "Con <code>fixedColumns: 1</code> la primera columna queda anclada mientras el resto hace scroll horizontal. Acepta número (cantidad de columnas fijas) o array de campos.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumns": 1,
+            "columns": [
+              { "id":       { "name": "#",           "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",          "width": "100px" } },
+              { "name":     { "name": "Producto",     "width": "220px" } },
+              { "category": { "name": "Categoría",    "width": "130px" } },
+              { "brand":    { "name": "Marca",        "width": "110px" } },
+              { "price":    { "name": "Precio",       "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",        "width": "95px",  "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",        "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",         "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",       "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",       "width": "90px",  "align": "center" } },
+              { "status":   { "name": "Estado",       "width": "100px", "align": "center" } },
+              { "supplier": { "name": "Proveedor",    "width": "160px" } },
+              { "dc":       { "name": "Creado",       "width": "110px", "format": "date", "align": "center" } },
+              { "da":       { "name": "Actualizado",  "width": "110px", "format": "date", "align": "center" } }
+            ],
+            "actions": {
+              "edit": { "name": "✏️", "onclick": "ogToast.info('Editar: {name}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// fixedColumns: número de columnas ancladas desde la izquierda\n{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"fixedColumns\": 1,\n    \"columns\": [\n      { \"id\":   { \"name\": \"#\",        \"width\": \"55px\",  \"align\": \"center\" } },\n      { \"name\": { \"name\": \"Producto\", \"width\": \"220px\" } },\n      // ... más columnas\n    ]\n  }\n}\n\n// También acepta 2 columnas fijas\n\"fixedColumns\": 2"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Dos columnas fijas",
+      "description": "Con <code>fixedColumns: 2</code> las primeras 2 columnas quedan ancladas. Útil cuando el identificador y el nombre del registro deben ser siempre visibles.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumns": 2,
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "220px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",       "width": "95px",  "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",      "width": "90px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+              { "supplier": { "name": "Proveedor",   "width": "160px" } },
+              { "dc":       { "name": "Creado",      "width": "110px", "format": "date", "align": "center" } },
+              { "da":       { "name": "Actualizado", "width": "110px", "format": "date", "align": "center" } }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Resize de columnas",
+      "description": "Con <code>resizableColumns: true</code> se puede arrastrar el borde derecho de cualquier cabecera para cambiar su ancho. Por defecto está desactivado.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "resizableColumns": true,
+            "tableClass": "table-bordered",
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "200px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+              { "supplier": { "name": "Proveedor",   "width": "150px" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "{ \"resizableColumns\": true }"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Columna fija + Resize combinados",
+      "description": "Se puede combinar <code>fixedColumns</code> con <code>resizableColumns</code>. Las columnas fijas mantienen su posición en el scroll horizontal y todas las columnas son redimensionables.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumns": 2,
+            "resizableColumns": true,
+            "tableClass": "table-bordered",
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "200px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",       "width": "100px", "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",      "width": "80px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+              { "supplier": { "name": "Proveedor",   "width": "150px" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "{ \"fixedColumns\": 2, \"resizableColumns\": true }"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Columnas destacadas",
+      "description": "Con <code>\"solid\": true</code> en una columna, sus celdas toman el fondo de la cabecera. Útil para resaltar columnas de referencia o de solo lectura.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumns": 2,
+            "resizableColumns": true,
+            "tableClass": "table-bordered",
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center", "solid": true } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "200px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",       "width": "100px", "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",      "width": "80px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+              { "supplier": { "name": "Proveedor",   "width": "150px" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// Marcar columna como destacada con solid: true\n{ \"id\": { \"name\": \"#\", \"width\": \"55px\", \"align\": \"center\", \"solid\": true } }"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Columnas fijas a la derecha",
+      "description": "Con <code>fixedColumnsRight: N</code> las últimas N columnas quedan ancladas al borde derecho. Ideal para fijar columnas de acciones o estado mientras el contenido hace scroll horizontal.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumnsRight": 1,
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "200px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",       "width": "100px", "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",      "width": "80px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } }
+            ],
+            "actions": {
+              "edit": { "name": "✏️ Editar", "onclick": "ogToast.info('Editar: {name}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// Últimas N columnas (incluyendo acciones) fijas a la derecha\n{ \"fixedColumnsRight\": 1 }\n\n// Combinable con columnas fijas a la izquierda\n{ \"fixedColumns\": 1, \"fixedColumnsRight\": 1 }"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Columnas fijas izquierda + derecha",
+      "description": "Combina <code>fixedColumns</code> y <code>fixedColumnsRight</code> para anclar columnas en ambos extremos simultáneamente. El contenido central hace scroll mientras los extremos quedan fijos.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/products-wide.json",
+            "fixedColumns": 2,
+            "fixedColumnsRight": 1,
+            "tableClass": "table-bordered",
+            "columns": [
+              { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+              { "sku":      { "name": "SKU",         "width": "110px" } },
+              { "name":     { "name": "Producto",    "width": "200px" } },
+              { "category": { "name": "Categoría",   "width": "130px" } },
+              { "brand":    { "name": "Marca",       "width": "110px" } },
+              { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+              { "cost":     { "name": "Costo",       "width": "100px", "format": "money", "align": "right" } },
+              { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+              { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+              { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+              { "sales":    { "name": "Ventas",      "width": "80px",  "align": "center" } },
+              { "status":   { "name": "Estado",      "width": "100px", "align": "center" } }
+            ],
+            "actions": {
+              "edit": { "name": "✏️ Editar", "onclick": "ogToast.info('Editar: {name}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// Fijar 2 columnas a la izquierda y 1 (acciones) a la derecha\n{ \"fixedColumns\": 2, \"fixedColumnsRight\": 1 }"
+        }
+      ]
+    }
+  ]
+}

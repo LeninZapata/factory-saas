@@ -78,7 +78,7 @@ class ogGrouper {
     const activeIndex = config.activeIndex || 0;
 
     let html = `<div class="og-grouper og-grouper-tabs" id="${grouperId}">`;
-    html += '<div class="og-grouper-tabs-header">';
+    html += '<div class="og-grouper-tabs-header-wrap"><div class="og-grouper-tabs-header">';
 
     config.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
@@ -89,7 +89,7 @@ class ogGrouper {
       `;
     });
 
-    html += '</div><div class="og-grouper-tabs-content">';
+    html += '</div></div><div class="og-grouper-tabs-content">';
 
     config.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
@@ -126,39 +126,20 @@ class ogGrouper {
 
   static checkTabsOverflow(header) {
     if (!header) return;
+    const wrap = header.closest('.og-grouper-tabs-header-wrap') || header;
 
-    const hasOverflow = header.scrollWidth > header.clientWidth;
-    const isScrolledLeft = header.scrollLeft > 0;
-
-    if (hasOverflow) {
-      header.classList.add('has-overflow-right');
-    } else {
-      header.classList.remove('has-overflow-right', 'has-overflow-left');
-    }
-
-    if (isScrolledLeft) {
-      header.classList.add('has-overflow-left');
-    } else {
-      header.classList.remove('has-overflow-left');
-    }
-
-    // Actualizar en scroll
-    header.addEventListener('scroll', () => {
-      const isAtStart = header.scrollLeft <= 5;
-      const isAtEnd = header.scrollLeft + header.clientWidth >= header.scrollWidth - 5;
-
-      if (!isAtStart) {
-        header.classList.add('has-overflow-left');
-      } else {
-        header.classList.remove('has-overflow-left');
+    const update = () => {
+      const hasOverflow = header.scrollWidth > header.clientWidth;
+      if (!hasOverflow) {
+        wrap.classList.remove('has-overflow-right', 'has-overflow-left');
+        return;
       }
+      wrap.classList.toggle('has-overflow-left', header.scrollLeft > 5);
+      wrap.classList.toggle('has-overflow-right', header.scrollLeft + header.clientWidth < header.scrollWidth - 5);
+    };
 
-      if (!isAtEnd) {
-        header.classList.add('has-overflow-right');
-      } else {
-        header.classList.remove('has-overflow-right');
-      }
-    });
+    update();
+    header.addEventListener('scroll', update);
   }
 
   static async initDynamicContent(container) {

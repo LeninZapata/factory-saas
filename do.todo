@@ -2,17 +2,9 @@ Backend (Framework):
 
 
 Frontend (Framework):
-✔ el modal hacerlo que sean como paneles que aparenzan a los lados, agregar claramente la funcionalidad de que no se cierra dandole clc en el body @done(05-03-2026 16:46)
-✔ hacer que el modal tenga atributos dinamos al titulo, ejemplo cuando se abra que el titulo sea un nombre de los campos internos creo que seria mejor asi pero es opcional @done(05-03-2026 16:46)
-☐ La tabla creo que no async se esta ejecutando cuando sus data esta cargada la cual es mal pero el tema de table hay que cambiarla de ley porque hay que hacer un minisupabase asi que esto l ocambia todo 
-  a nivel de componente de talbe
+☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
+esto sirve para ponerlo en los activadores de bienvenida del infoproducto
 ☐ agregar mejoras en la tablas, como lo de la columnas visibles
-☐ efecto al momento de refrescar la table, admin.js hace un rerfesh pero el componente no tiene aun un efecto
-☐ agregar mejoras en la tablas, como lo de la columnas visibles
-
-☐ Hooks a nivel de plugins, hay que hacer el sistema para poder parsear todos los hooks
-de un plugin registrado para cuando se carguen las vistas, form, modal, etc...
-se agreguen los hooks en los lugares correspondientess
 ☐ Hooks a nivel de menu, no existe hooks a nivel de menu por ejemplo que un plugin
 agregue un menu a otro o algo asi.
 ☐ Access por mensaje o visualizacion el contexto del permiso alg comoo role_context : visible|denegado
@@ -21,14 +13,11 @@ o que tipo de permiso es ese booton o elemeto y debe consultar alli si el usuari
 ☐ Hacer que la tambien se pueda enrolar las tab de tabs para rol tipo 'admin' entonces
 una persona normal no podria ver X tab pero si un admin.
 ☐ persistencia en widgets posicion
-☐ grouper tabs no se ve los estilos de degradados como lo hace tabs en responsive scroll horizontal
 ☐ El type submit el label de json debe ser su value para que cambie el txto del boton
 actualmente si pones un type : "submit" crea un boton con el texto "enviar" y label se coloca
 en una extraña posicion en si.
 ☐ en react native quedo pendiente seguir con el tema de la navegacion
 link https://claude.ai/chat/ae42cc5a-dcf4-4691-957c-c4e494d42a9c
-☐ Agregar un tipe "tag" que es un componente que permita agregar multiples etiquetas con la "," o tecla ENTER se van separando
-esto sirve para ponerlo en los activadores de bienvenida del infoproducto
 ☐ Agregar que tu puedes tener un campo que solo sea visible para el admin
 esto va permitir listar todos los usuarios cosa que por FORM tu puedes poner
 a quien le pertenece ese registro, por defecto estara el user logeado pero el admin puede cambiarlo
@@ -37,10 +26,6 @@ Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todo
 actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
 (PARECE QUE ESTO YA EXISTE CON ROLE ADMIN EL CAMPO SE MUESTRA O NO, SOLO FALTARIA LLENARLO CON UN ENDPOINT
 Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
-
-☐ Seguir puliendo el diseño completo de UI (CSS mas que todo hay un modelo a seguir)
-
-
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
 parsear todo y luego generar la documentacion automatica actualizados.

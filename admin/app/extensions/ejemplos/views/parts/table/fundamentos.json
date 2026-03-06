@@ -1,0 +1,185 @@
+{
+  "content": [
+    {
+      "type": "section",
+      "title": "¿Qué es el DataTable?",
+      "description": "Componente para renderizar tablas con columnas configurables, acciones y formatos. Soporta fuentes de datos locales (JSON mock) y APIs REST.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<table class='og-table og-table-sm og-table-bordered og-table-auto'><thead><tr><th>Propiedad</th><th>Tipo</th><th>Descripción</th></tr></thead><tbody><tr><td><code>source</code></td><td>string</td><td>Ruta al JSON local (<code>ext|mock/file.json</code>) o API (<code>api/endpoint</code>)</td></tr><tr><td><code>columns</code></td><td>array</td><td>Columnas: campo, nombre, ancho, alineación, formato</td></tr><tr><td><code>actions</code></td><td>object</td><td>Botones por fila: <code>name</code>, <code>onclick</code> o <code>action</code></td></tr><tr><td><code>tableClass</code></td><td>string</td><td>Clase CSS adicional: <code>og-table-sm</code>, <code>og-table-bordered</code></td></tr><tr><td><code>cacheTTL</code></td><td>number</td><td>Tiempo de caché en ms (default: 5 min)</td></tr></tbody></table>"
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"columns\": [\n      { \"id\":    { \"name\": \"ID\",     \"width\": \"80px\", \"align\": \"center\" } },\n      { \"name\":  { \"name\": \"Nombre\" } },\n      { \"email\": { \"name\": \"Email\" } }\n    ],\n    \"actions\": {\n      \"edit\": { \"name\": \"✏️ Editar\", \"onclick\": \"ogToast.success('Editar {id}')\" }\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Datos desde JSON local",
+      "description": "Carga datos desde un archivo <code>.json</code> usando el formato <code>extension|mock/archivo.json</code>. Ideal para desarrollo, pruebas y demos.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/users-mock.json",
+            "columns": [
+              { "id":     { "name": "ID",      "width": "80px",  "align": "center" } },
+              { "name":   { "name": "Nombre",   "width": "200px" } },
+              { "email":  { "name": "Email",    "width": "220px" } },
+              { "role":   { "name": "Rol",      "format": "uppercase", "align": "center", "width": "120px" } },
+              { "status": { "name": "Estado",   "align": "center", "width": "100px" } }
+            ],
+            "actions": {
+              "view":   { "name": "👁️",      "onclick": "ogToast.info('Ver: {name} (ID: {id})')" },
+              "delete": { "name": "🗑️", "onclick": "if(confirm('¿Eliminar a {name}?')) ogToast.warning('Eliminado {id}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// Source: extensionName|ruta/relativa.json\n{\n  \"source\": \"ejemplos|mock/users-mock.json\",\n  \"columns\": [\n    { \"id\":   { \"name\": \"ID\",  \"width\": \"80px\", \"align\": \"center\" } },\n    { \"name\": { \"name\": \"Nombre\" } },\n    { \"role\": { \"name\": \"Rol\", \"format\": \"uppercase\", \"align\": \"center\" } }\n  ],\n  \"actions\": {\n    \"edit\":   { \"name\": \"✏️ Editar\",   \"onclick\": \"ogToast.success('Editar {id}')\" },\n    \"delete\": { \"name\": \"🗑️ Eliminar\", \"onclick\": \"if(confirm('¿Eliminar?')) ogToast.warning('Eliminado {id}')\" }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Datos desde API REST",
+      "description": "Usa <code>source: \"api/endpoint\"</code> para consumir datos desde una API. Detecta automáticamente rutas con <code>api/</code>. Soporta respuesta como array directo o <code>{ data: [...] }</code>.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='margin-bottom:0.75rem'><button class='btn btn-sm btn-outline-secondary' onclick='var t=this.closest(&quot;.og-content-section&quot;);t=t&amp;&amp;t.querySelector(&quot;[data-datatable]&quot;);t=t&amp;&amp;ogDatatableCore.tables.get(t.dataset.datatable);if(t)ogDatatable.render(Object.assign({},t.config,{source:&quot;api/user?_delay=3&quot;}),t.container)'>⏱ Hacer petición con demora (3s)</button> <span style='color:#9ca3af;font-size:0.8125rem'>— Simula latencia de red para ver el skeleton de carga</span></div>"
+        },
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "api/user",
+            "columns": [
+              { "id":    { "name": "ID",      "width": "80px",  "align": "center" } },
+              { "user":  { "name": "Usuario", "width": "180px" } },
+              { "email": { "name": "Email",   "width": "220px" } },
+              { "dc":    { "name": "Creado",  "format": "datetime", "width": "180px", "align": "center" } },
+              { "role":  { "name": "Rol",     "format": "uppercase", "align": "center", "width": "120px" } }
+            ],
+            "actions": {
+              "edit":   { "name": "✏️",   "onclick": "ogToast.info('Editar: {user} (ID: {id})')" },
+              "delete": { "name": "🗑️", "onclick": "if(confirm('¿Eliminar {user}?')) ogToast.warning('Eliminar ID: {id}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// API: source empieza con api/ — NO termina en .json\n{\n  \"source\": \"api/user\",\n  \"columns\": [\n    { \"id\":   { \"name\": \"ID\" } },\n    { \"user\": { \"name\": \"Usuario\" } },\n    { \"dc\":   { \"name\": \"Creado\", \"format\": \"datetime\" } }\n  ]\n}\n\n// Formatos de respuesta soportados:\n// Array directo:  [{ \"id\": 1, ... }]\n// Con data:       { \"success\": true, \"data\": [...] }\n// Con results:    { \"results\": [...] }\n// Con items:      { \"items\": [...] }"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Estado vacío",
+      "description": "Cuando el <code>source</code> no existe, devuelve <code>[]</code> o la API falla, el componente muestra un mensaje automáticamente sin romper la vista.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/empty.json",
+            "columns": [
+              { "id":     { "name": "ID" } },
+              { "nombre": { "name": "Nombre" } },
+              { "email":  { "name": "Email" } }
+            ],
+            "actions": {
+              "edit": { "name": "✏️ Editar", "onclick": "alert('Editar')" }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Formatos de columnas",
+      "description": "El campo <code>format</code> en una columna transforma el valor antes de mostrarlo. También puedes registrar formatters personalizados desde JavaScript con <code>ogDatatable.registerFormatter()</code>.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/format-demo.json",
+            "columns": [
+              { "id":     { "name": "ID",     "width": "60px",  "align": "center" } },
+              { "nombre": { "name": "Nombre", "width": "150px" } },
+              { "precio": { "name": "Precio", "format": "money",     "align": "right",  "width": "120px" } },
+              { "activo": { "name": "Activo", "format": "boolean",   "align": "center", "width": "80px"  } },
+              { "fecha":  { "name": "Fecha",  "format": "date",      "align": "center", "width": "120px" } },
+              { "codigo": { "name": "Código", "format": "uppercase", "align": "center", "width": "100px" } }
+            ],
+            "actions": {
+              "details": { "name": "📋 Detalles", "onclick": "ogToast.info('Producto: {nombre}')" }
+            }
+          }
+        },
+        {
+          "type": "html",
+          "content": "<table class='og-table og-table-sm og-table-bordered og-table-auto og-mt-3'><thead><tr><th>Formato</th><th>Descripción</th><th>Entrada</th><th>Salida</th></tr></thead><tbody><tr><td><code>date</code></td><td>Fecha corta</td><td>2024-01-15</td><td>15/01/2024</td></tr><tr><td><code>datetime</code></td><td>Fecha y hora</td><td>2024-01-15T10:30</td><td>15/01/2024, 10:30</td></tr><tr><td><code>money</code></td><td>Moneda USD</td><td>1234.56</td><td>$1,234.56</td></tr><tr><td><code>boolean</code></td><td>Sí / No</td><td>true</td><td>Sí</td></tr><tr><td><code>uppercase</code></td><td>Mayúsculas</td><td>producto</td><td>PRODUCTO</td></tr><tr><td><code>lowercase</code></td><td>Minúsculas</td><td>PRODUCTO</td><td>producto</td></tr><tr><td><code>capitalize</code></td><td>Primera mayúscula</td><td>producto</td><td>Producto</td></tr></tbody></table>"
+        },
+        {
+          "type": "code",
+          "lang": "javascript",
+          "content": "// Formato predefinido en columna\n// { \"precio\": { \"name\": \"Precio\", \"format\": \"money\", \"align\": \"right\" } }\n\n// Formatter personalizado desde JS\nogDatatable.registerFormatter('badge', (value, row) => {\n  const color = row.status === 'active' ? '#10b981' : '#6b7280';\n  return `<span style=\"background:${color};color:#fff;padding:2px 8px;border-radius:12px;font-size:.8rem\">${value}</span>`;\n});\n\n// Quitar un formatter\nogDatatable.unregisterFormatter('badge');"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Traducciones (i18n)",
+      "description": "Prefija con <code>i18n:extension.clave</code> el campo <code>name</code> de columnas y acciones para resolver traducciones desde el archivo <code>lang/es.json</code> de la extensión.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/users-mock.json",
+            "columns": [
+              { "id":    { "name": "i18n:ejemplos.column.id",    "width": "80px", "align": "center" } },
+              { "name":  { "name": "i18n:ejemplos.column.name"  } },
+              { "email": { "name": "i18n:ejemplos.column.email" } },
+              { "role":  { "name": "i18n:ejemplos.column.role",  "format": "uppercase", "align": "center" } }
+            ],
+            "actions": {
+              "edit":   { "name": "i18n:ejemplos.action.edit",   "onclick": "ogToast.info('Edit: {id}')"      },
+              "delete": { "name": "i18n:ejemplos.action.delete", "onclick": "ogToast.warning('Delete: {id}')" }
+            }
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// lang/es.json de la extensión\n{\n  \"ejemplos.column.id\":     \"ID\",\n  \"ejemplos.column.name\":   \"Nombre\",\n  \"ejemplos.column.email\":  \"Correo\",\n  \"ejemplos.column.role\":   \"Rol\",\n  \"ejemplos.action.edit\":   \"✏️ Editar\",\n  \"ejemplos.action.delete\": \"🗑️ Eliminar\"\n}\n\n// Uso en columna del datatable\n{\n  \"name\":  { \"name\": \"i18n:ejemplos.column.name\" },\n  \"email\": { \"name\": \"i18n:ejemplos.column.email\" }\n}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Estilos de bordes",
+      "description": "Usa <code>tableClass</code> para controlar la apariencia de los bordes. Hay tres variantes: solo horizontales (por defecto), solo verticales y cuadrícula completa.",
+      "content": [
+        {
+          "type": "html",
+          "content": "<div style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;overflow-x:auto'><div><p style='font-weight:600;margin-bottom:.5rem'>Solo horizontal <small style='color:#6b7280;font-weight:400'>(default)</small></p><table class='og-table og-table-sm og-table-auto'><thead><tr><th>#</th><th>Nombre</th><th>Estado</th></tr></thead><tbody><tr><td>1</td><td>Ana García</td><td>Activo</td></tr><tr><td>2</td><td>Luis Pérez</td><td>Inactivo</td></tr><tr><td>3</td><td>María López</td><td>Activo</td></tr></tbody></table></div><div><p style='font-weight:600;margin-bottom:.5rem'>Solo vertical <small style='color:#6b7280;font-weight:400'>(table-cols)</small></p><table class='og-table og-table-sm og-table-cols og-table-auto'><thead><tr><th>#</th><th>Nombre</th><th>Estado</th></tr></thead><tbody><tr><td>1</td><td>Ana García</td><td>Activo</td></tr><tr><td>2</td><td>Luis Pérez</td><td>Inactivo</td></tr><tr><td>3</td><td>María López</td><td>Activo</td></tr></tbody></table></div><div><p style='font-weight:600;margin-bottom:.5rem'>Cuadrícula <small style='color:#6b7280;font-weight:400'>(table-bordered)</small></p><table class='og-table og-table-sm og-table-bordered og-table-auto'><thead><tr><th>#</th><th>Nombre</th><th>Estado</th></tr></thead><tbody><tr><td>1</td><td>Ana García</td><td>Activo</td></tr><tr><td>2</td><td>Luis Pérez</td><td>Inactivo</td></tr><tr><td>3</td><td>María López</td><td>Activo</td></tr></tbody></table></div></div>"
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// Solo horizontal (default — sin tableClass)\n{ \"source\": \"...\", \"columns\": [...] }\n\n// Solo vertical\n{ \"source\": \"...\", \"tableClass\": \"table-cols\", \"columns\": [...] }\n\n// Cuadrícula completa\n{ \"source\": \"...\", \"tableClass\": \"table-bordered\", \"columns\": [...] }"
+        }
+      ]
+    }
+  ]
+}

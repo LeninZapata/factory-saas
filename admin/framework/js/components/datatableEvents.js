@@ -1,5 +1,7 @@
 // Eventos DOM, detección de overflow y actualización de tablas
 class ogDatatableEvents {
+  static _scrollListeners = new Map();
+
   static bindEvents(tableId) {
     setTimeout(() => {
       this.checkTableOverflow(tableId);
@@ -12,26 +14,38 @@ class ogDatatableEvents {
     const container = document.getElementById(tableId);
     if (!container) return;
 
-    const wrapper = container.querySelector('.og-table-responsive');
-    if (!wrapper) return;
+    const wrap = container.querySelector('.og-table-scroll-wrap');
+    const scrollEl = container.querySelector('.og-table-responsive');
+    if (!wrap || !scrollEl) return;
 
-    const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth;
+    // Leer config del store para saber si hay columnas fijas (más fiable que DOM query)
+    const tableData = typeof ogDatatableCore !== 'undefined' ? ogDatatableCore.tables.get(tableId) : null;
+    const config = tableData?.config || {};
+    const fixedLeft = typeof config.fixedColumns === 'number' ? config.fixedColumns
+      : Array.isArray(config.fixedColumns) ? config.fixedColumns.length : 0;
+    const fixedRight = typeof config.fixedColumnsRight === 'number' ? config.fixedColumnsRight
+      : Array.isArray(config.fixedColumnsRight) ? config.fixedColumnsRight.length : 0;
 
-    if (hasOverflow) {
-      wrapper.classList.add('has-overflow');
-    } else {
-      wrapper.classList.remove('has-overflow');
-    }
+    // Reglas: fijas izquierda → sin degradado izquierda; fijas derecha → sin degradado derecha
+    const allowLeft = fixedLeft < 1;
+    const allowRight = fixedRight < 1;
 
-    wrapper.addEventListener('scroll', () => {
-      const isAtEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
+    const update = () => {
+      const scrollLeft = scrollEl.scrollLeft;
+      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+      const hasHScroll = maxScroll > 1;
+      wrap.classList.toggle('has-overflow-right', allowRight && hasHScroll && scrollLeft < maxScroll - 5);
+      wrap.classList.toggle('has-overflow-left', allowLeft && hasHScroll && scrollLeft > 5);
+    };
 
-      if (isAtEnd) {
-        wrapper.classList.remove('has-overflow');
-      } else if (hasOverflow) {
-        wrapper.classList.add('has-overflow');
-      }
-    }, { once: false });
+    // Remover listener anterior para evitar duplicados
+    const prev = this._scrollListeners.get(tableId);
+    if (prev) scrollEl.removeEventListener('scroll', prev);
+
+    scrollEl.addEventListener('scroll', update, { passive: true });
+    this._scrollListeners.set(tableId, update);
+
+    update();
   }
 
   static async refresh(tableId) {
@@ -42,6 +56,9 @@ class ogDatatableEvents {
     }
 
     const { config, extensionName, container } = table;
+
+    container.innerHTML = ogDatatableRender.generateSkeleton(config);
+
     const data = await ogDatatableSource.loadData(config, extensionName);
 
     ogDatatableCore.tables.set(tableId, { config, data, extensionName, container });
@@ -52,7 +69,7 @@ class ogDatatableEvents {
     this.bindEvents(tableId);
 
     // Feature: columnas fijas
-    if (typeof ogDatatableFixedCols !== 'undefined' && config.fixedColumns) {
+    if (typeof ogDatatableFixedCols !== 'undefined' && (config.fixedColumns || config.fixedColumnsRight)) {
       ogDatatableFixedCols.apply(tableId, config, container);
     }
 

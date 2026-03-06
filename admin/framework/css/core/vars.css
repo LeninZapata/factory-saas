@@ -19,6 +19,9 @@
   /* Accent colors */
   --og-accent-primary: rgb(79, 129, 189);
   --og-accent-primary-dark: rgb(56, 93, 138);
+
+  /* Table */
+  --og-table-head-bg: var(--og-gray-50);
 }
 html {
   font-size: 16px; /* Base explícita para rem */

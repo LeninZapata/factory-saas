@@ -1,0 +1,86 @@
+{
+  "content": [
+    {
+      "type": "section",
+      "title": "Cabecera de tabla (tableHeader)",
+      "description": "Con <code>tableHeader</code> se añade una fila de título que abarca todas las columnas. Comparte el mismo fondo que los encabezados de columna para parecer visualmente unida a ellos, separada únicamente por un borde sutil.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/users-mock.json",
+            "tableHeader": "Directorio de usuarios activos",
+            "columns": [
+              { "id":     { "name": "#",      "width": "55px",  "align": "center" } },
+              { "name":   { "name": "Nombre", "width": "180px" } },
+              { "email":  { "name": "Email",  "width": "220px" } },
+              { "role":   { "name": "Rol",    "width": "110px", "align": "center" } },
+              { "status": { "name": "Estado", "width": "100px", "align": "center" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// tableHeader: texto que abarca todas las columnas como título de la tabla\n{\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"tableHeader\": \"Directorio de usuarios activos\",\n    \"columns\": [\n      { \"id\":   { \"name\": \"#\",      \"width\": \"55px\", \"align\": \"center\" } },\n      { \"name\": { \"name\": \"Nombre\", \"width\": \"180px\" } }\n    ]\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Pie de tabla (tableFooter)",
+      "description": "Con <code>tableFooter</code> se añade una fila resumen al final del <code>&lt;tfoot&gt;</code>. Comparte el mismo fondo que los encabezados con un borde superior sutil que lo separa del cuerpo.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/users-mock.json",
+            "tableFooter": "Total: 5 usuarios registrados",
+            "columns": [
+              { "id":     { "name": "#",      "width": "55px",  "align": "center" } },
+              { "name":   { "name": "Nombre", "width": "180px" } },
+              { "email":  { "name": "Email",  "width": "220px" } },
+              { "role":   { "name": "Rol",    "width": "110px", "align": "center" } },
+              { "status": { "name": "Estado", "width": "100px", "align": "center" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// tableFooter: texto en el <tfoot> que abarca todas las columnas\n{\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"tableFooter\": \"Total: 5 usuarios registrados\",\n    \"columns\": [\n      { \"id\":   { \"name\": \"#\",      \"width\": \"55px\", \"align\": \"center\" } },\n      { \"name\": { \"name\": \"Nombre\", \"width\": \"180px\" } }\n    ]\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Header + Footer combinados",
+      "description": "Usando <code>tableHeader</code> y <code>tableFooter</code> juntos se obtiene una tabla con título y resumen, todo visualmente cohesionado con el mismo fondo de los encabezados.",
+      "content": [
+        {
+          "type": "component",
+          "component": "datatable",
+          "config": {
+            "source": "ejemplos|mock/users-mock.json",
+            "tableHeader": "Directorio de usuarios activos",
+            "tableFooter": "Total: 5 usuarios — Última actualización: hoy",
+            "columns": [
+              { "id":     { "name": "#",      "width": "55px",  "align": "center" } },
+              { "name":   { "name": "Nombre", "width": "180px" } },
+              { "email":  { "name": "Email",  "width": "220px" } },
+              { "role":   { "name": "Rol",    "width": "110px", "align": "center" } },
+              { "status": { "name": "Estado", "width": "100px", "align": "center" } }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "lang": "json",
+          "content": "// tableHeader + tableFooter: título arriba y resumen abajo\n{\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"tableHeader\": \"Directorio de usuarios activos\",\n    \"tableFooter\": \"Total: 5 usuarios — Última actualización: hoy\",\n    \"columns\": [\n      { \"id\":   { \"name\": \"#\",      \"width\": \"55px\", \"align\": \"center\" } },\n      { \"name\": { \"name\": \"Nombre\", \"width\": \"180px\" } }\n    ]\n  }\n}"
+        }
+      ]
+    }
+  ]
+}

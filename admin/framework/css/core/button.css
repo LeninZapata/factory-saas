@@ -128,6 +128,16 @@
     }
   }
 
+  .btn-outline.btn-warning {
+    --og-btn-text: #d97706;
+
+    &:hover {
+      --og-btn-bg: #f59e0b;
+      --og-btn-border: #d97706;
+      --og-btn-text: #fff;
+    }
+  }
+
   /* Variante link */
   .btn-link {
     --og-btn-bg: transparent;

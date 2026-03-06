@@ -1,5 +1,40 @@
 // Generación de HTML: tabla, filas, celdas y botones de acción
 class ogDatatableRender {
+  static generateSkeleton(config) {
+    const columns = ogDatatableColumns.processColumns(config.columns || []);
+    const hasActions = config.actions && Object.keys(config.actions).length > 0;
+    const colCount = columns.length + (hasActions ? 1 : 0) || 4;
+    const rows = config.skeletonRows || 5;
+
+    let tableClass = 'og-table';
+    if (config.tableClass) tableClass = `og-table ${config.tableClass.replace('table-', 'og-table-')}`;
+
+    const headerCells = columns.length
+      ? columns.map(col => `<th${col.solid ? ' class="og-col-solid"' : ''}>${col.headerLabel}</th>`).join('')
+        + (hasActions ? `<th>${__('com.datatable.actions')}</th>` : '')
+      : Array(colCount).fill('<th><span class="og-skeleton-line" style="width:60%"></span></th>').join('');
+
+    const skeletonRow = `<tr>${Array(colCount).fill('<td><span class="og-skeleton-line"></span></td>').join('')}</tr>`;
+
+    return `
+      <div class="og-datatable-container og-datatable-loading" data-datatable-skeleton>
+        <div class="og-table-scroll-wrap">
+          <div class="og-table-responsive">
+            <table class="${tableClass}">
+              <thead>
+                ${config.tableHeader ? `<tr class="og-table-header-row"><th colspan="${colCount}">${config.tableHeader}</th></tr>` : ''}
+                <tr>${headerCells}</tr>
+              </thead>
+              <tbody>
+                ${Array(rows).fill(skeletonRow).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   static generateHtml(tableId, config, data) {
     const columns = ogDatatableColumns.processColumns(config.columns || []);
     const hasActions = config.actions && Object.keys(config.actions).length > 0;
@@ -14,21 +49,25 @@ class ogDatatableRender {
 
     return `
       <div class="og-datatable-container" id="${tableId}" data-datatable="${tableId}">
-        <div class="og-table-responsive">
-          <table class="${tableClass}">
-            <thead>
-              <tr>
-                ${columns.map(col => `<th>${col.headerLabel}</th>`).join('')}
-                ${hasActions ? `<th>${__('com.datatable.actions')}</th>` : ''}
-              </tr>
-            </thead>
-            <tbody>
-              ${isEmpty
-                ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">${__('com.datatable.no_data')}</td></tr>`
-                : data.map(row => this.renderRow(row, columns, config.actions)).join('')
-              }
-            </tbody>
-          </table>
+        <div class="og-table-scroll-wrap">
+          <div class="og-table-responsive">
+            <table class="${tableClass}">
+              <thead>
+                ${config.tableHeader ? `<tr class="og-table-header-row"><th colspan="${totalColumns}">${config.tableHeader}</th></tr>` : ''}
+                <tr>
+                  ${columns.map(col => `<th${col.solid ? ' class="og-col-solid"' : ''}>${col.headerLabel}</th>`).join('')}
+                  ${hasActions ? `<th>${__('com.datatable.actions')}</th>` : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${isEmpty
+                  ? `<tr><td colspan="${totalColumns}" style="text-align: center; padding: 2rem; color: #6b7280;">${__('com.datatable.no_data')}</td></tr>`
+                  : data.map(row => this.renderRow(row, columns, config.actions)).join('')
+                }
+              </tbody>
+              ${config.tableFooter ? `<tfoot><tr class="og-table-footer-row"><td colspan="${totalColumns}">${config.tableFooter}</td></tr></tfoot>` : ''}
+            </table>
+          </div>
         </div>
       </div>
     `;

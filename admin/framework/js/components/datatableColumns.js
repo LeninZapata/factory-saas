@@ -89,8 +89,9 @@ class ogDatatableColumns {
     if (column.align) style.push(`text-align: ${column.align}`);
 
     const styleAttr = style.length > 0 ? ` style="${style.join('; ')}"` : '';
+    const classAttr = column.solid ? ' class="og-col-solid"' : '';
 
-    return `<td${styleAttr}>${value}</td>`;
+    return `<td${classAttr}${styleAttr}>${value}</td>`;
   }
 
   static formatValue(value, format, row) {

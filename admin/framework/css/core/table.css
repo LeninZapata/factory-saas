@@ -9,7 +9,6 @@
 .og-table-responsive {
   width: 100%;
   overflow-x: auto;
-  position: relative;
 
   /* Scrollbar delgado */
   scrollbar-width: thin;
@@ -17,26 +16,6 @@
 
   /* Smooth scroll */
   scroll-behavior: smooth;
-
-  /* Sombra degradada a la derecha cuando hay scroll */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 40px;
-    background: linear-gradient(to left, rgba(255, 255, 255, 0.9) 0%, transparent 100%);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 10; /* Por encima del contenido */
-  }
-
-  /* Mostrar sombra cuando hay overflow */
-  &.has-overflow::after {
-    opacity: 1;
-  }
 }
 
 /* Scrollbar personalizado en Chrome/Safari */
@@ -65,7 +44,7 @@
   width: 100%;
   border-collapse: collapse;
   background: white;
-  margin: 0 0 1rem 0;
+  /*margin: 0 0 1rem 0;*/
   font-size: 0.875rem;
   border-radius: 6px;
   overflow: hidden;
@@ -76,7 +55,7 @@
     text-align: left;
     font-weight: 600;
     color: #374151;
-    background: #f9fafb;
+    background: var(--og-table-head-bg);
     border-bottom: 1px solid #e5e7eb;
 
     /* Evitar que el header se rompa */
@@ -127,12 +106,36 @@
   }
 }
 
+/* Variante sin min-width — para tablas de documentación/referencia */
+.og-table.og-table-auto {
+  min-width: unset;
+  width: 100%;
+}
+
 /* Tabla con bordes */
 .og-table.og-table-bordered {
-  border: 1px solid #e5e7eb;
-
   th, td {
-    border: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  th:first-child, td:first-child {
+    border-left: 1px solid #e5e7eb;
+  }
+
+  thead tr:first-child th {
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+/* Solo bordes verticales */
+.og-table.og-table-cols {
+  th, td {
+    border-right: 1px solid #e5e7eb;
+  }
+
+  th:first-child, td:first-child {
+    border-left: 1px solid #e5e7eb;
   }
 }
 
@@ -214,7 +217,7 @@
     /* Mensaje sin datos */
     tr > td[colspan] {
       text-align: center;
-      padding: 2rem;
+      padding: 1rem;
       color: #6b7280;
       font-style: italic;
     }

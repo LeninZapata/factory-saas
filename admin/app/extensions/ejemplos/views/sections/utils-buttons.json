@@ -20,6 +20,12 @@
     "  <button class='btn btn-info'>Info</button>",
     "</div>",
     
+    "<h3 style='margin-top: 2rem;'>Botón con Precio Tachado</h3>",
+    "<p>Botón de llamada a la acción con precio original tachado y precio final destacado.</p>",
+    "<div class='og-flex og-wrap og-gap-md' style='margin-bottom: 1rem;'>",
+    "  <button class='btn' style='background:#FDD763;border-color:#e6c14a;color:#1a1a1a;'>Get started — <s style='opacity:0.6;'>$990</s> $529</button>",
+    "</div>",
+
     "<h3 style='margin-top: 2rem;'>Tamaños de Botones</h3>",
     "<p>Tres tamaños: pequeño, normal y grande.</p>",
     "<div class='og-flex og-wrap og-gap-md' style='margin-bottom: 1rem; align-items: center;'>",
@@ -34,6 +40,7 @@
     "  <button class='btn btn-outline btn-primary'>Primary Outline</button>",
     "  <button class='btn btn-outline btn-secondary'>Secondary Outline</button>",
     "  <button class='btn btn-outline btn-success'>Success Outline</button>",
+    "  <button class='btn btn-outline btn-warning'>Warning Outline</button>",
     "</div>",
     
     "<h3 style='margin-top: 2rem;'>Botones Link</h3>",

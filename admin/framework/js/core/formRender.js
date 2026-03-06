@@ -259,7 +259,7 @@ class ogFormRender {
 
     let html = `<div class="og-grouper og-grouper-tabs" id="${grouperId}" data-field-path="${fieldPath}">`;
 
-    html += `<div class="og-grouper-tabs-header">`;
+    html += `<div class="og-grouper-tabs-header-wrap"><div class="og-grouper-tabs-header">`;
     field.groups.forEach((group, index) => {
       const isActive = index === activeIndex;
       const processedTitle = core?.processI18nTitle(group.title) || `Tab ${index + 1}`;
@@ -271,7 +271,7 @@ class ogFormRender {
         </button>
       `;
     });
-    html += `</div>`;
+    html += `</div></div>`;
 
     html += `<div class="og-grouper-tabs-content">`;
     field.groups.forEach((group, index) => {
@@ -329,7 +329,7 @@ class ogFormRender {
         });
       });
     } else if (mode === 'tabs') {
-      const tabButtons = container.querySelectorAll(':scope > .og-grouper-tabs-header > .og-grouper-tab-btn');
+      const tabButtons = container.querySelectorAll(':scope > .og-grouper-tabs-header-wrap > .og-grouper-tabs-header > .og-grouper-tab-btn');
       const tabPanels = container.querySelectorAll(':scope > .og-grouper-tabs-content > .og-grouper-tab-panel');
 
       tabButtons.forEach(button => {
@@ -355,6 +355,14 @@ class ogFormRender {
           }
         });
       });
+
+      // Detectar overflow para los degradados del wrapper
+      const header = container.querySelector('.og-grouper-tabs-header');
+      if (header) {
+        if (typeof ogGrouper !== 'undefined') {
+          ogGrouper.checkTabsOverflow(header);
+        }
+      }
     }
   }
 }

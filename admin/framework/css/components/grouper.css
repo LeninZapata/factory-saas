@@ -94,23 +94,11 @@
   }
 
   /* Header de tabs */
-  .og-grouper-tabs-header {
-    display: flex;
-    border-bottom: 1px solid var(--og-gray-100);
-    background: #f8f9fa;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: smooth;
+  .og-grouper-tabs-header-wrap {
     position: relative;
+    overflow: hidden;
 
-    /* Ocultar scrollbar en Chrome/Safari */
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Degradado DERECHA */
+    /* Degradado DERECHA — fijo al borde visible */
     &::after {
       content: '';
       position: absolute;
@@ -140,14 +128,23 @@
       z-index: 10;
     }
 
-    /* Mostrar degradado derecho cuando hay overflow a la derecha */
-    &.has-overflow-right::after {
-      opacity: 1;
-    }
+    &.has-overflow-right::after { opacity: 1; }
+    &.has-overflow-left::before { opacity: 1; }
+  }
 
-    /* Mostrar degradado izquierdo cuando hay scroll a la izquierda */
-    &.has-overflow-left::before {
-      opacity: 1;
+  .og-grouper-tabs-header {
+    display: flex;
+    border-bottom: 1px solid var(--og-gray-100);
+    background: #f8f9fa;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+
+    /* Ocultar scrollbar en Chrome/Safari */
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 
@@ -163,7 +160,7 @@
     color: #6b7280;
     flex-shrink: 0;
     white-space: nowrap;
-    min-width: 120px;
+    /*min-width: 120px;*/
     position: relative;
     z-index: 1;
 
@@ -201,7 +198,7 @@
     .og-grouper-tab-btn {
       padding: 10px 16px;
       font-size: 0.9rem;
-      min-width: 100px;
+      /*min-width: 100px;*/
     }
 
     .og-grouper-tabs-content {

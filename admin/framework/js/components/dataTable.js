@@ -88,6 +88,10 @@ class ogDatatable {
 
     const tableId = `datatable-${++ogDatatableCore.counter}`;
     const extensionName = currentConfig.extensionName || ogDatatableCore.detectPluginName(currentContainer);
+
+    // Mostrar skeleton de inmediato para evitar que el contenedor quede en blanco
+    currentContainer.innerHTML = ogDatatableRender.generateSkeleton(currentConfig);
+
     const data = await ogDatatableSource.loadData(currentConfig, extensionName);
 
     ogDatatableCore.tables.set(tableId, { config: currentConfig, data, extensionName, container: currentContainer });
@@ -98,7 +102,7 @@ class ogDatatable {
     ogDatatableEvents.bindEvents(tableId);
 
     // Feature: columnas fijas
-    if (typeof ogDatatableFixedCols !== 'undefined' && currentConfig.fixedColumns) {
+    if (typeof ogDatatableFixedCols !== 'undefined' && (currentConfig.fixedColumns || currentConfig.fixedColumnsRight)) {
       ogDatatableFixedCols.apply(tableId, currentConfig, currentContainer);
     }
 

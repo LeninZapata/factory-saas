@@ -99,6 +99,9 @@ class ogDbBuilder {
       return $i;
     }
 
+    // Ignorar columnas con prefijo "_" (parámetros de sistema: _delay, _debug, etc.)
+    if (is_string($col) && str_starts_with($col, '_')) return $i;
+
     // Solo almacenar el nombre de la columna, SIN backticks
     $columnName = $col;
 

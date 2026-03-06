@@ -1,5 +1,5 @@
 // Columnas fijas para scroll horizontal — via transform sincronizado con scroll
-// Uso: config.fixedColumns: 1 (número) o ['id','name'] (campos → usa el length)
+// Uso: fixedColumns: N (izquierda), fixedColumnsRight: N (derecha)
 class ogDatatableFixedCols {
   static _listeners = new Map();
 
@@ -17,10 +17,11 @@ class ogDatatableFixedCols {
     if (!table || !wrapper) return;
 
     const fixedCount = this._resolveCount(config);
-    if (fixedCount < 1) return;
+    const fixedCountRight = this._resolveCountRight(config);
+    if (fixedCount < 1 && fixedCountRight < 1) return;
 
     const headers = Array.from(table.querySelectorAll('thead tr th'));
-    if (headers.length < fixedCount) return;
+    if (headers.length < fixedCount + fixedCountRight) return;
 
     // Si está en tab oculta, reintentar cuando sea visible
     if (headers[0].getBoundingClientRect().width === 0) {
@@ -32,35 +33,59 @@ class ogDatatableFixedCols {
     const prev = this._listeners.get(tableId);
     if (prev) wrapper.removeEventListener('scroll', prev);
 
-    // Recopilar celdas fijas de todas las filas
-    const cells = [];
+    const cellsLeft = [];
+    const cellsRight = [];
+
     table.querySelectorAll('thead tr, tbody tr').forEach(row => {
-      Array.from(row.querySelectorAll('th, td')).forEach((el, i) => {
-        if (i < fixedCount) {
-          cells.push({ el, isLast: i === fixedCount - 1, isHeader: el.tagName === 'TH' });
+      const els = Array.from(row.querySelectorAll('th, td'));
+      const total = els.length;
+      els.forEach((el, i) => {
+        if (fixedCount > 0 && i < fixedCount) {
+          cellsLeft.push({ el, isFirst: i === 0, isLast: i === fixedCount - 1, isHeader: el.tagName === 'TH' });
+        }
+        if (fixedCountRight > 0 && i >= total - fixedCountRight) {
+          cellsRight.push({ el, isEdge: i === total - fixedCountRight, isHeader: el.tagName === 'TH' });
         }
       });
     });
 
-    // Estilos base — position:relative para que z-index funcione
-    cells.forEach(({ el, isLast, isHeader }) => {
+    // border-separate para que cada celda posea sus bordes
+    table.style.borderCollapse = 'separate';
+    table.style.borderSpacing = '0';
+
+    cellsLeft.forEach(({ el, isFirst, isLast, isHeader }) => {
       el.style.position = 'relative';
       el.style.zIndex = isHeader ? '3' : '1';
       el.classList.add('og-col-fixed');
+      if (isFirst) el.classList.add('og-col-fixed-first');
       if (isLast) el.classList.add('og-col-fixed-last');
     });
 
-    // translateX(scrollLeft) cancela el desplazamiento del scroll en cada celda fija
+    cellsRight.forEach(({ el, isEdge, isHeader }) => {
+      el.style.position = 'relative';
+      el.style.zIndex = isHeader ? '3' : '1';
+      el.classList.add('og-col-fixed-right');
+      if (isEdge) el.classList.add('og-col-fixed-right-edge');
+    });
+
+    // translateX(scrollLeft) para izquierda
+    // Math.min(0, s + clientWidth - tableWidth) para derecha — mismo valor para todas las cols derechas
     const sync = () => {
       const s = wrapper.scrollLeft;
-      cells.forEach(({ el }) => (el.style.transform = `translate3d(${s}px, 0, 0)`));
+      if (cellsLeft.length) {
+        cellsLeft.forEach(({ el }) => (el.style.transform = `translate3d(${s}px, 0, 0)`));
+      }
+      if (cellsRight.length) {
+        const t = Math.min(0, s + wrapper.clientWidth - table.offsetWidth);
+        cellsRight.forEach(({ el }) => (el.style.transform = `translate3d(${t}px, 0, 0)`));
+      }
     };
 
     wrapper.addEventListener('scroll', sync, { passive: true });
     this._listeners.set(tableId, sync);
-    sync(); // posición inicial
+    sync();
 
-    ogLogger.info('com:fixedcols', `✅ ${fixedCount} columna(s) fija(s) en #${tableId}`);
+    ogLogger.info('com:fixedcols', `✅ left:${fixedCount} right:${fixedCountRight} en #${tableId}`);
   }
 
   static _retryWhenVisible(tableId, config, parentEl) {
@@ -76,13 +101,18 @@ class ogDatatableFixedCols {
     }, { threshold: 0.1 });
 
     observer.observe(container);
-
-    // Timeout de seguridad
     setTimeout(() => observer.disconnect(), 10000);
   }
 
   static _resolveCount(config) {
     const fc = config.fixedColumns;
+    if (typeof fc === 'number') return fc;
+    if (Array.isArray(fc)) return fc.length;
+    return 0;
+  }
+
+  static _resolveCountRight(config) {
+    const fc = config.fixedColumnsRight;
     if (typeof fc === 'number') return fc;
     if (Array.isArray(fc)) return fc.length;
     return 0;

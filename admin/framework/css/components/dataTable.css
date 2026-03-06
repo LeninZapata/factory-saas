@@ -8,6 +8,78 @@
     }
   }
 
+  /* ── Wrapper de scroll con degradados de borde ───────────── */
+  .og-table-scroll-wrap {
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.92), transparent);
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0.92), transparent);
+    }
+
+    &.has-overflow-left::before { opacity: 1; }
+    &.has-overflow-right::after { opacity: 1; }
+  }
+
+  /* ── Skeleton de carga ───────────────────────────────────── */
+  .og-skeleton-line {
+    display: block;
+    height: 0.75rem;
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: og-skeleton-shimmer 1.4s infinite;
+    width: 80%;
+  }
+
+  @keyframes og-skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Cabecera de tabla (tableHeader) ────────────────────── */
+  .og-table-header-row th {
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
+    white-space: normal;
+  }
+
+  /* ── Pie de tabla (tableFooter) ─────────────────────────── */
+  .og-table-footer-row td {
+    background: var(--og-table-head-bg, #f8fafc);
+    border-top: 1px solid #e5e7eb;
+    border-bottom: none;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-weight: 500;
+    white-space: normal;
+  }
+
+  /* ── Columna destacada (solid) ───────────────────────────── */
+  .og-col-solid { background: var(--og-table-head-bg, #f8fafc); }
+  .og-col-fixed.og-col-solid { background: var(--og-table-head-bg, #f8fafc); }
+  .og-table-striped tbody tr:nth-child(even) .og-col-solid { background: var(--og-table-head-bg, #f8fafc); }
+
   /* ── Columnas fijas (sticky) ─────────────────────────────── */
   .og-col-fixed {
     background: var(--og-table-bg, #ffffff);
@@ -15,11 +87,27 @@
     will-change: transform;
   }
 
-  /* Sombra en la última columna fija para indicar que hay scroll */
-  .og-col-fixed-last {
-    box-shadow: 4px 0 12px -1px rgba(0, 0, 0, 0.18);
+  /* Primera columna fija: border-left propio (viaja con translateX, tapa el gap al hacer scroll) */
+  .og-table-bordered .og-col-fixed-first {
+    border-left: 1px solid #e5e7eb;
   }
 
+  /* Sombra full-height via pseudo-elemento en todas las tablas con columnas fijas */
+  .og-col-fixed-last {
+    overflow: visible !important;
+  }
+
+  .og-col-fixed-last::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    bottom: 0;
+    width: 8px;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent);
+    pointer-events: none;
+    z-index: 4;
+  }
   /* Header de columna fija: fondo ligeramente diferenciado */
   thead .og-col-fixed {
     background: var(--og-table-head-bg, #f8fafc);
@@ -29,6 +117,41 @@
   /* Si la tabla está en modo oscuro o con clase alternativa */
   .og-table-striped tbody tr:nth-child(even) .og-col-fixed {
     background: var(--og-table-stripe-bg, #f9fafb);
+  }
+
+  /* ── Columnas fijas derechas ────────────────────────────────── */
+  .og-col-fixed-right {
+    background: var(--og-table-bg, #ffffff);
+    z-index: 2;
+    will-change: transform;
+  }
+
+  thead .og-col-fixed-right {
+    background: var(--og-table-head-bg, #f8fafc);
+    z-index: 3;
+  }
+
+  .og-table-striped tbody tr:nth-child(even) .og-col-fixed-right {
+    background: var(--og-table-stripe-bg, #f9fafb);
+  }
+
+  .og-col-fixed-right.og-col-solid { background: var(--og-table-head-bg, #f8fafc); }
+
+  /* Sombra en el lado izquierdo del borde de la zona fija derecha */
+  .og-col-fixed-right-edge {
+    overflow: visible !important;
+  }
+
+  .og-col-fixed-right-edge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    bottom: 0;
+    width: 8px;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent);
+    pointer-events: none;
+    z-index: 4;
   }
 
   /* ── Resize de columnas ────────────────────────────────────── */
