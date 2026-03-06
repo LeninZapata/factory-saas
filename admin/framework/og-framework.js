@@ -62,7 +62,16 @@
     'js/components/tabs.js',
     'js/components/widget.js',
     'js/components/grouper.js',
+
+    'js/components/datatableCore.js',
+    'js/components/datatableSource.js',
+    'js/components/datatableColumns.js',
+    'js/components/datatableRender.js',
+    'js/components/datatableEvents.js',
     'js/components/dataTable.js',
+    'js/components/datatableFixedCols.js',
+    'js/components/datatableResizeCols.js',
+
     'js/components/textareaExpander.js',
   ];
 

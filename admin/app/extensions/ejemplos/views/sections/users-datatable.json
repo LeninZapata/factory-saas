@@ -4,327 +4,317 @@
   "type": "tabs",
   "tabs": [
     {
-      "id": "tab-intro",
-      "title": "📖 Introducción",
+      "id": "tab-fundamentos",
+      "title": "📊 Fundamentos",
       "content": [
         {
-          "type": "html",
-          "content": "<div style=''><h2 style=''>📊 DataTable - Componente de Tablas</h2><p style='font-size:1.1rem;color:#555;line-height:1.6;'>Componente para mostrar datos en tablas con acciones y formateo.</p><h3 style='margin:2rem 0 1rem;color:#3b82f6;'>✨ Características</h3><ul style='line-height:1.8;color:#555;'><li><strong>Fuentes de datos:</strong> Mock JSON o API REST</li><li><strong>Columnas configurables:</strong> Ancho, alineación, formato</li><li><strong>Acciones personalizadas:</strong> Editar, eliminar, custom</li><li><strong>Formateo:</strong> date, datetime, money, boolean, uppercase, etc.</li><li><strong>Traducciones:</strong> Soporte i18n para labels</li></ul><h3 style='margin:2rem 0 1rem;color:#10b981;'>📋 Configuración Básica</h3><pre style='background:#1e293b;color:#e2e8f0;padding:1.5rem;border-radius:6px;overflow-x:auto;'><code>{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"plugins/miPlugin/mock/data.json\",\n    \"columns\": [\n      { \"id\": { \"name\": \"ID\", \"width\": \"80px\" } },\n      { \"nombre\": { \"name\": \"Nombre\" } },\n      { \"email\": { \"name\": \"Email\" } }\n    ],\n    \"actions\": {\n      \"edit\": {\n        \"name\": \"✏️ Editar\",\n        \"onclick\": \"alert('Editar {id}')\"\n      }\n    }\n  }\n}</code></pre><h3 style='margin:2rem 0 1rem;color:#f59e0b;'>🔑 Propiedades de Source</h3><table class='og-table og-table-sm og-table-bordered'><thead><tr><th>Tipo</th><th>Formato</th><th>Ejemplo</th></tr></thead><tbody><tr><td><strong>Mock JSON</strong></td><td>Ruta completa .json</td><td><code>\"plugins/ejemplos/mock/users.json\"</code></td></tr><tr><td><strong>API REST</strong></td><td>Endpoint sin .json</td><td><code>\"api/users\"</code></td></tr></tbody></table></div>"
+          "type": "section",
+          "title": "¿Qué es el DataTable?",
+          "description": "Componente para renderizar tablas con columnas configurables, acciones y formatos. Soporta fuentes de datos locales (JSON mock) y APIs REST.",
+          "content": [
+            {
+              "type": "html",
+              "content": "<table class='og-table og-table-sm og-table-bordered'><thead><tr><th>Propiedad</th><th>Tipo</th><th>Descripción</th></tr></thead><tbody><tr><td><code>source</code></td><td>string</td><td>Ruta al JSON local (<code>ext|mock/file.json</code>) o API (<code>api/endpoint</code>)</td></tr><tr><td><code>columns</code></td><td>array</td><td>Columnas: campo, nombre, ancho, alineación, formato</td></tr><tr><td><code>actions</code></td><td>object</td><td>Botones por fila: <code>name</code>, <code>onclick</code> o <code>action</code></td></tr><tr><td><code>tableClass</code></td><td>string</td><td>Clase CSS adicional: <code>og-table-sm</code>, <code>og-table-bordered</code></td></tr><tr><td><code>cacheTTL</code></td><td>number</td><td>Tiempo de caché en ms (default: 5 min)</td></tr></tbody></table>"
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"columns\": [\n      { \"id\":    { \"name\": \"ID\",     \"width\": \"80px\", \"align\": \"center\" } },\n      { \"name\":  { \"name\": \"Nombre\" } },\n      { \"email\": { \"name\": \"Email\" } }\n    ],\n    \"actions\": {\n      \"edit\": { \"name\": \"✏️ Editar\", \"onclick\": \"ogToast.success('Editar {id}')\" }\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Datos desde JSON local",
+          "description": "Carga datos desde un archivo <code>.json</code> usando el formato <code>extension|mock/archivo.json</code>. Ideal para desarrollo, pruebas y demos.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/users-mock.json",
+                "columns": [
+                  { "id":     { "name": "ID",      "width": "80px",  "align": "center" } },
+                  { "name":   { "name": "Nombre",   "width": "200px" } },
+                  { "email":  { "name": "Email",    "width": "220px" } },
+                  { "role":   { "name": "Rol",      "format": "uppercase", "align": "center", "width": "120px" } },
+                  { "status": { "name": "Estado",   "align": "center", "width": "100px" } }
+                ],
+                "actions": {
+                  "view":   { "name": "👁️ Ver",      "onclick": "ogToast.info('Ver: {name} (ID: {id})')" },
+                  "edit":   { "name": "✏️ Editar",   "onclick": "ogToast.success('Editar usuario {id}')" },
+                  "delete": { "name": "🗑️ Eliminar", "onclick": "if(confirm('¿Eliminar a {name}?')) ogToast.warning('Eliminado {id}')" }
+                }
+              }
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "// Source: extensionName|ruta/relativa.json\n{\n  \"source\": \"ejemplos|mock/users-mock.json\",\n  \"columns\": [\n    { \"id\":   { \"name\": \"ID\",  \"width\": \"80px\", \"align\": \"center\" } },\n    { \"name\": { \"name\": \"Nombre\" } },\n    { \"role\": { \"name\": \"Rol\", \"format\": \"uppercase\", \"align\": \"center\" } }\n  ],\n  \"actions\": {\n    \"edit\":   { \"name\": \"✏️ Editar\",   \"onclick\": \"ogToast.success('Editar {id}')\" },\n    \"delete\": { \"name\": \"🗑️ Eliminar\", \"onclick\": \"if(confirm('¿Eliminar?')) ogToast.warning('Eliminado {id}')\" }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Datos desde API REST",
+          "description": "Usa <code>source: \"api/endpoint\"</code> para consumir datos desde una API. Detecta automáticamente rutas con <code>api/</code>. Soporta respuesta como array directo o <code>{ data: [...] }</code>.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "api/user",
+                "columns": [
+                  { "id":    { "name": "ID",      "width": "80px",  "align": "center" } },
+                  { "user":  { "name": "Usuario", "width": "180px" } },
+                  { "email": { "name": "Email",   "width": "220px" } },
+                  { "dc":    { "name": "Creado",  "format": "datetime", "width": "180px", "align": "center" } },
+                  { "role":  { "name": "Rol",     "format": "uppercase", "align": "center", "width": "120px" } }
+                ],
+                "actions": {
+                  "edit":   { "name": "✏️ Editar",   "onclick": "ogToast.info('Editar: {user} (ID: {id})')" },
+                  "delete": { "name": "🗑️ Eliminar", "onclick": "if(confirm('¿Eliminar {user}?')) ogToast.warning('Eliminar ID: {id}')" }
+                }
+              }
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "// API: source empieza con api/ — NO termina en .json\n{\n  \"source\": \"api/user\",\n  \"columns\": [\n    { \"id\":   { \"name\": \"ID\" } },\n    { \"user\": { \"name\": \"Usuario\" } },\n    { \"dc\":   { \"name\": \"Creado\", \"format\": \"datetime\" } }\n  ]\n}\n\n// Formatos de respuesta soportados:\n// Array directo:  [{ \"id\": 1, ... }]\n// Con data:       { \"success\": true, \"data\": [...] }\n// Con results:    { \"results\": [...] }\n// Con items:      { \"items\": [...] }"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Estado vacío",
+          "description": "Cuando el <code>source</code> no existe, devuelve <code>[]</code> o la API falla, el componente muestra un mensaje automáticamente sin romper la vista.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/empty.json",
+                "columns": [
+                  { "id":     { "name": "ID" } },
+                  { "nombre": { "name": "Nombre" } },
+                  { "email":  { "name": "Email" } }
+                ],
+                "actions": {
+                  "edit": { "name": "✏️ Editar", "onclick": "alert('Editar')" }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Formatos de columnas",
+          "description": "El campo <code>format</code> en una columna transforma el valor antes de mostrarlo. También puedes registrar formatters personalizados desde JavaScript con <code>ogDatatable.registerFormatter()</code>.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/format-demo.json",
+                "columns": [
+                  { "id":     { "name": "ID",     "width": "60px",  "align": "center" } },
+                  { "nombre": { "name": "Nombre", "width": "150px" } },
+                  { "precio": { "name": "Precio", "format": "money",     "align": "right",  "width": "120px" } },
+                  { "activo": { "name": "Activo", "format": "boolean",   "align": "center", "width": "80px"  } },
+                  { "fecha":  { "name": "Fecha",  "format": "date",      "align": "center", "width": "120px" } },
+                  { "codigo": { "name": "Código", "format": "uppercase", "align": "center", "width": "100px" } }
+                ],
+                "actions": {
+                  "details": { "name": "📋 Detalles", "onclick": "ogToast.info('Producto: {nombre}')" }
+                }
+              }
+            },
+            {
+              "type": "html",
+              "content": "<table class='og-table og-table-sm og-table-bordered og-mt-3'><thead><tr><th>Formato</th><th>Descripción</th><th>Entrada</th><th>Salida</th></tr></thead><tbody><tr><td><code>date</code></td><td>Fecha corta</td><td>2024-01-15</td><td>15/01/2024</td></tr><tr><td><code>datetime</code></td><td>Fecha y hora</td><td>2024-01-15T10:30</td><td>15/01/2024, 10:30</td></tr><tr><td><code>money</code></td><td>Moneda USD</td><td>1234.56</td><td>$1,234.56</td></tr><tr><td><code>boolean</code></td><td>Sí / No</td><td>true</td><td>Sí</td></tr><tr><td><code>uppercase</code></td><td>Mayúsculas</td><td>producto</td><td>PRODUCTO</td></tr><tr><td><code>lowercase</code></td><td>Minúsculas</td><td>PRODUCTO</td><td>producto</td></tr><tr><td><code>capitalize</code></td><td>Primera mayúscula</td><td>producto</td><td>Producto</td></tr></tbody></table>"
+            },
+            {
+              "type": "code",
+              "lang": "javascript",
+              "content": "// Formato predefinido en columna\n// { \"precio\": { \"name\": \"Precio\", \"format\": \"money\", \"align\": \"right\" } }\n\n// Formatter personalizado desde JS\nogDatatable.registerFormatter('badge', (value, row) => {\n  const color = row.status === 'active' ? '#10b981' : '#6b7280';\n  return `<span style=\"background:${color};color:#fff;padding:2px 8px;border-radius:12px;font-size:.8rem\">${value}</span>`;\n});\n\n// Quitar un formatter\nogDatatable.unregisterFormatter('badge');"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Traducciones (i18n)",
+          "description": "Prefija con <code>i18n:extension.clave</code> el campo <code>name</code> de columnas y acciones para resolver traducciones desde el archivo <code>lang/es.json</code> de la extensión.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/users-mock.json",
+                "columns": [
+                  { "id":    { "name": "i18n:ejemplos.column.id",    "width": "80px", "align": "center" } },
+                  { "name":  { "name": "i18n:ejemplos.column.name"  } },
+                  { "email": { "name": "i18n:ejemplos.column.email" } },
+                  { "role":  { "name": "i18n:ejemplos.column.role",  "format": "uppercase", "align": "center" } }
+                ],
+                "actions": {
+                  "edit":   { "name": "i18n:ejemplos.action.edit",   "onclick": "ogToast.info('Edit: {id}')"      },
+                  "delete": { "name": "i18n:ejemplos.action.delete", "onclick": "ogToast.warning('Delete: {id}')" }
+                }
+              }
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "// lang/es.json de la extensión\n{\n  \"ejemplos.column.id\":     \"ID\",\n  \"ejemplos.column.name\":   \"Nombre\",\n  \"ejemplos.column.email\":  \"Correo\",\n  \"ejemplos.column.role\":   \"Rol\",\n  \"ejemplos.action.edit\":   \"✏️ Editar\",\n  \"ejemplos.action.delete\": \"🗑️ Eliminar\"\n}\n\n// Uso en columna del datatable\n{\n  \"name\":  { \"name\": \"i18n:ejemplos.column.name\" },\n  \"email\": { \"name\": \"i18n:ejemplos.column.email\" }\n}"
+            }
+          ]
         }
       ]
     },
     {
-      "id": "tab-mock",
-      "title": "📁 Datos Mock",
+      "id": "tab-columns",
+      "title": "📌 Columnas",
       "content": [
         {
-          "type": "html",
-          "content": "<h3>📁 Tabla con Datos Mock (JSON)</h3><p>Carga datos desde un archivo JSON local. Útil para desarrollo y pruebas.</p><div class='alert alert-info alert-border'><strong>💡 Tip:</strong> El source debe ser la ruta completa al archivo .json</div>"
-        },
-        {
-          "type": "component",
-          "component": "datatable",
-          "config": {
-            "source": "ejemplos|mock/users-mock.json",
-            "columns": [
-              {
-                "id": {
-                  "name": "ID",
-                  "width": "80px",
-                  "align": "center"
-                }
-              },
-              {
-                "name": {
-                  "name": "Nombre Completo",
-                  "width": "200px"
-                }
-              },
-              {
-                "email": {
-                  "name": "Correo Electrónico",
-                  "width": "220px"
-                }
-              },
-              {
-                "role": {
-                  "name": "Rol",
-                  "format": "uppercase",
-                  "align": "center",
-                  "width": "120px"
-                }
-              },
-              {
-                "status": {
-                  "name": "Estado",
-                  "align": "center",
-                  "width": "100px"
+          "type": "section",
+          "title": "Columna fija en scroll horizontal",
+          "description": "Con <code>fixedColumns: 1</code> la primera columna queda anclada mientras el resto hace scroll horizontal. Acepta número (cantidad de columnas fijas) o array de campos.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/products-wide.json",
+                "fixedColumns": 1,
+                "columns": [
+                  { "id":       { "name": "#",           "width": "55px",  "align": "center" } },
+                  { "sku":      { "name": "SKU",          "width": "100px" } },
+                  { "name":     { "name": "Producto",     "width": "220px" } },
+                  { "category": { "name": "Categoría",    "width": "130px" } },
+                  { "brand":    { "name": "Marca",        "width": "110px" } },
+                  { "price":    { "name": "Precio",       "width": "100px", "format": "money", "align": "right" } },
+                  { "cost":     { "name": "Costo",        "width": "95px",  "format": "money", "align": "right" } },
+                  { "stock":    { "name": "Stock",        "width": "80px",  "align": "center" } },
+                  { "weight":   { "name": "Peso",         "width": "80px",  "align": "center" } },
+                  { "rating":   { "name": "Rating",       "width": "80px",  "align": "center" } },
+                  { "sales":    { "name": "Ventas",       "width": "90px",  "align": "center" } },
+                  { "status":   { "name": "Estado",       "width": "100px", "align": "center" } },
+                  { "supplier": { "name": "Proveedor",    "width": "160px" } },
+                  { "dc":       { "name": "Creado",       "width": "110px", "format": "date", "align": "center" } },
+                  { "da":       { "name": "Actualizado",  "width": "110px", "format": "date", "align": "center" } }
+                ],
+                "actions": {
+                  "edit": { "name": "✏️", "onclick": "ogToast.info('Editar: {name}')" }
                 }
               }
-            ],
-            "actions": {
-              "view": {
-                "name": "👁️ Ver",
-                "onclick": "ogToast.info('Ver usuario: {name} (ID: {id})')"
-              },
-              "edit": {
-                "name": "✏️ Editar",
-                "onclick": "ogToast.success('Editar usuario {id}')"
-              },
-              "delete": {
-                "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar a {name}?')) ogToast.warning('Usuario {id} eliminado')"
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "// fixedColumns: número de columnas ancladas desde la izquierda\n{\n  \"type\": \"component\",\n  \"component\": \"datatable\",\n  \"config\": {\n    \"source\": \"miPlugin|mock/data.json\",\n    \"fixedColumns\": 1,\n    \"columns\": [\n      { \"id\":   { \"name\": \"#\",        \"width\": \"55px\",  \"align\": \"center\" } },\n      { \"name\": { \"name\": \"Producto\", \"width\": \"220px\" } },\n      // ... más columnas\n    ]\n  }\n}\n\n// También acepta 2 columnas fijas\n\"fixedColumns\": 2"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "title": "Dos columnas fijas",
+          "description": "Con <code>fixedColumns: 2</code> las primeras 2 columnas quedan ancladas. Útil cuando el identificador y el nombre del registro deben ser siempre visibles.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/products-wide.json",
+                "fixedColumns": 2,
+                "columns": [
+                  { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+                  { "sku":      { "name": "SKU",         "width": "110px" } },
+                  { "name":     { "name": "Producto",    "width": "220px" } },
+                  { "category": { "name": "Categoría",   "width": "130px" } },
+                  { "brand":    { "name": "Marca",       "width": "110px" } },
+                  { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+                  { "cost":     { "name": "Costo",       "width": "95px",  "format": "money", "align": "right" } },
+                  { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+                  { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+                  { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+                  { "sales":    { "name": "Ventas",      "width": "90px",  "align": "center" } },
+                  { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+                  { "supplier": { "name": "Proveedor",   "width": "160px" } },
+                  { "dc":       { "name": "Creado",      "width": "110px", "format": "date", "align": "center" } },
+                  { "da":       { "name": "Actualizado", "width": "110px", "format": "date", "align": "center" } }
+                ]
               }
             }
-          }
+          ]
         },
         {
-          "type": "html",
-          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Estructura del JSON Mock</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>[\n  {\n    \"id\": 1,\n    \"name\": \"Juan Pérez\",\n    \"email\": \"juan@email.com\",\n    \"role\": \"admin\",\n    \"status\": \"active\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"María García\",\n    \"email\": \"maria@email.com\",\n    \"role\": \"user\",\n    \"status\": \"active\"\n  }\n]</code></pre><div class='alert-desc'>Ejemplo de estructura de datos para el DataTable con campos básicos</div></div>"
-        }
-      ]
-    },
-    {
-      "id": "tab-api",
-      "title": "🌐 Datos API",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>🌐 Tabla con Datos desde API</h3><p>Carga datos desde un endpoint REST. El sistema detecta automáticamente rutas que empiezan con 'api/'.</p><div class='alert alert-success alert-border'><strong>✅ Importante:</strong> El source NO debe terminar en .json cuando es una API</div>"
-        },
-        {
-          "type": "component",
-          "component": "datatable",
-          "config": {
-            "source": "api/user",
-            "columns": [
-              {
-                "id": {
-                  "name": "ID",
-                  "width": "80px",
-                  "align": "center"
-                }
-              },
-              {
-                "user": {
-                  "name": "Usuario",
-                  "width": "180px"
-                }
-              },
-              {
-                "email": {
-                  "name": "Email",
-                  "width": "220px"
-                }
-              },
-              {
-                "dc": {
-                  "name": "Fecha Creación",
-                  "format": "datetime",
-                  "width": "180px",
-                  "align": "center"
-                }
-              },
-              {
-                "role": {
-                  "name": "Rol",
-                  "format": "uppercase",
-                  "align": "center",
-                  "width": "120px"
-                }
+          "type": "section",
+          "title": "Resize de columnas",
+          "description": "Con <code>resizableColumns: true</code> se puede arrastrar el borde derecho de cualquier cabecera para cambiar su ancho. Por defecto está desactivado.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/products-wide.json",
+                "resizableColumns": true,
+                "tableClass": "table-bordered",
+                "columns": [
+                  { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+                  { "sku":      { "name": "SKU",         "width": "110px" } },
+                  { "name":     { "name": "Producto",    "width": "200px" } },
+                  { "category": { "name": "Categoría",   "width": "130px" } },
+                  { "brand":    { "name": "Marca",       "width": "110px" } },
+                  { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+                  { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+                  { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+                  { "supplier": { "name": "Proveedor",   "width": "150px" } }
+                ]
               }
-            ],
-            "actions": {
-              "edit": {
-                "name": "✏️ Editar",
-                "onclick": "ogToast.info('Editar usuario API: {user} (ID: {id})')"
-              },
-              "delete": {
-                "name": "🗑️ Eliminar",
-                "onclick": "if(confirm('¿Eliminar usuario {user}?')) ogToast.warning('Eliminar ID: {id}')"
-              }
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "{ \"resizableColumns\": true }"
             }
-          }
+          ]
         },
         {
-          "type": "html",
-          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Respuesta Esperada de la API</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>// Opción 1: Array directo\n[\n  {\"id\": 1, \"user\": \"admin\", \"email\": \"admin@email.com\", ...},\n  {\"id\": 2, \"user\": \"user1\", \"email\": \"user1@email.com\", ...}\n]\n\n// Opción 2: Objeto con data\n{\n  \"success\": true,\n  \"data\": [\n    {\"id\": 1, \"user\": \"admin\", ...},\n    {\"id\": 2, \"user\": \"user1\", ...}\n  ]\n}</code></pre><div class='alert-desc'><strong>Nota:</strong> El componente maneja ambos formatos automáticamente</div></div>"
-        }
-      ]
-    },
-    {
-      "id": "tab-formats",
-      "title": "🎨 Formatos",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>🎨 Formatos de Columnas</h3><p>Ejemplos de diferentes formatos disponibles para las columnas.</p>"
-        },
-        {
-          "type": "component",
-          "component": "datatable",
-          "config": {
-            "source": "ejemplos|mock/format-demo.json",
-            "columns": [
-              {
-                "id": {
-                  "name": "ID",
-                  "width": "60px",
-                  "align": "center"
-                }
-              },
-              {
-                "nombre": {
-                  "name": "Nombre",
-                  "width": "150px"
-                }
-              },
-              {
-                "precio": {
-                  "name": "Precio",
-                  "format": "money",
-                  "align": "right",
-                  "width": "120px"
-                }
-              },
-              {
-                "activo": {
-                  "name": "Activo",
-                  "format": "boolean",
-                  "align": "center",
-                  "width": "80px"
-                }
-              },
-              {
-                "fecha": {
-                  "name": "Fecha",
-                  "format": "date",
-                  "align": "center",
-                  "width": "120px"
-                }
-              },
-              {
-                "codigo": {
-                  "name": "Código",
-                  "format": "uppercase",
-                  "align": "center",
-                  "width": "100px"
-                }
+          "type": "section",
+          "title": "Columna fija + Resize combinados",
+          "description": "Se puede combinar <code>fixedColumns</code> con <code>resizableColumns</code>. Las columnas fijas mantienen su posición en el scroll horizontal y todas las columnas son redimensionables.",
+          "content": [
+            {
+              "type": "component",
+              "component": "datatable",
+              "config": {
+                "source": "ejemplos|mock/products-wide.json",
+                "fixedColumns": 2,
+                "resizableColumns": true,
+                "tableClass": "table-bordered",
+                "columns": [
+                  { "id":       { "name": "#",          "width": "55px",  "align": "center" } },
+                  { "sku":      { "name": "SKU",         "width": "110px" } },
+                  { "name":     { "name": "Producto",    "width": "200px" } },
+                  { "category": { "name": "Categoría",   "width": "130px" } },
+                  { "brand":    { "name": "Marca",       "width": "110px" } },
+                  { "price":    { "name": "Precio",      "width": "100px", "format": "money", "align": "right" } },
+                  { "cost":     { "name": "Costo",       "width": "100px", "format": "money", "align": "right" } },
+                  { "stock":    { "name": "Stock",       "width": "80px",  "align": "center" } },
+                  { "weight":   { "name": "Peso",        "width": "80px",  "align": "center" } },
+                  { "rating":   { "name": "Rating",      "width": "80px",  "align": "center" } },
+                  { "sales":    { "name": "Ventas",      "width": "80px",  "align": "center" } },
+                  { "status":   { "name": "Estado",      "width": "100px", "align": "center" } },
+                  { "supplier": { "name": "Proveedor",   "width": "150px" } }
+                ]
               }
-            ],
-            "actions": {
-              "details": {
-                "name": "📋 Detalles",
-                "onclick": "ogToast.info('Producto: {nombre} - Precio: ${precio}')"
-              }
+            },
+            {
+              "type": "code",
+              "lang": "json",
+              "content": "{ \"fixedColumns\": 2, \"resizableColumns\": true }"
             }
-          }
-        },
-        {
-          "type": "html",
-          "content": "<div class='og-mt-3'><h4>📋 Formatos Disponibles</h4><table class='og-table og-table-sm og-table-bordered'><thead><tr><th>Formato</th><th>Descripción</th><th>Ejemplo Entrada</th><th>Ejemplo Salida</th></tr></thead><tbody><tr><td><code>date</code></td><td>Fecha corta</td><td>2024-01-15</td><td>15/01/2024</td></tr><tr><td><code>datetime</code></td><td>Fecha y hora</td><td>2024-01-15T10:30:00</td><td>15/01/2024, 10:30:00</td></tr><tr><td><code>money</code></td><td>Formato moneda</td><td>1234.56</td><td>$1,234.56</td></tr><tr><td><code>boolean</code></td><td>Sí/No</td><td>true</td><td>Sí</td></tr><tr><td><code>uppercase</code></td><td>Mayúsculas</td><td>producto</td><td>PRODUCTO</td></tr><tr><td><code>lowercase</code></td><td>Minúsculas</td><td>PRODUCTO</td><td>producto</td></tr><tr><td><code>capitalize</code></td><td>Primera mayúscula</td><td>producto</td><td>Producto</td></tr></tbody></table></div>"
-        }
-      ]
-    },
-    {
-      "id": "tab-empty",
-      "title": "📭 Sin Datos",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>📭 Tabla Vacía (Sin Datos)</h3><p>Cuando no hay datos, el componente muestra un mensaje automáticamente.</p><div class='alert alert-danger alert-border'><strong>⚠️ Nota:</strong> Este ejemplo usa un archivo que no existe para demostrar el estado vacío</div>"
-        },
-        {
-          "type": "component",
-          "component": "datatable",
-          "config": {
-            "source": "ejemplos|mock/empty.json",
-            "columns": [
-              {
-                "id": {
-                  "name": "ID",
-                  "width": "80px"
-                }
-              },
-              {
-                "nombre": {
-                  "name": "Nombre"
-                }
-              },
-              {
-                "email": {
-                  "name": "Email"
-                }
-              }
-            ],
-            "actions": {
-              "edit": {
-                "name": "✏️ Editar",
-                "onclick": "alert('Editar')"
-              }
-            }
-          }
-        },
-        {
-          "type": "html",
-          "content": "<div class='alert alert-tip alert-with-desc og-mt-3'><strong>💡 Mensaje Personalizado</strong><p>El componente muestra automáticamente: <code>\"No hay datos para mostrar\"</code> cuando:</p><div class='alert-desc'><ul style='margin: 0; padding-left: 1.5rem;'><li>El archivo no existe</li><li>El array está vacío: <code>[]</code></li><li>La API devuelve error</li></ul></div></div>"
-        }
-      ]
-    },
-    {
-      "id": "tab-i18n",
-      "title": "🌍 Traducciones",
-      "content": [
-        {
-          "type": "html",
-          "content": "<h3>🌍 Uso de i18n en DataTable</h3><p>Las columnas y acciones pueden usar traducciones automáticamente.</p><div class='alert alert-info alert-border'><strong>💡 Formato:</strong> <code>\"name\": \"i18n:plugin.key\"</code></div>"
-        },
-        {
-          "type": "component",
-          "component": "datatable",
-          "config": {
-            "source": "ejemplos|mock/users-mock.json",
-            "columns": [
-              {
-                "id": {
-                  "name": "i18n:ejemplos.column.id",
-                  "width": "80px",
-                  "align": "center"
-                }
-              },
-              {
-                "name": {
-                  "name": "i18n:ejemplos.column.name"
-                }
-              },
-              {
-                "email": {
-                  "name": "i18n:ejemplos.column.email"
-                }
-              },
-              {
-                "role": {
-                  "name": "i18n:ejemplos.column.role",
-                  "format": "uppercase",
-                  "align": "center"
-                }
-              }
-            ],
-            "actions": {
-              "edit": {
-                "name": "i18n:ejemplos.action.edit",
-                "onclick": "ogToast.info('Edit: {id}')"
-              },
-              "delete": {
-                "name": "i18n:ejemplos.action.delete",
-                "onclick": "ogToast.warning('Delete: {id}')"
-              }
-            }
-          }
-        },
-        {
-          "type": "html",
-          "content": "<div class='alert alert-warning alert-with-desc og-mt-3'><strong>📝 Archivo de Traducciones (lang/es.json)</strong><pre style='background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; margin-top: 0.5rem;'><code>{\n  \"ejemplos.column.id\": \"ID\",\n  \"ejemplos.column.name\": \"Nombre\",\n  \"ejemplos.column.email\": \"Correo\",\n  \"ejemplos.column.role\": \"Rol\",\n  \"ejemplos.action.edit\": \"✏️ Editar\",\n  \"ejemplos.action.delete\": \"🗑️ Eliminar\"\n}</code></pre><div class='alert-desc'>Define las traducciones en el archivo de idioma correspondiente</div></div>"
+          ]
         }
       ]
     }

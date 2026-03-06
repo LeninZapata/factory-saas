@@ -7,4 +7,70 @@
       margin-left: 0.5rem;
     }
   }
+
+  /* ── Columnas fijas (sticky) ─────────────────────────────── */
+  .og-col-fixed {
+    background: var(--og-table-bg, #ffffff);
+    z-index: 2;
+    will-change: transform;
+  }
+
+  /* Sombra en la última columna fija para indicar que hay scroll */
+  .og-col-fixed-last {
+    box-shadow: 4px 0 12px -1px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Header de columna fija: fondo ligeramente diferenciado */
+  thead .og-col-fixed {
+    background: var(--og-table-head-bg, #f8fafc);
+    z-index: 3;
+  }
+
+  /* Si la tabla está en modo oscuro o con clase alternativa */
+  .og-table-striped tbody tr:nth-child(even) .og-col-fixed {
+    background: var(--og-table-stripe-bg, #f9fafb);
+  }
+
+  /* ── Resize de columnas ────────────────────────────────────── */
+  .og-resize-handle {
+    position: absolute;
+    right: -4px;
+    top: 10%;
+    width: 8px;
+    height: 80%;
+    cursor: col-resize;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .og-resize-handle::after {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 100%;
+    background: var(--og-gray-300, #d1d5db);
+    border-radius: 2px;
+    opacity: 0;
+    transition: background 0.15s, transform 0.15s, opacity 0.15s;
+  }
+
+  /* Mostrar todos los handles al pasar el mouse por la fila de headers */
+  thead tr:hover .og-resize-handle::after {
+    opacity: 1;
+  }
+
+  /* Al hover sobre el handle específico, cambiar a color primario */
+  .og-resize-handle:hover::after {
+    background: var(--og-primary, #6366f1);
+    transform: scaleX(2);
+  }
+
+  /* Cursor global durante drag */
+  .og-col-resizing,
+  .og-col-resizing * {
+    cursor: col-resize !important;
+    user-select: none !important;
+  }
 }
