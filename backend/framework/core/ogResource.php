@@ -120,6 +120,46 @@ class ogResource {
 }
 
 // Helper global
-function ogResource($name) {
-  return new ogResource($name);
+if (!function_exists('ogResource')) {
+  function ogResource($name) {
+    return new ogResource($name);
+  }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogResource.php
+ * ROLE: Helper de acceso a datos basado en schema JSON. Wrapper fluido sobre
+ *       ogDb para usar dentro de controllers, handlers o services.
+ *
+ * USO:
+ *   $user = ogResource('user');         // vía helper global
+ *   $user = new ogResource('user');     // vía instancia directa
+ *
+ * MÉTODOS:
+ *   $user->get()                        → todos los registros
+ *   $user->get(42)                      → por ID
+ *   $user->get(['status' => 'active'])  → por condiciones
+ *   $user->first(['email' => $email])   → primer resultado
+ *   $user->where('status', 'active')    → query builder fluido (retorna ogDb)
+ *   $user->insert(['name' => 'Juan'])   → crea registro
+ *   $user->update(42, ['name' => 'X'])  → actualiza por ID
+ *   $user->update(['email' => $e], $d)  → actualiza por condiciones
+ *   $user->delete(42)                   → elimina por ID
+ *   $user->count(['status' => 'active'])→ cuenta registros
+ *   $user->exists(['email' => $email])  → bool
+ *
+ * TIMESTAMPS AUTOMÁTICOS (igual que ogController):
+ *   timestamps: true  → created_at / updated_at
+ *   timestamps: false → dc / tc (insert) y du / tu (update)
+ *
+ * BÚSQUEDA DE SCHEMA (orden):
+ *   app/resources/schemas/{module}.json
+ *   middle/resources/schemas/{module}.json
+ *   framework/resources/schemas/{module}.json
+ *
+ * DIFERENCIA CON ogController:
+ *   ogController → uso en rutas HTTP (request/response)
+ *   ogResource   → uso interno en lógica de negocio
+ * @doc-end
+ */

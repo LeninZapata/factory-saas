@@ -426,7 +426,62 @@ class ogFramework {
   }
 }
 
-// Alias global para acceso más corto
-function ogApp($pluginName = 'default', $pluginPath = null, $isWP = false, $prefix = null) {
-  return ogFramework::instance($pluginName, $pluginPath, $isWP, $prefix);
+// Alias global — guard para evitar redeclaración en multi-plugin
+if (!function_exists('ogApp')) {
+  function ogApp($pluginName = 'default', $pluginPath = null, $isWP = false, $prefix = null) {
+    return ogFramework::instance($pluginName, $pluginPath, $isWP, $prefix);
+  }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogApp.php
+ * ROLE: Singleton principal del framework. Punto central de acceso a helpers,
+ *       services, controllers, handlers, cores y middleware.
+ *
+ * ACCESO GLOBAL:
+ *   ogApp()                  → instancia default
+ *   ogApp('pluginName')      → instancia de un plugin específico
+ *
+ * MULTI-PLUGIN SAFE:
+ *   ogApp() y ogResource() están protegidas con function_exists()
+ *   para evitar redeclaración si el framework es cargado por múltiples plugins.
+ *
+ * CARGA BAJO DEMANDA:
+ *   ogApp()->helper('str')         → instancia ogStr (helpers/)
+ *   ogApp()->service('ai')         → instancia AiService (services/)
+ *   ogApp()->controller('user')    → instancia UserController
+ *   ogApp()->handler('auth')       → instancia AuthHandler
+ *   ogApp()->core('router')        → instancia ogRouter
+ *   ogApp()->loadHelper('str')     → solo carga el archivo (sin instanciar)
+ *
+ * SUBCARPETAS: todos los métodos aceptan rutas con subcarpetas:
+ *   ogApp()->handler('integrations/whatsapp') → busca integrations/WhatsappHandler.php
+ *   ogApp()->controller('admin/product')      → busca admin/ProductController.php
+ *   ogApp()->helper('utils/formatter')        → busca utils/FormatterHelper.php
+ *   ogApp()->service('integrations/ads')      → busca integrations/AdsService.php
+ *
+ * NOTA: loadController/loadHandler aceptan nombre con o sin sufijo:
+ *   ogApp()->loadController('user')           → busca UserController
+ *   ogApp()->loadController('UserController') → también funciona
+ *   ogApp()->loadHandler('auth')              → busca AuthHandler
+ *   ogApp()->loadHandler('AuthHandler')       → también funciona
+ *
+ * BÚSQUEDA DE ARCHIVOS (orden por capa):
+ *   app → middle → framework
+ *   Prefijos intentados por capa: sin prefijo → prefijo config → 'og'
+ *
+ * RUTAS PREDEFINIDAS (getPath):
+ *   ogApp()->getPath()                         → /backend/app
+ *   ogApp()->getPath('storage')                → /backend/app/storage
+ *   ogApp()->getPath('sessions')               → /backend/app/storage/sessions
+ *   ogApp()->getPath('backend')                → /backend
+ *   ogApp()->getPath('storage/json/bots/data') → /backend/app/storage/json/bots/data
+ *   getPath() acepta cualquier subpath relativo, no solo rutas predefinidas.
+ *
+ * OTROS:
+ *   ogApp()->db()                  → acceso directo a ogDb::table()
+ *   ogApp()->isWordPress()         → bool
+ *   ogApp()->getPrefix()           → prefijo del plugin (si aplica)
+ * @doc-end
+ */

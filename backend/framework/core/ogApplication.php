@@ -106,3 +106,35 @@ class ogApplication {
     }
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogApplication.php
+ * ROLE: Maneja el ciclo de vida completo de la request. Inicializa el router,
+ *       carga las rutas y controla el output hasta enviar la respuesta final.
+ *
+ * CICLO DE VIDA:
+ *   1. __construct() → instancia ogRouter + guarda en ogApp + carga ogApi.php
+ *   2. run()         → captura output previo → dispatch() → sendResponse()
+ *
+ * USO (desde api.php):
+ *   $app = new ogApplication();
+ *   $app->run();
+ *
+ * MANEJO DE OUTPUT:
+ *   - Captura cualquier output previo al routing (warnings, var_dumps, etc.)
+ *   - En OG_IS_DEV: loguea output capturado como advertencia
+ *   - Valida que la respuesta final sea JSON válido
+ *   - Si el output contiene HTML/tags PHP → llama handlePhpWarning()
+ *   - Si el output está vacío → responde { success: true }
+ *
+ * MANEJO DE ERRORES:
+ *   OG_IS_DEV  → expone mensaje, archivo, línea y trace (5 niveles)
+ *   Producción → responde { success: false, error: 'api.server_error' }
+ *
+ * RESPUESTAS DE ERROR:
+ *   500 → excepción no capturada en dispatch()
+ *   500 → output con HTML/warnings de PHP detectados
+ *   500 → output que no es JSON válido
+ * @doc-end
+ */

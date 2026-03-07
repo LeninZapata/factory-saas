@@ -266,3 +266,24 @@ $router->group('/api/system', function($router) {
   });
 
 });
+
+/**
+ * @doc-start
+ * FILE: framework/routes/system.php
+ * ROLE: Rutas internas de administración y diagnóstico del sistema.
+ *
+ * ENDPOINTS:
+ *   GET  /api/system/health          → estado del sistema (status + timestamp)
+ *   GET  /api/system/info            → PHP version, entorno, storage, sesiones activas [auth]
+ *   GET  /api/system/routes          → lista todos los endpoints registrados
+ *     ?method=GET                    → filtrar por método HTTP
+ *     ?source=middle                 → filtrar por origen
+ *     ?grouped=true                  → agrupar por recurso
+ *   GET  /api/system/tables          → estructura de tablas de la DB
+ *     ?names=users,products          → filtrar tablas específicas
+ *     ?format=mini|json|html         → formato de respuesta (default: mini/text)
+ *   GET  /api/system/cache/stats     → estadísticas de archivos en storage/cache
+ *   GET  /api/system/logs-test       → genera un log de prueba (debug)
+ *   DELETE /api/system/cache/cleanup → elimina cache y sesiones expiradas
+ * @doc-end
+ */

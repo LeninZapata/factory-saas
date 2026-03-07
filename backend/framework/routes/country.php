@@ -69,11 +69,21 @@ $router->group('/api/country', function($router) {
 
 });
 
-// Ejemplos de uso:
-// GET /api/country/all
-// GET /api/country/all?region=america
-// GET /api/country/all?region=europa&sort=name&order=desc
-// GET /api/country/all?codes=EC,CO,PE
-// GET /api/country/EC
-// GET /api/country/EC?time=1
-// POST /api/country/convert {"datetime":"2025-12-14 10:00:00","from":"EC","to":"ES"}
+/**
+ * @doc-start
+ * FILE: framework/routes/country.php
+ * ROLE: Endpoints de consulta de países usando ogCountry.
+ *
+ * ENDPOINTS:
+ *   GET  /api/country/all            → todos los países
+ *     ?region=america|europa         → filtrar por región
+ *     ?codes=EC,CO,PE                → filtrar por códigos ISO
+ *     ?sort=name|currency            → ordenar por campo (default: name)
+ *     ?order=asc|desc                → dirección (default: asc)
+ *   GET  /api/country/{code}         → datos de un país por código ISO
+ *     ?time=1                        → incluir hora actual del país
+ *   POST /api/country/convert        → convertir fecha entre timezones de dos países
+ *     { "datetime": "2025-01-12 10:00:00", "from": "EC", "to": "ES" }
+ *     → requiere middleware 'json'
+ * @doc-end
+ */

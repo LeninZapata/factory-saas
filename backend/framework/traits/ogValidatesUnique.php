@@ -43,3 +43,37 @@ trait ogValidatesUnique {
     }
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/traits/ogValidatesUnique.php
+ * ROLE: Trait de validación de unicidad en DB. Usado por ogController y
+ *       controllers personalizados que extiendan validaciones de campos únicos.
+ *
+ * MÉTODOS:
+ *   validateUnique($table, $field, $value, $errorKey)
+ *     → valida que $value no exista en $table.$field (para create)
+ *     → ogResponse::error() HTTP 400 si ya existe
+ *
+ *   validateUniqueExcept($table, $field, $value, $excludeId, $errorKey)
+ *     → igual pero excluye el registro actual por id (para update)
+ *
+ *   validateEmail($email, $table, $excludeId)
+ *     → valida formato email via ogValidation
+ *     → si se pasa $table también valida unicidad
+ *     → si se pasa $excludeId usa validateUniqueExcept (para update)
+ *
+ * USO EN CONTROLLER:
+ *   class UserController extends ogController {
+ *     function create() {
+ *       $data = ogRequest::data();
+ *       $this->validateEmail($data['email'], 'users');
+ *       $this->validateUnique('users', 'phone', $data['phone']);
+ *     }
+ *     function update($id) {
+ *       $data = ogRequest::data();
+ *       $this->validateEmail($data['email'], 'users', $id);
+ *     }
+ *   }
+ * @doc-end
+ */

@@ -23,3 +23,11 @@ class ogJsonMiddleware {
     return true;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/middleware/ogJsonMiddleware.php
+ * ROLE: Valida que el request tenga Content-Type: application/json y body JSON válido.
+ *       Retorna 400 si el Content-Type es incorrecto o el JSON está malformado.
+ * @doc-end
+ */

@@ -118,3 +118,36 @@ class ogFile {
     return $deleted;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogFile.php
+ * ROLE: Helper de archivos. Lectura y escritura de JSON, gestión de directorios
+ *       y eliminación de archivos con logging de errores.
+ *
+ * MÉTODOS:
+ *   ogFile::saveJson($path, $data, $module, $action)
+ *     → guarda $data bajo clave 'data' en JSON con metadata (created, module, action)
+ *
+ *   ogFile::saveJsonItems($path, $items, $module, $action)
+ *     → igual que saveJson pero guarda bajo clave 'items' (para arrays/colecciones)
+ *
+ *   ogFile::getJson($path, $reconstructCallback)
+ *     → lee y retorna 'data' o 'items' del JSON
+ *     → si el archivo no existe ejecuta $reconstructCallback (opcional)
+ *
+ *   ogFile::ensureDir($path)
+ *     → crea el directorio si no existe (mkdir recursivo 0755)
+ *
+ *   ogFile::delete($path)
+ *     → elimina un archivo, retorna true si no existe o si se eliminó correctamente
+ *
+ *   ogFile::deletePattern($pattern)
+ *     → elimina archivos por patrón glob → retorna cantidad eliminada
+ *     → ogFile::deletePattern($dir . '/*.cache')
+ *
+ * NOTAS:
+ *   - Crea directorios automáticamente si no existen (saveJson, saveJsonItems)
+ *   - Todos los errores se loguean via ogLog con module 'file'
+ * @doc-end
+ */

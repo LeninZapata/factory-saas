@@ -128,3 +128,35 @@ class ogDate {
     return date('Y-m-d', strtotime($date));
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogDate.php
+ * ROLE: Helper de fechas. Rangos predefinidos, formateo, diferencias y utilidades
+ *       para MySQL.
+ *
+ * RANGOS PREDEFINIDOS (getDateRange):
+ *   'today'          → hoy 00:00:00 - 23:59:59
+ *   'yesterday'      → ayer 00:00:00 - 23:59:59
+ *   'yesterday_today'→ ayer - hoy
+ *   'last_3_days'    → 3 días atrás SIN incluir hoy
+ *   'last_7_days'    → 7 días atrás SIN incluir hoy
+ *   'last_15_days'   → 15 días atrás SIN incluir hoy
+ *   'last_30_days'   → 30 días atrás SIN incluir hoy
+ *   'this_week'      → lunes de esta semana - hoy
+ *   'this_month'     → primer día - último día del mes actual
+ *   'last_month'     → primer día - último día del mes anterior
+ *
+ * MÉTODOS:
+ *   ogDate::getDateRange('last_7_days')        → ['start' => '...', 'end' => '...']
+ *   ogDate::diffDays('2025-01-01')             → días desde esa fecha hasta hoy
+ *   ogDate::addDays('2025-01-01', 7)           → '2025-01-08'
+ *   ogDate::subDays('2025-01-01', 7)           → '2024-12-25'
+ *   ogDate::isToday('2025-01-01')              → bool
+ *   ogDate::isYesterday('2025-01-01')          → bool
+ *   ogDate::toMysql()                          → '2025-01-01 15:30:00'
+ *   ogDate::toMysqlDate()                      → '2025-01-01'
+ *   ogDate::timestamp('2025-01-01')            → unix timestamp
+ *   ogDate::formatEs('2025-01-01')             → '01/01/2025'
+ * @doc-end
+ */

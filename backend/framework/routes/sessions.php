@@ -18,3 +18,17 @@ $router->group('/api/sessions', function($router) {
   }); //->middleware($middleware);
 
 });
+
+/**
+ * @doc-start
+ * FILE: framework/routes/sessions.php
+ * ROLE: Endpoints de gestión de sesiones.
+ *
+ * ENDPOINTS:
+ *   DELETE /api/sessions/user/{user_id} → invalida todas las sesiones de un usuario
+ *
+ * NOTAS:
+ *   - Puede ejecutarse desde CRON para limpieza programada
+ *   - Delega la lógica a UserController::invalidateSessions()
+ * @doc-end
+ */

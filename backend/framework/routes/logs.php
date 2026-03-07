@@ -1,56 +1,4 @@
 <?php
-/**
- * routes/logs.php - Endpoints de logs usando logReader
- *
- * Toda la lógica de lectura y filtrado está en logReader
- * Este archivo solo maneja las rutas y respuestas
- *
- * EJEMPLOS DE USO:
- *
- * 1. Logs de hoy:
- *    GET /api/logs/today
- *    GET /api/logs/today?limit=50
- *    GET /api/logs/today?module=integrations/whatsapp
- *    GET /api/logs/today?tags=whatsapp,error
- *    GET /api/logs/today?number=593987654321&bot_id=10
- *
- * 2. Logs de fecha específica:
- *    GET /api/logs/2025/12/08
- *    GET /api/logs/2025/12/08?module=integrations/whatsapp
- *    GET /api/logs/2025/12/08?tags=whatsapp&level=ERROR
- *    GET /api/logs/2025/12/08?number=593987654321
- *
- * 3. Búsqueda con rango de fechas:
- *    GET /api/logs/search?from=2025-12-01&to=2025-12-08
- *    GET /api/logs/search?module=integrations/whatsapp&from=2025-12-01
- *    GET /api/logs/search?number=593987654321&tags=error
- *    GET /api/logs/search?bot_id=10&level=ERROR
- *
- * 4. Últimos logs:
- *    GET /api/logs/latest?limit=20
- *
- * 5. Estadísticas:
- *    GET /api/logs/stats
- *    GET /api/logs/stats?module=integrations/whatsapp
- *
- * FILTROS DISPONIBLES (query params):
- * - limit: Número máximo de logs (default: varía por endpoint)
- * - level: DEBUG, INFO, WARNING, ERROR
- * - module: Módulo específico (ej: integrations/whatsapp, auth, bot)
- * - tags: Tags separados por coma (ej: whatsapp,error o whatsapp,message)
- * - search: Buscar en mensaje o contexto
- * - number: Filtrar por número de teléfono (custom var)
- * - bot_id: Filtrar por bot_id (custom var)
- * - user_id: Filtrar por user_id (custom var)
- * - client_id: Filtrar por client_id (custom var)
- * - [cualquier custom var]: Se busca en el contexto del log
- *
- * EJEMPLOS COMBINADOS:
- * GET /api/logs/today?module=integrations/whatsapp&number=593987654321&tags=error
- * GET /api/logs/search?bot_id=10&level=ERROR&from=2025-12-01&to=2025-12-08
- * GET /api/logs/2025/12/08?tags=whatsapp,telegram&level=WARNING
- */
-
 $router->group('/api/logs', function($router) {
 
   $middleware = OG_IS_DEV ? [] : ['auth'];
@@ -249,3 +197,39 @@ function applyLogFilters($logs) {
 
   return ogApp()->helper('logReader')->filter($logs, $filters);
 }
+
+/**
+ * @doc-start
+ * FILE: framework/routes/logs.php
+ * ROLE: Endpoints de consulta y filtrado de logs del sistema.
+ *       Lógica de lectura delegada a helper logReader.
+ *       En producción todos los endpoints requieren middleware 'auth'.
+ *
+ * ENDPOINTS:
+ *   GET /api/logs/today              → logs de hoy (default: 100)
+ *   GET /api/logs/latest             → últimos N logs (default: 50)
+ *   GET /api/logs/{year}/{month}     → logs de un mes completo
+ *   GET /api/logs/{year}/{month}/{day} → logs de una fecha específica
+ *   GET /api/logs/search             → búsqueda con rango de fechas
+ *     ?from=2025-12-01&to=2025-12-10 → rango (default: últimos 7 días)
+ *   GET /api/logs/stats              → estadísticas de logs de hoy
+ *
+ * FILTROS DISPONIBLES (todos los endpoints):
+ *   ?level=ERROR                     → DEBUG, INFO, WARNING, ERROR
+ *   ?module=integrations/whatsapp    → módulo específico
+ *   ?tags=whatsapp,error             → tags separados por coma
+ *   ?search=login                    → busca en mensaje y contexto
+ *   ?user_id=5                       → filtrar por usuario
+ *   ?limit=100                       → límite de resultados
+ *   ?number=593987654321             → custom var: número de teléfono
+ *   ?bot_id=10                       → custom var: ID de bot
+ *   ?client_id=3                     → custom var: ID de cliente
+ *   ?[custom_var]=valor              → cualquier custom var registrada en el log
+ *
+ * EJEMPLOS COMBINADOS:
+ *   GET /api/logs/today?module=integrations/whatsapp&number=593987654321&tags=error
+ *   GET /api/logs/search?bot_id=10&level=ERROR&from=2025-12-01&to=2025-12-08
+ *   GET /api/logs/2025/12/08?tags=whatsapp,telegram&level=WARNING
+ *   GET /api/logs/today?user_id=5&level=INFO
+ * @doc-end
+ */

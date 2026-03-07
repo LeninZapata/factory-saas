@@ -133,3 +133,42 @@ class ogController {
     return $required;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogController.php
+ * ROLE: Controller CRUD genérico basado en schema JSON. Se instancia
+ *       automáticamente desde ogApi.php cuando no existe controller personalizado.
+ *
+ * USO DIRECTO (en rutas manuales):
+ *   $ctrl = new ogController('user');
+ *   $router->get('/api/user', [$ctrl, 'list']);
+ *
+ * ACCIONES DISPONIBLES:
+ *   list($id)    → GET    /api/{module}       filtros dinámicos desde ?campo=valor
+ *   show($id)    → GET    /api/{module}/{id}
+ *   create()     → POST   /api/{module}       valida campos required del schema
+ *   update($id)  → PUT    /api/{module}/{id}
+ *   delete($id)  → DELETE /api/{module}/{id}
+ *
+ * TIMESTAMPS AUTOMÁTICOS:
+ *   timestamps: true  → created_at / updated_at
+ *   timestamps: false → dc / tc (create) y du / tu (update)
+ *
+ * BÚSQUEDA DE SCHEMA (orden):
+ *   app/resources/schemas/{module}.json
+ *   middle/resources/schemas/{module}.json
+ *   framework/resources/schemas/{module}.json
+ *
+ * BÚSQUEDA DE HANDLER PERSONALIZADO (orden):
+ *   app/resources/handlers/{Module}Handler.php
+ *   middle/resources/handlers/{Module}Handler.php
+ *   framework/resources/handlers/og{Module}Handler.php
+ *
+ * PAGINACIÓN (list):
+ *   ?page=1&per_page=50&sort=id&order=ASC
+ *
+ * TRAITS:
+ *   ogValidatesUnique → validación de campos únicos en DB
+ * @doc-end
+ */

@@ -108,3 +108,28 @@ class ogThrottleMiddleware {
     file_put_contents($this->storageFile, json_encode($data));
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/middleware/ogThrottleMiddleware.php
+ * ROLE: Rate limiting por IP y ruta. Limita el número de requests en una ventana
+ *       de tiempo. Persiste contadores en storage/middleware/throttle_data.json.
+ *
+ * USO EN RUTAS:
+ *   ->middleware(['throttle:60,1'])   → max 60 requests por minuto
+ *   ->middleware(['throttle:10,5'])   → max 10 requests cada 5 minutos
+ *
+ * HEADERS DE RESPUESTA:
+ *   X-RateLimit-Limit     → máximo permitido
+ *   X-RateLimit-Remaining → requests restantes
+ *   X-RateLimit-Reset     → timestamp de reset (si fue bloqueado)
+ *   Retry-After           → segundos para reintentar (si fue bloqueado)
+ *
+ * ERRORES:
+ *   429 → límite excedido (loguea IP, path y contadores via ogLog::warning)
+ *
+ * NOTAS:
+ *   - Key única por MD5(ip + path)
+ *   - Limpieza automática de entradas con más de 1 hora al guardar
+ * @doc-end
+ */

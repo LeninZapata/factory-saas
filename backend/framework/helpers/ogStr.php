@@ -65,3 +65,32 @@ class ogStr {
   }
 
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogStr.php
+ * ROLE: Helper de manipulación de strings. Normalización, conversión de casos
+ *       y utilidades de comparación.
+ *
+ * MÉTODOS:
+ *   ogStr::normalize($text)
+ *     → minúsculas + remueve tildes (á→a, é→e, ñ→n, ç→c, etc.)
+ *     → útil para comparaciones case-insensitive sin tildes
+ *     → ogStr::normalize('Ñoño') → 'nono'
+ *
+ *   ogStr::containsAllWords($needle, $haystack)
+ *     → true si TODAS las palabras de $needle están en $haystack
+ *     → normaliza ambos strings antes de comparar
+ *     → ogStr::containsAllWords('juan perez', 'Juan Pérez García') → true
+ *
+ *   ogStr::isJson($string)
+ *     → true si el string es JSON válido
+ *     → retorna false si está vacío o no es string
+ *
+ *   ogStr::toCamelCase($string)
+ *     → convierte kebab-case o snake_case a camelCase
+ *     → ogStr::toCamelCase('my-module')  → 'myModule'
+ *     → ogStr::toCamelCase('my_module')  → 'myModule'
+ *     → usado en ogApi.php para normalizar módulos de URL
+ * @doc-end
+ */

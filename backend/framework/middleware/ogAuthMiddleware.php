@@ -167,7 +167,7 @@ class ogAuthMiddleware {
   }
 
   private function validatePhpVersion() {
-    $required = defined('PHP_MIN_VERSION') ? PHP_MIN_VERSION : '8.1.0';
+    $required = '8.1.0';
 
     $cache = ogApp()->helper('cache');
 
@@ -189,3 +189,26 @@ class ogAuthMiddleware {
     return true;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/middleware/ogAuthMiddleware.php
+ * ROLE: Valida sesión activa via Bearer token en cada request protegida.
+ *
+ * FLUJO:
+ *   1. Extrae Bearer token del header Authorization
+ *   2. Busca archivo de sesión en storage/sessions/ por los primeros 16 chars del token
+ *   3. Verifica que no esté expirada
+ *   4. Inyecta user_id y user en $GLOBALS y ogCache::memory
+ *   5. Limpieza oportunista de sesiones expiradas (máx 10 archivos por request)
+ *
+ * SESIONES:
+ *   Formato de archivo: {expires}_{userId}_{token16}.json
+ *   $GLOBALS['auth_user_id'] y $GLOBALS['auth_user'] quedan disponibles globalmente
+ *   ogCache::memoryGet('auth_user_id') disponible en el resto del ciclo
+ *
+ * ERRORES:
+ *   401 → token ausente, inválido o expirado
+ *   500 → versión de PHP insuficiente (solo OG_IS_DEV, verifica 1 vez por sesión)
+ * @doc-end
+ */

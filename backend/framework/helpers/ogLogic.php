@@ -443,45 +443,53 @@ class OgLogic
 
 }
 
-
 /**
- * EJEMPLO DE USO:
- * 
- * $logic = [
- *   'or' => [
+ * @doc-start
+ * FILE: framework/helpers/ogLogic.php
+ * ROLE: Motor de lógica basado en JSON (JsonLogic). Evalúa reglas de negocio
+ *       definidas como estructuras JSON contra datos en runtime.
+ *       Útil para reglas dinámicas en ads, scoring, validaciones condicionales.
+ *
+ * MÉTODOS PRINCIPALES:
+ *   OgLogic::apply($logic, $data)
+ *     → evalúa lógica y retorna el resultado directo
+ *
+ *   OgLogic::evaluate($logic, $data)
+ *     → igual que apply pero retorna detalles de evaluación
+ *     → ['result' => bool, 'details' => [...], 'matched_rules' => [...]]
+ *     → útil para saber QUÉ condiciones se cumplieron
+ *
+ *   OgLogic::addOp($name, $callable)
+ *     → registra operador personalizado
+ *     → OgLogic::addOp('between', fn($a,$min,$max) => $a >= $min && $a <= $max)
+ *
+ *   OgLogic::usesData($logic)
+ *     → retorna array de variables que usa la lógica
+ *
+ * OPERADORES DISPONIBLES:
+ *   Comparación:  ==, ===, !=, !==, >, >=, <, <=
+ *   Lógicos:      and, or, if, ?:, !, !!
+ *   Arrays:       in, merge, filter, map, reduce, all, some, none
+ *   Variables:    var, missing, missing_some
+ *   Matemáticos:  +, -, *, /, %, max, min
+ *   String:       cat, substr
+ *
+ * EJEMPLO:
+ *   $logic = ['or' => [
  *     ['and' => [
  *       ['<=', [['var' => 'cost_per_result'], 18]],
  *       ['>=', [['var' => 'results'], 1]]
  *     ]],
  *     ['>=', [['var' => 'roas'], 2.5]]
- *   ]
- * ];
- * 
- * $data = [
- *   'cost_per_result' => 0.31,
- *   'results' => 4,
- *   'roas' => 4.88
- * ];
- * 
- * $evaluation = OgLogic::evaluate($logic, $data);
- * 
- * Resultado:
- * [
- *   'result' => true,
- *   'details' => [...],
- *   'matched_rules' => [
- *     [
- *       'index' => 0,
- *       'operator' => 'or',
- *       'condition' => [...],
- *       'details' => [...]
- *     ],
- *     [
- *       'index' => 1,
- *       'operator' => 'or',
- *       'condition' => [...],
- *       'details' => [...]
- *     ]
- *   ]
- * ]
+ *   ]];
+ *   $data = ['cost_per_result' => 0.31, 'results' => 4, 'roas' => 4.88];
+ *
+ *   OgLogic::apply($logic, $data);     → true
+ *   OgLogic::evaluate($logic, $data);  → ['result'=>true, 'matched_rules'=>[...]]
+ *
+ * NOTAS:
+ *   - var con dot notation: ['var' => 'user.role'] accede a $data['user']['role']
+ *   - Operadores if/and/or usan evaluación lazy (no evalúan lo innecesario)
+ *   - evaluate() detalla qué rama del OR/AND cumplió (útil para auditoría de ads)
+ * @doc-end
  */

@@ -79,3 +79,42 @@ class ogResponse {
     flush();
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogResponse.php
+ * ROLE: Helper de respuestas HTTP/JSON. Todas las respuestas terminan en exit().
+ *       Errores no-200 se loguean automáticamente via ogLog.
+ *
+ * MÉTODOS PRINCIPALES:
+ *   ogResponse::success($data, $msg, $code)
+ *     → { success: true, message?, data? }
+ *
+ *   ogResponse::error($error, $code, $details)
+ *     → { success: false, error, details? }
+ *
+ *   ogResponse::validation($errors)
+ *     → { success: false, errors: [...] }  HTTP 400
+ *
+ *   ogResponse::json($data, $code)
+ *     → respuesta JSON base, usada internamente por todos los métodos
+ *     → OG_IS_DEV agrega JSON_PRETTY_PRINT automáticamente
+ *
+ * SHORTCUTS HTTP:
+ *   ogResponse::notFound($msg)      → HTTP 404
+ *   ogResponse::unauthorized($msg)  → HTTP 401
+ *   ogResponse::forbidden($msg)     → HTTP 403
+ *   ogResponse::serverError($msg)   → HTTP 500 (incluye $debug si OG_IS_DEV)
+ *
+ * WEBHOOKS:
+ *   ogResponse::flushAndContinue($data)
+ *     → responde HTTP 200 al cliente inmediatamente y continúa ejecución en background
+ *     → usar en webhooks para evitar retransmisiones por timeout (ej: Meta, WhatsApp)
+ *     → setea Connection: close + Content-Length antes del flush
+ *
+ * NOTAS:
+ *   - Todos los métodos terminan en exit() excepto flushAndContinue()
+ *   - Respuestas con code !== 200 se loguean (datos >5000 chars se truncan en el log)
+ *   - Mensajes de error sin parámetro usan traducciones de 'helper.response.*'
+ * @doc-end
+ */

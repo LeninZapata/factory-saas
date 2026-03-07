@@ -108,10 +108,38 @@ class ogCountry {
   }
 }
 
-// Ejemplos de uso:
-// $ec = ogCountry::get('EC'); // ['name'=>'Ecuador', 'region'=>'america', 'currency'=>'USD', 'timezone'=>'America/Guayaquil', 'offset'=>'UTC-5']
-// $all = ogCountry::all(); // Array con todos los países
-// $exists = ogCountry::exists('EC'); // true
-// $hora = ogCountry::now('EC'); // '2025-12-14 15:30:45'
-// $horaCustom = ogCountry::now('EC', 'H:i'); // '15:30'
-// $converted = ogCountry::convert('2025-12-14 10:00:00', 'EC', 'ES'); // '2025-12-14 16:00:00' (hora en España)
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogCountry.php
+ * ROLE: Helper de países. Datos estáticos de países (nombre, región, moneda,
+ *       timezone, offset) con utilidades de conversión horaria.
+ *
+ * COBERTURA:
+ *   América del Sur, América Central y Caribe, América del Norte,
+ *   Europa Occidental y del Este. Indexado por código ISO 3166-1 alpha-2.
+ *
+ * MÉTODOS:
+ *   ogCountry::get('EC')
+ *     → ['name'=>'Ecuador', 'region'=>'america', 'currency'=>'USD',
+ *        'timezone'=>'America/Guayaquil', 'offset'=>'UTC-5']
+ *
+ *   ogCountry::all()
+ *     → array completo de países
+ *
+ *   ogCountry::exists('EC')
+ *     → bool
+ *
+ *   ogCountry::now('EC')
+ *     → '2025-01-01 15:30:45'  (hora actual en timezone del país)
+ *
+ *   ogCountry::now('EC', 'H:i')
+ *     → '15:30'
+ *
+ *   ogCountry::convert('2025-01-01 10:00:00', 'EC', 'ES')
+ *     → '2025-01-01 16:00:00'  (convierte entre timezones de dos países)
+ *
+ * NOTAS:
+ *   - Códigos en mayúsculas (get/exists normalizan automáticamente)
+ *   - Retorna null si el código no existe o hay error de timezone
+ * @doc-end
+ */

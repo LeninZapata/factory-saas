@@ -106,3 +106,44 @@ class ogHttp {
     return json_last_error() === JSON_ERROR_NONE;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogHttp.php
+ * ROLE: Helper de peticiones HTTP salientes via cURL. Wrapper simple para
+ *       consumir APIs externas con decodificación JSON automática.
+ *
+ * MÉTODOS:
+ *   ogHttp::get($url, $options)
+ *   ogHttp::post($url, $data, $options)
+ *   ogHttp::put($url, $data, $options)
+ *   ogHttp::delete($url, $options)
+ *
+ * RESPUESTA (siempre retorna array, nunca lanza excepción):
+ *   [
+ *     'success'  => bool,        // true si httpCode 200-299
+ *     'data'     => mixed,       // JSON decodificado o string raw
+ *     'raw'      => string,      // respuesta sin decodificar
+ *     'httpCode' => int,         // código HTTP
+ *     'error'    => string|null  // mensaje de error si falló
+ *   ]
+ *
+ * OPCIONES DISPONIBLES:
+ *   'timeout'    => 30       // segundos (default: 30)
+ *   'headers'    => []       // array de headers: ['Authorization: Bearer token']
+ *   'ssl_verify' => false    // verificar SSL (default: false)
+ *   'auto_json'  => true     // decodificar respuesta JSON automáticamente
+ *
+ * EJEMPLOS:
+ *   $res = ogHttp::get('https://api.example.com/users');
+ *   $res = ogHttp::post('https://api.example.com/users', ['name' => 'Juan'], [
+ *     'headers' => ['Content-Type: application/json', 'Authorization: Bearer token']
+ *   ]);
+ *   if ($res['success']) { $data = $res['data']; }
+ *
+ * NOTAS:
+ *   - URLs normalizadas automáticamente via ogUrl::normalizeUrl()
+ *   - Si Content-Type es application/json y $data es array → json_encode automático
+ *   - Errores cURL se loguean via ogLog con module 'http'
+ * @doc-end
+ */

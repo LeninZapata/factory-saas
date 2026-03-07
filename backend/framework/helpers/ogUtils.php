@@ -67,3 +67,46 @@ class ogUtils {
     return round($bytes, 2) . ' ' . $units[$i];
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogUtils.php
+ * ROLE: Utilidades generales de uso frecuente. Generación de tokens, formato
+ *       de datos y helpers de texto.
+ *
+ * MÉTODOS:
+ *   ogUtils::get($arr, $key, $default)
+ *     → acceso seguro a array con valor default
+ *     → ogUtils::get($data, 'name', 'sin nombre')
+ *
+ *   ogUtils::uuid()
+ *     → genera UUID v4 aleatorio
+ *     → 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+ *
+ *   ogUtils::token($length)
+ *     → token hexadecimal criptográficamente seguro (default: 32 chars)
+ *     → usa random_bytes() internamente
+ *
+ *   ogUtils::money($amount, $currency)
+ *     → formatea número como moneda con 2 decimales
+ *     → ogUtils::money(1234.5) → '$1,234.50'
+ *
+ *   ogUtils::timeAgo($datetime)
+ *     → tiempo transcurrido en español
+ *     → acepta timestamp unix o string de fecha
+ *     → retorna: 'hace X segundos/minutos/horas/días' o 'dd/mm/yyyy'
+ *
+ *   ogUtils::slug($text)
+ *     → convierte texto a slug URL-friendly
+ *     → ogUtils::slug('Héroe del año') → 'heroe-del-ano'
+ *     → retorna 'n-a' si el resultado está vacío
+ *
+ *   ogUtils::truncate($text, $len, $suffix)
+ *     → trunca texto a $len caracteres añadiendo $suffix (default: '...')
+ *     → no trunca si el texto es menor o igual a $len
+ *
+ *   ogUtils::bytes($bytes)
+ *     → formatea bytes a unidad legible
+ *     → ogUtils::bytes(1536) → '1.5 KB'
+ * @doc-end
+ */

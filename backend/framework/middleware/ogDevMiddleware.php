@@ -11,3 +11,11 @@ class ogDevMiddleware {
     return true;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/middleware/ogDevMiddleware.php
+ * ROLE: Restringe el acceso a rutas solo para entorno local (localhost).
+ *       Retorna 403 si la request no viene de localhost.
+ * @doc-end
+ */

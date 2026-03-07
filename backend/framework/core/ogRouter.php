@@ -250,3 +250,44 @@ class ogRoute {
   function getMethod() { return $this->method; }
   function getPath() { return $this->path; }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogRouter.php
+ * ROLE: Enrutador minimalista. Registra rutas HTTP, ejecuta middleware por ruta
+ *       y despacha el handler correspondiente.
+ *
+ * REGISTRO DE RUTAS:
+ *   $router->get('/api/user', [UserController::class, 'list']);
+ *   $router->post('/api/user', [UserController::class, 'create']);
+ *   $router->put('/api/user/{id}', [UserController::class, 'update']);
+ *   $router->delete('/api/user/{id}', [UserController::class, 'delete']);
+ *
+ * MIDDLEWARE POR RUTA:
+ *   $router->get('/api/user', $handler)->middleware(['auth', 'throttle:60,1']);
+ *
+ * GRUPOS:
+ *   $router->group('/api/admin', function($r) {
+ *     $r->get('/stats', $handler);   // → /api/admin/stats
+ *   });
+ *
+ * MIDDLEWARE DISPONIBLES (alias):
+ *   'auth'      → ogAuthMiddleware
+ *   'json'      → ogJsonMiddleware
+ *   'throttle'  → ogThrottleMiddleware
+ *   'dev'       → ogDevMiddleware
+ *
+ * PARÁMETROS DINÁMICOS:
+ *   {id}        → captura segmento simple  → /api/user/42
+ *   {path:.*}   → captura todo incluyendo slashes → /api/file/a/b/c
+ *
+ * HANDLERS SOPORTADOS:
+ *   [$controller, 'method']     → array callable
+ *   'Controller@method'         → string (carga bajo demanda via ogApp)
+ *   function() {}               → closure
+ *
+ * CLASES:
+ *   ogRouter   → enrutador principal
+ *   ogRoute    → objeto de ruta individual (handler + middleware)
+ * @doc-end
+ */

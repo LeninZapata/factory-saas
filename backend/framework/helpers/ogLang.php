@@ -140,3 +140,48 @@ if( !function_exists('__')) {
   }
 }
 
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogLang.php
+ * ROLE: Helper de traducciones con lazy loading por módulo. Carga archivos de
+ *       idioma bajo demanda la primera vez que se accede a cada módulo.
+ *
+ * USO PRINCIPAL (helper global):
+ *   __('auth.login_failed')
+ *   __('core.controller.not_found', ['resource' => 'user'])
+ *   __('services.email.sent')
+ *
+ * MÉTODOS:
+ *   ogLang::load('es')              → establece locale (NO carga archivos)
+ *   ogLang::get($key, $replace)     → obtiene traducción con dot notation
+ *   ogLang::setLocale('en')         → cambia idioma y limpia cache en runtime
+ *   ogLang::getLocale()             → retorna locale actual
+ *   ogLang::getLoadedModules()      → array de módulos cargados (debug)
+ *   ogLang::getCacheStats()         → locale, módulos cargados, memory usage (debug)
+ *
+ * ESTRUCTURA DE ARCHIVOS:
+ *   framework/lang/es/{module}.php          → traducciones base del framework
+ *   framework/lang/es/services/{service}.php → traducciones de servicios
+ *   app/lang/es/{module}.php                → sobreescribe/extiende framework
+ *
+ * MÓDULOS DISPONIBLES EN FRAMEWORK:
+ *   api, auth, core, country, helper, log, middleware, session, validation
+ *   services: ai, chatapi, email, evolution, storage, webhook
+ *
+ * LAZY LOADING:
+ *   - Al llamar __('auth.x') → carga framework/lang/es/auth.php + app/lang/es/auth.php
+ *   - Merge app sobre framework (app tiene prioridad)
+ *   - Módulo 'services' carga todos los archivos de la carpeta services/
+ *   - Cada módulo se carga una sola vez por request
+ *
+ * VARIABLES EN TRADUCCIONES:
+ *   Archivo: 'not_found' => 'Recurso {resource} no encontrado'
+ *   Uso:     __('core.not_found', ['resource' => 'user'])
+ *
+ * NOTAS:
+ *   - helper __() protegido con function_exists() para multi-plugin
+ *   - Si key no existe retorna la key original (nunca falla)
+ *   - Fallback locale: 'es'
+ * @doc-end
+ */

@@ -90,3 +90,34 @@ class ogRequest {
     return null;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogRequest.php
+ * ROLE: Helper de lectura de la request HTTP entrante. Acceso a datos, headers,
+ *       método, IP y token de autenticación.
+ *
+ * MÉTODOS:
+ *   ogRequest::data()
+ *     → body del request (JSON o form data)
+ *     → detecta Content-Type automáticamente
+ *
+ *   ogRequest::method()        → 'GET', 'POST', 'PUT', 'DELETE'
+ *   ogRequest::isAjax()        → bool (detecta X-Requested-With)
+ *   ogRequest::ip()            → IP real del cliente (soporta proxies y CDN)
+ *   ogRequest::userAgent()     → string del User-Agent
+ *   ogRequest::path()          → path de la URL sin query string
+ *   ogRequest::query($key)     → valor de $_GET[$key]
+ *   ogRequest::post($key)      → valor de $_POST[$key]
+ *
+ *   ogRequest::bearerToken()
+ *     → extrae token del header Authorization: Bearer {token}
+ *     → intenta 3 métodos: HTTP_AUTHORIZATION, getallheaders(), apache_request_headers()
+ *     → retorna null si no encuentra token
+ *
+ * NOTAS:
+ *   - ip() prioriza headers de proxy en orden: HTTP_CLIENT_IP →
+ *     HTTP_X_FORWARDED_FOR → ... → REMOTE_ADDR
+ *   - data() retorna [] si el body está vacío o es inválido
+ * @doc-end
+ */

@@ -1,28 +1,4 @@
 <?php
-/**
- * CACHE - Sistema hibrido de cache con configuraciones personalizables
- *
- * REGLA DE ORO: Usar prefijo 'global_' para decidir donde cachear
- *
- * CONFIGURACIONES PERSONALIZABLES:
- * - Formato de nombre de archivo
- * - Directorio de almacenamiento
- * - Extension de archivo
- * - Variables personalizadas en el nombre
- *
- * USO:
- * 1. Cache normal (por defecto):
- *    ogCache::set('my_data', $value);
- *
- * 2. Cache con configuracion personalizada (sesiones):
- *    ogCache::setConfig([
- *      'dir' => ogApp()->getPath('sessions'),
- *      'ext' => 'json',
- *      'format' => '{expires}_{var1}_{hash}'
- *    ]);
- *    ogCache::set('session_data', $value, null, ['var1' => $userId]);
- *    ogCache::setConfigDefault(); // Restaurar config por defecto
- */
 class ogCache {
   private static $sessionStarted = false;
   private static $configs = [];
@@ -490,77 +466,38 @@ class ogCache {
     return $value;
   }
 }
-
-/*
- * EJEMPLOS DE USO
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogCache.php
+ * ROLE: Sistema híbrido de cache. Archivo, sesión PHP y memoria volátil (runtime).
  *
- * // ============ CACHE NORMAL (por defecto) ============
- * ogCache::set('user_data', $data);
- * $data = ogCache::get('user_data');
- * ogCache::forget('user_data');
+ * REGLA: prefijo 'global_' → sesión PHP | sin prefijo → archivo
  *
- * // Archivos: 1735689600_abc123.cache
+ * MÉTODOS ARCHIVO/SESIÓN:
+ *   set/get/has/forget/pull/remember/rememberOnce
  *
+ * CONFIG PERSONALIZADA:
+ *   setConfig(['dir','ext','format'], 'key') | setConfigDefault()
  *
- * // ============ CACHE PERSONALIZADO (sesiones) ============
- * // Configurar para sesiones
- * ogCache::setConfig([
- *   'dir' => ogApp()->getPath('sessions'),
- *   'ext' => 'json',
- *   'format' => '{expires}_{var1}_{hash}'
- * ], 'session');
+ * FORMATO ARCHIVO:
+ *   variables {expires},{hash},{key},{key:N},{var1}...
+ *   Default: '{expires}_{hash}.cache'
  *
- * // Guardar sesion
- * ogCache::set('session_' . $token, $sessionData, 86400, ['var1' => $userId]);
- * // Archivo: 1735689600_10_abc123.json
+ * MEMORIA VOLÁTIL (runtime, se pierde al terminar la request):
+ *   memorySet('key', $value)
+ *   memoryGet('key', $default)   → retorna $default si la clave no existe
+ *   memoryHas('key')             → bool
+ *   memoryForget('key')
+ *   memoryRemember('key', fn)
+ *   memoryClear()
  *
- * // Obtener sesion
- * $session = ogCache::get('session_' . $token);
+ * USO TÍPICO EN BOOTSTRAP:
+ *   ogCache::memorySet('path_middle', $path)
+ *   ogCache::memorySet('db_tables', $tables)
+ *   ogCache::memoryGet('db_tables', [])      → [] si no existe
  *
- * // Eliminar sesion
- * ogCache::forget('session_' . $token, ['var1' => $userId]);
- *
- * // Restaurar config por defecto
- * ogCache::setConfigDefault();
- *
- * // Ahora usa config normal de nuevo
- * ogCache::set('other_data', $value);
- * // Archivo: 1735689600_def456.cache
- *
- *
- * // ============ LIMPIEZA ============
- * // Limpiar config activa
- * ogCache::cleanup();
- *
- * // Limpiar config especifica
- * ogCache::cleanup('session');
- *
- * // Limpiar todas las configs
- * ogCache::cleanupAll();
+ * LIMPIEZA:
+ *   cleanup() | cleanup('session') | cleanupAll()
+ *   Lee timestamp del nombre del archivo sin abrirlo.
+ * @doc-end
  */
-
-/*  Usos de Memory volatil
-// Guardar
-ogCache::memorySet('user_data', $userData);
-ogCache::memorySet('temp_result', ['count' => 100]);
-
-// Obtener
-$data = ogCache::memoryGet('user_data');
-$result = ogCache::memoryGet('temp_result', []); // con default
-
-// Verificar
-if (ogCache::memoryHas('user_data')) {
-  // existe
-}
-
-// Remember (ejecuta callback solo si no existe)
-$users = ogCache::memoryRemember('all_users', function() {
-  return ogDb::table('users')->get();
-});
-
-// Eliminar
-ogCache::memoryForget('user_data');
-
-// Limpiar todo
-ogCache::memoryClear();
-*/

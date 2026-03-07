@@ -47,3 +47,36 @@ class ogValidation {
     return ['valid' => empty($errors), 'errors' => $errors];
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogValidation.php
+ * ROLE: Helper de validación y sanitización de datos de entrada.
+ *
+ * VALIDACIÓN:
+ *   ogValidation::email($email)           → bool, valida formato email
+ *   ogValidation::phone($phone)           → bool, acepta +, -, espacios, ()
+ *   ogValidation::url($url)               → bool, valida formato URL
+ *   ogValidation::numeric($val)           → bool, equivale a is_numeric()
+ *   ogValidation::range($val, $min, $max) → bool, verifica rango numérico
+ *
+ * CAMPOS REQUERIDOS:
+ *   ogValidation::required($data, ['name', 'email'])
+ *     → ['valid' => bool, 'errors' => [...]]
+ *     → valida que los campos existan y no estén vacíos
+ *     → usado internamente por ogController en create()
+ *
+ * SANITIZACIÓN:
+ *   ogValidation::sanitizeText($text)
+ *     → strip_tags + htmlspecialchars + trim (UTF-8)
+ *     → usar antes de guardar texto libre en DB
+ *
+ *   ogValidation::sanitizeEmail($email)
+ *     → FILTER_SANITIZE_EMAIL + trim
+ *     → elimina caracteres no válidos en emails
+ *
+ * NOTAS:
+ *   - required() es el método más usado, llamado desde ogController::create()
+ *   - Para validaciones únicas en DB ver trait ogValidatesUnique
+ * @doc-end
+ */

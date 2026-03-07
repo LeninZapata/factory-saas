@@ -163,3 +163,44 @@ if ($module) {
     require_once $appRoutes;
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/core/ogApi.php
+ * ROLE: Compositor de rutas. Se ejecuta en cada request y construye el stack
+ *       de rutas combinando schemas JSON (CRUD automático) + rutas manuales
+ *       de las 3 capas (framework, middle, app).
+ *
+ * FLUJO DE EJECUCIÓN (4 pasos en orden):
+ *   1. Auto-registrar rutas CRUD desde schema JSON del módulo
+ *   2. Cargar rutas manuales de framework/routes/{module}.php
+ *   3. Cargar rutas manuales de middle/routes/{module}.php
+ *   4. Cargar rutas manuales de app/routes/{module}.php
+ *
+ * DETECCIÓN DE MÓDULO:
+ *   Extrae el módulo desde la URL → /api/{module}/...
+ *   Convierte kebab-case a camelCase automáticamente:
+ *   /api/my-module → /api/myModule  (loguea advertencia)
+ *
+ * CRUD AUTOMÁTICO (si existe schema JSON):
+ *   Busca schema: app → middle → framework
+ *   GET    /api/{module}        → list
+ *   GET    /api/{module}/{id}   → show
+ *   POST   /api/{module}        → create
+ *   PUT    /api/{module}/{id}   → update
+ *   DELETE /api/{module}/{id}   → delete
+ *
+ *   Si existe {Module}Controller personalizado → lo usa
+ *   Si no → instancia ogController genérico
+ *
+ *   Rutas pueden deshabilitarse en el schema:
+ *   { "routes": [{ "name": "delete", "enabled": false }] }
+ *
+ * MIDDLEWARE EN SCHEMA:
+ *   Middleware global del módulo + middleware por ruta se fusionan:
+ *   { "middleware": ["auth"], "routes": [{ "name": "list", "middleware": ["throttle:60,1"] }] }
+ *
+ * DEV TOOLS:
+ *   ?_delay=N  → simula latencia N segundos (solo OG_IS_DEV)
+ * @doc-end
+ */

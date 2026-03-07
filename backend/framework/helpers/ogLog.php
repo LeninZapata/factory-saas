@@ -344,3 +344,52 @@ class ogLog {
     }
   }
 }
+
+/**
+ * @doc-start
+ * FILE: framework/helpers/ogLog.php
+ * ROLE: Sistema de logging con formato TSV, lazy loading por módulo, rotación
+ *       por tamaño y soporte de custom vars para filtros avanzados.
+ *
+ * FORMATO TSV (10 columnas):
+ *   [timestamp.microseconds] sequence level layer module message context file:line user_id tags
+ *   [2025-12-10 15:30:00.000000] 1 INFO app auth Login exitoso {"user":"admin"} Handler.php:42 3 auth,login
+ *
+ * USO:
+ *   ogLog::info('Mensaje')
+ *   ogLog::info('Login exitoso', ['user' => 'admin'])
+ *   ogLog::info('Mensaje', ['data' => 'x'], ['module' => 'auth', 'tags' => ['login']])
+ *   ogLog::debug()    → solo en OG_IS_DEV
+ *   ogLog::warning()
+ *   ogLog::error()
+ *   ogLog::throwError($msg) → ogLog::error() + throw Exception
+ *   ogLog::sql($sql, $bindings) → solo en OG_IS_DEV
+ *
+ * CONFIGURACIÓN (en execute.php):
+ *   ogLog::setConfig([
+ *     'format'   => 'custom',   // single | monthly | daily | custom
+ *     'template' => '{year}/{month}/{day}/{module}.log',
+ *     'level'    => OG_IS_DEV ? 'debug' : 'info',
+ *     'max_size' => 1048576,    // 1MB por archivo
+ *     'enabled'  => true
+ *   ]);
+ *
+ * CUSTOM VARS (se agregan al context Y sirven como filtros en API):
+ *   ogLog::info('Msg', ['text' => 'Hola'], ['module' => 'whatsapp', 'number' => '593987', 'bot_id' => 10]);
+ *   → filtrable via GET /api/logs/today?bot_id=10&number=593987
+ *
+ * USER ID AUTOMÁTICO:
+ *   Si existe $GLOBALS['auth_user_id'] se incluye en columna user_id automáticamente
+ *
+ * API DE CONSULTA:
+ *   GET /api/logs/today          → logs de hoy
+ *   GET /api/logs/latest         → últimos N logs
+ *   GET /api/logs/2025/12/10     → logs por fecha
+ *   GET /api/logs/search?from=2025-12-01&to=2025-12-10
+ *   Filtros: ?level=ERROR &module=auth &tags=login &user_id=5 &search=texto &bot_id=10
+ *
+ * ROTACIÓN:
+ *   Al superar max_size crea app_1.log, app_2.log, etc. en el mismo directorio
+ *   Protección anti-recursión y anti-OOM (no loguea si quedan <50MB de memoria)
+ * @doc-end
+ */
