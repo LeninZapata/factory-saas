@@ -388,6 +388,18 @@ class ogLog {
  *   GET /api/logs/search?from=2025-12-01&to=2025-12-10
  *   Filtros: ?level=ERROR &module=auth &tags=login &user_id=5 &search=texto &bot_id=10
  *
+ * ESTILO DE ESCRITURA:
+ *   Siempre inline (1 línea) cuando tenga 0, 1, 2 o 3 parámetros:
+ *     ogLog::info('Mensaje');
+ *     ogLog::info('Login exitoso', ['user' => 'admin'], ['module' => 'auth']);
+ *   Solo multilínea cuando tenga 4 o más elementos en contexto o meta:
+ *     ogLog::info('Mensaje', [
+ *       'user'   => 'admin',
+ *       'action' => 'login',
+ *       'ip'     => '192.168.1.1',
+ *       'agent'  => 'Mozilla'
+ *     ], ['module' => 'auth']);
+ *
  * ROTACIÓN:
  *   Al superar max_size crea app_1.log, app_2.log, etc. en el mismo directorio
  *   Protección anti-recursión y anti-OOM (no loguea si quedan <50MB de memoria)

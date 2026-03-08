@@ -317,3 +317,40 @@ window.ogConditionsEvaluator = ogConditionsEvaluator;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.conditionsEvaluator = ogConditionsEvaluator;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formConditionsEvaluator.js
+ * CLASS: ogConditionsEvaluator
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Evaluación y aplicación de condiciones de visibilidad al DOM.
+ *   Recorre todas las reglas del formulario, evalúa cada condición usando
+ *   ogConditionsOperators y muestra/oculta los campos correspondientes.
+ *   Sub-módulo de ogConditions — no se usa directamente.
+ *
+ * FLUJO evaluate(formId):
+ *   1. Por cada regla en rules.get(formId):
+ *      a. getContext(formEl, targetFieldPath, contextType) → obtiene valor del campo fuente
+ *      b. checkConditions() → evalúa array de conditions con operator AND/OR
+ *      c. applyVisibilitySimple() → show/hide del .og-field-wrapper[data-path]
+ *   2. Soporta evaluación dentro de repeatables (evaluateRepeatable)
+ *
+ * APLICACIÓN DE VISIBILIDAD:
+ *   applyVisibilitySimple(formEl, fieldPath, shouldShow)
+ *     → añade/quita clase 'og-hidden' en el wrapper del campo
+ *     → también oculta el label (og-field-label) si corresponde
+ *
+ *   applyVisibilityToAll(formEl, fieldPath, shouldShow)
+ *     → aplica a todos los elementos con ese data-path (útil en repeatables)
+ *
+ * DEBOUNCE:
+ *   Las evaluaciones disparadas por 'input' tienen debounce de 150ms para
+ *   no ejecutarse en cada tecla al escribir en un campo de texto.
+ *
+ * REGISTRO:
+ *   window.ogConditionsEvaluator
+ *   ogFramework.core.conditionsEvaluator
+ * @doc-end
+ */

@@ -240,3 +240,48 @@ window.ogApi = ogApi;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.api = ogApi;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/api.js
+ * CLASS: ogApi
+ * TYPE: core-service
+ * PROMPT: fe-core-services
+ *
+ * ROLE:
+ *   HTTP client con autenticación Bearer automática, manejo de errores 401/400
+ *   y soporte de contexto multi-instancia. Todos los requests pasan por request().
+ *   En 401 dispara el flujo de logout de auth automáticamente.
+ *
+ * MÉTODOS:
+ *   get(endpoint, opts?)              → GET
+ *   post(endpoint, data, opts?)       → POST con JSON body
+ *   put(endpoint, data, opts?)        → PUT con JSON body
+ *   delete(endpoint, opts?)           → DELETE
+ *   request(endpoint, opts?)          → método base, todos los anteriores lo usan
+ *
+ * AUTENTICACIÓN:
+ *   Lee el token desde ogAuth (si existe) y lo agrega como Authorization: Bearer {token}.
+ *   En respuesta 401 → llama ogAuth.logout() automáticamente.
+ *
+ * BASE URL:
+ *   Usa apiBaseUrl del config activo. Si no existe, deriva de baseUrl removiendo /admin/.
+ *   Los endpoints deben comenzar con /api/... (ej: '/api/user')
+ *
+ * MULTI-CONTEXTO:
+ *   opts._context → permite pasar una config específica en vez de usar activeConfig.
+ *   Usado por ogApp(slug).api para requests contextualizados por instancia.
+ *
+ * RESPUESTA ESPERADA DEL BACKEND:
+ *   { success: true, data: {...} }   → éxito
+ *   { success: false, message: '' }  → error de negocio
+ *
+ * USO:
+ *   const res = await ogApi.get('/api/user');
+ *   const res = await ogApi.post('/api/user', { name: 'Juan' });
+ *   if (res.success) { ... }
+ *
+ * REGISTRO:
+ *   window.ogApi
+ *   ogFramework.core.api
+ * @doc-end
+ */

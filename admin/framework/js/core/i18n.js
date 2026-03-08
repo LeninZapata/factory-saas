@@ -372,3 +372,46 @@ if (typeof window.ogFramework !== 'undefined') {
 }
 
 window.__ = (key, params) => ogI18n.t(key, params);
+/**
+ * @doc-start
+ * FILE: framework/js/core/i18n.js
+ * CLASS: ogI18n
+ * TYPE: core-service
+ * PROMPT: fe-core-services
+ *
+ * ROLE:
+ *   Sistema de internacionalización con carga lazy de traducciones por idioma.
+ *   Maneja traducciones del core (framework/js/lang/) y de cada extensión
+ *   (extensions/{ext}/lang/). El idioma persiste en localStorage entre sesiones.
+ *
+ * INICIALIZACIÓN:
+ *   await ogI18n.init({ defaultLang:'es', availableLangs:['es','en'], refreshOnChange:true })
+ *   → carga el lang del localStorage o defaultLang, luego carga el archivo de traducciones.
+ *
+ * TRADUCCIÓN:
+ *   ogI18n.t('core.loading')                     → string traducido
+ *   ogI18n.t('core.items', { count: 5 })          → con interpolación de parámetros
+ *   __('core.loading')                             → alias global de ogI18n.t()
+ *   'i18n:core.loading' en JSON de vista/form     → procesado automáticamente al renderizar
+ *   '{i18n:core.key}' dentro de strings HTML      → procesado por processString()
+ *
+ * CAMBIO DE IDIOMA:
+ *   await ogI18n.setLang('en')  → carga traducciones del nuevo idioma y recarga la página
+ *                                  (si refreshOnChange:true, por defecto)
+ *
+ * ARCHIVOS DE TRADUCCIÓN:
+ *   Core:       framework/js/lang/{lang}.json          → keys: core.*, form.*, modal.*, datatable.*...
+ *   Extensión:  extensions/{ext}/lang/{lang}.json      → keys libres por extensión
+ *
+ * MÉTODOS ÚTILES:
+ *   getLang()              → idioma actual
+ *   getAvailableLangs()    → array de idiomas configurados
+ *   processString(str)     → reemplaza {i18n:key} en strings HTML
+ *   loadExtensionLang(ext, lang)  → carga traducciones de una extensión
+ *
+ * REGISTRO:
+ *   window.ogI18n  (también accesible via ogModule('i18n'))
+ *   ogFramework.core.i18n
+ *   __ → función global alias de ogI18n.t()
+ * @doc-end
+ */

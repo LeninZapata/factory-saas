@@ -129,3 +129,37 @@ class ogDatatableRender {
 }
 
 window.ogDatatableRender = ogDatatableRender;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableRender.js
+ * CLASS: ogDatatableRender
+ * TYPE: component-internal
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Generación del HTML completo de la tabla: skeleton de carga, estructura
+ *   de tabla, filas y botones de acción. Sub-módulo de ogDatatable.
+ *
+ * SKELETON (generateSkeleton):
+ *   Genera un placeholder visual inmediato antes de que lleguen los datos,
+ *   evitando que el contenedor quede vacío durante el fetch.
+ *
+ * ESTRUCTURA HTML (generateHtml):
+ *   #tableId.og-datatable-container
+ *     .og-table-toolbar      (si config.searchable o config.toolbar)
+ *     .og-table-responsive
+ *       table.og-table
+ *         thead > tr > th    (por cada columna visible)
+ *         tbody > tr         (por cada fila de datos)
+ *     .og-table-footer       (info de resultados + paginación)
+ *
+ * ACCIONES (renderActions):
+ *   Por cada action en config.actions[] genera un botón si el usuario
+ *   tiene rol de acceso. Soporta data-action para ogAction.handle().
+ *   replaceVars(str, row) sustituye {id}, {nombre}, etc. en los strings de acción.
+ *
+ * REGISTRO:
+ *   window.ogDatatableRender
+ *   ogFramework.components.datatableRender
+ * @doc-end
+ */

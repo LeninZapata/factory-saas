@@ -120,3 +120,46 @@ window.ogDatatable = ogDatatable;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.datatable = ogDatatable;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/dataTable.js
+ * CLASS: ogDatatable
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Fachada principal del datatable. Orquesta la secuencia completa de render
+ *   y re-expone todos los métodos de los sub-módulos bajo una sola clase.
+ *   Es el único punto de entrada para renderizar tablas desde vistas y formularios.
+ *
+ * FLUJO render(config, container):
+ *   1. Normalizar alias (list / FlatList → datatable)
+ *   2. Generar tableId incremental
+ *   3. Detectar extensionName del container
+ *   4. generateSkeleton() → insertar placeholder inmediato
+ *   5. loadData(config, extensionName) → fetch o cache
+ *   6. generateHtml(tableId, config, data) → insertar tabla
+ *   7. bindEvents(tableId) → search, sort, pagination, acciones
+ *   8. fixedColumns: ogDatatableFixedCols.apply() si corresponde
+ *   9. resizableColumns: ogDatatableResizeCols.apply() si corresponde
+ *
+ * CONFIG MÍNIMA:
+ *   {
+ *     type: 'datatable',
+ *     source: 'admin|mock/users.json',
+ *     columns: [ { field: 'name', label: 'Nombre' } ],
+ *     actions: [ { label: 'Editar', action: 'modal:admin|forms/user-form?id={id}' } ]
+ *   }
+ *
+ * CONFIG COMPLETA (opcional):
+ *   pageSize, searchable, sortable, fixedColumns, fixedColumnsRight,
+ *   resizableColumns, cacheTTL, extensionName, toolbar
+ *
+ * TYPE ALIASES:
+ *   'list' | 'FlatList' | 'flatlist' → 'datatable' (compatibilidad React Native)
+ *
+ * REGISTRO:
+ *   window.ogDatatable
+ *   ogFramework.components.datatable
+ * @doc-end
+ */

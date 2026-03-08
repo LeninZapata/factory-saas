@@ -148,3 +148,45 @@ window.ogDataLoader = ogDataLoader;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.dataLoader = ogDataLoader;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/dataLoader.js
+ * CLASS: ogDataLoader
+ * TYPE: core-service
+ * PROMPT: fe-core-services
+ *
+ * ROLE:
+ *   Carga datos desde API o archivos mock JSON con estrategia auto-fallback.
+ *   Usado por ogDatatable y ogModal para obtener datos antes de renderizar.
+ *   En modo 'auto': intenta API si backend.enabled, si falla cae a mock.
+ *
+ * MODOS:
+ *   auto   → API si backend habilitado en pluginConfig → fallback a mock
+ *   api    → solo API (falla si no responde)
+ *   mock   → solo archivo JSON local
+ *
+ * MÉTODOS:
+ *   load(config, extensionName?)         → carga según type (auto/api/mock)
+ *   loadList(dataSourceConfig, ext)      → alias de load() para listas
+ *   loadDetail(config, id, ext)          → carga un ítem por ID (reemplaza {id} en endpoint)
+ *
+ * CONFIG DE DATASOURCE:
+ *   {
+ *     type: 'auto',
+ *     api: { enabled: true, endpoint: '/api/user', method: 'GET' },
+ *     mock: { file: 'mock/users.json', filterBy: 'id', filterValue: null }
+ *   }
+ *
+ * USO:
+ *   const data = await ogDataLoader.load({ type: 'mock', mock: { file: 'mock/users.json' } }, 'admin');
+ *   const user = await ogDataLoader.loadDetail(config, userId, 'admin');
+ *
+ * NOTA:
+ *   El archivo navigation.js contiene esta misma clase (duplicado por error de naming).
+ *   El archivo canónico es dataLoader.js. navigation.js debe eliminarse o renombrarse.
+ *
+ * REGISTRO:
+ *   window.ogDataLoader
+ *   ogFramework.core.dataLoader
+ * @doc-end
+ */

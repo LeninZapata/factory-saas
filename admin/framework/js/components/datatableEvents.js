@@ -92,3 +92,32 @@ class ogDatatableEvents {
 }
 
 window.ogDatatableEvents = ogDatatableEvents;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableEvents.js
+ * CLASS: ogDatatableEvents
+ * TYPE: component-internal
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Binding de eventos interactivos del datatable: búsqueda, ordenamiento,
+ *   paginación, acciones de fila y detección de overflow horizontal.
+ *   Sub-módulo de ogDatatable — llamado automáticamente tras render.
+ *
+ * EVENTOS QUE GESTIONA:
+ *   search input    → filtra filas visibles por texto en todas las columnas
+ *   th click        → ordena columna (toggle asc/desc)
+ *   pagination      → navega entre páginas (si config.pageSize)
+ *   action buttons  → delega a ogAction.handle(action, { id, row })
+ *   window scroll   → checkTableOverflow() para mostrar sombras laterales
+ *
+ * REFRESH:
+ *   refresh(tableId)    → recarga datos del source y re-renderiza la tabla
+ *   refreshFirst()      → refresca la primera tabla activa (shortcut)
+ *   Útil después de crear/editar/eliminar un registro desde un modal.
+ *
+ * REGISTRO:
+ *   window.ogDatatableEvents
+ *   ogFramework.components.datatableEvents
+ * @doc-end
+ */

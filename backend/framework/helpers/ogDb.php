@@ -124,6 +124,17 @@ class ogDb {
  *   ->toSql()   → SQL sin valores interpolados
  *   ->getSql()  → SQL con valores interpolados (solo dev)
  *
+ * ESTILO DE ESCRITURA:
+ *   Inline cuando hay 1 o 2 where (query simple):
+ *     $res = ogDb::t('assets')->where('product_id', $id)->get();
+ *     $res = ogDb::t('assets')->where('product_id', $id)->where('status', 1)->first();
+ *   Multilínea cuando hay 3 o más where:
+ *     $res = ogDb::t('assets')
+ *       ->where('product_id', $id)
+ *       ->where('status', 1)
+ *       ->where('is_active', 1)
+ *       ->get();
+ *
  * NOTAS:
  *   - Conexión PDO singleton (se resetea al llamar setConfig())
  *   - Columnas con prefijo '_' son ignoradas en where() (ej: _delay, _debug)

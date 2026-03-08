@@ -155,3 +155,40 @@ window.ogLoader = ogLoader;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.loader = ogLoader;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/loader.js
+ * CLASS: ogLoader
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Carga dinámica de scripts, estilos y JSON con deduplicación automática.
+ *   Mantiene un Set interno de URLs ya cargadas para no insertar duplicados.
+ *   Normaliza todas las rutas relativas contra baseUrl del config activo.
+ *
+ * MÉTODOS PRINCIPALES:
+ *   loadScript(url, opts?)          → inserta <script> en head, retorna Promise<bool>
+ *   loadStyle(url, opts?)           → inserta <link rel=stylesheet>, retorna Promise<bool>
+ *   loadResources(scripts, styles)  → carga arrays en paralelo con Promise.all
+ *   loadJson(url, opts?)            → fetch + JSON.parse, retorna Promise<data|null>
+ *   normalizeUrl(url)               → resuelve rutas relativas contra baseUrl
+ *
+ * OPCIONES:
+ *   optional: true  → si el recurso falla, resuelve false en vez de rechazar
+ *   silent: true    → suprime logs de error (usado en tryLoadPluginLang)
+ *
+ * DEDUPLICACIÓN:
+ *   Guarda URLs normalizadas en static loaded = new Set().
+ *   Si la URL ya está cargada, retorna true inmediatamente sin reinsertar.
+ *
+ * USO:
+ *   await ogLoader.loadScript('extensions/admin/assets/js/admin.js');
+ *   await ogLoader.loadResources(['ext.js'], ['ext.css']);
+ *   const data = await ogLoader.loadJson('extensions/admin/mock/users.json', { optional: true });
+ *
+ * REGISTRO:
+ *   window.ogLoader
+ *   ogFramework.core.loader
+ * @doc-end
+ */

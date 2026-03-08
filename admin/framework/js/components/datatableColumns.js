@@ -131,3 +131,37 @@ class ogDatatableColumns {
 }
 
 window.ogDatatableColumns = ogDatatableColumns;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableColumns.js
+ * CLASS: ogDatatableColumns
+ * TYPE: component-internal
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Procesamiento y renderizado de columnas y celdas.
+ *   Traduce labels, aplica formatos de valor y genera el HTML de cada celda.
+ *   Sub-módulo de ogDatatable — no se usa directamente.
+ *
+ * PROCESAMIENTO (processColumns):
+ *   Normaliza cada columna: traduce label, aplica defaults (sortable, visible, width).
+ *   Retorna array de columnas listas para renderizar.
+ *
+ * FORMATOS DE CELDA (formatValue):
+ *   date        → DD/MM/YYYY
+ *   datetime    → DD/MM/YYYY HH:mm
+ *   money       → número con separador de miles y 2 decimales
+ *   boolean     → ✅ / ❌
+ *   badge       → <span class="og-badge og-badge-{value}">{value}</span>
+ *   custom      → usa formatter registrado via ogDatatable.registerFormatter()
+ *   {template}  → replaceVars() reemplaza {field} con valores del row
+ *
+ * RENDERIZADO DE CELDA (renderCell):
+ *   Aplica format, custom formatter y también soporta column.render
+ *   como función inline definida en el JSON de vista.
+ *
+ * REGISTRO:
+ *   window.ogDatatableColumns
+ *   ogFramework.components.datatableColumns
+ * @doc-end
+ */

@@ -325,3 +325,45 @@ window.ogFormValidation = ogFormValidation;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formValidation = ogFormValidation;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formValidation.js
+ * CLASS: ogFormValidation
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Validación del formulario antes del submit. Recorre todos los fields del
+ *   schema, valida cada uno según sus reglas y muestra/oculta mensajes de error
+ *   inline. Retorna true/false para que el handler decida si continuar.
+ *
+ * USO:
+ *   const isValid = ogFormValidation.validate('user-form');
+ *   if (!isValid) return;
+ *
+ * REGLAS SOPORTADAS (en field.validation[]):
+ *   required          → no vacío
+ *   email             → formato RFC
+ *   url               → formato URL válido
+ *   min:{n}           → valor numérico mínimo
+ *   max:{n}           → valor numérico máximo
+ *   minlength:{n}     → longitud mínima
+ *   maxlength:{n}     → longitud máxima
+ *   numeric           → solo números
+ *   alpha_num         → alfanumérico
+ *   regex:{pattern}   → expresión regular custom
+ *
+ * ERRORES INLINE:
+ *   showFieldError(formEl, fieldPath, msg)  → crea .og-field-error bajo el input
+ *   hideFieldError(formEl, fieldPath)       → elimina el mensaje
+ *   clearAllErrors(formId)                  → limpia todos los errores del form
+ *   setError(formId, fieldName, msg)        → error programático post-submit (ej: desde API)
+ *
+ * CAMPOS OCULTOS:
+ *   Si el field está oculto por conditions (display:none), se salta su validación.
+ *
+ * REGISTRO:
+ *   window.ogFormValidation
+ *   ogFramework.core.formValidation
+ * @doc-end
+ */

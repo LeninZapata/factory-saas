@@ -1,0 +1,80 @@
+{
+  "_comments": {
+    "_comment1": "Manifiesto de scripts del framework. Leído por og-framework.js en loadFrameworkScripts().",
+    "_comment2": "Los scripts se cargan en el orden exacto definido aquí — el orden importa por dependencias.",
+    "_comment3": "core: módulos internos del framework, cargados antes que cualquier componente.",
+    "_comment4": "components: componentes UI, cargados después del core. Pueden usar ogModule() libremente.",
+    "_comment5": "middle: cargado condicionalmente por og-framework.js solo si auth.enabled = true.",
+    "_comment6": "Para agregar un archivo nuevo: incluirlo en la sección correspondiente respetando el orden de dependencia.",
+    "_comment7": "Todos los paths en core/components son relativos a frameworkUrl (ej: framework/) definido en appConfig.",
+    "_comment8": "Los paths en middle son relativos a baseUrl (ej: /admin/) definido en appConfig."
+  },
+
+  "core": [
+    "js/core/logger.js",
+    "js/core/trigger.js",
+    "js/core/cache.js",
+    "js/core/action.js",
+    "js/core/i18n.js",
+    "js/core/event.js",
+    "js/core/api.js",
+    "js/core/style.js",
+    "js/core/loader.js",
+
+    "js/core/hookRegistry.js",
+    "js/core/hookLoader.js",
+    "js/core/hook.js",
+    "js/core/validator.js",
+
+    "js/core/formConditionsCore.js",
+    "js/core/formConditionsOperators.js",
+    "js/core/formConditionsEvaluator.js",
+    "js/core/conditions.js",
+
+    "js/core/dataLoader.js",
+
+    "js/core/formCore.js",
+    "js/core/formInputs.js",
+    "js/core/formRender.js",
+    "js/core/formRepeatables.js",
+    "js/core/formData.js",
+    "js/core/formValidation.js",
+    "js/core/form.js",
+
+    "js/core/viewLoader.js",
+    "js/core/viewRender.js",
+    "js/core/viewComponents.js",
+    "js/core/view.js",
+    "js/core/sidebar.js",
+    "js/core/layout.js"
+  ],
+
+  "components": [
+    "js/components/langSelector.js",
+    "js/components/toast.js",
+    "js/components/modal.js",
+    "js/components/tabs.js",
+    "js/components/widget.js",
+    "js/components/grouper.js",
+
+    "js/components/datatableCore.js",
+    "js/components/datatableSource.js",
+    "js/components/datatableColumns.js",
+    "js/components/datatableRender.js",
+    "js/components/datatableEvents.js",
+    "js/components/dataTable.js",
+    "js/components/datatableFixedCols.js",
+    "js/components/datatableResizeCols.js",
+
+    "js/components/textareaExpander.js"
+  ],
+
+  "middle": [
+    "middle/js/authLoginForm.js",
+    "middle/js/authSession.js",
+    "middle/js/authPermissions.js",
+    "middle/js/authUI.js",
+    "middle/js/authCore.js",
+    "middle/js/auth.js"
+  ]
+}

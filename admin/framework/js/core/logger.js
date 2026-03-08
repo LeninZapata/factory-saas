@@ -52,3 +52,38 @@ if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.logger = ogLogger;
   window.ogLogger = ogLogger;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/logger.js
+ * CLASS: ogLogger
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Sistema de logging con niveles de severidad y prefijo de módulo.
+ *   En producción suprime los mensajes debug automáticamente.
+ *   Todos los módulos del framework lo usan como: ogLogger?.info('core:módulo', 'mensaje', dato)
+ *
+ * NIVELES:
+ *   debug   → solo visible en isDevelopment=true o forceDebug=true
+ *   info    → azul  — información de flujo normal
+ *   warn    → naranja — situación inesperada pero no crítica
+ *   success → verde  — operación completada correctamente
+ *   error   → rojo   — fallo que requiere atención
+ *   log     → gris   — diagnóstico genérico
+ *
+ * USO:
+ *   ogLogger.info('core:view', 'Vista cargada', viewName);
+ *   ogLogger.error('core:api', 'Error HTTP', error);
+ *   ogLogger.setLevel('debug');   // activa debug temporalmente
+ *
+ * PREFIJO DE MÓDULO:
+ *   Convención: 'core:nombreArchivo' para módulos del framework
+ *               'com:nombreComponente' para componentes UI
+ *   El prefijo aparece en consola como [core:view] [info]
+ *
+ * REGISTRO:
+ *   window.ogLogger — global directo (disponible antes que ogModule)
+ *   ogFramework.core.logger
+ * @doc-end
+ */

@@ -162,3 +162,38 @@ window.ogStyle = ogStyle;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.style = ogStyle;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/style.js
+ * CLASS: ogStyle
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Sistema de design tokens. Convierte objetos de estilo con tokens abstractos
+ *   a CSS inline (web) o a objetos StyleSheet (React Native futuro).
+ *   Los tokens se definen una vez y se resuelven automáticamente por propiedad.
+ *
+ * TOKENS DISPONIBLES:
+ *   colors        → primary, secondary, success, danger, warning, info, text-primary...
+ *   spacing       → none, xs(4px), sm(8px), md(16px), lg(24px), xl(32px), 2xl(48px)
+ *   fontSize      → xs(12px), sm(14px), md(16px), lg(18px), xl(20px), 2xl(24px)
+ *   fontWeight    → light, normal, medium, semibold, bold
+ *   borderRadius  → none, sm(4px), md(8px), lg(12px), xl(16px), full(9999px)
+ *   shadow        → none, sm, md, lg, xl
+ *
+ * USO:
+ *   ogStyle.resolve({ color: 'primary', padding: 'md' })
+ *   // → 'color: #007bff; padding: 16px'
+ *
+ *   ogStyle.toInlineStyle({ backgroundColor: 'danger', borderRadius: 'sm' })
+ *   // → 'background-color: #dc3545; border-radius: 4px'
+ *
+ *   ogStyle.toReactNative({ fontSize: 'lg', fontWeight: 'bold' })
+ *   // → { fontSize: 18, fontWeight: '700' }
+ *
+ * REGISTRO:
+ *   window.ogStyle
+ *   ogFramework.core.style
+ * @doc-end
+ */

@@ -121,3 +121,32 @@ window.ogConditions = ogConditions;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.conditions = ogConditions;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/conditions.js
+ * CLASS: ogConditions
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Fachada del sistema de condiciones. Re-expone todos los métodos de
+ *   ogConditionsCore, ogConditionsEvaluator y ogConditionsOperators.
+ *   El código externo (formCore) solo necesita ogConditions.
+ *
+ * USO:
+ *   ogConditions.init('user-form')         → activa condiciones del formulario
+ *   ogConditions.destroy('user-form')      → limpia reglas y watchers
+ *   ogConditions.pauseEvaluations()        → suspende mientras se hace fill
+ *   ogConditions.resumeEvaluations(formId) → reanuda y re-evalúa
+ *   ogConditions.debug('user-form')        → imprime reglas activas en consola
+ *
+ * MÉTODOS DELEGADOS:
+ *   init, destroy, extractConditions, setupWatchers, debug  → ogConditionsCore
+ *   evaluate, pauseEvaluations, resumeEvaluations           → ogConditionsEvaluator
+ *   checkOperator                                           → ogConditionsOperators
+ *
+ * REGISTRO:
+ *   window.ogConditions
+ *   ogFramework.core.conditions
+ * @doc-end
+ */

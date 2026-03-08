@@ -262,3 +262,43 @@ window.ogConditionsCore = ogConditionsCore;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.conditionsCore = ogConditionsCore;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formConditionsCore.js
+ * CLASS: ogConditionsCore
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Motor de condiciones de visibilidad de campos. Extrae las reglas del schema,
+ *   configura watchers en los campos fuente y dispara evaluaciones al cambiar.
+ *   Sub-módulo de ogConditions — no se usa directamente.
+ *
+ * FLUJO init(formId):
+ *   1. extractConditions() recorre todos los fields buscando field.conditions[]
+ *   2. Construye rulesMap: fieldPath → { conditions[], operator }
+ *   3. setupWatchers() → addEventListener 'change'/'input' en campos fuente
+ *   4. setupRepeatableObserver() → MutationObserver para detectar nuevos items
+ *   5. Evaluación inicial con timeout 50ms
+ *
+ * ESTRUCTURA DE CONDICIÓN EN SCHEMA:
+ *   {
+ *     "conditions": [
+ *       { "field": "tipo", "operator": "=", "value": "empresa" }
+ *     ],
+ *     "conditionsOperator": "AND"  // o "OR", default AND
+ *   }
+ *
+ * CONTEXTO DE EVALUACIÓN:
+ *   Para campos en repeatables, getContext() obtiene los valores del mismo item
+ *   (contexto 'sibling') o del formulario completo (contexto 'form').
+ *
+ * PAUSA DURANTE FILL:
+ *   isFillingForm = true suspende las evaluaciones mientras ogFormData.fill()
+ *   está en ejecución para evitar parpadeos o efectos no deseados.
+ *
+ * REGISTRO:
+ *   window.ogConditionsCore
+ *   ogFramework.core.conditionsCore
+ * @doc-end
+ */

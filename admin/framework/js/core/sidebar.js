@@ -435,3 +435,51 @@ window.ogSidebar = ogSidebar;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.sidebar = ogSidebar;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/sidebar.js
+ * CLASS: ogSidebar
+ * TYPE: core-view
+ * PROMPT: fe-view-hook
+ *
+ * ROLE:
+ *   Menú lateral dinámico. Lee los ítems de ogHook.getMenuItems(), los filtra
+ *   por rol del usuario autenticado, los renderiza en #sidebar y enlaza los
+ *   eventos de navegación. Al hacer click en un ítem llama ogView.loadView().
+ *
+ * FLUJO INIT:
+ *   init() → loadMenu() → hook.getMenuItems() → filterMenusByRole()
+ *          → removeDuplicateMenus() → renderMenu() → bindMenuEvents()
+ *          → ogTrigger.execute('sidebar')
+ *
+ * MENÚ BASE (siempre presente):
+ *   { id: 'dashboard', title: 'Dashboard', view: 'middle:dashboard/dashboard' }
+ *   Se agrega antes de los ítems de extensiones.
+ *
+ * NAVEGACIÓN AL HACER CLICK:
+ *   Ítem sin hijos → view.loadView(menuData.view, null, extensionName, menuResources, null, menuId)
+ *   Ítem con hijos → toggleSubmenu() (acordeón)
+ *   Al navegar pasa menuResources (scripts/styles del ítem) para que la vista los cargue.
+ *
+ * DETECCIÓN DE EXTENSIÓN:
+ *   detectPluginFromMenuId(menuId) → busca en pluginRegistry la extensión cuyo nombre
+ *   es prefijo del menuId (ej: menuId='admin-usuarios' → extensión='admin')
+ *
+ * PRECARGA:
+ *   preloadSiblingViews() → si un ítem hermano tiene preloadViews:true, fetchea su JSON
+ *   en background y lo guarda en ogCache para navegación instantánea.
+ *
+ * INYECCIÓN DE CONTENIDO:
+ *   ogSidebar.inject('header', '<img src="logo.png">')  → zona superior
+ *   ogSidebar.inject('footer', '<p>v1.0</p>')           → zona inferior
+ *   Zonas válidas: 'header', 'footer', 'content'
+ *
+ * FILTRO POR ROL:
+ *   hasRoleAccess(menuItem) → compara menuItem.role con ogAuth.user.role
+ *   Admin siempre ve todo. Si role es null el ítem es público.
+ *
+ * REGISTRO:
+ *   window.ogSidebar
+ *   ogFramework.core.sidebar
+ * @doc-end
+ */

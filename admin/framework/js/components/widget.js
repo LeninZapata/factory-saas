@@ -178,3 +178,40 @@ window.ogWidget = ogWidget;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.widget = ogWidget;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/widget.js
+ * CLASS: ogWidget
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Grid de widgets con drag & drop. Cada widget carga un tipo de contenido
+ *   (component, view, form, html, content[]) dentro de una celda del grid.
+ *   Todos los prefijos CSS usan 'og-'.
+ *
+ * CONFIG:
+ *   {
+ *     type: 'widget',
+ *     columns: 3,             // columnas del grid (default: 3)
+ *     gap: '16px',
+ *     draggable: true,        // drag & drop para reordenar (default: false)
+ *     widgets: [
+ *       {
+ *         title: 'Ventas',
+ *         size: 'full' | 'half' | 'third',  // ancho del widget
+ *         type: 'component' | 'view' | 'form' | 'html' | 'content',
+ *         content: '...' | [...]             // según type
+ *       }
+ *     ]
+ *   }
+ *
+ * DRAG & DROP:
+ *   HTML5 Drag API. Al soltar, intercambia el contenido de los widgets
+ *   (los contenedores quedan fijos, solo se mueve el contenido interno).
+ *
+ * REGISTRO:
+ *   window.ogWidget
+ *   ogFramework.components.widget
+ * @doc-end
+ */

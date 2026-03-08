@@ -235,3 +235,35 @@ if (document.readyState === 'loading') {
 } else {
   ogTextareaExpander.init();
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/textareaExpander.js
+ * CLASS: ogTextareaExpander
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Expande textareas en un modal de edición ampliada. Se auto-inicializa
+ *   via MutationObserver al detectar nuevos elementos .textarea-expandable
+ *   en el DOM. Útil para campos de texto largo en formularios densos.
+ *
+ * ACTIVACIÓN:
+ *   Agregar clase 'textarea-expandable' al textarea en el JSON de formulario:
+ *   { "type": "textarea", "name": "descripcion", "class": "textarea-expandable" }
+ *   El componente envuelve el textarea en .textarea-wrapper y agrega un botón
+ *   .textarea-expand-btn de forma automática.
+ *
+ * MODAL EXPANDIDO:
+ *   Al hacer click en el botón, abre un modal de pantalla completa con
+ *   una copia del textarea. Al cerrar sincroniza el contenido de vuelta
+ *   al textarea original. Ctrl+Enter guarda y cierra el modal.
+ *
+ * AUTO-INIT:
+ *   MutationObserver detecta nuevos .textarea-expandable añadidos por
+ *   ogForm.load() o cualquier render dinámico sin necesidad de llamada manual.
+ *
+ * REGISTRO:
+ *   window.ogTextareaExpander
+ *   ogFramework.components.textareaExpander
+ * @doc-end
+ */

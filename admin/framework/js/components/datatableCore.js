@@ -65,3 +65,38 @@ class ogDatatableCore {
 }
 
 window.ogDatatableCore = ogDatatableCore;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableCore.js
+ * CLASS: ogDatatableCore
+ * TYPE: component-internal
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Estado compartido y utilidades base del sistema datatable.
+ *   Mantiene el Map de tablas activas, el contador de IDs, y el registro
+ *   de formatters custom. Sub-módulo de ogDatatable — no se usa directamente.
+ *
+ * ESTADO:
+ *   tables          → Map<tableId, { config, data, extensionName, container }>
+ *   counter         → entero autoincrementado para IDs únicos (datatable-1, datatable-2...)
+ *   customFormatters → Map<name, fn> de formatters registrados por extensiones
+ *
+ * DETECCIÓN DE EXTENSIÓN (detectPluginName):
+ *   Busca en orden: data-extension en ancestro → data-view en .view-container
+ *   → view.currentPlugin → clase CSS 'extension-{name}' en el container.
+ *
+ * FORMATTERS CUSTOM (registerFormatter / unregisterFormatter):
+ *   Permiten a extensiones registrar funciones de formato para columnas:
+ *   ogDatatable.registerFormatter('estado', (val, row) => `<span class="${val}">${val}</span>`)
+ *   Usados en column.format: 'estado' dentro del JSON de vista.
+ *
+ * ACCESO POR ROL (hasRoleAccess):
+ *   Si action.role está definido, compara con ogAuth.user.role.
+ *   Admin siempre tiene acceso. Null/undefined role → acceso libre.
+ *
+ * REGISTRO:
+ *   window.ogDatatableCore
+ *   ogFramework.components.datatableCore
+ * @doc-end
+ */

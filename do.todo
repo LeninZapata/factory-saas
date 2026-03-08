@@ -1,3 +1,6 @@
+Rapido:
+☐ en "👥 Gestión de Usuarios" al actualizar se ve un destello feo, hay que que hacer que no se reresque el cuerpo de la table
+solo su CONTENT para no tener un flash visual feo.
 Backend (Framework):
 
 Frontend (Framework):
@@ -25,6 +28,13 @@ Otra cosa, el admin debe tener la posibilidad de ver todos los registros de todo
 actualmente solo ve los suyos. Esto debe ser algo estandar en todo el sistema.
 (PARECE QUE ESTO YA EXISTE CON ROLE ADMIN EL CAMPO SE MUESTRA O NO, SOLO FALTARIA LLENARLO CON UN ENDPOINT
 Y VALIDAR EN BODY DEL JSON QUE SI ESTA DISPONIBLE PUES ACTUALIZAR EL user_id)
+
+☐ Table mas caracteristicas
+  _ https://www.jotform.com/help/1014-how-to-show-and-hide-columns-in-jotform-tables/
+  _ http://www.ascsoftwares.com/technology/hide-show-columns-in-livewire-table/
+  _ https://github.com/mbrn/material-table/issues/1878
+  _ https://github.com/jbetancur/react-data-table-component/issues/708
+  _ https://community.wappler.io/t/dynamic-data-table-that-allows-for-showing-hiding-columns/27287
 Otros:
 ☐ Usa cada archivo como su propio documentacion independiente para lueog hacer un script que permite
 parsear todo y luego generar la documentacion automatica actualizados.
@@ -33,7 +43,7 @@ https://chat.deepseek.com/a/chat/s/dbedab39-f8b3-465c-b25d-217bf9787d87
 https://wordpress.org/plugins/sierotki/ esto deberiamos tambien hacer en los plugins
 ☐ Tener varias cuenas de copiloto con el mismo github https://www.google.com/search?q=como+agregar+varias+cuentas+de+copilot+en+vscode&sca_esv=190a96a9d156750b&sxsrf=ANbL-n6_xmW-h-ndj1nsOm-Z_po0yjnrQQ%3A1771016744303&udm=50&fbs=ADc_l-bpk8W4E-qsVlOvbGJcDwpn75JLSqV3j_xbkySF4grw51H30IP-0-FgEAUalWuLGReuPxwY1XJn-KcoPw8-j7gPmDhIlzW26CnVSGeGlpeLqqRzcnYbVaxCwe1cZuC6K9LEItujwZhN_-uqW4TyOOfEvMjVGovmuJouBaZrBdUWVEeT9SXYp74N0i0ejHq82GcpgX311zLb03PqMgzprhD4qxT4Jw&aep=1&ntc=1&sa=X&ved=2ahUKEwjmyr2_r9eSAxVATDABHRGaAEcQ2J8OegQICRAE&biw=1393&bih=902&dpr=1&mstk=AUtExfDJzYWquRKB48yd5aWicm4nw2-Omly6jmw75MpIEU9kuEBs8MM14aPgT9bKUv7-d92iFate9xa82kahHVBJM4YBhxFb6KsupNbOHoFE5r-uhdQmcopLmPBQxv-ARc8gqBLEDmNzVTMnoM0XSGF-ihyOAgfUjAjTG0a0UuiFoolWGXnrPVOVBZZS8CS-gdx_wcNTJ-r0RDlxFZYKBXqe8X4ax20L33uZSNVezFyKDNIWfZ6QPsb5XRDrSrBp8JhUAH0frCB5Mcfjfzl2ZMzfyPEJRGnzAu4nt7NzszMiMB750QaGD9OH6qFABy8YHAzEH61wqn56U1SADw&csuir=1&mtid=KpKPafLTJKq3wt0P9OeuwAQ
 ☐ el componente de los permisos no funciona tan bien revisa eso por tabs @BUG del que existe
-
+☐ OPcache buscar como usarlo
 
 MiniApp:
 ☐ Crear un sistema mas logico de logs para dev

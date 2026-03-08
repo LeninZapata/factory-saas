@@ -65,3 +65,24 @@ class ogDatatableResizeCols {
 
 window.ogDatatableResizeCols = ogDatatableResizeCols;
 
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableResizeCols.js
+ * CLASS: ogDatatableResizeCols
+ * TYPE: component-feature
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Feature opcional de columnas redimensionables por el usuario.
+ *   Se activa automáticamente si config.resizableColumns: true en el JSON de vista.
+ *   Inserta un handle .og-resize-handle en cada th y gestiona el drag.
+ *
+ * IMPLEMENTACIÓN:
+ *   mousedown en handle → _startDrag() → mousemove → actualiza th.style.width
+ *   → mouseup → limpia listeners. Limita el ancho mínimo a 40px.
+ *
+ * REGISTRO:
+ *   window.ogDatatableResizeCols
+ *   ogFramework.components.datatableResizeCols
+ * @doc-end
+ */

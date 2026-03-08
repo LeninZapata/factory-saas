@@ -168,3 +168,46 @@ if (typeof window.ogFramework !== 'undefined') {
 }
 
 ogLogger.info('com:grouper', '✅ Registrado en window.grouper');
+/**
+ * @doc-start
+ * FILE: framework/js/components/grouper.js
+ * CLASS: ogGrouper
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Contenedor visual que agrupa secciones de contenido en dos modos:
+ *   acordeón colapsable (linear) o pestañas horizontales (tabs).
+ *   Usado como componente dinámico en vistas y como field type:'grouper'
+ *   dentro de formularios (renderizado por ogFormRender).
+ *
+ * MODOS:
+ *   linear  → acordeón: cada grupo tiene header clicable y body colapsable
+ *             solo un grupo abierto a la vez, primero abierto por defecto
+ *   tabs    → pestañas horizontales con contenido por tab
+ *             soporta overflow con flecha de scroll
+ *
+ * CONFIG:
+ *   {
+ *     mode: 'linear' | 'tabs',        // default: linear
+ *     collapsible: true,              // default: true (solo linear)
+ *     openFirst: true,                // default: true (solo linear)
+ *     groups: [
+ *       { title: 'Grupo 1', content: '<html>' },
+ *       { title: 'Grupo 2', content: '<html>' }
+ *     ]
+ *   }
+ *
+ * CONTENIDO DINÁMICO:
+ *   initDynamicContent(container) → después de renderizar, busca
+ *   .dynamic-form y .dynamic-component dentro del grouper y los inicializa
+ *   igual que ogViewComponents.loadDynamicComponents().
+ *
+ * USO:
+ *   await ogGrouper.render(config, containerEl);
+ *
+ * REGISTRO:
+ *   window.ogGrouper
+ *   ogFramework.components.grouper
+ * @doc-end
+ */

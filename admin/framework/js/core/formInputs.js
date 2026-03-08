@@ -436,3 +436,44 @@ window.ogFormInputs = ogFormInputs;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formInputs = ogFormInputs;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formInputs.js
+ * CLASS: ogFormInputs
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Generación de HTML para cada tipo de campo individual. Llamado por
+ *   ogFormRender.renderFields() para cada field del schema.
+ *   Incluye carga async de selects desde API y lógica de estilos/props.
+ *
+ * TIPOS DE CAMPO SOPORTADOS:
+ *   text, number, email, password, date, datetime-local, time, color, range
+ *   textarea    → con soporte de filas configurables
+ *   select      → con carga desde API (source) o valores estáticos (options)
+ *   checkbox    → con label inline
+ *   button-group → grupo de botones radio-like
+ *   radio       → radio buttons con options[]
+ *   button      → botón de acción con data-action
+ *
+ * CARGA DE SELECT DESDE API (loadSelectFromAPI):
+ *   Se dispara automáticamente post-render cuando field.source está definido.
+ *   Soporta source como URL string o config { url, valueField, labelField }.
+ *   Usa ogApi.get() + ogCache para no repetir la llamada.
+ *
+ * ATRIBUTOS GENERADOS:
+ *   getValidationAttributes(field) → required, min, max, minlength, maxlength, pattern
+ *   getTransformClasses(field)     → clases CSS og-transform-* para transforms en tiempo real
+ *   buildStyleAttr(styleConfig)    → convierte objeto style a string inline via ogStyle
+ *   buildPropsAttr(props)          → convierte props adicionales a atributos HTML
+ *
+ * ACCESIBILIDAD DE ROLES:
+ *   hasRoleAccess(field) → si field.role está definido, compara con ogAuth.user.role
+ *   Si el usuario no tiene acceso: field.readOnly = true (no se oculta, se deshabilita)
+ *
+ * REGISTRO:
+ *   window.ogFormInputs
+ *   ogFramework.core.formInputs
+ * @doc-end
+ */

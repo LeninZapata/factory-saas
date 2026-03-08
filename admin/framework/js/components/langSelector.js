@@ -70,3 +70,28 @@ window.ogLangSelector = ogLangSelector;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.langSelector = ogLangSelector;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/langSelector.js
+ * CLASS: ogLangSelector
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Selector de idioma. Se inserta en .header (zona del header del layout)
+ *   y crea un <select> con los idiomas disponibles de ogI18n.getAvailableLangs().
+ *   Al cambiar llama ogI18n.setLang() que recarga la página si refreshOnChange:true.
+ *
+ * INICIALIZACIÓN:
+ *   ogLangSelector.init()   → crea e inserta el select en .og-header
+ *   Auto-selecciona el idioma activo desde ogI18n.getLang().
+ *
+ * INTEGRACIÓN TÍPICA:
+ *   Se carga como parte de la extensión o desde ogTrigger.register('sidebar', ...)
+ *   para insertarse después de que ogSidebar renderice el header.
+ *
+ * REGISTRO:
+ *   window.ogLangSelector
+ *   ogFramework.components.langSelector
+ * @doc-end
+ */

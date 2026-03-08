@@ -437,3 +437,51 @@ window.ogFormCore = ogFormCore;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formCore = ogFormCore;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formCore.js
+ * CLASS: ogFormCore
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Núcleo del sistema de formularios. Gestiona el ciclo de vida completo:
+ *   fetch del JSON → resolución de json_parts → render HTML → fill de datos
+ *   → init de repeatables → init de conditions → bind de eventos.
+ *   Los demás módulos de form (Inputs, Render, etc.) son invocados desde aquí.
+ *
+ * FLUJO load(formName, container?, data?, isCore?, afterRender?):
+ *   1. Resolver URL según notación (ext|path, core:, middle:, ext/path)
+ *   2. ogCache.get(cacheKey) o fetch JSON
+ *   3. resolveFieldParts() → reemplaza { type:'json_part', src } con fields externos
+ *   4. ogFormRender.render(schema) → genera HTML y lo inserta en container
+ *   5. ogFormData.fill(formId, data) si se pasó data
+ *   6. ogFormData.applyDefaultValues(formId)
+ *   7. ogFormData.bindTransforms(formId)
+ *   8. ogFormRepeatables.initRepeatables(formId)
+ *   9. ogConditions.init(formId) si el schema tiene conditions
+ *   10. afterRender(formId) callback opcional
+ *
+ * NOTACIONES DE formName:
+ *   'admin|forms/user-form'        → extensión explícita con pipe
+ *   'middle:auth/forms/login-form' → middle
+ *   'core:user/user-form'          → vistas del framework
+ *   'admin/user-form'              → extensión implícita por primera parte
+ *
+ * JSON PARTS (resolveFieldParts):
+ *   Permite fragmentar schemas grandes. Un field con type:'json_part' y src:'parts/roles'
+ *   se reemplaza por los fields del JSON externo antes de renderizar.
+ *
+ * TYPE ALIASES (typeAliases):
+ *   Mapea tipos React Native / genéricos a tipos web:
+ *   Switch→checkbox, Picker→select, TextInput→text, FlatList→repeatable
+ *
+ * TRANSFORMS (aplicados en tiempo real sobre inputs):
+ *   lowercase, uppercase, trim, alphanumeric, numeric, decimal, slug
+ *   Se activan via field.transform o automáticamente por reglas de validación.
+ *
+ * REGISTRO:
+ *   window.ogFormCore
+ *   ogFramework.core.formCore
+ * @doc-end
+ */

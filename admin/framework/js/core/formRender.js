@@ -374,3 +374,43 @@ window.ogFormRender = ogFormRender;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formRender = ogFormRender;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formRender.js
+ * CLASS: ogFormRender
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Generación del HTML estructural del formulario completo. Orquesta toolbar,
+ *   fields, statusbar y agrupaciones (group, grouper). Delega cada campo
+ *   individual a ogFormInputs.renderField().
+ *
+ * ESTRUCTURA HTML GENERADA:
+ *   .og-form-container
+ *     h2 (si schema.title)
+ *     p.og-form-desc (si schema.description)
+ *     form#id[data-form-id][data-real-id]
+ *       .og-form-toolbar    (si schema.toolbar)
+ *       [fields renderizados]
+ *       .og-form-statusbar  (si schema.statusbar)
+ *
+ * TIPOS DE AGRUPACIÓN:
+ *   group    → fieldset con legend, fields en grid según columns
+ *   grouper  → sección agrupadora con modos:
+ *              linear → acordeón colapsable con header y body
+ *              tabs   → pestañas horizontales con contenido por tab
+ *
+ * TOOLBAR Y STATUSBAR:
+ *   Dividen los items en left/right por field.align.
+ *   Se renderizan con renderFields() — pueden contener cualquier tipo de campo.
+ *
+ * REPEATABLE (renderRepeatable):
+ *   Genera el contenedor .og-repeatable con template oculto y botón agregar.
+ *   ogFormRepeatables.initRepeatables() lo activa post-render.
+ *
+ * REGISTRO:
+ *   window.ogFormRender
+ *   ogFramework.core.formRender
+ * @doc-end
+ */

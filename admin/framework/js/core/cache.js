@@ -283,3 +283,45 @@ window.ogCache = ogCache;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.cache = ogCache;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/cache.js
+ * CLASS: ogCache
+ * TYPE: core-service
+ * PROMPT: fe-core-services
+ *
+ * ROLE:
+ *   Cache de dos capas: memoria (Map) y localStorage, con TTL y prefijo por slug+space.
+ *   get/set usan ambas capas automáticamente: primero memoria, luego localStorage.
+ *   El prefijo se construye como cache_{slug}_{space}_ para aislar datos entre instancias.
+ *
+ * MÉTODOS PRINCIPALES:
+ *   get(key)                    → memoria → localStorage → null
+ *   set(key, data, ttl?)        → guarda en memoria y localStorage
+ *   delete(key)                 → elimina de ambas capas
+ *   clear()                     → limpia todas las keys del slug+space activo
+ *   clearAll()                  → limpia memoria + todo localStorage del prefijo
+ *   memoryGet(key, default?)    → solo memoria, retorna default si no existe
+ *
+ * CAPAS INDIVIDUALES:
+ *   getMemory(key) / setMemory(key, data, ttl?)   → solo Map en memoria
+ *   getLocal(key)  / setLocal(key, data, ttl?)    → solo localStorage
+ *
+ * TTL:
+ *   Por defecto: 1 hora (3.600.000 ms)
+ *   Personalizable por llamada: ogCache.set('key', data, 30 * 60 * 1000)
+ *
+ * ESPACIO (multi-tenancy):
+ *   ogCache.setSpace('tenant-123')  → cambia el space y resetea el prefijo
+ *   Útil para aislar datos de distintos tenants en la misma instancia
+ *
+ * USO:
+ *   ogCache.set('user_list', data);
+ *   const users = ogCache.get('user_list');
+ *   ogCache.delete('user_list');
+ *
+ * REGISTRO:
+ *   window.ogCache
+ *   ogFramework.core.cache
+ * @doc-end
+ */

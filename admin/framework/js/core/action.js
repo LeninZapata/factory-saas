@@ -223,3 +223,42 @@ window.actionProxy = {
     return window.ogFramework.core.action.handle(actionStr, params, context);
   }
 };
+/**
+ * @doc-start
+ * FILE: framework/js/core/action.js
+ * CLASS: ogAction
+ * TYPE: core-service
+ * PROMPT: fe-core-services
+ *
+ * ROLE:
+ *   Dispatcher de acciones con formato 'tipo:valor'. Abstrae la lógica de
+ *   navegación, modales, llamadas API y métodos JS para que funcionen tanto
+ *   en HTML (onclick) como desde código. Diseñado para ser portable a React Native.
+ *
+ * FORMATO DE ACCIÓN:
+ *   'navigate:products/list'          → carga vista
+ *   'modal:admin|forms/user-form'     → abre modal con vista/form
+ *   'api:save?method=POST'            → llamada HTTP
+ *   'call:admin.save'                 → llama window.admin.save()
+ *   'submit:admin.save'               → busca el form activo y llama admin.save(formId)
+ *   'submit:'                         → dispara submit nativo del form activo
+ *   'custom:miFuncion'                → llama window.miFuncion()
+ *
+ * USO EN JSON (statusbar/toolbar de formularios):
+ *   { "type": "button", "action": "submit:admin.save" }
+ *   { "type": "button", "action": "navigate:admin|sections/admin-panel" }
+ *   { "type": "button", "_action": "call:ogComponent(\"modal\")?.closeAll" }
+ *
+ * USO EN CÓDIGO:
+ *   ogAction.handle('navigate:admin|sections/panel', {}, { extensionContext: 'admin' });
+ *   ogAction.handle('modal:admin|forms/user-form', { title: 'Nuevo' });
+ *
+ * MÉTODOS INTERNOS (no usar directamente):
+ *   handleNavigate, handleModal, handleApi, handleMethodCall, handleSubmit, handleCustom
+ *
+ * REGISTRO:
+ *   window.ogAction
+ *   window.actionProxy.handle() → alias para uso en HTML onclick
+ *   ogFramework.core.action
+ * @doc-end
+ */

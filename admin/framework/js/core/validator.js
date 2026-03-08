@@ -73,3 +73,32 @@ window.ogValidator = ogValidator;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.validator = ogValidator;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/validator.js
+ * CLASS: ogValidator
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Validación de schemas JSON de vistas y formularios. Verifica campos
+ *   requeridos y tipos de datos antes de renderizar. Usado internamente
+ *   por formCore y viewLoader para detectar JSONs mal formados.
+ *
+ * SCHEMAS REGISTRADOS:
+ *   view  → required: [id, title] | optional: [layout, scripts, styles, content, tabs, statusbar]
+ *   form  → required: [id, fields] | optional: [title, description, toolbar, statusbar]
+ *
+ * USO:
+ *   const result = ogValidator.validate('view', viewData, 'sections/admin-panel.json');
+ *   if (!result.valid) console.error(result.message);
+ *   // result → { valid: bool, errors?: string[], message?: string }
+ *
+ * EXTENSIBILIDAD:
+ *   ogValidator.schemas.miTipo = { required: [...], optional: [...], types: {...} }
+ *
+ * REGISTRO:
+ *   window.ogValidator
+ *   ogFramework.core.validator
+ * @doc-end
+ */

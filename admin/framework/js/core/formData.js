@@ -474,3 +474,39 @@ window.ogFormData = ogFormData;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formData = ogFormData;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formData.js
+ * CLASS: ogFormData
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Lectura, escritura y transformaciones de datos en el formulario.
+ *   getData() extrae los valores como objeto JS. fill() los inyecta de vuelta.
+ *   Maneja rutas anidadas, arrays (repeatables), checkboxes y valores por defecto.
+ *
+ * LECTURA (getData):
+ *   Usa FormData nativo para recoger todos los inputs.
+ *   setNestedValue() convierte paths como 'items[0].nombre' a objetos anidados:
+ *   { items: [ { nombre: 'Juan' } ] }
+ *
+ * ESCRITURA (fill):
+ *   fill(formId, data, container?, skipRepeatables?)
+ *   Recorre el schema y por cada field busca el input por data-path y setInputValue().
+ *   Si el field es repeatable: fillRepeatable() crea y llena los items dinámicamente.
+ *   pauseEvaluations() durante el fill para no disparar condiciones en cascada.
+ *
+ * VALORES POR DEFECTO (applyDefaultValues):
+ *   Soporta: string literal, 'today' → fecha actual, 'now' → datetime actual,
+ *   'timestamp' → unix timestamp, '{field:otroField}' → valor de otro campo.
+ *
+ * TRANSFORMS (bindTransforms):
+ *   Binds eventos 'input' en todos los campos con data-transform.
+ *   Aplica la función de transform (lowercase, numeric, etc.) en tiempo real.
+ *
+ * REGISTRO:
+ *   window.ogFormData
+ *   ogFramework.core.formData
+ * @doc-end
+ */

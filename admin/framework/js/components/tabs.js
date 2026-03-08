@@ -416,3 +416,48 @@ window.ogTabs = ogTabs;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.components.tabs = ogTabs;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/tabs.js
+ * CLASS: ogTabs
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Sistema de pestañas para vistas JSON. Renderiza el header de tabs y carga
+ *   el contenido de cada una bajo demanda con caché por tab. Soporta overflow
+ *   horizontal con degradado y flecha de scroll. Inicializado por ogViewComponents.
+ *
+ * TIPOS DE CONTENIDO POR TAB:
+ *   html       → string HTML directo
+ *   component  → componente dinámico (datatable, grouper, etc.)
+ *   form       → carga ogForm.load()
+ *   section    → sección con sub-contenido[]
+ *   code       → bloque <pre><code> con highlight
+ *
+ * CACHE POR TAB:
+ *   Cada tab se renderiza una sola vez y su HTML se cachea en memoria.
+ *   Al cambiar de tab se restaura el HTML cacheado en vez de re-renderizar.
+ *   preloadAllTabs: true → carga todas las tabs en background al init.
+ *
+ * SCRIPTS/STYLES POR TAB:
+ *   Cada tab puede tener scripts[] y styles[] que se cargan via ogLoader
+ *   la primera vez que se activa esa tab.
+ *
+ * CALLBACKS:
+ *   onLoad(tabIndex, tabEl) → llamado cada vez que se activa una tab
+ *   executePendingCallbacks() → ejecuta callbacks que esperaban scripts cargados
+ *
+ * OVERFLOW:
+ *   checkTabsOverflow() detecta si el header de tabs no cabe y añade
+ *   degradado visual + scroll con teclas o scroll táctil.
+ *
+ * PERMISOS:
+ *   Las tabs filtradas por ogViewLoader.filterTabsByPermissions() directamente
+ *   no aparecen en el array — ogTabs no necesita lógica de permisos propia.
+ *
+ * REGISTRO:
+ *   window.ogTabs
+ *   ogFramework.components.tabs
+ * @doc-end
+ */

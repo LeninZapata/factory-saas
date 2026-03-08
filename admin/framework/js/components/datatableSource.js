@@ -163,3 +163,41 @@ class ogDatatableSource {
 }
 
 window.ogDatatableSource = ogDatatableSource;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableSource.js
+ * CLASS: ogDatatableSource
+ * TYPE: component-internal
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Carga y normalización de datos para el datatable. Soporta múltiples
+ *   formatos de source y mantiene una caché propia por source URL.
+ *   Sub-módulo de ogDatatable — no se usa directamente.
+ *
+ * FORMATOS DE SOURCE:
+ *   'api/users'                  → GET relativo via ogApi
+ *   'https://...'                → fetch externo directo
+ *   '/ruta/absoluta.json'        → relativo a baseUrl
+ *   'extensions/admin/mock.json' → ruta desde baseUrl
+ *   'admin|mock/users.json'      → notación extensión con pipe
+ *   'js/views/mock/data.json'    → ruta framework
+ *
+ * NORMALIZACIÓN (normalizeData):
+ *   Acepta respuestas del backend en cualquier formato:
+ *   { success, data: [] }  →  extrae data
+ *   { data: [] }           →  extrae data
+ *   []                     →  usa directamente
+ *   Siempre retorna un array plano.
+ *
+ * CACHÉ:
+ *   getCached(source)               → retorna datos cacheados por source
+ *   findInCache(source, id, field)  → busca un ítem por ID en cache (para modales de edición)
+ *   filterInCache(source, fn)       → filtra items en cache (para búsquedas locales)
+ *   clearCache(source)              → invalida cache de un source específico
+ *
+ * REGISTRO:
+ *   window.ogDatatableSource
+ *   ogFramework.components.datatableSource
+ * @doc-end
+ */

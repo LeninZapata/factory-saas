@@ -99,3 +99,42 @@ window.ogLayout = ogLayout;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.layout = ogLayout;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/layout.js
+ * CLASS: ogLayout
+ * TYPE: core-view
+ * PROMPT: fe-view-hook
+ *
+ * ROLE:
+ *   Genera la estructura HTML base de la aplicación e inyecta dentro del
+ *   contenedor raíz (#app). Crea el esqueleto DOM que sidebar, view y auth
+ *   necesitan antes de poder operar. Se llama una sola vez desde bootApp().
+ *
+ * MODOS:
+ *   'app'   → estructura completa: header + sidebar + main#content + footer
+ *             usada en la aplicación principal autenticada
+ *   'auth'  → estructura mínima: solo div#content sin sidebar ni header
+ *             usada por ogAuth para mostrar el login
+ *
+ * ESTRUCTURA HTML GENERADA (modo app):
+ *   .og-layout.sidebar-compact2
+ *     header.og-header#header
+ *     .og-sidebar-overlay#sidebar-overlay
+ *     aside.og-sidebar#sidebar          ← ogSidebar escribe aquí
+ *     main.og-content#content           ← ogView escribe aquí
+ *       footer.og-footer
+ *
+ * RESPONSIVE:
+ *   initResponsive() activa el toggle del sidebar en pantallas ≤1024px.
+ *   El botón #menu-toggle aparece solo en mobile.
+ *
+ * USO:
+ *   ogLayout.init('app', containerElement);   // desde bootApp()
+ *   ogLayout.init('auth', containerElement);  // desde ogAuth cuando no autenticado
+ *
+ * REGISTRO:
+ *   window.ogLayout
+ *   ogFramework.core.layout
+ * @doc-end
+ */

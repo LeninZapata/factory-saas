@@ -71,3 +71,34 @@ window.ogEvents = ogEvents;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.events = ogEvents;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/event.js
+ * CLASS: ogEvents
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Event delegation con IDs para cleanup. Envuelve addEventListener con
+ *   soporte de delegación — el handler se dispara tanto si el target es
+ *   el elemento exacto como si es un descendiente que hace matches(selector).
+ *
+ * USO:
+ *   const id = ogEvents.on('.btn-save', 'click', (e) => save(), formContainer);
+ *   ogEvents.off(id);    // elimina el listener por ID
+ *   ogEvents.clear();    // elimina todos
+ *
+ * MÉTODOS:
+ *   on(selector, eventType, handler, context?)  → retorna ID numérico del listener
+ *   off(id)                                     → elimina listener por ID
+ *   clear()                                     → elimina todos los listeners
+ *
+ * NOTA:
+ *   El context por defecto es document. Pasar el contenedor del formulario
+ *   o vista limita el scope del evento y evita colisiones.
+ *
+ * REGISTRO:
+ *   window.ogEvents
+ *   ogFramework.core.events
+ * @doc-end
+ */

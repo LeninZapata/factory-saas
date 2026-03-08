@@ -74,3 +74,34 @@ if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.trigger = ogTrigger;
 }
 
+/**
+ * @doc-start
+ * FILE: framework/js/core/trigger.js
+ * CLASS: ogTrigger
+ * TYPE: core-util
+ * PROMPT: fe-framework
+ *
+ * ROLE:
+ *   Sistema de triggers nombrados por target. Permite registrar callbacks
+ *   asociados a un identificador string y ejecutarlos todos en bloque.
+ *   Útil para extensiones que quieren reaccionar a eventos del framework
+ *   sin acoplarse directamente.
+ *
+ * USO:
+ *   ogTrigger.register('after:view:load', 'admin', 'onViewLoad');
+ *   // → cuando se ejecute el target 'after:view:load', llama admin.onViewLoad(target)
+ *
+ *   ogTrigger.execute('after:view:load');
+ *   ogTrigger.list('after:view');   // debug — lista triggers del target
+ *
+ * MÉTODOS:
+ *   register(target, className, methodName)  → registra un trigger
+ *   execute(targetFilter)                    → ejecuta todos los triggers que empiecen con targetFilter
+ *   reset()                                  → limpia el registry (útil en testing)
+ *   list(targetFilter?)                      → retorna array de strings descriptivos
+ *
+ * REGISTRO:
+ *   window.ogTrigger
+ *   ogFramework.core.trigger
+ * @doc-end
+ */

@@ -458,3 +458,39 @@ window.ogFormRepeatables = ogFormRepeatables;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.formRepeatables = ogFormRepeatables;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formRepeatables.js
+ * CLASS: ogFormRepeatables
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Manejo de campos repetibles (listas dinámicas de items con mismo schema).
+ *   Inicializa los contenedores, gestiona agregar/eliminar items,
+ *   drag & drop para reordenar y re-indexación de paths.
+ *
+ * FLUJO INIT (initRepeatables):
+ *   1. Busca todos los fields type:'repeatable' en el schema (incluyendo anidados en groups/groupers)
+ *   2. Por cada uno: initRepeatableContainer() → clona template → bindRepeatableEvents()
+ *   3. Si field.minItems: pre-popula con items vacíos hasta el mínimo
+ *
+ * AGREGAR ITEM (addRepeatableItem):
+ *   Clona el template oculto (.og-repeatable-template), reemplaza [INDEX]
+ *   por el índice correcto en todos los name/id/data-path, inserta en el DOM
+ *   e inicializa conditions y selects del nuevo item.
+ *
+ * DRAG & DROP (setupDragAndDrop):
+ *   Usa HTML5 Drag API. Reordena items visualmente y llama
+ *   reindexRepeatableItems() para actualizar todos los atributos name[N].
+ *
+ * PATH NOTATION:
+ *   Los campos dentro de un repeatable usan notación array en sus names:
+ *   items[0].nombre, items[1].nombre, items[0].subitems[0].valor
+ *   ogFormData.getData() los convierte a objetos JS anidados.
+ *
+ * REGISTRO:
+ *   window.ogFormRepeatables
+ *   ogFramework.core.formRepeatables
+ * @doc-end
+ */

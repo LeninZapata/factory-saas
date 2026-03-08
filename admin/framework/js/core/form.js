@@ -117,3 +117,36 @@ window.ogForm = ogForm;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.form = ogForm;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/form.js
+ * CLASS: ogForm
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Fachada única del sistema de formularios. Re-expone todos los métodos de
+ *   ogFormCore, ogFormRender, ogFormInputs, ogFormRepeatables, ogFormData
+ *   y ogFormValidation bajo una sola clase. El código externo solo necesita ogForm.
+ *
+ * USO TÍPICO DESDE EXTENSIONES:
+ *   const form = ogModule('form');
+ *   await form.load('admin|forms/user-form', container, userData);
+ *   const data = form.getData('user-form');
+ *   const ok   = form.validate('user-form');
+ *   form.setError('user-form', 'email', 'Email ya registrado');
+ *   form.fill('user-form', { nombre: 'Juan' });
+ *
+ * MÉTODOS DELEGADOS:
+ *   load, bindEventsOnce, normalizeFieldType, clearSelectCache  → ogFormCore
+ *   render, renderFields, renderToolbar, renderStatusbar        → ogFormRender
+ *   renderField, loadSelectFromAPI                              → ogFormInputs
+ *   initRepeatables, addRepeatableItem                          → ogFormRepeatables
+ *   getData, fill, applyDefaultValues, bindTransforms           → ogFormData
+ *   validate, setError, clearError, clearAllErrors              → ogFormValidation
+ *
+ * REGISTRO:
+ *   window.ogForm
+ *   ogFramework.core.form
+ * @doc-end
+ */

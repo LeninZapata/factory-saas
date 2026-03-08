@@ -388,3 +388,53 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+/**
+ * @doc-start
+ * FILE: framework/js/components/modal.js
+ * CLASS: ogModal
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Sistema de modales apilables con efectos de entrada/salida animados y
+ *   modo panel anclado a los bordes. Carga vistas JSON o HTML arbitrario
+ *   dentro del modal y gestiona su ciclo de vida (open → load → close).
+ *
+ * APERTURA:
+ *   ogModal.open(resource, options?)  → retorna { modalId, loadPromise }
+ *   ogModal.openWithData(resource, options?) → abre modal y llena form con datos
+ *
+ * CIERRE:
+ *   ogModal.close(modalId, effect?)  → cierra modal específico
+ *   ogModal.closeAll()               → cierra todos los modales abiertos
+ *
+ * OPTIONS:
+ *   title, width, maxWidth          → apariencia básica
+ *   effect                          → animación: 'slide-up'(default) | 'fade-scale' | 'slide-right'
+ *   closeOnOverlay, closeOnEsc      → comportamiento de cierre (default: true)
+ *   footer, footerLeft, footerRight → HTML del pie del modal
+ *   showFooter                      → bool (default: true)
+ *   beforeTitle, afterTitle         → HTML adicional en el header
+ *   headerExtra                     → HTML extra en la barra del header
+ *   html                            → HTML directo (omite carga de resource)
+ *   afterRender(modalId, el)        → callback post-render del contenido
+ *   panel                           → bool, activa modo panel (default: false)
+ *   panelSize                       → ancho/alto del panel (default: '400px')
+ *   panelSpan                       → posición: 'right'|'left'|'top'|'bottom' (default: 'right')
+ *
+ * RECURSOS:
+ *   resource puede ser cualquier notación de vista o form:
+ *   'admin|forms/user-form', 'middle:auth/login', 'core:user/user-list'
+ *
+ * APILADO:
+ *   Cada modal tiene z-index incremental. Los modales se apilan correctamente.
+ *   getLastModalId() retorna el ID del modal más reciente.
+ *
+ * ACTUALIZACIÓN DINÁMICA:
+ *   ogModal.updateTitle(modalId, title, extra?, before?, after?)
+ *
+ * REGISTRO:
+ *   window.ogModal
+ *   ogFramework.components.modal
+ * @doc-end
+ */

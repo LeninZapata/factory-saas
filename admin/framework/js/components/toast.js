@@ -131,3 +131,39 @@ if (window.ogFramework) {
   window.ogFramework.components = window.ogFramework.components || {};
   window.ogFramework.components.toast = ogToast;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/components/toast.js
+ * CLASS: ogToast
+ * TYPE: component
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Notificaciones no bloqueantes con cola, posición configurable y auto-dismiss.
+ *   Máximo 5 toasts visibles simultáneamente (maxVisible). Los excedentes
+ *   se encolan y aparecen al cerrarse los anteriores.
+ *   Traduce automáticamente keys i18n si el mensaje empieza con 'i18n:'.
+ *
+ * API:
+ *   ogToast.show(message, options?)    → genérico
+ *   ogToast.success(message, options?) → verde ✅
+ *   ogToast.error(message, options?)   → rojo ❌
+ *   ogToast.info(message, options?)    → azul ℹ️
+ *   ogToast.warning(message, options?) → naranja ⚠️
+ *
+ * OPTIONS:
+ *   duration    → ms hasta auto-dismiss (default: 3000, 0 = permanente)
+ *   position    → 'top-right'(default) | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center'
+ *   closable    → mostrar botón × (default: true)
+ *   type        → 'success' | 'error' | 'info' | 'warning'
+ *
+ * USO TÍPICO:
+ *   ogToast.success('Usuario guardado correctamente');
+ *   ogToast.error('i18n:errors.required_field');
+ *   ogToast.show('Procesando...', { duration: 0 });  // permanente hasta acción
+ *
+ * REGISTRO:
+ *   window.ogToast
+ *   ogFramework.components.toast
+ * @doc-end
+ */

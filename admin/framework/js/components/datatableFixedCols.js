@@ -120,3 +120,33 @@ class ogDatatableFixedCols {
 }
 
 window.ogDatatableFixedCols = ogDatatableFixedCols;
+/**
+ * @doc-start
+ * FILE: framework/js/components/datatableFixedCols.js
+ * CLASS: ogDatatableFixedCols
+ * TYPE: component-feature
+ * PROMPT: fe-components
+ *
+ * ROLE:
+ *   Feature opcional de columnas fijas durante el scroll horizontal.
+ *   Se activa automáticamente si config.fixedColumns o config.fixedColumnsRight
+ *   están definidos en el JSON de vista del datatable.
+ *
+ * IMPLEMENTACIÓN:
+ *   Usa transform: translateX() sincronizado con el evento 'scroll' del wrapper,
+ *   en lugar de position:sticky, para mayor compatibilidad con tablas complejas.
+ *
+ * CONFIG:
+ *   fixedColumns: 1        → congela N columnas desde la izquierda
+ *   fixedColumnsRight: 1   → congela N columnas desde la derecha (acciones)
+ *
+ * CASOS ESPECIALES:
+ *   Si el header tiene ancho 0 (tabla en tab oculta), usa _retryWhenVisible()
+ *   con MutationObserver para aplicar el fix cuando la tab se active.
+ *   En refresh del datatable limpia el scroll listener anterior antes de reasignar.
+ *
+ * REGISTRO:
+ *   window.ogDatatableFixedCols
+ *   ogFramework.components.datatableFixedCols
+ * @doc-end
+ */

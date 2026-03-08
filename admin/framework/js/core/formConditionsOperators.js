@@ -111,3 +111,37 @@ window.ogConditionsOperators = ogConditionsOperators;
 if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.conditionsOperators = ogConditionsOperators;
 }
+/**
+ * @doc-start
+ * FILE: framework/js/core/formConditionsOperators.js
+ * CLASS: ogConditionsOperators
+ * TYPE: core-form
+ * PROMPT: fe-form
+ *
+ * ROLE:
+ *   Librería pura de operadores de comparación para el sistema de condiciones.
+ *   checkOperator(fieldValue, operator, targetValue) → bool.
+ *   Sin estado, sin efectos secundarios. Usado por ogConditionsEvaluator.
+ *
+ * OPERADORES DISPONIBLES:
+ *   =, ==, equals     → igualdad (normalizada, insensible a tipo)
+ *   !=                → desigualdad
+ *   >, <, >=, <=      → comparación numérica
+ *   any               → fieldValue está en lista CSV de targetValue
+ *   not-any           → fieldValue NO está en lista CSV
+ *   empty             → vacío (null, '', [], undefined)
+ *   not-empty         → no vacío
+ *   contains          → fieldValue contiene targetValue (string)
+ *   not-contains      → no contiene
+ *   starts-with       → empieza con
+ *   ends-with         → termina con
+ *
+ * NORMALIZACIÓN:
+ *   normalize(value) convierte a string en minúsculas para comparaciones
+ *   insensibles a mayúsculas/minúsculas y tipo.
+ *
+ * REGISTRO:
+ *   window.ogConditionsOperators
+ *   ogFramework.core.conditionsOperators
+ * @doc-end
+ */
