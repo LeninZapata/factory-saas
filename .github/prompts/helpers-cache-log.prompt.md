@@ -1,7 +1,7 @@
 # Helpers — Parte 2: Cache, Log, Response, Request, Lang
 
 > Helpers pre-cargados en el boot. Ver también: helpers.prompt.md (ogDb) y helpers-utils.prompt.md.
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 

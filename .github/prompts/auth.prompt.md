@@ -1,7 +1,7 @@
 # Módulo Auth & Users (No aplica para WordPress)
 
 > Login, sesiones, gestión de usuarios. Capa middle.
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 
@@ -66,16 +66,16 @@ ENDPOINTS USER (CRUD automático via user.json):
   PUT    /api/user/{id}/config → actualizar config [auth, json]
 ```
 
-> ⚠️ `backend/middle/resources/handlers/UserHandler.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleresourceshandlersUserHandler.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/resources/controllers/UserController.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleresourcescontrollersUserController.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/helpers/ogLogReader.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddlehelpersogLogReader.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/auth.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutesauth.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/user.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutesuser.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/sessions.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutessessions.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/cleanup.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutescleanup.php` — sin bloque `@doc-start`/`@doc-end`

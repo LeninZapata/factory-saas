@@ -208,44 +208,46 @@ if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.viewComponents = ogViewComponents;
 }
 /**
- * @doc-start
- * FILE: framework/js/core/viewComponents.js
- * CLASS: ogViewComponents
- * TYPE: core-view
- * PROMPT: fe-view-hook
- *
- * ROLE:
- *   Inicialización de componentes dinámicos después del render, carga de
- *   recursos (scripts/styles) de la vista y validación de formularios.
- *   Sub-módulo de ogView — no se usa directamente desde extensiones.
- *
- * FLUJO POST-RENDER (setupView):
- *   1. renderHookComponents()    → monta componentes .hook-component en el DOM
- *   2a. ogTabs.render()          → si viewData.tabs (vista con pestañas)
- *   2b. loadDynamicComponents()  → si viewData.content (vista normal)
- *   3. initFormValidation()      → activa validación en forms[data-validation]
- *
- * COMPONENTES DINÁMICOS (loadDynamicComponents):
- *   .dynamic-form[data-form-json]         → llama ogForm.load(formPath, el)
- *   .dynamic-component[data-component]   → llama component.render(config, el)
- *   Detecta el extensionContext del contenedor padre para construir el formPath
- *   correcto: {ext}|forms/{formJson}
- *
- * RECURSOS (loadAndInitResources):
- *   1. loadViewResources()    → ogLoader.loadResources(scripts, styles) normalizados
- *   2. ogTabs.executePendingCallbacks()  → callbacks de tabs que esperaban scripts
- *   3. initViewComponents()  → llama .init() en clases JS cargadas via scripts[]
- *
- * DETECCIÓN DE CLASE JS:
- *   extractComponentName(scriptPath) intenta window[fileName],
- *   window['ejemplo'+FileName], window[FileName] para encontrar la clase.
- *
- * RE-INIT DESDE CACHE:
- *   reInitializeCachedView() restaura tabs o componentes dinámicos cuando
- *   la vista se recupera del cache de navegación (HTML ya renderizado).
- *
- * REGISTRO:
- *   window.ogViewComponents
- *   ogFramework.core.viewComponents
- * @doc-end
+@doc-start
+FILE: framework/js/core/viewComponents.js
+CLASS: ogViewComponents
+TYPE: core-view
+PROMPT: fe-view-hook
+
+ROLE:
+  Carga y ejecuta los recursos JS/CSS de una vista, registra hook-components
+  en el DOM y orquesta el post-render de tabs y componentes.
+
+FLUJO POST-RENDER (setupView):
+  1. renderHookComponents()    → monta componentes .hook-component en el DOM
+  2a. ogTabs.render()          → si viewData.tabs (vista con pestañas)
+  2b. renderContent()          → si viewData.content (vista de contenido)
+
+CARGA DE RECURSOS (loadAndInitResources):
+  1. loadViewResources()    → ogLoader.loadResources(scripts, styles) normalizados
+  2. ogTabs.executePendingCallbacks()  → callbacks de tabs que esperaban scripts
+  3. initViewComponents()  → llama .init() en clases JS cargadas via scripts[]
+
+SCRIPTS BAJO DEMANDA — CONVENCIÓN:
+  Si la vista declara scripts[], el sistema carga el archivo y llama .init()
+  automáticamente. El script debe:
+    1. Tener un método estático init()
+    2. Exportarse a window con el mismo nombre que el archivo (sin extensión)
+
+  Ejemplo — chart.js:
+    class ejemploChart {
+      static init() {
+        // Se llama automáticamente al cargar la vista
+        this.createChart('chart1', {...});
+      }
+    }
+    window.ejemploChart = ejemploChart;   // ← obligatorio
+
+DETECCIÓN DE CLASE JS:
+  extractComponentName(scriptPath) intenta window[fileName],
+  window['ejemplo'+FileName], window[FileName] para encontrar la clase.
+
+REGISTRO:
+  ogFramework.core.viewComponents (interno, no expuesto en window)
+@doc-end
  */

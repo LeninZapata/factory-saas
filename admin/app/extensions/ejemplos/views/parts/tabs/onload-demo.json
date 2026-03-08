@@ -1,0 +1,6 @@
+[
+  {
+    "type": "html",
+    "content": "<div id='onload-demo-info' class='og-p-3 og-bg-blue-50 og-rounded-lg'><h3>⚡ Uso de <code>onLoad</code> en Tabs</h3><p class='og-my-2'>El atributo <code>onLoad</code> permite ejecutar código JavaScript automáticamente cuando se muestra la tab por primera vez.</p><h4 class='og-mt-3'>🎯 ¿Para qué sirve?</h4><ul style='line-height: 1.8;'><li>Inicializar widgets o componentes complejos</li><li>Cargar datos dinámicos desde una API</li><li>Ejecutar animaciones o efectos visuales</li><li>Configurar eventos o listeners específicos</li><li>Cualquier acción personalizada en JavaScript</li></ul><h4 class='og-mt-3'>💻 Ejemplo de uso:</h4><pre class='og-bg-gray-900 og-text-white og-p-2 og-rounded og-mt-2' style='overflow-x: auto;'>{\n  \"id\": \"mi-tab\",\n  \"title\": \"Mi Tab\",\n  \"onLoad\": \"miModulo.inicializar()\",\n  \"content\": [...]\n}</pre><div class='alert alert-warning alert-border og-mt-2'><strong>⚠️ Nota:</strong> Esta tab tiene un <code>onLoad</code> que inyecta un mensaje debajo de este texto. ¡Observa cómo aparece!</div></div>"
+  }
+]

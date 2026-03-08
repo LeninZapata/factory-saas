@@ -1,7 +1,7 @@
 # Helpers — Parte 3: Utils, File, Http, Str, Url, Date, Country, Logic, Validation
 
 > Helpers bajo demanda via ogApp()->helper(). Ver también: helpers.prompt.md (ogDb) y helpers-cache-log.prompt.md.
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 

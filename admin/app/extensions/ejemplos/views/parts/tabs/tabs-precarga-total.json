@@ -1,0 +1,78 @@
+[
+  {
+    "type": "html",
+    "content": "<h3>⚡ Precarga Total de Tabs</h3><p>Esta funcionalidad permite cargar <strong>todas las tabs de una sola vez</strong> en lugar de hacerlo bajo demanda:</p>"
+  },
+  {
+    "type": "html",
+    "content": "<div class='og-grid og-cols-2 og-gap-lg og-my-3'><div class='og-p-3 og-bg-green-100 og-rounded-lg og-border-l-4 og-border-green-500'><h4 class='og-text-green-700 og-mb-1'>⚡ Con Precarga</h4><ul style='font-size: 0.95rem;'><li>✅ Todas las tabs cargan al inicio</li><li>✅ Cambio instantáneo entre tabs</li><li>✅ Sin tiempo de espera</li><li>✅ Ideal para vistas pequeñas</li><li>⚠️ Mayor tiempo de carga inicial</li></ul></div><div class='og-p-3 og-bg-yellow-100 og-rounded-lg og-border-l-4 og-border-yellow-500'><h4 class='og-text-yellow-700 og-mb-1'>🔄 Bajo Demanda (Default)</h4><ul style='font-size: 0.95rem;'><li>✅ Solo carga la tab activa</li><li>✅ Carga inicial más rápida</li><li>✅ Ahorra recursos</li><li>✅ Ideal para vistas grandes</li><li>⚠️ Pequeña espera al cambiar tab</li></ul></div></div>"
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-info alert-with-desc'><strong>🎯 Configuración:</strong><p>Agregar <code>preloadAllTabs: true</code> en el config del componente tabs:</p><div class='alert-desc'><pre style='overflow-x: auto;'>{\n  \"type\": \"component\",\n  \"component\": \"tabs\",\n  \"config\": {\n    \"id\": \"mi-tabs\",\n    \"preloadAllTabs\": true,  // ← Precarga todas las tabs\n    \"tabs\": [...]\n  }\n}</pre></div></div>"
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-warning alert-border og-my-3'><strong>📋 Ejemplo en Acción:</strong> Las siguientes tabs fueron <strong>todas precargadas</strong> al momento de abrir este ejemplo. Puedes cambiar entre ellas instantáneamente sin tiempo de carga:</div>"
+  },
+  {
+    "type": "component",
+    "component": "tabs",
+    "config": {
+      "id": "tabs-precarga-demo",
+      "preloadAllTabs": true,
+      "tabs": [
+        {
+          "id": "tab-form1",
+          "title": "📝 Formulario 1",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='alert alert-success alert-border'><strong>✅ Esta tab fue precargada:</strong> Este formulario se cargó automáticamente al inicio, no cuando hiciste click en esta tab.</div>"
+            },
+            {
+              "type": "form",
+              "form_json": "ejemplos/formularios/form-inputs-normales"
+            }
+          ]
+        },
+        {
+          "id": "tab-form2",
+          "title": "📊 Formulario 2",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='alert alert-success alert-border'><strong>✅ Esta tab también fue precargada:</strong> Cambiaste de tab instantáneamente porque el contenido ya estaba cargado.</div>"
+            },
+            {
+              "type": "form",
+              "form_json": "ejemplos/formularios/form-grouped-fields"
+            }
+          ]
+        },
+        {
+          "id": "tab-info",
+          "title": "ℹ️ Información",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='alert alert-success alert-border'><strong>✅ Tercera tab precargada:</strong> Todas las tabs se cargaron en paralelo al inicio.</div>"
+            },
+            {
+              "type": "html",
+              "content": "<div class='og-p-3 og-bg-blue-50 og-rounded-lg'><h4>📊 Ventajas de la Precarga</h4><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Aspecto</th><th>Bajo Demanda</th><th>Precarga Total</th></tr></thead><tbody><tr><td><strong>Carga inicial</strong></td><td>⚡ Rápida</td><td>🐢 Más lenta</td></tr><tr><td><strong>Cambio de tab</strong></td><td>🐢 Con espera</td><td>⚡ Instantáneo</td></tr><tr><td><strong>Uso de memoria</strong></td><td>💚 Bajo</td><td>⚠️ Alto</td></tr><tr><td><strong>Mejor uso</strong></td><td>Vistas grandes, muchas tabs</td><td>Vistas pequeñas, 3-5 tabs</td></tr></tbody></table></div>"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-tip alert-with-desc og-my-4'><strong>🔍 ¿Cómo saber si funcionó?</strong><div class='alert-desc'><ol><li>Abre la <strong>consola del navegador</strong> (F12)</li><li>Busca logs de <code>com:tabs</code></li><li>Verás: <code>Precargando todas las tabs (3 tabs)</code></li><li>Luego: <code>Tab X precargada</code> para cada una</li><li>Al cambiar de tab: <code>Mostrando tab desde caché</code> (instantáneo)</li></ol></div></div>"
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-warning alert-with-desc'><strong>⚠️ Cuándo NO usar precarga:</strong><div class='alert-desc'><ul><li>Tabs con mucho contenido (>5 formularios grandes)</li><li>Tabs con imágenes pesadas o videos</li><li>Tabs con componentes que hacen peticiones al servidor</li><li>Vistas con más de 7-8 tabs</li><li>En dispositivos móviles con conexión lenta</li></ul></div></div>"
+  }
+]

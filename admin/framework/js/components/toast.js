@@ -151,10 +151,11 @@ if (window.ogFramework) {
  *   ogToast.info(message, options?)    → azul ℹ️
  *   ogToast.warning(message, options?) → naranja ⚠️
  *
- * OPTIONS:
- *   duration    → ms hasta auto-dismiss (default: 3000, 0 = permanente)
- *   position    → 'top-right'(default) | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center'
- *   closable    → mostrar botón × (default: true)
+   OPTIONS:
+    duration    → ms hasta auto-dismiss (default: 3000, 0 = permanente)
+    position    → 'top-right'(default) | 'top-left' | 'top-center'
+                  'bottom-right' | 'bottom-left' | 'bottom-center'
+    closable    → mostrar botón × (default: true)
  *   type        → 'success' | 'error' | 'info' | 'warning'
  *
  * USO TÍPICO:

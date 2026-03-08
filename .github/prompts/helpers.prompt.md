@@ -1,7 +1,7 @@
 # Helpers — Parte 1: ogDb
 
 > Query builder ogDb completo (entry point + traits). Ver también: helpers-cache-log.prompt.md y helpers-utils.prompt.md
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 
@@ -114,12 +114,12 @@ NOTAS:
   - En OG_IS_DEV el exec() interpola valores para facilitar debugging
 ```
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbBuilder.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbBuilder.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbWhere.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbWhere.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbQuery.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbQuery.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbExecute.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbExecute.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogRawExpr.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogRawExpr.php` — sin bloque `@doc-start`/`@doc-end`

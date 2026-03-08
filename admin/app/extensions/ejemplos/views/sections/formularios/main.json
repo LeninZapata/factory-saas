@@ -21,10 +21,6 @@
                 "title": "Inputs Normales",
                 "content": [
                   {
-                    "type": "no_show_html",
-                    "content": "<h3>Tipos de Inputs Disponibles</h3>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-inputs-normales"
                   }
@@ -34,10 +30,6 @@
                 "id": "campos-agrupados",
                 "title": "Agrupados",
                 "content": [
-                  {
-                    "type": "not_show_html",
-                    "content": "<h3>Agrupación de Campos en Columnas</h3><p>Organiza campos en grupos de 2, 3 o 4 columnas con diseño responsive.</p>"
-                  },
                   {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-grouped-fields"
@@ -49,10 +41,6 @@
                 "title": "Overflow",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>🔽 Prueba de Overflow en Columnas</h3><p>Comportamiento cuando hay más campos que columnas.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-grouped-fields-column-overflow"
                   }
@@ -63,10 +51,6 @@
                 "title": "Valores por Defecto",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>⭐ Valores por Defecto</h3><p>Campos con valores iniciales normales y tokens especiales que generan valores únicos.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-inputs-defaults"
                   }
@@ -76,10 +60,6 @@
                 "id": "requerido",
                 "title": "Requerido",
                 "content": [
-                  {
-                    "type": "not_show_html",
-                    "content": "<h3>✅ Campo Requerido</h3><p>Solo el primer campo es obligatorio. Mueve el scroll hasta él y muestra el foco si falta.</p>"
-                  },
                   {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-inputs-required"
@@ -106,10 +86,6 @@
                 "title": "Básicos",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>Campos Repetibles</h3><p>Agrega y elimina grupos de campos dinámicamente.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-repetibles-demo"
                   }
@@ -120,16 +96,8 @@
                 "title": "Agrupados",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>Repetibles con Columnas</h3><h4>Opción 1: Columnas en repeatable</h4>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/form-repeatable-grouped-opt1"
-                  },
-                  {
-                    "type": "not_show_html",
-                    "content": "<hr style='margin: 2rem 0;'><h4>Opción 2: Groups dentro del repeatable</h4>"
                   },
                   {
                     "type": "form",
@@ -195,10 +163,6 @@
                 "title": "Simple",
                 "content": [
                   {
-                    "type": "no_show_html",
-                    "content": "<h3>🎯 Condiciones Simples</h3><p>Mostrar/ocultar campos basados en un valor.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/conditions-simple"
                   }
@@ -208,10 +172,6 @@
                 "id": "cond-multiple",
                 "title": "Múltiples",
                 "content": [
-                  {
-                    "type": "not_show_html",
-                    "content": "<h3>🔗 Condiciones Múltiples (AND)</h3><p>El campo aparece solo si TODAS las condiciones se cumplen.</p>"
-                  },
                   {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/conditions-multiple"
@@ -223,10 +183,6 @@
                 "title": "Avanzado",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>⚡ Operadores Avanzados</h3><p>Ejemplos: <code>any</code>, <code>></code>, <code><</code>, <code>contains</code>, etc.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/conditions-advanced"
                   }
@@ -237,10 +193,6 @@
                 "title": "Repetibles",
                 "content": [
                   {
-                    "type": "not_show_html",
-                    "content": "<h3>🔄 Condiciones en Repetibles</h3><p>Condiciones dentro de cada instancia del repeatable usando <code>conditionContext: 'repeatable'</code>.</p>"
-                  },
-                  {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/conditions-repeatable"
                   }
@@ -250,10 +202,6 @@
                 "id": "cond-groups",
                 "title": "Grupos",
                 "content": [
-                  {
-                    "type": "not_show_html",
-                    "content": "<h3>📦 Condiciones con Grupos</h3><p>Mostrar/ocultar grupos completos de campos con condiciones. Incluye ejemplos dentro y fuera de repetables.</p>"
-                  },
                   {
                     "type": "form",
                     "form_json": "ejemplos|forms/formularios/conditions-groups"

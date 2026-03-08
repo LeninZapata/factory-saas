@@ -1,7 +1,7 @@
 # Backend Documentation
 
 > Generado automáticamente desde bloques `@doc-start`/`@doc-end`
-> Fecha: 2026-03-07 19:35:47
+> Fecha: 2026-03-08 14:28:20
 
 ---
 
@@ -20,7 +20,7 @@
 
 ## Bootstrap & Configuración
 
-> ⚠️ `backend/../funcs.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackend..funcs.php` — sin bloque `@doc-start`/`@doc-end`
 
 ### `backend/bootstrap.php`
 
@@ -209,15 +209,15 @@ Alternativas de idioma disponibles (comentadas en el archivo):
 - Detección desde query param ?lang=
 ```
 
-> ⚠️ `backend/app/config/init.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfiginit.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/execute.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigexecute.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/database.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigdatabase.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/tables.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigtables.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/consts.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigconsts.php` — sin bloque `@doc-start`/`@doc-end`
 
 ---
 
@@ -558,15 +558,15 @@ NOTAS:
   - En OG_IS_DEV el exec() interpola valores para facilitar debugging
 ```
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbBuilder.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbBuilder.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbWhere.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbWhere.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbQuery.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbQuery.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogDbExecute.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbExecute.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/framework/helpers/ogDb/ogRawExpr.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogRawExpr.php` — sin bloque `@doc-start`/`@doc-end`
 
 ---
 
@@ -1284,19 +1284,19 @@ ENDPOINTS USER (CRUD automático via user.json):
   PUT    /api/user/{id}/config → actualizar config [auth, json]
 ```
 
-> ⚠️ `backend/middle/resources/handlers/UserHandler.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleresourceshandlersUserHandler.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/resources/controllers/UserController.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleresourcescontrollersUserController.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/helpers/ogLogReader.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddlehelpersogLogReader.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/auth.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutesauth.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/user.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutesuser.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/sessions.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutessessions.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/middle/routes/cleanup.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendmiddleroutescleanup.php` — sin bloque `@doc-start`/`@doc-end`
 
 ---
 
@@ -1401,21 +1401,21 @@ ENDPOINTS:
 
 ### Archivos sin bloque @doc-start
 
-- `backend/../funcs.php`
-- `backend/app/config/init.php`
-- `backend/app/config/execute.php`
-- `backend/app/config/database.php`
-- `backend/app/config/tables.php`
-- `backend/app/config/consts.php`
-- `backend/framework/helpers/ogDb/ogDbBuilder.php`
-- `backend/framework/helpers/ogDb/ogDbWhere.php`
-- `backend/framework/helpers/ogDb/ogDbQuery.php`
-- `backend/framework/helpers/ogDb/ogDbExecute.php`
-- `backend/framework/helpers/ogDb/ogRawExpr.php`
-- `backend/middle/resources/handlers/UserHandler.php`
-- `backend/middle/resources/controllers/UserController.php`
-- `backend/middle/helpers/ogLogReader.php`
-- `backend/middle/routes/auth.php`
-- `backend/middle/routes/user.php`
-- `backend/middle/routes/sessions.php`
-- `backend/middle/routes/cleanup.php`
+- `backend/D:\laragon\www\factory-saasbackend..funcs.php`
+- `backend/D:\laragon\www\factory-saasbackendappconfiginit.php`
+- `backend/D:\laragon\www\factory-saasbackendappconfigexecute.php`
+- `backend/D:\laragon\www\factory-saasbackendappconfigdatabase.php`
+- `backend/D:\laragon\www\factory-saasbackendappconfigtables.php`
+- `backend/D:\laragon\www\factory-saasbackendappconfigconsts.php`
+- `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbBuilder.php`
+- `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbWhere.php`
+- `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbQuery.php`
+- `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogDbExecute.php`
+- `backend/D:\laragon\www\factory-saasbackendframeworkhelpersogDbogRawExpr.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleresourceshandlersUserHandler.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleresourcescontrollersUserController.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddlehelpersogLogReader.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleroutesauth.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleroutesuser.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleroutessessions.php`
+- `backend/D:\laragon\www\factory-saasbackendmiddleroutescleanup.php`

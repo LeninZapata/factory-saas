@@ -122,31 +122,53 @@ if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.conditions = ogConditions;
 }
 /**
- * @doc-start
- * FILE: framework/js/core/conditions.js
- * CLASS: ogConditions
- * TYPE: core-form
- * PROMPT: fe-form
- *
- * ROLE:
- *   Fachada del sistema de condiciones. Re-expone todos los métodos de
- *   ogConditionsCore, ogConditionsEvaluator y ogConditionsOperators.
- *   El código externo (formCore) solo necesita ogConditions.
- *
- * USO:
- *   ogConditions.init('user-form')         → activa condiciones del formulario
- *   ogConditions.destroy('user-form')      → limpia reglas y watchers
- *   ogConditions.pauseEvaluations()        → suspende mientras se hace fill
- *   ogConditions.resumeEvaluations(formId) → reanuda y re-evalúa
- *   ogConditions.debug('user-form')        → imprime reglas activas en consola
- *
- * MÉTODOS DELEGADOS:
- *   init, destroy, extractConditions, setupWatchers, debug  → ogConditionsCore
- *   evaluate, pauseEvaluations, resumeEvaluations           → ogConditionsEvaluator
- *   checkOperator                                           → ogConditionsOperators
- *
- * REGISTRO:
- *   window.ogConditions
- *   ogFramework.core.conditions
- * @doc-end
+@doc-start
+FILE: framework/js/core/conditions.js
+CLASS: ogConditions
+TYPE: core-form
+PROMPT: fe-conditions
+
+ROLE:
+  Motor de condiciones para mostrar/ocultar campos dinámicamente según
+  el valor de otros campos. ~200 líneas, sin dependencias.
+  Se evalúa en tiempo real al cambiar cualquier campo del formulario.
+
+CONFIG EN CAMPO:
+  {
+    "condition": [
+      { "field": "pais",   "operator": "==",  "value": "EC" },
+      { "field": "activo", "operator": "==",  "value": true }
+    ],
+    "conditionLogic":   "AND",   // 'AND'(default) | 'OR'
+    "conditionContext": "form"   // 'form'(default) | 'view' | 'repeatable' | 'group'
+  }
+
+OPERADORES:
+  ==          igual a
+  !=          diferente de
+  >           mayor que
+  <           menor que
+  >=          mayor o igual
+  <=          menor o igual
+  any         el valor está en la lista  → value: "rojo,verde,azul"
+  not-any     el valor NO está en la lista
+  empty       campo vacío
+  not-empty   campo NO vacío
+  contains    contiene el texto
+  not-contains  NO contiene el texto
+
+CONTEXTOS (conditionContext):
+  form        → busca el campo trigger dentro del mismo formulario (default)
+  view        → busca en toda la vista (útil con múltiples formularios)
+  repeatable  → busca dentro del mismo item repeatable
+  group       → busca dentro del mismo grupo
+
+DEBUG:
+  conditions.debug('form-id')   → imprime todas las reglas del formulario
+  conditions.rules              → map de todas las reglas activas
+
+REGISTRO:
+  window.ogConditions
+  ogFramework.core.conditions
+@doc-end
  */

@@ -1,7 +1,7 @@
 # Core del Framework
 
 > ogApp, ogRouter, ogApi, ogApplication, ogController, ogResource.
-> Generado: 2026-03-07 19:35:46
+> Generado: 2026-03-08 14:28:20
 
 ---
 

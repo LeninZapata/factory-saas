@@ -7,5 +7,6 @@
 #file:.github/prompts/middleware.prompt.md
 #file:.github/prompts/auth.prompt.md
 #file:.github/prompts/routes.prompt.md
+#file:.github/prompts/crud.prompt.md
 
 Lee y memoriza este contexto. Son las docs del backend.

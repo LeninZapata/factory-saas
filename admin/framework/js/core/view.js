@@ -135,55 +135,73 @@ if (typeof window.ogFramework !== 'undefined') {
   window.ogFramework.core.view = ogView;
 }
 /**
- * @doc-start
- * FILE: framework/js/core/view.js
- * CLASS: ogView
- * TYPE: core-view
- * PROMPT: fe-view-hook
- *
- * ROLE:
- *   Fachada principal del sistema de vistas. Orquesta la carga completa de
- *   una vista JSON: resolución de ruta → fetch → cache → render → componentes.
- *   Es el único punto de entrada para cargar vistas desde extensiones, sidebar,
- *   modales o código de extensión.
- *
- * FIRMA PRINCIPAL:
- *   ogView.loadView(viewName, container?, extensionContext?, menuResources?,
- *                   afterRender?, menuId?, viewContext?)
- *
- * NOTACIONES DE viewName:
- *   'admin|sections/panel'         → extensión explícita
- *   'middle:dashboard/dashboard'   → contexto middle
- *   'core:user/user-list'          → vistas del framework
- *   'sections/panel'               → auto-detecta extensión por primera parte
- *
- * FLUJO COMPLETO:
- *   1. Parsear notación | y :
- *   2. Verificar cache de navegación (viewNavigationCache) si !container
- *   3. ogViewLoader.resolveViewPath() → basePath + cacheKey
- *   4. ogCache.get(cacheKey) o ogViewLoader.fetchView()
- *   5. ogViewLoader.resolveJsonParts()
- *   6. ogViewLoader.filterTabsByPermissions()
- *   7. ogViewLoader.combineResources()
- *   8. ogViewRender.renderView() o renderViewInContainer()
- *   9. ogViewComponents.loadAndInitResources()
- *   10. ogViewComponents.setupView()
- *   11. afterRender(viewId, contentEl) callback opcional
- *   12. Guardar en viewNavigationCache si !container y cache.viewNavigation
- *
- * CACHE DE NAVEGACIÓN:
- *   viewNavigationCache guarda el HTML ya renderizado de vistas de navegación
- *   (sin container). Al volver a una vista cacheada se restaura el HTML y se
- *   re-inicializan tabs/componentes sin hacer fetch.
- *   Activado con config.cache.viewNavigation = true.
- *
- * USO TÍPICO:
- *   ogView.loadView('admin|sections/panel');                 // navegación
- *   ogView.loadView('admin|forms/user-form', modalEl);      // dentro de modal
- *   ogView.loadView('middle:dashboard/dashboard');           // vista del middle
- *
- * REGISTRO:
- *   window.ogView
- *   ogFramework.core.view
- * @doc-end
- */
+@doc-start
+FILE: framework/js/core/view.js
+CLASS: ogView
+TYPE: core-view
+PROMPT: fe-view-hook
+
+ROLE:
+  Fachada principal del sistema de vistas. Orquesta la carga completa de
+  una vista JSON: resolución de ruta → fetch → cache → render → componentes.
+  Es el único punto de entrada para cargar vistas desde extensiones, sidebar,
+  modales o código de extensión.
+
+FIRMA PRINCIPAL:
+  ogView.loadView(viewName, container?, extensionContext?, menuResources?,
+                  afterRender?, menuId?, viewContext?)
+
+NOTACIONES DE viewName:
+  'admin|sections/panel'         → extensión explícita
+  'middle:dashboard/dashboard'   → contexto middle
+  'core:user/user-list'          → vistas del framework
+  'sections/panel'               → auto-detecta extensión por primera parte
+
+VISTA JSON (estructura top-level):
+  {
+    "id":          "mi-vista",
+    "title":       "Mi Vista",
+    "description": "texto descriptivo (opcional, no se renderiza)",
+    "type":        "tabs" | "content" | "html",
+    "scripts":     ["extensions/ejemplos/assets/js/chart.js"],  // bajo demanda
+    "tabs":        [ ... ],    // si type: tabs
+    "content":     [ ... ]     // si type: content | html
+  }
+
+TIPOS DE ITEM EN content[]:
+  { "type": "html",      "content": "<p>...</p>",    "order": 10 }
+  { "type": "form",      "form_json": "ext/form-id", "order": 20 }
+  { "type": "component", "component": "widget",      "order": 30, "config": {...} }
+  { "type": "json_part", "src": "ext|parts/nombre" }
+  order → los items se ordenan por este valor antes de renderizar
+
+FLUJO COMPLETO:
+  1. Parsear notación | y :
+  2. Verificar cache de navegación (viewNavigationCache) si !container
+  3. ogViewLoader.resolveViewPath() → basePath + cacheKey
+  4. ogCache.get(cacheKey) o ogViewLoader.fetchView()
+  5. ogViewLoader.resolveJsonParts()
+  6. ogViewLoader.filterTabsByPermissions()
+  7. ogViewLoader.combineResources()
+  8. ogViewRender.renderView() o renderViewInContainer()
+  9. ogViewComponents.loadAndInitResources()
+  10. ogViewComponents.setupView()
+  11. afterRender(viewId, contentEl) callback opcional
+  12. Guardar en viewNavigationCache si !container y cache.viewNavigation
+
+CACHE DE NAVEGACIÓN:
+  viewNavigationCache guarda el HTML ya renderizado de vistas de navegación
+  (sin container). Al volver a una vista cacheada se restaura el HTML y se
+  re-inicializan tabs/componentes sin hacer fetch.
+  Activado con config.cache.viewNavigation = true.
+
+USO TÍPICO:
+  ogView.loadView('admin|sections/panel');                 // navegación
+  ogView.loadView('admin|forms/user-form', modalEl);      // dentro de modal
+  ogView.loadView('middle:dashboard/dashboard');           // vista del middle
+
+REGISTRO:
+  window.ogView
+  ogFramework.core.view
+@doc-end
+*/

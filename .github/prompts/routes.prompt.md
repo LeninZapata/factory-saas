@@ -1,7 +1,7 @@
 # Rutas del Framework
 
 > Endpoints del sistema: system, logs, sessions, country.
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 

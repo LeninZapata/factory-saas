@@ -389,52 +389,53 @@ document.addEventListener('keydown', (e) => {
   }
 });
 /**
- * @doc-start
- * FILE: framework/js/components/modal.js
- * CLASS: ogModal
- * TYPE: component
- * PROMPT: fe-components
- *
- * ROLE:
- *   Sistema de modales apilables con efectos de entrada/salida animados y
- *   modo panel anclado a los bordes. Carga vistas JSON o HTML arbitrario
- *   dentro del modal y gestiona su ciclo de vida (open → load → close).
- *
- * APERTURA:
- *   ogModal.open(resource, options?)  → retorna { modalId, loadPromise }
- *   ogModal.openWithData(resource, options?) → abre modal y llena form con datos
- *
- * CIERRE:
- *   ogModal.close(modalId, effect?)  → cierra modal específico
- *   ogModal.closeAll()               → cierra todos los modales abiertos
- *
- * OPTIONS:
- *   title, width, maxWidth          → apariencia básica
- *   effect                          → animación: 'slide-up'(default) | 'fade-scale' | 'slide-right'
- *   closeOnOverlay, closeOnEsc      → comportamiento de cierre (default: true)
- *   footer, footerLeft, footerRight → HTML del pie del modal
- *   showFooter                      → bool (default: true)
- *   beforeTitle, afterTitle         → HTML adicional en el header
- *   headerExtra                     → HTML extra en la barra del header
- *   html                            → HTML directo (omite carga de resource)
- *   afterRender(modalId, el)        → callback post-render del contenido
- *   panel                           → bool, activa modo panel (default: false)
- *   panelSize                       → ancho/alto del panel (default: '400px')
- *   panelSpan                       → posición: 'right'|'left'|'top'|'bottom' (default: 'right')
- *
- * RECURSOS:
- *   resource puede ser cualquier notación de vista o form:
- *   'admin|forms/user-form', 'middle:auth/login', 'core:user/user-list'
- *
- * APILADO:
- *   Cada modal tiene z-index incremental. Los modales se apilan correctamente.
- *   getLastModalId() retorna el ID del modal más reciente.
- *
- * ACTUALIZACIÓN DINÁMICA:
- *   ogModal.updateTitle(modalId, title, extra?, before?, after?)
- *
- * REGISTRO:
- *   window.ogModal
- *   ogFramework.components.modal
- * @doc-end
+@doc-start
+FILE: framework/js/components/modal.js
+CLASS: ogModal
+TYPE: component
+PROMPT: fe-components
+
+ROLE:
+  Sistema de modales apilables con efectos de entrada/salida animados y
+  modo panel anclado a los bordes. Carga vistas JSON o HTML arbitrario
+  dentro del modal y gestiona su ciclo de vida (open → load → close).
+
+API:
+  ogModal.open(resource, options?)      → { modalId, loadPromise }
+  ogModal.openWithData(resource, opts?) → abre modal y llena form con datos
+  ogModal.close(modalId, effect?)       → cierra modal específico
+  ogModal.closeAll()                    → cierra todos los modales abiertos
+  ogModal.getLastModalId()              → ID del modal más reciente
+  ogModal.updateTitle(modalId, title, extra?, before?, after?)
+
+OPTIONS:
+  title, width, maxWidth                    width/maxWidth default: 80% / 900px
+  effect           → 'slide-up'(default) | 'fade-scale' | 'slide-right'
+  closeOnOverlay   → bool (default: true)
+  closeOnEsc       → bool (default: true)
+  showFooter       → bool (default: true)
+  footer           → HTML string — reemplaza footer completo
+  footerLeft       → HTML string — botones lado izquierdo del footer
+  footerRight      → HTML string — botones lado derecho del footer
+  beforeTitle      → HTML a la izquierda del título en el header (icono, indicador)
+  afterTitle       → HTML a la derecha del título en el header (badge, estado)
+  headerExtra      → texto/HTML bajo el título (sub-línea: estado, metadatos)
+  html             → true — resource es HTML directo, omite carga de archivo
+  afterRender(modalId, el) → callback post-render
+
+PANEL OPTIONS (activa modo panel anclado al borde):
+  panel            → 'right'(default) | 'left' | 'top' | 'bottom'
+  panelSize        → ancho del panel: 'sm'(300px) | 'md'(440px, default) | 'lg'(640px) | 'full'
+                     o porcentaje:    'w90' | 'w80' | 'w70' | 'w50'
+  panelSpan        → CSS value — en laterales (right/left) controla el ALTO y centra verticalmente
+                                — en horizontales (top/bottom) controla el ANCHO y centra horizontalmente
+                     ej: '80%', '400px'
+
+APILADO:
+  Cada modal tiene z-index incremental.
+
+REGISTRO:
+  window.ogModal
+  ogFramework.components.modal
+@doc-end
  */

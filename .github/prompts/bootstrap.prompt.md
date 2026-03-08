@@ -1,7 +1,7 @@
 # Bootstrap & Configuración
 
 > Flujo de arranque, entorno, configuración del framework y de la app.
-> Generado: 2026-03-07 19:35:46
+> Generado: 2026-03-08 14:28:20
 
 ---
 
@@ -36,7 +36,7 @@ init.php         → carga framework/config/init.php + los 4 anteriores
 
 ---
 
-> ⚠️ `backend/../funcs.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackend..funcs.php` — sin bloque `@doc-start`/`@doc-end`
 
 ### `backend/bootstrap.php`
 
@@ -225,12 +225,12 @@ Alternativas de idioma disponibles (comentadas en el archivo):
 - Detección desde query param ?lang=
 ```
 
-> ⚠️ `backend/app/config/init.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfiginit.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/execute.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigexecute.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/database.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigdatabase.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/tables.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigtables.php` — sin bloque `@doc-start`/`@doc-end`
 
-> ⚠️ `backend/app/config/consts.php` — sin bloque `@doc-start`/`@doc-end`
+> ⚠️ `backend/D:\laragon\www\factory-saasbackendappconfigconsts.php` — sin bloque `@doc-start`/`@doc-end`

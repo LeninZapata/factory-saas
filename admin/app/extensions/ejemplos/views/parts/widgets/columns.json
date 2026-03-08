@@ -1,0 +1,113 @@
+[
+  {
+    "type": "html",
+    "content": "<h3>Widgets en Diferentes Columnas</h3><p>Ejemplos de 1, 2, 3 y 4 columnas con desbordamiento automático.</p>"
+  },
+  {
+    "type": "html",
+    "content": "<h4 class='og-mt-4'>1 Columna (Ancho Completo)</h4>"
+  },
+  {
+    "type": "component",
+    "component": "widget",
+    "config": {
+      "columns": 1,
+      "widgets": [
+        {
+          "title": "📊 Widget Ancho Completo",
+          "order": 1,
+          "html": "<div style='padding:2rem;text-align:center;background:#e0f2fe;border-radius:6px;'><h2 style='margin:0;color:#0284c7;'>Ocupa Todo el Ancho</h2><p style='margin:1rem 0 0;'>Este widget usa 1 columna, ideal para gráficos grandes o contenido destacado.</p></div>"
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<h4 class='og-mt-4'>2 Columnas (Default)</h4>"
+  },
+  {
+    "type": "component",
+    "component": "widget",
+    "config": {
+      "columns": 2,
+      "widgets": [
+        {
+          "title": "Widget 1",
+          "order": 1,
+          "html": "<div style='padding:1.5rem;text-align:center;background:#ddd6fe;'><h3 style='color:#7c3aed;'>Columna 1</h3></div>"
+        },
+        {
+          "title": "Widget 2",
+          "order": 2,
+          "html": "<div style='padding:1.5rem;text-align:center;background:#fce7f3;'><h3 style='color:#db2777;'>Columna 2</h3></div>"
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<h4 class='og-mt-4'>3 Columnas</h4>"
+  },
+  {
+    "type": "component",
+    "component": "widget",
+    "config": {
+      "columns": 3,
+      "widgets": [
+        {
+          "title": "Widget 1",
+          "order": 1,
+          "html": "<div style='padding:1rem;text-align:center;background:#dcfce7;'><p style='color:#16a34a;'>Col 1</p></div>"
+        },
+        {
+          "title": "Widget 2",
+          "order": 2,
+          "html": "<div style='padding:1rem;text-align:center;background:#fef3c7;'><p style='color:#d97706;'>Col 2</p></div>"
+        },
+        {
+          "title": "Widget 3",
+          "order": 3,
+          "html": "<div style='padding:1rem;text-align:center;background:#fecaca;'><p style='color:#dc2626;'>Col 3</p></div>"
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<h4 class='og-mt-4'>4 Columnas con Desbordamiento</h4><p>5 widgets en grid de 4 columnas: el 5to se desborda a una nueva fila automáticamente.</p>"
+  },
+  {
+    "type": "component",
+    "component": "widget",
+    "config": {
+      "columns": 4,
+      "widgets": [
+        {
+          "title": "W1",
+          "order": 1,
+          "html": "<div style='padding:1rem;text-align:center;background:#e0f2fe;'><p>1</p></div>"
+        },
+        {
+          "title": "W2",
+          "order": 2,
+          "html": "<div style='padding:1rem;text-align:center;background:#dcfce7;'><p>2</p></div>"
+        },
+        {
+          "title": "W3",
+          "order": 3,
+          "html": "<div style='padding:1rem;text-align:center;background:#fef3c7;'><p>3</p></div>"
+        },
+        {
+          "title": "W4",
+          "order": 4,
+          "html": "<div style='padding:1rem;text-align:center;background:#fecaca;'><p>4</p></div>"
+        },
+        {
+          "title": "W5 (Desborda)",
+          "order": 5,
+          "html": "<div style='padding:1rem;text-align:center;background:#ddd6fe;'><p style='color:#7c3aed;font-weight:bold;'>5 - Se desborda a nueva fila</p></div>"
+        }
+      ]
+    }
+  }
+]

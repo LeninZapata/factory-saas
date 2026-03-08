@@ -1,0 +1,121 @@
+[
+  {
+    "type": "html",
+    "content": "<h3>Tabs dentro de Tabs</h3><p>Este ejemplo muestra cómo los tabs pueden contener otros tabs, permitiendo una navegación multinivel:</p>"
+  },
+  {
+    "type": "component",
+    "component": "tabs",
+    "config": {
+      "id": "tabs-nivel-1",
+      "tabs": [
+        {
+          "id": "tab-productos",
+          "title": "🛍️ Productos",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='og-p-2 og-bg-blue-50 og-rounded-lg og-my-2'><h4>Sección de Productos (Nivel 1)</h4><p>Aquí se muestran tabs de segundo nivel con el componente tabs:</p></div>"
+            },
+            {
+              "type": "component",
+              "component": "tabs",
+              "config": {
+                "id": "tabs-productos-nivel-2",
+                "tabs": [
+                  {
+                    "id": "prod-electronica",
+                    "title": "📱 Electrónica",
+                    "content": "<div class='og-p-3'><h5>Productos Electrónicos</h5><ul style='line-height: 1.8;'><li><strong>Smartphones</strong> - $299 - $1,299</li><li><strong>Laptops</strong> - $499 - $2,499</li><li><strong>Tablets</strong> - $199 - $899</li><li><strong>Auriculares</strong> - $29 - $399</li><li><strong>Smartwatches</strong> - $149 - $799</li></ul></div>"
+                  },
+                  {
+                    "id": "prod-ropa",
+                    "title": "👕 Ropa",
+                    "content": "<div class='og-p-3'><h5>Ropa y Accesorios</h5><ul style='line-height: 1.8;'><li><strong>Camisetas</strong> - $15 - $50</li><li><strong>Pantalones</strong> - $30 - $120</li><li><strong>Zapatos</strong> - $40 - $200</li><li><strong>Accesorios</strong> - $10 - $80</li><li><strong>Chaquetas</strong> - $60 - $250</li></ul></div>"
+                  },
+                  {
+                    "id": "prod-alimentos",
+                    "title": "🍎 Alimentos",
+                    "content": "<div class='og-p-3'><h5>Productos Alimenticios</h5><ul style='line-height: 1.8;'><li><strong>Frutas</strong> - $2 - $8 / kg</li><li><strong>Verduras</strong> - $1 - $6 / kg</li><li><strong>Carnes</strong> - $5 - $20 / kg</li><li><strong>Lácteos</strong> - $1 - $10</li><li><strong>Panadería</strong> - $0.50 - $5</li></ul></div>"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tab-servicios",
+          "title": "🔧 Servicios",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='og-p-2 og-bg-yellow-100 og-rounded-lg og-my-2'><h4>Sección de Servicios (Nivel 1)</h4><p>Tabs de servicios con subcategorías usando componente tabs:</p></div>"
+            },
+            {
+              "type": "component",
+              "component": "tabs",
+              "config": {
+                "id": "tabs-servicios-nivel-2",
+                "tabs": [
+                  {
+                    "id": "serv-consultoria",
+                    "title": "💼 Consultoría",
+                    "content": "<div class='og-p-3'><h5>Servicios de Consultoría</h5><ul style='line-height: 1.8;'><li><strong>Análisis de negocio</strong> - $1,500/día</li><li><strong>Auditoría de sistemas</strong> - $2,000/día</li><li><strong>Estrategia digital</strong> - $2,500/día</li><li><strong>Optimización de procesos</strong> - $1,800/día</li><li><strong>Transformación digital</strong> - $3,000/día</li></ul></div>"
+                  },
+                  {
+                    "id": "serv-desarrollo",
+                    "title": "💻 Desarrollo",
+                    "content": "<div class='og-p-3'><h5>Servicios de Desarrollo</h5><ul style='line-height: 1.8;'><li><strong>Desarrollo web</strong> - $50-$150/hora</li><li><strong>Desarrollo móvil</strong> - $60-$180/hora</li><li><strong>Backend API</strong> - $70-$160/hora</li><li><strong>DevOps</strong> - $80-$200/hora</li><li><strong>Cloud Architecture</strong> - $90-$220/hora</li></ul></div>"
+                  },
+                  {
+                    "id": "serv-soporte",
+                    "title": "🛠️ Soporte",
+                    "content": "<div class='og-p-3'><h5>Planes de Soporte</h5><ul style='line-height: 1.8;'><li><strong>Soporte básico</strong> - $500/mes</li><li><strong>Soporte premium</strong> - $1,500/mes</li><li><strong>Soporte 24/7</strong> - $3,000/mes</li><li><strong>Mantenimiento</strong> - $800/mes</li><li><strong>SLA Enterprise</strong> - $5,000/mes</li></ul></div>"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tab-clientes",
+          "title": "👥 Clientes",
+          "content": [
+            {
+              "type": "html",
+              "content": "<div class='og-p-2 og-bg-green-100 og-rounded-lg og-my-2'><h4>Sección de Clientes (Nivel 1)</h4><p>Tabs con información de diferentes tipos de clientes usando componente tabs:</p></div>"
+            },
+            {
+              "type": "component",
+              "component": "tabs",
+              "config": {
+                "id": "tabs-clientes-nivel-2",
+                "tabs": [
+                  {
+                    "id": "cli-corporativos",
+                    "title": "🏢 Corporativos",
+                    "content": "<div class='og-p-3'><h5>Clientes Corporativos</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Empresa</th><th>Contrato</th><th>Empleados</th></tr></thead><tbody><tr><td>Tech Corp SA</td><td>$50,000/año</td><td>500</td></tr><tr><td>Global Solutions</td><td>$75,000/año</td><td>1,200</td></tr><tr><td>Enterprise Systems</td><td>$120,000/año</td><td>2,500</td></tr></tbody></table></div>"
+                  },
+                  {
+                    "id": "cli-pymes",
+                    "title": "🏪 PYMES",
+                    "content": "<div class='og-p-3'><h5>Pequeñas y Medianas Empresas</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Empresa</th><th>Contrato</th><th>Empleados</th></tr></thead><tbody><tr><td>Tienda Digital</td><td>$5,000/año</td><td>15</td></tr><tr><td>Restaurante El Sabor</td><td>$3,500/año</td><td>8</td></tr><tr><td>Consultora Pro</td><td>$8,000/año</td><td>25</td></tr></tbody></table></div>"
+                  },
+                  {
+                    "id": "cli-individuales",
+                    "title": "👤 Individuales",
+                    "content": "<div class='og-p-3'><h5>Clientes Individuales</h5><table class='og-table og-table-bordered og-mt-2'><thead><tr><th>Cliente</th><th>Plan</th><th>Mensualidad</th></tr></thead><tbody><tr><td>Juan Pérez</td><td>Básico</td><td>$50/mes</td></tr><tr><td>María González</td><td>Premium</td><td>$150/mes</td></tr><tr><td>Carlos Ruiz</td><td>Pro</td><td>$300/mes</td></tr></tbody></table></div>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-info alert-with-desc og-my-4'><strong>💡 Características de Tabs Anidados:</strong><div class='alert-desc'><ul><li><strong>Navegación multinivel:</strong> Permite organizar contenido en múltiples niveles de profundidad</li><li><strong>Interfaz limpia:</strong> Solo muestra el contenido activo, ocultando el resto</li><li><strong>Cambio dinámico:</strong> Al hacer clic en un tab, el contenido cambia instantáneamente</li><li><strong>Ideal para:</strong> Categorización de contenido, paneles de control, dashboards complejos</li></ul></div></div>"
+  }
+]

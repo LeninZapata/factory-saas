@@ -1,0 +1,66 @@
+[
+  {
+    "type": "html",
+    "content": "<h4 style='margin-bottom:8px'>Modal cargando vistas completas</h4><p class='text-muted' style='margin-bottom:24px'>El modal puede cargar cualquier vista, sección o formulario del sistema — incluyendo los que tienen tabs, sub-paneles, repetibles y JSON parts anidados. Aquí se demuestra su verdadero poder como contenedor universal.</p>"
+  },
+  {
+    "type": "section",
+    "title": "Galería de formularios completa",
+    "description": "Abre <code>sections/formularios/main</code> dentro de un modal al 90% de ancho. La vista contiene tabs anidados con múltiples formularios, repetibles, condiciones y más — todo renderizado dentro del modal como si fuera una página.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('ejemplos|sections/formularios/main', { title: '📋 Galería de Formularios', width: '90%', maxWidth: '1400px' })\">Abrir Galería de Formularios</button><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('ejemplos|sections/formularios/main', { title: '📋 Formularios — Panel', panel: 'right', panelSize: 'w90' })\">Como panel lateral 90%</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Modal centrado al 90% de ancho\nogComponent('modal').open('ejemplos|sections/formularios/main', {\n  title: 'Galería de Formularios',\n  width: '90%',\n  maxWidth: '1400px'\n});\n\n// O como panel lateral\nogComponent('modal').open('ejemplos|sections/formularios/main', {\n  title: 'Formularios',\n  panel: 'right',\n  panelSize: 'w90'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Vista Grouper",
+    "description": "Carga <code>sections/grouper-demo</code> — una vista con tabs, ejemplos de agrupación visual y sub-componentes. Demuestra que cualquier sección del menú puede abrirse en un modal sin cambios.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('ejemplos|sections/grouper-demo', { title: '📁 Grouper — Agrupación Visual', width: '85%', maxWidth: '1200px' })\">Abrir Grouper</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('ejemplos|sections/grouper-demo', { title: '📁 Grouper', panel: 'right', panelSize: 'lg' })\">Como panel lateral</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "ogComponent('modal').open('ejemplos|sections/grouper-demo', {\n  title: 'Grouper — Agrupación Visual',\n  width: '85%',\n  maxWidth: '1200px'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "JSON Parts",
+    "description": "Abre <code>sections/caracteristicas-json-parts</code> — una vista que a su vez carga partes externas (<code>json_part</code>) en tiempo de renderizado. El modal los resuelve y muestra el resultado ensamblado, demostrando que la composición de vistas funciona igual dentro de un modal.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', { title: '📦 JSON Parts — División de Vistas', width: '80%', maxWidth: '1100px' })\">Abrir JSON Parts</button><button class='btn btn-info' onclick=\"ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', { title: '📦 JSON Parts', panel: 'bottom', panelSize: 'w80' })\">Como panel inferior 80%</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "ogComponent('modal').open('ejemplos|sections/caracteristicas-json-parts', {\n  title: 'JSON Parts — División de Vistas',\n  width: '80%',\n  maxWidth: '1100px'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "¿Qué puedes abrir en un modal?",
+    "description": "Resumen de todos los tipos de recursos compatibles con <code>ogComponent('modal').open()</code>.",
+    "content": [
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Vista de una extensión\nogComponent('modal').open('miext|sections/mi-vista', { title: '...' });\n\n// Formulario de una extensión\nogComponent('modal').open('miext|forms/mi-form', { title: '...' });\n\n// Vista del framework o middle\nogComponent('modal').open('middle:sections/mi-vista', { title: '...' });\n\n// Formulario del framework\nogComponent('modal').open('core:forms/mi-form', { title: '...' });\n\n// HTML directo (sin carga)\nogComponent('modal').open('<p>Contenido inline</p>', { html: true, title: '...' });"
+      }
+    ]
+  }
+]

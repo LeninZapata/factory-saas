@@ -1,0 +1,63 @@
+[
+  {
+    "type": "html",
+    "content": "<h3>Grouper con Formularios Dinámicos</h3><p>El grouper puede cargar formularios completos dentro de cada grupo usando <code>type: 'form'</code> y <code>form_json</code>:</p>"
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-info alert-with-desc'><strong>💡 Ventajas:</strong><div class='alert-desc'><ul><li><strong>Modular:</strong> Cada formulario se mantiene en su propio archivo JSON</li><li><strong>Reutilizable:</strong> El mismo formulario puede usarse en múltiples lugares</li><li><strong>Organizado:</strong> Agrupa formularios relacionados visualmente</li><li><strong>Dinámico:</strong> Los formularios se cargan solo cuando el usuario abre el grupo (en modo linear)</li></ul></div></div>"
+  },
+  {
+    "type": "component",
+    "component": "grouper",
+    "config": {
+      "mode": "linear",
+      "collapsible": true,
+      "openFirst": true,
+      "groups": [
+        {
+          "title": "📝 Formulario de Inputs Básicos",
+          "content": "<div class='dynamic-form' data-form-json='ejemplos/formularios/form-inputs-normales'></div>"
+        },
+        {
+          "title": "📊 Formulario con Campos Agrupados",
+          "content": "<div class='dynamic-form' data-form-json='ejemplos/formularios/form-grouped-fields'></div>"
+        },
+        {
+          "title": "🌐 Información del Sistema",
+          "content": "<div class='og-p-2 og-bg-blue-50 og-rounded-lg'><h4>Datos del Sistema</h4><p>Este grupo contiene solo HTML estático para comparar:</p><ul><li><strong>Versión:</strong> 1.0.0</li><li><strong>Usuarios activos:</strong> 1,247</li><li><strong>Base de datos:</strong> PostgreSQL 14</li><li><strong>Servidor:</strong> Ubuntu 22.04 LTS</li></ul></div>"
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<h3 class='og-mt-4'>Grouper en Modo Tabs + Formularios</h3><p>También funciona en modo tabs:</p>"
+  },
+  {
+    "type": "component",
+    "component": "grouper",
+    "config": {
+      "mode": "tabs",
+      "activeIndex": 0,
+      "groups": [
+        {
+          "title": "📝 Inputs",
+          "content": "<div class='dynamic-form' data-form-json='ejemplos/formularios/form-inputs-normales'></div>"
+        },
+        {
+          "title": "📊 Agrupados",
+          "content": "<div class='dynamic-form' data-form-json='ejemplos/formularios/form-grouped-fields'></div>"
+        },
+        {
+          "title": "📄 Info",
+          "content": "<div class='og-p-3 og-bg-yellow-100 og-rounded-lg'><h4>Notas importantes</h4><ul><li>Los formularios se cargan dinámicamente</li><li>Cada formulario mantiene su propia validación</li><li>Los datos se mantienen independientes entre grupos</li><li>Puedes tener múltiples formularios en la misma vista</li></ul></div>"
+        }
+      ]
+    }
+  },
+  {
+    "type": "html",
+    "content": "<div class='alert alert-success alert-with-desc og-my-4'><strong>✅ Estructura del content con formularios:</strong><div class='alert-desc'><pre style='font-size: 0.85rem;'>{\n  \"title\": \"📝 Mi Formulario\",\n  \"content\": \"&lt;div class='dynamic-form' data-form-json='plugin/ruta/formulario'&gt;&lt;/div&gt;\"\n}</pre><p class='og-mt-2'><strong>Importante:</strong> El sistema detectará automáticamente los <code>dynamic-form</code> y cargará los formularios correspondientes.</p></div></div>"
+  }
+]

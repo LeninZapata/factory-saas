@@ -1,0 +1,86 @@
+[
+  {
+    "type": "html",
+    "content": "<h4 style='margin-bottom:8px'>Modal</h4><p class='text-muted' style='margin-bottom:24px'>El componente <code>ogModal</code> permite abrir cualquier contenido (HTML, vistas, formularios) dentro de una capa flotante. A continuación se muestran los casos de uso más comunes.</p>"
+  },
+  {
+    "type": "section",
+    "title": "Modal con contenido HTML",
+    "description": "Abre un modal pasando HTML directamente como recurso con la opción <code>html: true</code>.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><h4>¡Hola desde HTML!</h4><p>Este contenido fue pasado directamente como string HTML.</p><ul><li>Elemento 1</li><li>Elemento 2</li><li>Elemento 3</li></ul></div>', { html: true, title: '🎉 Modal HTML Básico' })\">Básico</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><div class=\\'alert alert-info\\'><strong>Información importante</strong><p>Este modal tiene footer personalizado con botones de acción.</p></div></div>', { html: true, title: '📋 Con Footer Personalizado', footer: '<button class=\\'btn btn-success\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>✅ Aceptar</button><button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cancelar</button>' })\">Con footer personalizado</button><button class='btn btn-info' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px;text-align:center\\'><div style=\\'font-size:48px;margin-bottom:8px\\'>⚠️</div><h4>¿Confirmar acción?</h4><p>Esta acción no se puede deshacer.</p></div>', { html: true, title: 'Confirmar', width: '400px', maxWidth: '400px', showFooter: false })\">Compacto (sin footer)</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Modal HTML básico\nogComponent('modal').open('<h4>Hola!</h4><p>Contenido HTML</p>', {\n  html: true,\n  title: 'Mi Modal'\n});\n\n// Con footer personalizado\nogComponent('modal').open('<p>Contenido</p>', {\n  html: true,\n  title: 'Confirmación',\n  footer: '<button class=\"btn btn-success\" onclick=\"ogComponent(\\'modal\\').closeAll()\">Aceptar</button>'\n});\n\n// Compacto sin footer\nogComponent('modal').open('<p>Mensaje</p>', {\n  html: true,\n  title: 'Aviso',\n  width: '400px',\n  maxWidth: '400px',\n  showFooter: false\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Modal con formulario",
+    "description": "Carga un formulario JSON existente dentro del modal. El recurso se pasa como <code>\"extension|forms/nombre\"</code>.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('ejemplos|forms/formularios/form-inputs-normales', { title: '📝 Formulario en Modal', width: '680px', maxWidth: '720px' })\">Formulario básico</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('ejemplos|forms/formularios/form-inputs-required', { title: '✅ Formulario con campos requeridos', width: '700px', maxWidth: '750px' })\">Con campos requeridos</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Abrir un formulario JSON dentro de un modal\n// Formato: 'extension|forms/nombre-del-formulario'\nogComponent('modal').open('ejemplos|forms/formularios/form-inputs-normales', {\n  title: '📝 Formulario en Modal',\n  width: '680px',\n  maxWidth: '720px'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Efectos de animación",
+    "description": "El modal soporta tres efectos de entrada/salida. El efecto por defecto es <code>slide-up</code>.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>slide-up</strong> (por defecto)</p>', { html: true, title: '↑ Slide Up', effect: 'slide-up' })\">slide-up (default)</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>fade-scale</strong> — aparece desde el centro</p>', { html: true, title: '🔍 Fade Scale', effect: 'fade-scale' })\">fade-scale</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Efecto <strong>slide-right</strong> — entra desde la derecha</p>', { html: true, title: '→ Slide Right', effect: 'slide-right' })\">slide-right</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Opciones de efecto: 'slide-up' | 'fade-scale' | 'slide-right'\nogComponent('modal').open('<p>Contenido</p>', {\n  html: true,\n  title: 'Modal animado',\n  effect: 'fade-scale'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Control de tamaño",
+    "description": "Usa <code>width</code> y <code>maxWidth</code> para controlar las dimensiones. Por defecto: <code>width: 80%, maxWidth: 900px</code>.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal pequeño — ideal para confirmaciones</p>', { html: true, title: 'Pequeño', width: '380px', maxWidth: '400px' })\">Pequeño (400px)</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal mediano (por defecto)</p>', { html: true, title: 'Mediano (default)' })\">Mediano (900px)</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Modal grande — ideal para formularios complejos o tablas</p>', { html: true, title: 'Grande', width: '95%', maxWidth: '1400px' })\">Grande (95% / 1400px)</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Pequeño\nogComponent('modal').open(resource, { width: '380px', maxWidth: '400px' });\n\n// Mediano (valores por defecto)\nogComponent('modal').open(resource, {});\n\n// Grande\nogComponent('modal').open(resource, { width: '95%', maxWidth: '1400px' });"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Múltiples modales apilados",
+    "description": "Se pueden abrir varios modales al mismo tiempo. <code>ogModal.closeAll()</code> los cierra todos.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick='ejemplos.openStackedModal()'>Abrir Modal 1</button><button class='btn btn-danger' onclick=\"ogComponent('modal').closeAll()\">Cerrar todos</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Abrir múltiples modales\nogComponent('modal').open(resource1, { title: 'Modal 1' });\nogComponent('modal').open(resource2, { title: 'Modal 2' });\n\n// Cerrar todos\nogComponent('modal').closeAll();"
+      }
+    ]
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "type": "html",
+    "content": "<h4 style='margin-bottom:8px'>Modal avanzado</h4><p class='text-muted' style='margin-bottom:24px'>Características de personalización: footer dividido, control de cierre y header enriquecido.</p>"
+  },
+  {
+    "type": "section",
+    "title": "Footer dividido (izquierda / derecha)",
+    "description": "Usa <code>footerLeft</code> y <code>footerRight</code> para distribuir botones en ambos lados. El footer siempre queda fijo; el contenido hace scroll.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'><p>Footer con botones a la izquierda (secundarios) y a la derecha (primarios).</p></div>', { html: true, title: 'Footer dividido', footerLeft: '<button class=\\'btn btn-outline-danger\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>🗑 Eliminar</button>', footerRight: '<button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cancelar</button><button class=\\'btn btn-primary\\'>Guardar</button>' })\">Footer izq / der</button><button class='btn btn-secondary' onclick=\"ogComponent('modal').open('<div style=\\'padding:8px\\'>' + '<p>'.repeat(1) + 'Línea de contenido. '.repeat(40) + '</p></div>', { html: true, title: 'Footer fijo con scroll', footerLeft: '<span style=\\'color:#6c757d;font-size:13px\\'>* El footer permanece fijo</span>', footerRight: '<button class=\\'btn btn-secondary\\' onclick=\\'ogComponent(\\'modal\\').closeAll()\\'>Cerrar</button><button class=\\'btn btn-primary\\'>Aceptar</button>', width: '500px', maxWidth: '520px' })\">Footer fijo + scroll</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Footer dividido: izquierda y derecha\nogComponent('modal').open(resource, {\n  title: 'Confirmación',\n  footerLeft: '<button class=\"btn btn-outline-danger\">🗑 Eliminar</button>',\n  footerRight: '<button class=\"btn btn-secondary\" onclick=\"ogComponent(\\'modal\\').closeAll()\">Cancelar</button><button class=\"btn btn-primary\">Guardar</button>'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Control de cierre",
+    "description": "Tres variantes: cierre por overlay (default), solo ESC, o solo con el botón ✕.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Comportamiento por defecto: cierra con clic en overlay, con ESC y con ✕.</p>', { html: true, title: '✅ Default (todo cierra)' })\">Default</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Solo se cierra con la tecla ESC. El clic en el overlay no hace nada.</p>', { html: true, title: '⌨️ Solo ESC', closeOnOverlay: false })\">Solo ESC</button><button class='btn btn-outline-info' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Solo se cierra con el botón ✕. Ni el overlay ni ESC lo cierran.</p>', { html: true, title: '✕ Solo botón X', closeOnOverlay: false, closeOnEsc: false })\">Solo botón X</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Default: cierra con overlay + ESC + X\nogComponent('modal').open(resource, { title: 'Default' });\n\n// Solo ESC y X (no cierra con clic en overlay)\nogComponent('modal').open(resource, {\n  title: 'Solo ESC',\n  closeOnOverlay: false\n});\n\n// Solo con el botón X\nogComponent('modal').open(resource, {\n  title: 'Solo X',\n  closeOnOverlay: false,\n  closeOnEsc: false\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Header enriquecido",
+    "description": "Agrega texto complementario bajo el título con <code>headerExtra</code>. Útil para badges, estados o metadatos del contexto abierto.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>El header muestra un badge de estado bajo el título principal.</p>', { html: true, title: 'Detalles del usuario', headerExtra: '🟢 Activo &nbsp;·&nbsp; Administrador' })\">Con badge de estado</button><button class='btn btn-outline-secondary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Puedes combinar texto, spans y pequeños iconos en headerExtra.</p>', { html: true, title: 'Ver pedido', headerExtra: '#0042 &nbsp;<span style=\\'background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:11px\\'>⏳ Pendiente</span>' })\">Con badge pill</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// headerExtra: texto/HTML pequeño bajo el título\nogComponent('modal').open(resource, {\n  title: 'Detalles del usuario',\n  headerExtra: '🟢 Activo · Administrador'\n});"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Header dinámico al editar",
+    "description": "Al abrir un modal para editar, inyecta el nombre del registro en el header con <code>headerExtra</code> via <code>afterRender</code> o directamente en <code>open()</code>. Así siempre sabes qué estás editando sin importar el scroll del contenido.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-primary' onclick=\"ejemplos.openEditDemo(42, 'Proceso de facturación')\">Editar registro #42</button><button class='btn btn-secondary' onclick=\"ejemplos.openEditDemo(7, 'Exportar reportes mensuales')\">Editar registro #7</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Al abrir el modal de edición, pasa el nombre del registro\nstatic async openEdit(id) {\n  const data = await this.get(id);\n  if (!data) return;\n\n  ogComponent('modal').open('miext|forms/mi-form', {\n    title: 'Editar workflow',\n    headerExtra: `✏️ ${data.name} <span style=\"opacity:.5\">#${data.id}</span>`,\n    width: '700px',\n    afterRender: (formId) => {\n      ogModule('form').fill(formId, data);\n    }\n  });\n}\n\n// También puedes actualizar el título de un modal ya abierto:\nogModal.updateTitle(modalId, 'Nuevo título', 'subtexto extra');"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Antes y después del título",
+    "description": "Usa <code>beforeTitle</code> para colocar contenido a la izquierda del título (icono, indicador visual) y <code>afterTitle</code> a la derecha (badge, contador, estado). Ambos viven en la misma fila inline del título, sin afectar el <code>headerExtra</code> que sigue bajo ellos.",
+    "content": [
+      {
+        "type": "html",
+        "content": "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px'><button class='btn btn-outline-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Icono a la izquierda del título con beforeTitle.</p>', { html: true, title: 'Configuración OAuth', beforeTitle: '🔐' })\">beforeTitle (icono)</button><button class='btn btn-outline-success' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Badge de estado a la derecha del título con afterTitle.</p>', { html: true, title: 'Base de datos', afterTitle: '<span style=\\'background:#d1fae5;color:#065f46;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600\\'>● Conectada</span>' })\">afterTitle (badge)</button><button class='btn btn-primary' onclick=\"ogComponent('modal').open('<p style=\\'padding:8px\\'>Los tres combinados: icono antes, badge después y descripción bajo el título.</p>', { html: true, title: 'Canal WhatsApp', beforeTitle: '💬', afterTitle: '<span style=\\'background:#fef9c3;color:#854d0e;font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600\\'>3 pendientes</span>', headerExtra: 'API v2 · Webhook activo', width: '520px' })\">before + after + extra</button></div>"
+      },
+      {
+        "type": "code",
+        "lang": "javascript",
+        "content": "// Solo icono antes del título\nogComponent('modal').open(resource, {\n  title: 'Configuración OAuth',\n  beforeTitle: '🔐'\n});\n\n// Badge de estado después del título\nogComponent('modal').open(resource, {\n  title: 'Base de datos',\n  afterTitle: '<span class=\\'badge-pill\\'>● Conectada</span>'\n});\n\n// Combinado: before + after + extra (sub-línea bajo el título)\nogComponent('modal').open(resource, {\n  title: 'Canal WhatsApp',\n  beforeTitle: '💬',\n  afterTitle: '<span class=\\'badge-pill\\'>3 pendientes</span>',\n  headerExtra: 'API v2 · Webhook activo'\n});\n\n// Actualizar before/after en un modal ya abierto:\nogModal.updateTitle(modalId, 'Nuevo título', 'extra', '🟢', 'nuevo after');"
+      }
+    ]
+  }
+]

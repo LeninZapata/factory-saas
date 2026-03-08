@@ -1,7 +1,7 @@
 # Middleware & Traits
 
 > Middleware disponibles en rutas y traits de validación.
-> Generado: 2026-03-07 19:35:47
+> Generado: 2026-03-08 14:28:20
 
 ---
 
